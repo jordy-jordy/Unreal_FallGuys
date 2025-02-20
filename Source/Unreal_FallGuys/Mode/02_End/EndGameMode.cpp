@@ -1,5 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Mode/TitleGameMode.h"
+#include "Mode/02_End/EndGameMode.h"
 
