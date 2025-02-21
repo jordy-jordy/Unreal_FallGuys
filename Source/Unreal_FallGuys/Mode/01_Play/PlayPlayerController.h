@@ -14,4 +14,7 @@ class UNREAL_FALLGUYS_API APlayPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 	
+protected:
+	void BeginPlay() override;
+
 };

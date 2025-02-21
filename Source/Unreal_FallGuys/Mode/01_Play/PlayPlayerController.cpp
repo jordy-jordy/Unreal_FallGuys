@@ -3,3 +3,11 @@
 
 #include "Mode/01_Play/PlayPlayerController.h"
 
+
+void APlayPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+
+	FInputModeGameOnly Mode;
+	SetInputMode(Mode);
+}
