@@ -14,4 +14,6 @@ class UNREAL_FALLGUYS_API ATitleHUD : public AHUD
 {
 	GENERATED_BODY()
 	
+protected:
+	void BeginPlay() override;
 };

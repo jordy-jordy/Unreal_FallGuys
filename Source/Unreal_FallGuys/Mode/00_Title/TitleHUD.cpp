@@ -2,4 +2,10 @@
 
 
 #include "Mode/00_Title/TitleHUD.h"
+#include "Blueprint/UserWidget.h"
 
+
+void ATitleHUD::BeginPlay()
+{
+	Super::BeginPlay();
+}
