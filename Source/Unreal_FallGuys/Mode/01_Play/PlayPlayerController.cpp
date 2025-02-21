@@ -8,6 +8,6 @@ void APlayPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	FInputModeGameOnly Mode;
-	SetInputMode(Mode);
+	//FInputModeGameOnly Mode;
+	//SetInputMode(Mode);
 }
