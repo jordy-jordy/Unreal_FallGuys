@@ -2,6 +2,7 @@
 
 
 #include "Global/FallGlobal.h"
+#include "Kismet/GameplayStatics.h"
 #include "AssetRegistry/AssetRegistryModule.h"
 
 
@@ -42,4 +43,22 @@ TArray<FAssetData> UFallGlobal::AssetsPath(UClass* _Class)
 	}
 
 	return MapList;
+}
+
+void UFallGlobal::StartServer()
+{
+	FString OpenLevel;
+	FString LevelPath = TEXT("");
+
+	UFallGlobal::AssetPackagePath(UWorld::StaticClass(), TEXT("PlayLevel"), LevelPath);
+	OpenLevel = FString::Printf(TEXT(":%s%s"), *Port, *LevelPath);
+
+	UGameplayStatics::OpenLevel(GetWorld(), *OpenLevel, true, TEXT("listen"));
+}
+
+void UFallGlobal::Connect()
+{
+	FString ConnectLevelName = FString::Printf(TEXT("%s:%s"), *IP, *Port);
+
+	UGameplayStatics::OpenLevel(GetWorld(), FName(*ConnectLevelName));
 }
