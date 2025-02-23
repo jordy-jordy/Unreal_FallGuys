@@ -3,3 +3,13 @@
 
 #include "Mode/02_End/EndGameMode.h"
 
+
+void AEndGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
+void AEndGameMode::Tick(float _Delta)
+{
+	Super::Tick(_Delta);
+}

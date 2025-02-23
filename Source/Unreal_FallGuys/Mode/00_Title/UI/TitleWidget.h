@@ -16,16 +16,7 @@ class UNREAL_FALLGUYS_API UTitleWidget : public UUserWidget
 
 public:
 	UFUNCTION(BlueprintCallable)
-	static void AssetPackagePath(UClass* _Class, const FString& _AssetName, FString& _Path);
-
-	UFUNCTION(BlueprintCallable)
-	static TArray<FAssetData> AssetsPath(UClass* _Class);
-
-	UFUNCTION(BlueprintCallable, Category = "Server")
-	void StartServer();
-
-	UFUNCTION(BlueprintCallable, Category = "Server")
-	void Connect();
+	UWorld* GetCurWorld();
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Server", meta = (AllowPrivateAccess = "true"))
@@ -33,4 +24,5 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Server", meta = (AllowPrivateAccess = "true"))
 	FString Port = TEXT("30000");
+
 };

@@ -14,4 +14,8 @@ class UNREAL_FALLGUYS_API APlayGameMode : public AGameMode
 {
 	GENERATED_BODY()
 	
+protected:
+	void BeginPlay() override;
+	void Tick(float _Delta) override;
+
 };

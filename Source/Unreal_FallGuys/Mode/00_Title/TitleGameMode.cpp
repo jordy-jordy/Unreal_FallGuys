@@ -3,3 +3,14 @@
 
 #include "Mode/00_Title/TitleGameMode.h"
 
+
+void ATitleGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
+void ATitleGameMode::Tick(float _Delta)
+{
+	Super::Tick(_Delta);
+
+}
