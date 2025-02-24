@@ -45,6 +45,20 @@ void APlayCharacter::Tick(float DeltaTime)
 
 }
 
+FVector APlayCharacter::GetControllerForward()
+{
+	const FRotator Rotaion = Controller->GetControlRotation();
+	const FRotator YawRoation = FRotator(0.0f, Rotaion.Yaw, 0.0f);
+	return FRotationMatrix(YawRoation).GetUnitAxis(EAxis::X);
+}
+
+FVector APlayCharacter::GetControllerRight()
+{
+	const FRotator Rotaion = Controller->GetControlRotation();
+	const FRotator YawRoation = FRotator(0.0f, Rotaion.Yaw, 0.0f);
+	return FRotationMatrix(YawRoation).GetUnitAxis(EAxis::Y);
+}
+
 // Called to bind functionality to input
 void APlayCharacter::SetupPlayerInputComponent(UInputComponent* _PlayerInputComponent)
 {
@@ -68,6 +82,23 @@ void APlayCharacter::SetupPlayerInputComponent(UInputComponent* _PlayerInputComp
 
 }
 
+void APlayCharacter::PlayerWMove()
+{
+	AddMovementInput(GetControllerForward());
+}
+void APlayCharacter::PlayerSMove()
+{
+	AddMovementInput(-GetControllerForward());
+}
+void APlayCharacter::PlayerDMove()
+{
+	AddMovementInput(GetControllerRight());
+}
+void APlayCharacter::PlayerAMove()
+{
+	AddMovementInput(-GetControllerRight());
+}
+
 void APlayCharacter::TestMove(const FVector2D& _Value)
 {
 
@@ -76,7 +107,9 @@ void APlayCharacter::TestMove(const FVector2D& _Value)
 	const FRotator YawRoation = FRotator(0.0f, Rotaion.Yaw, 0.0f);
 
 	const FVector Forward = FRotationMatrix(YawRoation).GetUnitAxis(EAxis::X);
+	const FVector Right = FRotationMatrix(YawRoation).GetUnitAxis(EAxis::Y);
 
-	AddMovementInput(Forward, _Value.Y);
+	AddMovementInput(Forward, _Value.X);
+	AddMovementInput(Right, _Value.Y);
 
 }

@@ -18,6 +18,23 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void TestMove(const FVector2D& _Value);
 
+	UFUNCTION(BlueprintCallable)
+	void PlayerWMove();
+
+	UFUNCTION(BlueprintCallable)
+	void PlayerSMove();
+
+	UFUNCTION(BlueprintCallable)
+	void PlayerDMove();
+
+	UFUNCTION(BlueprintCallable)
+	void PlayerAMove();
+
+	FVector GetControllerForward();
+
+	FVector GetControllerRight();
+
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
