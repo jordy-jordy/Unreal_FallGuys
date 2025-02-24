@@ -1,0 +1,82 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "Mode/01_Play/PlayCharacter.h"
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
+#include "Camera/CameraComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+
+// Sets default values
+APlayCharacter::APlayCharacter()
+{
+ 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	PrimaryActorTick.bCanEverTick = true;
+
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationYaw = false;
+	bUseControllerRotationRoll = false;
+
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+
+	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComponent"));
+	SpringArmComponent->SetupAttachment(RootComponent);
+	SpringArmComponent->TargetArmLength = 400.0f; // The camera follows at this distance behind the character	
+	SpringArmComponent->bUsePawnControlRotation = true; // Rotate the arm based on the controller
+
+	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
+	CameraComponent->SetupAttachment(SpringArmComponent, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
+	CameraComponent->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+
+}
+
+// Called when the game starts or when spawned
+void APlayCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+	
+}
+
+// Called every frame
+void APlayCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+}
+
+// Called to bind functionality to input
+void APlayCharacter::SetupPlayerInputComponent(UInputComponent* _PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(_PlayerInputComponent);
+	UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(_PlayerInputComponent);
+
+	EnhancedInputComponent->BindActionValueLambda(LookAction, ETriggerEvent::Triggered,
+		[this](const FInputActionValue& _Value)
+		{
+			// input is a Vector2D
+			FVector2D LookAxisVector = _Value.Get<FVector2D>();
+
+			if (Controller != nullptr)
+			{
+				// add yaw and pitch input to controller
+				AddControllerYawInput(LookAxisVector.X);
+				AddControllerPitchInput(LookAxisVector.Y);
+			}
+
+		});
+
+}
+
+void APlayCharacter::TestMove(const FVector2D& _Value)
+{
+
+	const FRotator Rotaion = Controller->GetControlRotation();
+
+	const FRotator YawRoation = FRotator(0.0f, Rotaion.Yaw, 0.0f);
+
+	const FVector Forward = FRotationMatrix(YawRoation).GetUnitAxis(EAxis::X);
+
+	AddMovementInput(Forward, _Value.Y);
+
+}
