@@ -50,7 +50,7 @@ void UFallGlobal::StartServer(UWorld* _World, FString _Port)
 	FString OpenLevel;
 	FString LevelPath = TEXT("");
 
-	UFallGlobal::AssetPackagePath(UWorld::StaticClass(), TEXT("Test_PlayLevel"), LevelPath);
+	UFallGlobal::AssetPackagePath(UWorld::StaticClass(), TEXT("PlayLevel"), LevelPath);
 	OpenLevel = FString::Printf(TEXT(":%s%s"), *_Port, *LevelPath);
 
 	UGameplayStatics::OpenLevel(_World, *OpenLevel, true, TEXT("listen"));

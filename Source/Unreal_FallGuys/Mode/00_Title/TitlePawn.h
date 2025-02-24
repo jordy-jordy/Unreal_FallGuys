@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
-#include "TitleyPawn.generated.h"
+#include "TitlePawn.generated.h"
 
 UCLASS()
-class UNREAL_FALLGUYS_API ATitleyPawn : public APawn
+class UNREAL_FALLGUYS_API ATitlePawn : public APawn
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this pawn's properties
-	ATitleyPawn();
+	ATitlePawn();
 
 protected:
 	// Called when the game starts or when spawned
