@@ -15,8 +15,7 @@ class UNREAL_FALLGUYS_API UTitleWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable)
-	UWorld* GetCurWorld();
+
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Server", meta = (AllowPrivateAccess = "true"))

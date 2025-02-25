@@ -4,7 +4,3 @@
 #include "Mode/00_Title/UI/TitleWidget.h"
 
 
-UWorld* UTitleWidget::GetCurWorld()
-{
-	return GetWorld();
-}

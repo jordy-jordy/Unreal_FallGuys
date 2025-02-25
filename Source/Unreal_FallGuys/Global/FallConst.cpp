@@ -3,3 +3,5 @@
 
 #include "Global/FallConst.h"
 
+
+FString UFallConst::PlayLevelName = TEXT("PlayLevel");  // √ ±‚»≠

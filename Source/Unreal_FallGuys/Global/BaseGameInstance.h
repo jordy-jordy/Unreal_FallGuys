@@ -14,4 +14,13 @@ class UNREAL_FALLGUYS_API UBaseGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
 	
+public:
+
+private:
+	friend class UFallGlobal;
+	UFUNCTION(BlueprintCallable, Category = "Server")
+	void CServerStart(UWorld* _World, FString _Port);
+
+	UFUNCTION(BlueprintCallable, Category = "Server")
+	void CServerConnect(UWorld* _World, FString _IP, FString _Port);
 };

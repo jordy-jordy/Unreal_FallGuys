@@ -21,11 +21,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static TArray<FAssetData> AssetsPath(UClass* _Class);
 	
-	UFUNCTION(BlueprintCallable, Category = "Server")
-	static void StartServer(UWorld* _World, FString _Port);
-
-	UFUNCTION(BlueprintCallable, Category = "Server")
-	static void Connect(UWorld* _World, FString _IP, FString _Port);
+	UFUNCTION(BlueprintCallable)
+	static void ServerStart(UObject* _Object, FString _Port);
+	
+	UFUNCTION(BlueprintCallable)
+	static void ServerConnect(UObject* _Object, FString _IP, FString _Port);
 
 
 

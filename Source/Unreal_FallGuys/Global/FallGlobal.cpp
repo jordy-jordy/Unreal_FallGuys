@@ -2,8 +2,9 @@
 
 
 #include "Global/FallGlobal.h"
-#include "Kismet/GameplayStatics.h"
 #include "AssetRegistry/AssetRegistryModule.h"
+
+#include <Global/BaseGameInstance.h>
 
 
 void UFallGlobal::AssetPackagePath(UClass* _Class, const FString& _AssetName, FString& _Path)
@@ -45,21 +46,17 @@ TArray<FAssetData> UFallGlobal::AssetsPath(UClass* _Class)
 	return MapList;
 }
 
-void UFallGlobal::StartServer(UWorld* _World, FString _Port)
+void UFallGlobal::ServerStart(UObject* _Object, FString _Port)
 {
-	FString OpenLevel;
-	FString LevelPath = TEXT("");
-
-	UFallGlobal::AssetPackagePath(UWorld::StaticClass(), TEXT("PlayLevel"), LevelPath);
-	OpenLevel = FString::Printf(TEXT(":%s%s"), *_Port, *LevelPath);
-
-	UGameplayStatics::OpenLevel(_World, *OpenLevel, true, TEXT("listen"));
+	UWorld* CurWorld = _Object->GetWorld();
+	UBaseGameInstance* GameIns = Cast<UBaseGameInstance>(_Object->GetWorld()->GetGameInstance());
+	GameIns->CServerStart(CurWorld, _Port);
 }
 
-void UFallGlobal::Connect(UWorld* _World, FString _IP, FString _Port)
+void UFallGlobal::ServerConnect(UObject* _Object, FString _IP, FString _Port)
 {
-	FString ConnectLevelName = FString::Printf(TEXT("%s:%s"), *_IP, *_Port);
-
-	UGameplayStatics::OpenLevel(_World, FName(*ConnectLevelName));
+	UWorld* CurWorld = _Object->GetWorld();
+	UBaseGameInstance* GameIns = Cast<UBaseGameInstance>(_Object->GetWorld()->GetGameInstance());
+	GameIns->CServerConnect(CurWorld, _IP, _Port);
 }
 

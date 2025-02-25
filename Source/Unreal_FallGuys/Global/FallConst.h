@@ -13,5 +13,11 @@ UCLASS()
 class UNREAL_FALLGUYS_API UFallConst : public UObject
 {
 	GENERATED_BODY()
-	
+
+public:
+
+private:
+	friend class UBaseGameInstance;
+	static FString PlayLevelName;
+
 };
