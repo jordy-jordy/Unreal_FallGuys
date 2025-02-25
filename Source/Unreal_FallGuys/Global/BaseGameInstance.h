@@ -16,6 +16,7 @@ class UNREAL_FALLGUYS_API UBaseGameInstance : public UGameInstance
 	
 public:
 
+
 private:
 	friend class UFallGlobal;
 	UFUNCTION(BlueprintCallable, Category = "Server")
@@ -23,4 +24,5 @@ private:
 
 	UFUNCTION(BlueprintCallable, Category = "Server")
 	void CServerConnect(UWorld* _World, FString _IP, FString _Port);
+
 };
