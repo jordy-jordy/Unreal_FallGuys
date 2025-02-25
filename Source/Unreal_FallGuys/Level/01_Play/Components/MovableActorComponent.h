@@ -22,7 +22,12 @@ protected:
 
 public:	
 	// Called every frame
+	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-		
+private:
+	float CurrentYaw;
+	float RotationSpeed;
+	float MaxYaw;
+	float MinYaw;
 };
