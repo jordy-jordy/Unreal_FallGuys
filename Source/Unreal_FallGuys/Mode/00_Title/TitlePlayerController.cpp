@@ -9,7 +9,11 @@
 void ATitlePlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
+	SetupInputComponentEvent();
+}
 
+void ATitlePlayerController::AddMappingContext(UInputMappingContext* _MappingContext)
+{
 	if (nullptr == GetLocalPlayer())
 	{
 		return;
@@ -19,5 +23,5 @@ void ATitlePlayerController::SetupInputComponent()
 
 	UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent);
 	InputSystem->ClearAllMappings();
-	InputSystem->AddMappingContext(MappingContext, 0);
+	InputSystem->AddMappingContext(_MappingContext, 0);
 }

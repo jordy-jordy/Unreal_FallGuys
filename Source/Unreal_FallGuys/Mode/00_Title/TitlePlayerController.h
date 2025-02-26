@@ -16,6 +16,11 @@ class UNREAL_FALLGUYS_API ATitlePlayerController : public APlayerController
 	GENERATED_BODY()
 
 public:
+	UFUNCTION(BlueprintCallable)
+	void AddMappingContext(UInputMappingContext* MappingContext);
+
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	void SetupInputComponentEvent();
 
 private:
 	void SetupInputComponent();
