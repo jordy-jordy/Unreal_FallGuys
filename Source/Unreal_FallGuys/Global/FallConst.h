@@ -19,5 +19,6 @@ public:
 private:
 	friend class UBaseGameInstance;
 	static FString PlayLevelName;
+	static FString PlayRaceLevelName;
 
 };

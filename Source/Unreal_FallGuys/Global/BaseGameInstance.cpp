@@ -13,7 +13,7 @@ void UBaseGameInstance::CServerStart(UWorld* _World, FString _Port)
     FString OpenLevel;
     FString LevelPath = TEXT("");
 
-    UFallGlobal::AssetPackagePath(UWorld::StaticClass(), UFallConst::PlayLevelName, LevelPath);
+    UFallGlobal::AssetPackagePath(UWorld::StaticClass(), UFallConst::PlayRaceLevelName, LevelPath);
     OpenLevel = FString::Printf(TEXT(":%s%s"), *_Port, *LevelPath);
 
     UGameplayStatics::OpenLevel(_World, *OpenLevel, true, TEXT("listen"));
