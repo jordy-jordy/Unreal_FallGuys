@@ -6,7 +6,13 @@
 #include "Components/ActorComponent.h"
 #include "MovableActorComponent.generated.h"
 
-
+UENUM(BlueprintType)
+enum class EAxisType : uint8
+{
+	Roll UMETA(DisplayName = "X축 회전"),
+	Pitch UMETA(DisplayName = "Y축 회전"),
+	Yaw UMETA(DisplayName = "Z축 회전"),
+};
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UNREAL_FALLGUYS_API UMovableActorComponent : public UActorComponent
 {
@@ -24,9 +30,17 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 private:
-	float CurrentYaw;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LMH", meta = (AllowPrivateAccess = "true"))
+	float CurrentPivot;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LMH", meta = (AllowPrivateAccess = "true"))
+	float MaxPivot;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LMH", meta = (AllowPrivateAccess = "true"))
+	float MinPivot;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LMH", meta = (AllowPrivateAccess = "true"))
 	float RotationSpeed;
-	float MaxYaw;
-	float MinYaw;
-		
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LMH", meta = (AllowPrivateAccess = "true"))
+	EAxisType AxisType = EAxisType::Yaw;
 };

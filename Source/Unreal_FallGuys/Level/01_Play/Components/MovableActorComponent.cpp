@@ -10,10 +10,10 @@ UMovableActorComponent::UMovableActorComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	CurrentYaw = -50.0f; // 초기 각도
+	CurrentPivot = -50.0f; // 초기 각도
 	RotationSpeed = 1.0f; // 회전 속도
-	MaxYaw = 50.0f; // 최대 각도
-	MinYaw = -50.0f; // 최소 각도
+	MaxPivot = 50.0f; // 최대 각도
+	MinPivot = -50.0f; // 최소 각도
 }
 
 
@@ -22,7 +22,23 @@ void UMovableActorComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CurrentYaw = GetOwner()->GetActorRotation().Pitch;
+	switch (AxisType)
+	{
+	case EAxisType::Roll:
+		CurrentPivot = GetOwner()->GetActorRotation().Roll;
+
+		break;
+	case EAxisType::Pitch:
+		CurrentPivot = GetOwner()->GetActorRotation().Pitch;
+
+		break;
+	case EAxisType::Yaw:
+		CurrentPivot = GetOwner()->GetActorRotation().Yaw;
+
+		break;
+	default:
+		break;
+	}
 	
 }
 
@@ -31,17 +47,34 @@ void UMovableActorComponent::BeginPlay()
 void UMovableActorComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	CurrentYaw += RotationSpeed * DeltaTime * 50.0f; // DeltaTime을 곱하여 프레임 독립적 회전
+	CurrentPivot += RotationSpeed * DeltaTime * 50.0f; // DeltaTime을 곱하여 프레임 독립적 회전
 
 	// 각도가 최대 또는 최소에 도달하면 방향 전환
-	if (CurrentYaw >= MaxYaw || CurrentYaw <= MinYaw)
+	if (CurrentPivot >= MaxPivot || CurrentPivot <= MinPivot)
 	{
 		RotationSpeed = -RotationSpeed; // 방향 전환
 	}
 
 	// 회전 적용
-	FRotator NewRotation = FRotator(CurrentYaw, 0.0f, 0.0f); 
+	FRotator NewRotation = FRotator(0.0f, 0.0f, 0.0f);
+
+	switch (AxisType)
+	{
+	case EAxisType::Roll:
+		 NewRotation = FRotator(0.0f, 0.0f, CurrentPivot);
+		break;
+	case EAxisType::Pitch:
+		NewRotation = FRotator(CurrentPivot, 0.0f, 0.0f);
+		break;
+	case EAxisType::Yaw:
+		 NewRotation = FRotator(0.0f, CurrentPivot, 0.0f);
+		break;
+	default:
+		break;
+	}
 	GetOwner()->SetActorRotation(NewRotation);
+
+	
 
 }
 
