@@ -5,4 +5,3 @@
 
 
 FString UFallConst::PlayLevelName = TEXT("PlayLevel");  // 초기화
-FString UFallConst::PlayRaceLevelName = TEXT("Race2Map");  // 초기화

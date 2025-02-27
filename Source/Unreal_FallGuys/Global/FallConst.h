@@ -15,10 +15,8 @@ class UNREAL_FALLGUYS_API UFallConst : public UObject
 	GENERATED_BODY()
 
 public:
+	static FString PlayLevelName;
 
 private:
-	friend class UBaseGameInstance;
-	static FString PlayLevelName;
-	static FString PlayRaceLevelName;
 
 };

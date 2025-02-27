@@ -4,3 +4,5 @@
 #include "Modules/ModuleManager.h"
 
 IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, Unreal_FallGuys, "Unreal_FallGuys" );
+
+DEFINE_LOG_CATEGORY(FALL_DEV_LOG);

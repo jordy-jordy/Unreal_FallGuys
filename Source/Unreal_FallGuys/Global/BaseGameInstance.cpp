@@ -7,18 +7,17 @@
 #include <Global/FallGlobal.h>
 #include <Global/FallConst.h>
 
+
 // 서버 오픈
 void UBaseGameInstance::CServerStart(UWorld* _World, FString _Port)
 {
     FString OpenLevel;
     FString LevelPath = TEXT("");
 
-    UFallGlobal::AssetPackagePath(UWorld::StaticClass(), UFallConst::PlayRaceLevelName, LevelPath);
+    UFallGlobal::AssetPackagePath(UWorld::StaticClass(), UFallConst::PlayLevelName, LevelPath);
     OpenLevel = FString::Printf(TEXT(":%s%s"), *_Port, *LevelPath);
 
     UGameplayStatics::OpenLevel(_World, *OpenLevel, true, TEXT("listen"));
-
-    // 호스트도 플레이어로 카운트
 }
 
 // 서버 접속
