@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Widgets/SWidget.h"
 #include "TitleWidget.generated.h"
 
 /**
@@ -15,6 +16,8 @@ class UNREAL_FALLGUYS_API UTitleWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	UFUNCTION(BlueprintCallable)
+	void StartPlay(UWidget* _Panel, bool _IsVisible);
 
 
 private:
