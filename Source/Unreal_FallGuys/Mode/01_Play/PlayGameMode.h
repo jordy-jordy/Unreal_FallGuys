@@ -28,6 +28,13 @@ public:
 	/** 플레이어 접속 시 실행되는 함수 */
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 
+	UFUNCTION(BlueprintCallable, Category = "Game")
+	bool IsMinPlayersReached(); // 최소 3명 도달 여부 체크
+
+	UFUNCTION(BlueprintCallable, Category = "Game")
+	void StartGame();
+
+
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };

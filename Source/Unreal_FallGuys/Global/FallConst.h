@@ -16,6 +16,7 @@ class UNREAL_FALLGUYS_API UFallConst : public UObject
 
 public:
 	static FString PlayLevelName;
+	static const int MinPlayerCount = 2;
 
 private:
 

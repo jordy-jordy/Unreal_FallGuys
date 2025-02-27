@@ -4,7 +4,10 @@
 #include "Mode/01_Play/PlayGameMode.h"
 #include "Net/UnrealNetwork.h"
 #include "Kismet/GameplayStatics.h" 
+
 #include <Unreal_FallGuys.h>
+#include <Global/FallConst.h>
+
 
 APlayGameMode::APlayGameMode()
 {
@@ -22,6 +25,15 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 		ConnectedPlayers++;
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("Join To %s"), *CurrentLevelName);
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("Server: Player Joined, Cur Player Number = %d"), ConnectedPlayers);
+		// 네트워크 동기화를 강제 실행하여 클라이언트와 데이터 맞추기
+		ForceNetUpdate();
+		//OnRep_ConnectedPlayers();
+	}
+
+	if (IsMinPlayersReached())
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("MIN PLAYER READY. TRY GAME START"));
+		StartGame();
 	}
 }
 
@@ -36,6 +48,16 @@ void APlayGameMode::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 	DOREPLIFETIME(APlayGameMode, ConnectedPlayers);
 }
 
+bool APlayGameMode::IsMinPlayersReached()
+{
+	return ConnectedPlayers >= UFallConst::MinPlayerCount;
+}
+
+void APlayGameMode::StartGame()
+{
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("GAME START READY"));
+	// 여기에 실제 게임 시작 로직 추가 예정
+}
 
 
 
