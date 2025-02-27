@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Mode/01_Play/PlayEnum.h"
 #include "PlayCharacter.generated.h"
 
 UCLASS()
@@ -30,6 +31,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void PlayerAMove();
 
+	UFUNCTION(BlueprintCallable)
+	void SetCurAnimnation(EPlayerAnimation _Anim)
+	{
+		CurAnimnation = _Anim;
+	}
+
 	FVector GetControllerForward();
 
 	FVector GetControllerRight();
@@ -54,5 +61,11 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* CameraComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	EPlayerAnimation CurAnimnation = EPlayerAnimation::Idle;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	float CurSpeed = 0.0f;
 
 };

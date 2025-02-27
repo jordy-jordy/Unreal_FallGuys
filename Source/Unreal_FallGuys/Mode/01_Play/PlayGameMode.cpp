@@ -14,6 +14,20 @@ APlayGameMode::APlayGameMode()
 	ConnectedPlayers = 0;
 }
 
+void APlayGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (HasAuthority()) // 서버에서만 실행
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("Server: PlayGameMode Started!"));
+	}
+	else
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("Client: PlayGameMode Started!"));
+	}
+}
+
 void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);

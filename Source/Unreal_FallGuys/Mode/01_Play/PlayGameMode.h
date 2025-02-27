@@ -36,5 +36,6 @@ public:
 
 
 protected:
+	void BeginPlay() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };
