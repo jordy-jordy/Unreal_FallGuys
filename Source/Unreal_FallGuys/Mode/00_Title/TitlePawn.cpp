@@ -50,31 +50,17 @@ void ATitlePawn::SetupPlayerInputComponent(UInputComponent* _PlayerInputComponen
 		});
 }
 
-void ATitlePawn::PawnRotation(const FVector2D& _Value)
+void ATitlePawn::PawnRotation(UStaticMeshComponent* _Target, const FVector2D& _Value)
 {
-	//const FRotator Rotaion = Controller->GetControlRotation();
-	//// z축만 뽑아냅니다.
-	//const FRotator YawRoation = FRotator(0.0f, Rotaion.Yaw, 0.0f);
-
-	//// 회전행렬
-	//const FVector Forward = FRotationMatrix(YawRoation).GetUnitAxis(EAxis::X);
-	//const FVector Right = FRotationMatrix(YawRoation).GetUnitAxis(EAxis::Y);
-	//const FVector Up = FRotationMatrix(YawRoation).GetUnitAxis(EAxis::Z);
-
-	//AddMovementInput(Forward, _Value.X);
-	//AddMovementInput(Right, _Value.Y);
-
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString::Printf(TEXT("%S(%u)> %s"), __FUNCTION__, __LINE__, *_Value.ToString()));
-
-	const FRotator Rotation = Controller->GetControlRotation();
 
 	if (_Value.X < 0)
 	{
-		AddActorLocalRotation(FRotator(0.0f, -1.0f, 0.0f));
+		_Target->AddLocalRotation(FRotator(0.0f, 1.0f, 0.0f));
 	}
 	else if (_Value.X > 0)
 	{
-		AddActorLocalRotation(FRotator(0.0f, 1.0f, 0.0f));
+		_Target->AddLocalRotation(FRotator(0.0f, -1.0f, 0.0f));
 	}
 }
 

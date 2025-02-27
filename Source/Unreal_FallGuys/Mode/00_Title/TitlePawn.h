@@ -16,7 +16,7 @@ public:
 	ATitlePawn();
 
 	UFUNCTION(BlueprintCallable)
-	void PawnRotation(const FVector2D& _Value);
+	void PawnRotation(UStaticMeshComponent* _Target, const FVector2D& _Value);
 
 protected:
 	// Called when the game starts or when spawned
