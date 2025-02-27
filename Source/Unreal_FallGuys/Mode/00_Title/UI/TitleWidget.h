@@ -17,7 +17,7 @@ class UNREAL_FALLGUYS_API UTitleWidget : public UUserWidget
 
 public:
 	UFUNCTION(BlueprintCallable)
-	void StartPlay(UWidget* _Panel, bool _IsVisible);
+	void StartPlay(UWidget* _TitlePanel, UWidget* _StartPanel, bool _IsVisible);
 
 
 private:

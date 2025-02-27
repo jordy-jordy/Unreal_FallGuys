@@ -4,14 +4,16 @@
 #include "Mode/00_Title/UI/TitleWidget.h"
 
 
-void UTitleWidget::StartPlay(UWidget* _Panel, bool _IsVisible)
+void UTitleWidget::StartPlay(UWidget* _TitlePanel, UWidget* _StartPanel, bool _IsVisible)
 {
 	if (true == _IsVisible)
 	{
-		_Panel->SetVisibility(ESlateVisibility::Visible);
+		_TitlePanel->SetVisibility(ESlateVisibility::Visible);
+		_StartPanel->SetVisibility(ESlateVisibility::Hidden);
 	}
 	else
 	{
-		_Panel->SetVisibility(ESlateVisibility::Hidden);
+		_TitlePanel->SetVisibility(ESlateVisibility::Hidden);
+		_StartPanel->SetVisibility(ESlateVisibility::Visible);
 	}
 }
