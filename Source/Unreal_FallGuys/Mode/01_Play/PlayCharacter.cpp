@@ -84,18 +84,22 @@ void APlayCharacter::SetupPlayerInputComponent(UInputComponent* _PlayerInputComp
 
 void APlayCharacter::PlayerWMove()
 {
+	CurAnimnation = EPlayerAnimation::Run;
 	AddMovementInput(GetControllerForward());
 }
 void APlayCharacter::PlayerSMove()
 {
+	CurAnimnation = EPlayerAnimation::Run;
 	AddMovementInput(-GetControllerForward());
 }
 void APlayCharacter::PlayerDMove()
 {
+	CurAnimnation = EPlayerAnimation::Run;
 	AddMovementInput(GetControllerRight());
 }
 void APlayCharacter::PlayerAMove()
 {
+	CurAnimnation = EPlayerAnimation::Run;
 	AddMovementInput(-GetControllerRight());
 }
 
