@@ -15,7 +15,10 @@ class UNREAL_FALLGUYS_API UBaseGameInstance : public UGameInstance
 	GENERATED_BODY()
 	
 public:
+	UPROPERTY()
+	class UPlayerClothManager* PlayerClothManager;
 
+	virtual void Init() override;
 
 private:
 	friend class UFallGlobal;

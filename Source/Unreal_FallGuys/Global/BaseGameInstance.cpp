@@ -6,6 +6,7 @@
 
 #include <Global/FallGlobal.h>
 #include <Global/FallConst.h>
+#include <Global/PlayerClothManager.h>
 
 
 // ¼­¹ö ¿ÀÇÂ
@@ -28,3 +29,8 @@ void UBaseGameInstance::CServerConnect(UWorld* _World, FString _IP, FString _Por
     UGameplayStatics::OpenLevel(_World, FName(*ConnectLevelName));
 }
 
+void UBaseGameInstance::Init()
+{
+    Super::Init();
+    PlayerClothManager = NewObject<UPlayerClothManager>();
+}
