@@ -11,7 +11,10 @@ enum class EPlayerAnimation : uint8
 {
 	Idle UMETA(DisplayName = "Idle"),
 	Run UMETA(DisplayName = "Run"),
-	Jump UMETA(DisplayName = "Jump"),
+	JumpStart UMETA(DisplayName = "JumpStart"),
+	JumpMidAir UMETA(DisplayName = "JumpMidAir"),
+	Fall UMETA(DisplayName = "Fall"),
+	Dive UMETA(DisplayName = "Dive"),
 	MAX UMETA(DisplayName = "MAX"),
 };
 
