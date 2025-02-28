@@ -37,6 +37,18 @@ public:
 		CurAnimnation = _Anim;
 	}
 
+	UFUNCTION(BlueprintCallable)
+	void AddAirTime(float _Deltatime)
+	{
+		AirTime += _Deltatime;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	void ResetAirTime()
+	{
+		AirTime = 0.0f;
+	}
+
 	FVector GetControllerForward();
 
 	FVector GetControllerRight();
@@ -67,5 +79,8 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	float CurSpeed = 0.0f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	float AirTime = 0.0f;
 
 };
