@@ -76,3 +76,5 @@ DerivedDataCache/*
 
 Plugins/* 
 Plugins
+Plugins/AdvancedSessionsPlugin/AdvancedSessions/AdvancedSessions/Intermediate/Build/Win64/UnrealEditor/Inc/AdvancedSessions/UHT/Timestamp
+Plugins/AdvancedSessionsPlugin/AdvancedSessions/AdvancedSteamSessions/Intermediate/Build/Win64/UnrealEditor/Inc/AdvancedSteamSessions/UHT/Timestamp
