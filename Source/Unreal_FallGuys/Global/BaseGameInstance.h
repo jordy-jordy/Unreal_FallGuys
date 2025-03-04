@@ -17,8 +17,12 @@ UCLASS()
 class UNREAL_FALLGUYS_API UBaseGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
+	friend class UFallGlobal;
+	friend class UGlobalDataTable;
 	
 public:
+	UBaseGameInstance();
+
 	UPROPERTY()
 	class UPlayerClothManager* PlayerClothManager;
 
@@ -28,9 +32,10 @@ public:
 	void SelectPlayerCloth(int32 PlayerID, FString ClothID);
 
 
+protected:
+
+
 private:
-	friend class UFallGlobal;
-	friend class UGlobalDataTable;
 
 	UFUNCTION(BlueprintCallable, Category = "Server")
 	void CServerStart(UWorld* _World, FString _Port);
