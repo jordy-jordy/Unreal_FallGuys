@@ -4,19 +4,27 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+
 #include "CostumeDataTable.generated.h"
+
 
 USTRUCT(BlueprintType)
 struct FCostumeDataRow : public FTableRowBase
 {
 	GENERATED_BODY()
 
-	FCostumeDataRow() {};
-	~FCostumeDataRow() {};
+	FCostumeDataRow() {}
+	~FCostumeDataRow() {}
 
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CostumeData")
+	USkeletalMesh* CostumeMesh = nullptr;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CostumeData")
+	FVector CostumePos = FVector::ZeroVector;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CostumeData")
+	FVector CostumePivot = FVector::ZeroVector;
 
 };
 

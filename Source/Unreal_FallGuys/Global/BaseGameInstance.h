@@ -4,7 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+
+#include <Global/Data/GlobalDataTable.h>
+
 #include "BaseGameInstance.generated.h"
+
 
 /**
  * 
@@ -20,18 +24,24 @@ public:
 
 	virtual void Init() override;
 
-	UFUNCTION(BlueprintCallable, Category = "Cloth")
+	UFUNCTION(BlueprintCallable, Category = "Costume")
 	void SelectPlayerCloth(int32 PlayerID, FString ClothID);
 
 
 private:
 	friend class UFallGlobal;
+	friend class UGlobalDataTable;
+
 	UFUNCTION(BlueprintCallable, Category = "Server")
 	void CServerStart(UWorld* _World, FString _Port);
 
 	UFUNCTION(BlueprintCallable, Category = "Server")
 	void CServerConnect(UWorld* _World, FString _IP, FString _Port);
 
+	UPROPERTY(VisibleAnywhere, Category = "Data")
+	class UDataTable* DataTables = nullptr;
+	class UDataTable* ActorDataTable = nullptr;
+	class UDataTable* CostumeDataTable = nullptr;
 
 
 };
