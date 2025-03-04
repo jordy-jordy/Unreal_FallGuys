@@ -46,8 +46,6 @@ UBaseGameInstance::UBaseGameInstance()
 	UE_LOG(FALL_DEV_LOG, Log, TEXT("%S(%u)> DataTableLoading End"), __FUNCTION__, __LINE__);
 }
 
-
-
 // ¼­¹ö ¿ÀÇÂ
 void UBaseGameInstance::CServerStart(UWorld* _World, FString _Port)
 {
@@ -68,31 +66,3 @@ void UBaseGameInstance::CServerConnect(UWorld* _World, FString _IP, FString _Por
     UGameplayStatics::OpenLevel(_World, FName(*ConnectLevelName));
 }
 
-void UBaseGameInstance::Init()
-{
-    Super::Init();
-
-    if (!PlayerClothManager)
-    {
-        PlayerClothManager = NewObject<UPlayerClothManager>();
-    }
-}
-
-void UBaseGameInstance::SelectPlayerCloth(int32 PlayerID, FString ClothID)
-{
-    if (!PlayerClothManager) return;
-
-    FPlayerCloth NewCloth;
-    NewCloth.ClothID = ClothID;
-
-    if (ClothID == "Costume1")
-    {
-        NewCloth.MaterialPath = "/Game/Materials/Costume1Material";
-    }
-    else if (ClothID == "Costume2")
-    {
-        NewCloth.MaterialPath = "/Game/Materials/Costume2Material";
-    }
-
-    PlayerClothManager->SetPlayerCloth(PlayerID, NewCloth);
-}

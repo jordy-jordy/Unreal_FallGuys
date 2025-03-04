@@ -23,14 +23,6 @@ class UNREAL_FALLGUYS_API UBaseGameInstance : public UGameInstance
 public:
 	UBaseGameInstance();
 
-	UPROPERTY()
-	class UPlayerClothManager* PlayerClothManager;
-
-	virtual void Init() override;
-
-	UFUNCTION(BlueprintCallable, Category = "Costume")
-	void SelectPlayerCloth(int32 PlayerID, FString ClothID);
-
 
 protected:
 
