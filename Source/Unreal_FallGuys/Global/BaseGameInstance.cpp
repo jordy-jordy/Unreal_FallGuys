@@ -7,7 +7,6 @@
 #include <Unreal_FallGuys.h>
 #include <Global/FallGlobal.h>
 #include <Global/FallConst.h>
-#include <Global/PlayerClothManager.h>
 
 
 UBaseGameInstance::UBaseGameInstance()
