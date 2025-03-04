@@ -15,7 +15,7 @@ class UNREAL_FALLGUYS_API UTitleUserWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
-	void SetMainWidget(class UTitleMenuWidget* _MenuWidget)
+	void SetMenuWidget(class UTitleMenuWidget* _MenuWidget)
 	{
 		MenuWidget = _MenuWidget;
 	}

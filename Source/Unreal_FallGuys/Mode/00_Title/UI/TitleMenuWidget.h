@@ -22,9 +22,12 @@ protected:
 	void MenuWidgetInit();
 
 	UFUNCTION(BlueprintCallable)
-	void CreateChildWidget(TSubclassOf<UUserWidget> _Widget);
+	void CreateChildWidget(TSubclassOf<UUserWidget> _Widget, bool _IsVisible, FName _PanelName);
+
+	UFUNCTION(BlueprintCallable)
+	void SwitchMenu(FString _PrevPanel, FString _NextPanel);
 
 private:
 	UCanvasPanel* MenuCanvasPanel;
-	TArray<UTitleUserWidget*> Wigets;
+	TArray<UTitleUserWidget*> Widgets;
 };

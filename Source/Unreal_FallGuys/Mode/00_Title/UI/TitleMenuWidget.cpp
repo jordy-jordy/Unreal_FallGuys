@@ -3,6 +3,7 @@
 
 #include "Mode/00_Title/UI/TitleMenuWidget.h"
 #include "Global/FallConst.h"
+#include "Components/CanvasPanelSlot.h"
 
 void UTitleMenuWidget::MenuWidgetInit()
 {
@@ -20,7 +21,7 @@ void UTitleMenuWidget::MenuWidgetInit()
 	}
 }
 
-void UTitleMenuWidget::CreateChildWidget(TSubclassOf<UUserWidget> _Widget)
+void UTitleMenuWidget::CreateChildWidget(TSubclassOf<UUserWidget> _Widget, bool _IsVisible, FName _PanelName)
 {
 	UTitleUserWidget* Widget = CreateWidget<UTitleUserWidget>(MenuCanvasPanel, _Widget);
 
@@ -29,9 +30,38 @@ void UTitleMenuWidget::CreateChildWidget(TSubclassOf<UUserWidget> _Widget)
 		return;
 	}
 
-	Widget->SetMainWidget(this);
-
+	Widget->SetMenuWidget(this);
 	MenuCanvasPanel->AddChild(Widget);
 
-	Wigets.Add(Widget);
+	Widgets.Add(Widget);
+
+	UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>(Widget->Slot);
+	CanvasSlot->SetAnchors(FAnchors(0.0f, 0.0f, 1.0f, 1.0f));
+	CanvasSlot->SetOffsets(FMargin(0.0f, 0.0f, 0.0f, 0.0f));
+	CanvasSlot->SetAlignment(FVector2D(0.0f, 0.0f));
+
+	UWidget* PanelWidget = GetWidgetFromName(_PanelName);
+	UCanvasPanel* CurPanel = Cast<UCanvasPanel>(PanelWidget);
+}
+
+void UTitleMenuWidget::SwitchMenu(FString _PrevPanel, FString _NextPanel)
+{
+	UWidget* PrevWidget = GetWidgetFromName(FName(*_PrevPanel));
+	UWidget* NextWidget = GetWidgetFromName(FName(*_NextPanel));
+
+	if (nullptr == PrevWidget || nullptr == NextWidget)
+	{
+		return;
+	}
+
+	UCanvasPanel* PrevPanel = Cast<UCanvasPanel>(PrevWidget);
+	UCanvasPanel* NextPanel = Cast<UCanvasPanel>(NextWidget);
+
+	if (nullptr == PrevPanel || nullptr == NextPanel)
+	{
+		return;
+	}
+
+	PrevPanel->SetVisibility(ESlateVisibility::Hidden);
+	NextPanel->SetVisibility(ESlateVisibility::Visible);
 }
