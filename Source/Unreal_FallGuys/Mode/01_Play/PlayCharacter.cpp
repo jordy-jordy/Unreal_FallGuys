@@ -8,6 +8,11 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
+#include <Unreal_FallGuys.h>
+#include <Global/Data/CostumeDataTable.h>
+#include <Global/Data/GlobalDataTable.h>
+
+
 // Sets default values
 APlayCharacter::APlayCharacter()
 {
@@ -85,6 +90,7 @@ void APlayCharacter::SetupPlayerInputComponent(UInputComponent* _PlayerInputComp
 void APlayCharacter::PlayerWMove()
 {
 	AddMovementInput(GetControllerForward());
+	ChangeCostume("TEST00");
 }
 void APlayCharacter::PlayerSMove()
 {
@@ -112,4 +118,25 @@ void APlayCharacter::TestMove(const FVector2D& _Value)
 	AddMovementInput(Forward, _Value.X);
 	AddMovementInput(Right, _Value.Y);
 
+}
+
+void APlayCharacter::ChangeCostume(FString _CostumeName)
+{
+	if (UWorld* World = GetWorld())
+	{
+		const FCostumeDataRow* CostumeData = UGlobalDataTable::GetCostumeData(World, _CostumeName);
+		if (CostumeData && CostumeData->CostumeMesh)
+		{
+			if (USkeletalMeshComponent* MeshComp = GetMesh()) // 캐릭터의 SkeletalMeshComponent 가져오기
+			{
+				MeshComp->SetSkeletalMesh(CostumeData->CostumeMesh);
+				MeshComp->SetRelativeLocation(CostumeData->CostumePos);
+				MeshComp->SetRelativeRotation(FRotator::ZeroRotator); // 필요하면 CostumePivot 반영
+			}
+		}
+		else
+		{
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("Invalid Costume Data or Mesh"));
+		}
+	}
 }
