@@ -20,6 +20,10 @@ public:
 
 	virtual void Init() override;
 
+	UFUNCTION(BlueprintCallable, Category = "Cloth")
+	void SelectPlayerCloth(int32 PlayerID, FString ClothID);
+
+
 private:
 	friend class UFallGlobal;
 	UFUNCTION(BlueprintCallable, Category = "Server")
@@ -27,5 +31,7 @@ private:
 
 	UFUNCTION(BlueprintCallable, Category = "Server")
 	void CServerConnect(UWorld* _World, FString _IP, FString _Port);
+
+
 
 };

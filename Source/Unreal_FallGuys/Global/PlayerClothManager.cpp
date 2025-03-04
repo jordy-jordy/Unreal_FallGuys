@@ -6,14 +6,10 @@
 
 void UPlayerClothManager::SetPlayerCloth(int32 PlayerID, const FPlayerCloth& Cloth)
 {
-    PlayerClothMap.Add(PlayerID, Cloth);
+    PlayerClothMap.Emplace(PlayerID, Cloth);
 }
 
 FPlayerCloth UPlayerClothManager::GetPlayerCloth(int32 PlayerID) const
 {
-    if (PlayerClothMap.Contains(PlayerID))
-    {
-        return *PlayerClothMap.Find(PlayerID);
-    }
-    return FPlayerCloth();  // 기본값 반환
+    return PlayerClothMap.FindRef(PlayerID);
 }

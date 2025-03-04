@@ -32,5 +32,28 @@ void UBaseGameInstance::CServerConnect(UWorld* _World, FString _IP, FString _Por
 void UBaseGameInstance::Init()
 {
     Super::Init();
-    PlayerClothManager = NewObject<UPlayerClothManager>();
+
+    if (!PlayerClothManager)
+    {
+        PlayerClothManager = NewObject<UPlayerClothManager>();
+    }
+}
+
+void UBaseGameInstance::SelectPlayerCloth(int32 PlayerID, FString ClothID)
+{
+    if (!PlayerClothManager) return;
+
+    FPlayerCloth NewCloth;
+    NewCloth.ClothID = ClothID;
+
+    if (ClothID == "Costume1")
+    {
+        NewCloth.MaterialPath = "/Game/Materials/Costume1Material";
+    }
+    else if (ClothID == "Costume2")
+    {
+        NewCloth.MaterialPath = "/Game/Materials/Costume2Material";
+    }
+
+    PlayerClothManager->SetPlayerCloth(PlayerID, NewCloth);
 }
