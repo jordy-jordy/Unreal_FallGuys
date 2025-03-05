@@ -8,6 +8,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
+
 // Sets default values
 APlayCharacter::APlayCharacter()
 {
@@ -113,3 +114,4 @@ void APlayCharacter::TestMove(const FVector2D& _Value)
 	AddMovementInput(Right, _Value.Y);
 
 }
+

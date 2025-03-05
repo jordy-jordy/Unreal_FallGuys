@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -17,19 +17,19 @@ class UNREAL_FALLGUYS_API APlayGameMode : public AGameMode
 public:
 	APlayGameMode();
 
-	/** ÇöÀç Á¢¼ÓÇÑ ÇÃ·¹ÀÌ¾î ¼ö */
+	/** í˜„ì¬ ì ‘ì†í•œ í”Œë ˆì´ì–´ ìˆ˜ */
 	UPROPERTY(ReplicatedUsing = OnRep_ConnectedPlayers)
 	int32 ConnectedPlayers;
 
-	/** ÇÃ·¹ÀÌ¾î ¼ö º¯°æ ½Ã Å¬¶óÀÌ¾ğÆ®¿¡¼­ ½ÇÇàµÇ´Â ÇÔ¼ö */
+	/** í”Œë ˆì´ì–´ ìˆ˜ ë³€ê²½ ì‹œ í´ë¼ì´ì–¸íŠ¸ì—ì„œ ì‹¤í–‰ë˜ëŠ” í•¨ìˆ˜ */
 	UFUNCTION()
 	void OnRep_ConnectedPlayers();
 
-	/** ÇÃ·¹ÀÌ¾î Á¢¼Ó ½Ã ½ÇÇàµÇ´Â ÇÔ¼ö */
+	/** í”Œë ˆì´ì–´ ì ‘ì† ì‹œ ì‹¤í–‰ë˜ëŠ” í•¨ìˆ˜ */
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Game")
-	bool IsMinPlayersReached(); // ÃÖ¼Ò 3¸í µµ´Ş ¿©ºÎ Ã¼Å©
+	bool IsMinPlayersReached(); // ìµœì†Œ 3ëª… ë„ë‹¬ ì—¬ë¶€ ì²´í¬
 
 	UFUNCTION(BlueprintCallable, Category = "Game")
 	void StartGame();

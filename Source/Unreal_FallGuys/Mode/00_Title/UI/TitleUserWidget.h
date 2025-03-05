@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/CanvasPanel.h"
 #include "TitleUserWidget.generated.h"
 
 /**
@@ -15,12 +16,21 @@ class UNREAL_FALLGUYS_API UTitleUserWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
-	void SetMenuWidget(class UTitleMenuWidget* _MenuWidget)
+	void SetMenuWidget(class UTitleUserWidget* _UserWidget)
 	{
-		MenuWidget = _MenuWidget;
+		UserWidget = _UserWidget;
 	}
+
+	UFUNCTION(BlueprintCallable)
+	void InputCheck(const FVector2D& _Value);
+
+	UFUNCTION(BlueprintCallable)
+	void CreateChildWidget(TSubclassOf<UUserWidget> _Widget, bool _IsVisible);
 
 private:
 	UPROPERTY(Category = "UI", EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	class UTitleMenuWidget* MenuWidget;
+	class UTitleUserWidget* UserWidget;
+
+	UCanvasPanel* CanvasPanel;
+	TArray<UTitleUserWidget*> Widgets;
 };
