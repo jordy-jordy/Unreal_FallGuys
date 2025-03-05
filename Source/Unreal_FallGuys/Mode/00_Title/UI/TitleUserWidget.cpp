@@ -35,8 +35,9 @@ void UTitleUserWidget::CreateChildWidget(TSubclassOf<UUserWidget> _Widget, bool 
 		return;
 	}
 
-	SetUserWidget(this);
+	SetMenuWidget(this);
 	CanvasPanel->AddChild(Widget);
+
 
 	Widgets.Add(Widget);
 
@@ -52,6 +53,12 @@ void UTitleUserWidget::CreateChildWidget(TSubclassOf<UUserWidget> _Widget, bool 
 	else
 	{
 		Widget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-		CurUserWidget = Widget;
+	}
+}void UTitleUserWidget::AllWidgetHidden()
+{
+	for (size_t i = 0; i < Widgets.Num(); i++)
+	{
+		Widgets[i]->SetVisibility(ESlateVisibility::Hidden);
 	}
 }
+
