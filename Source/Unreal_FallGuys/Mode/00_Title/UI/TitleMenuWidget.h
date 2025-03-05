@@ -18,8 +18,8 @@ class UNREAL_FALLGUYS_API UTitleMenuWidget : public UTitleUserWidget
 public:
 
 protected:
-	UFUNCTION(BlueprintCallable)
-	void MenuWidgetInit();
+	//UFUNCTION(BlueprintCallable)
+	//void MenuWidgetInit();
 
 	//UFUNCTION(BlueprintCallable)
 	//void CreateChildWidget(TSubclassOf<UUserWidget> _Widget, bool _IsVisible);

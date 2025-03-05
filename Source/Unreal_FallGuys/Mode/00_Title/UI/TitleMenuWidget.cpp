@@ -5,21 +5,21 @@
 #include "Global/FallConst.h"
 #include "Components/CanvasPanelSlot.h"
 
-void UTitleMenuWidget::MenuWidgetInit()
-{
-	UWidget* PanelWidget = GetWidgetFromName(UFallConst::MenuPanelName);
-	MenuCanvasPanel = Cast<UCanvasPanel>(PanelWidget);
-
-	if (nullptr == MenuCanvasPanel)
-	{
-		return;
-	}
-
-	if (false == MenuCanvasPanel->IsValidLowLevel())
-	{
-		return;
-	}
-}
+//void UTitleMenuWidget::MenuWidgetInit()
+//{
+//	UWidget* PanelWidget = GetWidgetFromName(UFallConst::MenuPanelName);
+//	MenuCanvasPanel = Cast<UCanvasPanel>(PanelWidget);
+//
+//	if (nullptr == MenuCanvasPanel)
+//	{
+//		return;
+//	}
+//
+//	if (false == MenuCanvasPanel->IsValidLowLevel())
+//	{
+//		return;
+//	}
+//}
 
 //void UTitleMenuWidget::CreateChildWidget(TSubclassOf<UUserWidget> _Widget, bool _IsVisible)
 //{

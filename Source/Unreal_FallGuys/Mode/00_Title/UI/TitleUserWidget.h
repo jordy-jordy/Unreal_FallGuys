@@ -25,6 +25,9 @@ public:
 	void InputCheck(const FVector2D& _Value);
 
 	UFUNCTION(BlueprintCallable)
+	void WidgetInit();
+
+	UFUNCTION(BlueprintCallable)
 	void CreateChildWidget(TSubclassOf<UUserWidget> _Widget, bool _IsVisible);
 
 private:

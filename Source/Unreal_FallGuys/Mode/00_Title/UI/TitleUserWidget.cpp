@@ -2,11 +2,28 @@
 
 
 #include "Mode/00_Title/UI/TitleUserWidget.h"
+#include "Global/FallConst.h"
 #include "Components/CanvasPanelSlot.h"
 
 void UTitleUserWidget::InputCheck(const FVector2D& _Value)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString::Printf(TEXT("%S(%u)> %s"), __FUNCTION__, __LINE__, *_Value.ToString()));
+}
+
+void UTitleUserWidget::WidgetInit()
+{
+	UWidget* PanelWidget = GetWidgetFromName(UFallConst::MenuPanelName);
+	CanvasPanel = Cast<UCanvasPanel>(PanelWidget);
+
+	if (nullptr == CanvasPanel)
+	{
+		return;
+	}
+
+	if (false == CanvasPanel->IsValidLowLevel())
+	{
+		return;
+	}
 }
 
 void UTitleUserWidget::CreateChildWidget(TSubclassOf<UUserWidget> _Widget, bool _IsVisible)
