@@ -53,9 +53,6 @@ public:
 
 	FVector GetControllerRight();
 
-	// 현정 코스튬 변경 테스트용
-	UFUNCTION(BlueprintCallable, Category = "Costume")
-	void ChangeCostume(FString _CostumeName);
 
 
 
