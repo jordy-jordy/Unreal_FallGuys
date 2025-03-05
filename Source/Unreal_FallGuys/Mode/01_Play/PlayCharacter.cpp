@@ -12,10 +12,6 @@
 
 #include <Global/FallGlobal.h>
 
-#include <Unreal_FallGuys.h>
-#include <Global/Data/CostumeDataTable.h>
-#include <Global/Data/GlobalDataTable.h>
-
 
 // Sets default values
 APlayCharacter::APlayCharacter()

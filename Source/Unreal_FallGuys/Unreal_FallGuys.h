@@ -1,8 +1,8 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+ï»¿// Copyright Epic Games, Inc. All Rights Reserved.
 
 #pragma once
 
 #include "CoreMinimal.h"
 
-//                         Ä«Å×°í¸® ·Î±×¿ëµµ ·Î±×Ç¥½Ã Á¦ÇÑ
+//                         ì¹´í…Œê³ ë¦¬ ë¡œê·¸ìš©ë„ ë¡œê·¸í‘œì‹œ ì œí•œ
 DECLARE_LOG_CATEGORY_EXTERN(FALL_DEV_LOG, Log, All);

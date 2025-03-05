@@ -16,11 +16,6 @@ class UNREAL_FALLGUYS_API UTitleWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable)
-	void StartPlay(UWidget* _TitlePanel, UWidget* _StartPanel, bool _IsVisible, const FVector2D& _Value);
-	
-	UFUNCTION(BlueprintCallable)
-	void SavedCostume(UGameInstance* _Ins, const FString& _CostumeName);
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Server", meta = (AllowPrivateAccess = "true"))
