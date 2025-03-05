@@ -18,7 +18,7 @@ public:
 
 protected:
 	UFUNCTION(BlueprintCallable)
-	void SwitchMenu(TSubclassOf<UUserWidget> _PrevWidget, TSubclassOf<UUserWidget> _NextWidget);
+	void SwitchMenu();
 
 private:
 

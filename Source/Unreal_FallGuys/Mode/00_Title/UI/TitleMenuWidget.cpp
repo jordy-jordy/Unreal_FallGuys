@@ -5,16 +5,14 @@
 #include "Components/CanvasPanelSlot.h"
 
 
-void UTitleMenuWidget::SwitchMenu(TSubclassOf<UUserWidget> _PrevWidget, TSubclassOf<UUserWidget> _NextWidget)
+void UTitleMenuWidget::SwitchMenu()
 {
-	UTitleUserWidget* PrevWidget = Cast<UTitleUserWidget>(_PrevWidget);
+	ESlateVisibility CurVisibility = GetCurUserWidget()->GetVisibility();
 
-	if (ESlateVisibility::SelfHitTestInvisible == PrevWidget->GetVisibility())
+	if (ESlateVisibility::SelfHitTestInvisible == CurVisibility)
 	{
-		PrevWidget->SetVisibility(ESlateVisibility::Hidden);
+		GetCurUserWidget()->SetVisibility(ESlateVisibility::Hidden);
 	}
 
 	TArray<UTitleUserWidget*> AllWidgets = GetAllWidgets();
-
-
 }
