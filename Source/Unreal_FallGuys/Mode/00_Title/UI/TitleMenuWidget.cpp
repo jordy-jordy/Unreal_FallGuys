@@ -21,7 +21,7 @@ void UTitleMenuWidget::MenuWidgetInit()
 	}
 }
 
-void UTitleMenuWidget::CreateChildWidget(TSubclassOf<UUserWidget> _Widget, bool _IsVisible, FName _PanelName)
+void UTitleMenuWidget::CreateChildWidget(TSubclassOf<UUserWidget> _Widget, bool _IsVisible)
 {
 	UTitleUserWidget* Widget = CreateWidget<UTitleUserWidget>(MenuCanvasPanel, _Widget);
 
@@ -33,6 +33,7 @@ void UTitleMenuWidget::CreateChildWidget(TSubclassOf<UUserWidget> _Widget, bool 
 	Widget->SetMenuWidget(this);
 	MenuCanvasPanel->AddChild(Widget);
 
+
 	Widgets.Add(Widget);
 
 	UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>(Widget->Slot);
@@ -40,8 +41,14 @@ void UTitleMenuWidget::CreateChildWidget(TSubclassOf<UUserWidget> _Widget, bool 
 	CanvasSlot->SetOffsets(FMargin(0.0f, 0.0f, 0.0f, 0.0f));
 	CanvasSlot->SetAlignment(FVector2D(0.0f, 0.0f));
 
-	UWidget* PanelWidget = GetWidgetFromName(_PanelName);
-	UCanvasPanel* CurPanel = Cast<UCanvasPanel>(PanelWidget);
+	if (false == _IsVisible)
+	{
+		Widget->SetVisibility(ESlateVisibility::Hidden);
+	}
+	else
+	{
+		Widget->SetVisibility(ESlateVisibility::Visible);
+	}
 }
 
 void UTitleMenuWidget::SwitchMenu(FString _PrevPanel, FString _NextPanel)
