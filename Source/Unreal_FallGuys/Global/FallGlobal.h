@@ -31,6 +31,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Costume")
 	static void ChangeCostume(APawn* _Pawn, FString _CostumeName);
 
+	UFUNCTION(BlueprintCallable, Category = "Costume")
+	static void ApplySavedCostume(APawn* _Pawn);
 
 
 };

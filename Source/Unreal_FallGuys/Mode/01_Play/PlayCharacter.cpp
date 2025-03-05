@@ -7,6 +7,10 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
+
+
+#include <Global/FallGlobal.h>
 
 #include <Unreal_FallGuys.h>
 #include <Global/Data/CostumeDataTable.h>
@@ -40,7 +44,11 @@ APlayCharacter::APlayCharacter()
 void APlayCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	if (UGameplayStatics::GetPlayerController(GetWorld(),0) == GetController())
+	{
+		UFallGlobal::ApplySavedCostume(this);
+	}
+
 }
 
 // Called every frame

@@ -3,6 +3,9 @@
 
 #include "Mode/00_Title/UI/TitleWidget.h"
 
+#include <Unreal_FallGuys.h>
+#include <Global/BaseGameInstance.h>
+
 
 void UTitleWidget::StartPlay(UWidget* _TitlePanel, UWidget* _StartPanel, bool _IsVisible, const FVector2D& _Value)
 {
@@ -18,4 +21,10 @@ void UTitleWidget::StartPlay(UWidget* _TitlePanel, UWidget* _StartPanel, bool _I
 		_TitlePanel->SetVisibility(ESlateVisibility::Hidden);
 		_StartPanel->SetVisibility(ESlateVisibility::Visible);
 	}
+}
+
+void UTitleWidget::SavedCostume(UGameInstance* _Ins, const FString& _CostumeName)
+{
+	UBaseGameInstance* GameIns = Cast<UBaseGameInstance>(_Ins);
+	GameIns->SaveSelectedCostume(_CostumeName);
 }

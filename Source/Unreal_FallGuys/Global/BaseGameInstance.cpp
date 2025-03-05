@@ -4,6 +4,7 @@
 #include "Global/BaseGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 
+#include <Net/UnrealNetwork.h>
 #include <Unreal_FallGuys.h>
 #include <Global/FallGlobal.h>
 #include <Global/FallConst.h>
@@ -65,3 +66,19 @@ void UBaseGameInstance::CServerConnect(UWorld* _World, FString _IP, FString _Por
     UGameplayStatics::OpenLevel(_World, FName(*ConnectLevelName));
 }
 
+void UBaseGameInstance::SaveSelectedCostume_Implementation(const FString& CostumeName)
+{
+	SelectedCostumeName = CostumeName;
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("Selected Costume Saved: %s"), *SelectedCostumeName);
+}
+
+FString UBaseGameInstance::GetSelectedCostume() const
+{
+	return SelectedCostumeName;
+}
+
+void UBaseGameInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UBaseGameInstance, SelectedCostumeName); 
+}
