@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Global/FallGlobal.h"
@@ -67,12 +67,12 @@ void UFallGlobal::ChangeCostume(APawn* _Pawn, FString _CostumeName)
 	const FCostumeDataRow* CostumeData = UGlobalDataTable::GetCostumeData(World, _CostumeName);
 	if (CostumeData && CostumeData->CostumeMesh)
 	{
-		// _PawnÀÇ ½ºÄÌ·¹Å» ¸Ş½Ã °¡Á®¿À±â
+		// _Pawnì˜ ìŠ¤ì¼ˆë ˆíƒˆ ë©”ì‹œ ê°€ì ¸ì˜¤ê¸°
 		if (USkeletalMeshComponent* MeshComp = _Pawn->FindComponentByClass<USkeletalMeshComponent>()) 
 		{
 			MeshComp->SetSkeletalMesh(CostumeData->CostumeMesh);
 			//MeshComp->SetRelativeLocation(CostumeData->CostumePos);
-			//MeshComp->SetRelativeRotation(FRotator::ZeroRotator); // ÇÊ¿äÇÏ¸é CostumePivot ¹İ¿µ
+			//MeshComp->SetRelativeRotation(FRotator::ZeroRotator); // í•„ìš”í•˜ë©´ CostumePivot ë°˜ì˜
 		}
 	}
 	else

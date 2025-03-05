@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Mode/01_Play/PlayGameMode.h"
@@ -18,7 +18,7 @@ void APlayGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (HasAuthority()) // ¼­¹ö¿¡¼­¸¸ ½ÇÇà
+	if (HasAuthority()) // ì„œë²„ì—ì„œë§Œ ì‹¤í–‰
 	{
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("Server: PlayGameMode Started!"));
 	}
@@ -34,12 +34,12 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 
 	FString CurrentLevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
 
-	if (HasAuthority()) // ¼­¹ö¿¡¼­¸¸ ½ÇÇà
+	if (HasAuthority()) // ì„œë²„ì—ì„œë§Œ ì‹¤í–‰
 	{
 		ConnectedPlayers++;
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("Join To %s"), *CurrentLevelName);
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("Server: Player Joined, Cur Player Number = %d"), ConnectedPlayers);
-		// ³×Æ®¿öÅ© µ¿±âÈ­¸¦ °­Á¦ ½ÇÇàÇÏ¿© Å¬¶óÀÌ¾ğÆ®¿Í µ¥ÀÌÅÍ ¸ÂÃß±â
+		// ë„¤íŠ¸ì›Œí¬ ë™ê¸°í™”ë¥¼ ê°•ì œ ì‹¤í–‰í•˜ì—¬ í´ë¼ì´ì–¸íŠ¸ì™€ ë°ì´í„° ë§ì¶”ê¸°
 		ForceNetUpdate();
 		//OnRep_ConnectedPlayers();
 	}
@@ -70,7 +70,7 @@ bool APlayGameMode::IsMinPlayersReached()
 void APlayGameMode::StartGame()
 {
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("GAME START READY"));
-	// ¿©±â¿¡ ½ÇÁ¦ °ÔÀÓ ½ÃÀÛ ·ÎÁ÷ Ãß°¡ ¿¹Á¤
+	// ì—¬ê¸°ì— ì‹¤ì œ ê²Œì„ ì‹œì‘ ë¡œì§ ì¶”ê°€ ì˜ˆì •
 }
 
 

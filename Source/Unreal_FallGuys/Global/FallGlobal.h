@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -27,7 +27,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static void ServerConnect(UObject* _Object, FString _IP, FString _Port);
 
-	// ÇöÁ¤ ÄÚ½ºÆ¬ º¯°æ Å×½ºÆ®¿ë
+	// í˜„ì • ì½”ìŠ¤íŠ¬ ë³€ê²½ í…ŒìŠ¤íŠ¸ìš©
 	UFUNCTION(BlueprintCallable, Category = "Costume")
 	static void ChangeCostume(APawn* _Pawn, FString _CostumeName);
 
