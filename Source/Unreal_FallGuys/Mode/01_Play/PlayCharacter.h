@@ -49,6 +49,32 @@ public:
 		AirTime = 0.0f;
 	}
 
+	UFUNCTION(BlueprintCallable)
+	void DiveSwitch()
+	{
+		if (true == IsDive)
+		{
+			IsDive = false;
+		}
+		else
+		{
+			IsDive = true;
+		}
+	}
+
+	UFUNCTION(BlueprintCallable)
+	void AddDiveTime(float _Deltatime)
+	{
+		DiveTime += _Deltatime;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	void ResetDiveTime()
+	{
+		DiveTime = 0.0f;
+	}
+
+
 	FVector GetControllerForward();
 
 	FVector GetControllerRight();
@@ -82,5 +108,11 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	float AirTime = 0.0f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	bool IsDive = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	float DiveTime = 0.0f;
 
 };
