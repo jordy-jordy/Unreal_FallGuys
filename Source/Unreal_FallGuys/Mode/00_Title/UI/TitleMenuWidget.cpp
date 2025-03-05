@@ -21,36 +21,36 @@ void UTitleMenuWidget::MenuWidgetInit()
 	}
 }
 
-void UTitleMenuWidget::CreateChildWidget(TSubclassOf<UUserWidget> _Widget, bool _IsVisible)
-{
-	UTitleUserWidget* Widget = CreateWidget<UTitleUserWidget>(MenuCanvasPanel, _Widget);
-
-	if (nullptr == Widget)
-	{
-		return;
-	}
-
-	Widget->SetMenuWidget(this);
-	MenuCanvasPanel->AddChild(Widget);
-
-
-	Widgets.Add(Widget);
-
-	UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>(Widget->Slot);
-	CanvasSlot->SetAnchors(FAnchors(0.0f, 0.0f, 1.0f, 1.0f));
-	CanvasSlot->SetOffsets(FMargin(0.0f, 0.0f, 0.0f, 0.0f));
-	CanvasSlot->SetAlignment(FVector2D(0.0f, 0.0f));
-
-	if (false == _IsVisible)
-	{
-		Widget->SetVisibility(ESlateVisibility::Hidden);
-	}
-	else
-	{
-		Widget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-		CurWidget = Widget;
-	}
-}
+//void UTitleMenuWidget::CreateChildWidget(TSubclassOf<UUserWidget> _Widget, bool _IsVisible)
+//{
+//	UTitleUserWidget* Widget = CreateWidget<UTitleUserWidget>(MenuCanvasPanel, _Widget);
+//
+//	if (nullptr == Widget)
+//	{
+//		return;
+//	}
+//
+//	Widget->SetMenuWidget(this);
+//	MenuCanvasPanel->AddChild(Widget);
+//
+//
+//	Widgets.Add(Widget);
+//
+//	UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>(Widget->Slot);
+//	CanvasSlot->SetAnchors(FAnchors(0.0f, 0.0f, 1.0f, 1.0f));
+//	CanvasSlot->SetOffsets(FMargin(0.0f, 0.0f, 0.0f, 0.0f));
+//	CanvasSlot->SetAlignment(FVector2D(0.0f, 0.0f));
+//
+//	if (false == _IsVisible)
+//	{
+//		Widget->SetVisibility(ESlateVisibility::Hidden);
+//	}
+//	else
+//	{
+//		Widget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+//		CurWidget = Widget;
+//	}
+//}
 
 void UTitleMenuWidget::SwitchMenu(FString _PrevPanel, FString _NextPanel)
 {

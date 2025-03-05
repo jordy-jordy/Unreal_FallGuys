@@ -21,8 +21,8 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void MenuWidgetInit();
 
-	UFUNCTION(BlueprintCallable)
-	void CreateChildWidget(TSubclassOf<UUserWidget> _Widget, bool _IsVisible);
+	//UFUNCTION(BlueprintCallable)
+	//void CreateChildWidget(TSubclassOf<UUserWidget> _Widget, bool _IsVisible);
 
 	UFUNCTION(BlueprintCallable)
 	void SwitchMenu(FString _PrevPanel, FString _NextPanel);
