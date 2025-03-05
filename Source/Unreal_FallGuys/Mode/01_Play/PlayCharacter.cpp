@@ -8,6 +8,11 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
+#include <Unreal_FallGuys.h>
+#include <Global/Data/CostumeDataTable.h>
+#include <Global/Data/GlobalDataTable.h>
+
+
 // Sets default values
 APlayCharacter::APlayCharacter()
 {
@@ -113,3 +118,4 @@ void APlayCharacter::TestMove(const FVector2D& _Value)
 	AddMovementInput(Right, _Value.Y);
 
 }
+

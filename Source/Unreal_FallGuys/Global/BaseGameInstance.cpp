@@ -4,10 +4,46 @@
 #include "Global/BaseGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 
+#include <Unreal_FallGuys.h>
 #include <Global/FallGlobal.h>
 #include <Global/FallConst.h>
-#include <Global/PlayerClothManager.h>
 
+
+UBaseGameInstance::UBaseGameInstance()
+{
+	// 보통 이 로그가 존재하는 위치를 알고 
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("%S(%u)> DataTableLoading Start"), __FUNCTION__, __LINE__);
+
+	{
+		FString DataPath = TEXT("/Script/Engine.DataTable'/Game/BP/Global/Data/DT_GlobalDataTable.DT_GlobalDataTable'");
+		ConstructorHelpers::FObjectFinder<UDataTable> FinderDataTables(*DataPath);
+		if (true == FinderDataTables.Succeeded())
+		{
+			DataTables = FinderDataTables.Object;
+		}
+
+		//if (nullptr != DataTables)
+		//{
+		//	ActorDataTable = DataTables->FindRow<FDataTableRow>("DT_GlobalActorDataTable", nullptr)->Resources;
+		//	if (nullptr == ActorDataTable)
+		//	{
+		//		UE_LOG(FALL_DEV_LOG, Error, TEXT("%S(%u)> if (nullptr == ActorDataTable)"), __FUNCTION__, __LINE__);
+		//	}
+		//}
+
+		if (nullptr != DataTables)
+		{
+			CostumeDataTable = DataTables->FindRow<FDataTableRow>("DT_CostumeDataTable", nullptr)->Resources;
+			if (nullptr == CostumeDataTable)
+			{
+				UE_LOG(FALL_DEV_LOG, Error, TEXT("%S(%u)> if (nullptr == CostumeDataTable)"), __FUNCTION__, __LINE__);
+			}
+		}
+	}
+
+	// 흰색
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("%S(%u)> DataTableLoading End"), __FUNCTION__, __LINE__);
+}
 
 // 서버 오픈
 void UBaseGameInstance::CServerStart(UWorld* _World, FString _Port)
@@ -29,8 +65,3 @@ void UBaseGameInstance::CServerConnect(UWorld* _World, FString _IP, FString _Por
     UGameplayStatics::OpenLevel(_World, FName(*ConnectLevelName));
 }
 
-void UBaseGameInstance::Init()
-{
-    Super::Init();
-    PlayerClothManager = NewObject<UPlayerClothManager>();
-}
