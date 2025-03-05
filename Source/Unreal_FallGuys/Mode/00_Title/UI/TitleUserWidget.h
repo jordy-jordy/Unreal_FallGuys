@@ -16,7 +16,7 @@ class UNREAL_FALLGUYS_API UTitleUserWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
-	void SetMenuWidget(class UTitleUserWidget* _UserWidget)
+	void SetUserWidget(class UTitleUserWidget* _UserWidget)
 	{
 		UserWidget = _UserWidget;
 	}
@@ -25,14 +25,34 @@ public:
 	void InputCheck(const FVector2D& _Value);
 
 	UFUNCTION(BlueprintCallable)
-	void WidgetInit();
+	void WidgetInit(FName _PanelName);
 
 	UFUNCTION(BlueprintCallable)
 	void CreateChildWidget(TSubclassOf<UUserWidget> _Widget, bool _IsVisible);
 
+	UFUNCTION(BlueprintCallable)
+	UTitleUserWidget* GetCurUserWidget()
+	{
+		return CurUserWidget;
+	}
+
+	//UFUNCTION(BlueprintCallable)
+	//void SetCurUserWidget(UTitleUserWidget* _Widget)
+	//{
+	//	//UTitleUserWidget* Widget = Cast<UTitleUserWidget>(_Widget);
+
+	//	CurUserWidget = _Widget;
+	
+
+	TArray<UTitleUserWidget*> GetAllWidgets()
+	{
+		return Widgets;
+	}
+
 private:
 	UPROPERTY(Category = "UI", EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UTitleUserWidget* UserWidget;
+	class UTitleUserWidget* CurUserWidget;
 
 	UCanvasPanel* CanvasPanel;
 	TArray<UTitleUserWidget*> Widgets;

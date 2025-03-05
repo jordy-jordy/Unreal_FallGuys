@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Mode/00_Title/UI/TitleUserWidget.h"
-#include "Components/CanvasPanel.h"
 #include "TitleMenuWidget.generated.h"
 
 /**
@@ -18,17 +17,9 @@ class UNREAL_FALLGUYS_API UTitleMenuWidget : public UTitleUserWidget
 public:
 
 protected:
-	//UFUNCTION(BlueprintCallable)
-	//void MenuWidgetInit();
-
-	//UFUNCTION(BlueprintCallable)
-	//void CreateChildWidget(TSubclassOf<UUserWidget> _Widget, bool _IsVisible);
-
 	UFUNCTION(BlueprintCallable)
-	void SwitchMenu(FString _PrevPanel, FString _NextPanel);
+	void SwitchMenu(TSubclassOf<UUserWidget> _PrevWidget, TSubclassOf<UUserWidget> _NextWidget);
 
 private:
-	UCanvasPanel* MenuCanvasPanel;
-	UTitleUserWidget* CurWidget;
-	TArray<UTitleUserWidget*> Widgets;
+
 };
