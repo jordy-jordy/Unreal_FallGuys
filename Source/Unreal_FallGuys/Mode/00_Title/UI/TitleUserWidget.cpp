@@ -13,6 +13,7 @@ void UTitleUserWidget::InputCheck(const FVector2D& _Value)
 void UTitleUserWidget::WidgetInit(FName _PanelName)
 {
 	UWidget* PanelWidget = GetWidgetFromName(_PanelName);
+
 	CanvasPanel = Cast<UCanvasPanel>(PanelWidget);
 
 	if (nullptr == CanvasPanel)
@@ -35,9 +36,8 @@ void UTitleUserWidget::CreateChildWidget(TSubclassOf<UUserWidget> _Widget, bool 
 		return;
 	}
 
-	SetMenuWidget(this);
+	SetUserWidget(this);
 	CanvasPanel->AddChild(Widget);
-
 
 	Widgets.Add(Widget);
 
@@ -53,8 +53,11 @@ void UTitleUserWidget::CreateChildWidget(TSubclassOf<UUserWidget> _Widget, bool 
 	else
 	{
 		Widget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		CurUserWidget = Widget;
 	}
-}void UTitleUserWidget::AllWidgetHidden()
+
+}
+void UTitleUserWidget::AllWidgetHidden()
 {
 	for (size_t i = 0; i < Widgets.Num(); i++)
 	{
