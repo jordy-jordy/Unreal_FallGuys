@@ -94,3 +94,8 @@ void UBaseGameInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(UBaseGameInstance, SelectedCostumeName); 
 }
+
+void UBaseGameInstance::OnRep_SelectedCostumeName()
+{
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SelectedCostumeName Replicated: %s"), *SelectedCostumeName);
+}

@@ -43,6 +43,12 @@ void APlayCharacter::BeginPlay()
 	if (UGameplayStatics::GetPlayerController(GetWorld(),0) == GetController())
 	{
 		UFallGlobal::ApplySavedCostume(this);
+
+
+	}
+	else
+	{
+		int a = 0;
 	}
 
 }

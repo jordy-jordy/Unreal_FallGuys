@@ -32,6 +32,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Costume")
 	FString GetSelectedCostume() const;
 
+	UFUNCTION()
+	void OnRep_SelectedCostumeName();
+
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 
 protected:
@@ -49,6 +52,6 @@ private:
 	class UDataTable* ActorDataTable = nullptr;
 	class UDataTable* CostumeDataTable = nullptr;
 
-	UPROPERTY(VisibleAnywhere, Replicated, Category = "Costume")
+	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_SelectedCostumeName, Category = "Costume")
 	FString SelectedCostumeName = TEXT("TEST00");
 };

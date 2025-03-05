@@ -4,7 +4,7 @@
 #include "Global/FallConst.h"
 
 
-FString UFallConst::PlayLevelName = TEXT("Race2Map");  // 초기화
+FString UFallConst::PlayLevelName = TEXT("PlayLevel");  // 초기화
 
 FName UFallConst::Collision::CollisionProfile_Player = TEXT("PlayerColl");
 FName UFallConst::Collision::CollisionProfile_LevelOBJ = TEXT("LevelObjColl");
