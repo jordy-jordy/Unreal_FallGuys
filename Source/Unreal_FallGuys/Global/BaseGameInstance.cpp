@@ -1,17 +1,59 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+Ôªø// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Global/BaseGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 
+#include <Unreal_FallGuys.h>
 #include <Global/FallGlobal.h>
 #include <Global/FallConst.h>
-#include <Global/PlayerClothManager.h>
 
 
-// º≠πˆ ø¿«¬
+UBaseGameInstance::UBaseGameInstance()
+{
+	// Î≥¥ÌÜµ Ïù¥ Î°úÍ∑∏Í∞Ä Ï°¥Ïû¨ÌïòÎäî ÏúÑÏπòÎ•º ÏïåÍ≥† 
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("%S(%u)> DataTableLoading Start"), __FUNCTION__, __LINE__);
+
+	{
+		FString DataPath = TEXT("/Script/Engine.DataTable'/Game/BP/Global/Data/DT_GlobalDataTable.DT_GlobalDataTable'");
+		ConstructorHelpers::FObjectFinder<UDataTable> FinderDataTables(*DataPath);
+		if (true == FinderDataTables.Succeeded())
+		{
+			DataTables = FinderDataTables.Object;
+		}
+
+		//if (nullptr != DataTables)
+		//{
+		//	ActorDataTable = DataTables->FindRow<FDataTableRow>("DT_GlobalActorDataTable", nullptr)->Resources;
+		//	if (nullptr == ActorDataTable)
+		//	{
+		//		UE_LOG(FALL_DEV_LOG, Error, TEXT("%S(%u)> if (nullptr == ActorDataTable)"), __FUNCTION__, __LINE__);
+		//	}
+		//}
+
+		if (nullptr != DataTables)
+		{
+			CostumeDataTable = DataTables->FindRow<FDataTableRow>("DT_CostumeDataTable", nullptr)->Resources;
+			if (nullptr == CostumeDataTable)
+			{
+				UE_LOG(FALL_DEV_LOG, Error, TEXT("%S(%u)> if (nullptr == CostumeDataTable)"), __FUNCTION__, __LINE__);
+			}
+		}
+	}
+
+	// Ìù∞ÏÉâ
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("%S(%u)> DataTableLoading End"), __FUNCTION__, __LINE__);
+}
+
+// ÏÑúÎ≤Ñ Ïò§Ìîà
 void UBaseGameInstance::CServerStart(UWorld* _World, FString _Port)
 {
+	if (!_World)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("CServerStart: _World is nullptr"));
+		return;
+	}
+
     FString OpenLevel;
     FString LevelPath = TEXT("");
 
@@ -21,16 +63,17 @@ void UBaseGameInstance::CServerStart(UWorld* _World, FString _Port)
     UGameplayStatics::OpenLevel(_World, *OpenLevel, true, TEXT("listen"));
 }
 
-// º≠πˆ ¡¢º”
+// ÏÑúÎ≤Ñ Ï†ëÏÜç
 void UBaseGameInstance::CServerConnect(UWorld* _World, FString _IP, FString _Port)
 {
+	if (!_World)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("CServerConnect: _World is nullptr"));
+		return;
+	}
+
     FString ConnectLevelName = FString::Printf(TEXT("%s:%s"), *_IP, *_Port);
 
     UGameplayStatics::OpenLevel(_World, FName(*ConnectLevelName));
 }
 
-void UBaseGameInstance::Init()
-{
-    Super::Init();
-    PlayerClothManager = NewObject<UPlayerClothManager>();
-}
