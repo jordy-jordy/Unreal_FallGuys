@@ -1,4 +1,4 @@
- // Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Mode/00_Title/UI/TitleUserWidget.h"
@@ -10,10 +10,9 @@ void UTitleUserWidget::InputCheck(const FVector2D& _Value)
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString::Printf(TEXT("%S(%u)> %s"), __FUNCTION__, __LINE__, *_Value.ToString()));
 }
 
-void UTitleUserWidget::WidgetInit()
+void UTitleUserWidget::WidgetInit(FName _PanelName)
 {
-
-	UWidget* PanelWidget = GetWidgetFromName(FName("MainCanvasPanel"));
+	UWidget* PanelWidget = GetWidgetFromName(_PanelName);
 	CanvasPanel = Cast<UCanvasPanel>(PanelWidget);
 
 	if (nullptr == CanvasPanel)
@@ -36,9 +35,8 @@ void UTitleUserWidget::CreateChildWidget(TSubclassOf<UUserWidget> _Widget, bool 
 		return;
 	}
 
-	SetMenuWidget(this);
+	SetUserWidget(this);
 	CanvasPanel->AddChild(Widget);
-
 
 	Widgets.Add(Widget);
 
@@ -54,8 +52,11 @@ void UTitleUserWidget::CreateChildWidget(TSubclassOf<UUserWidget> _Widget, bool 
 	else
 	{
 		Widget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		CurUserWidget = Widget;
 	}
-}void UTitleUserWidget::AllWidgetHidden()
+
+}
+void UTitleUserWidget::AllWidgetHidden()
 {
 	for (size_t i = 0; i < Widgets.Num(); i++)
 	{
