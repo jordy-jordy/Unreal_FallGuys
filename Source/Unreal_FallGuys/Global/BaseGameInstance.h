@@ -25,6 +25,7 @@ public:
 
 	// 코스튬 저장
 	UFUNCTION(BlueprintCallable, Reliable, Server, Category = "Costume")
+	void SaveSelectedCostume(const FString& CostumeName);
 	void SaveSelectedCostume_Implementation(const FString& CostumeName);
 
 	// 저장된 코스튬 반환
