@@ -47,7 +47,8 @@ void UTitleMenuWidget::CreateChildWidget(TSubclassOf<UUserWidget> _Widget, bool 
 	}
 	else
 	{
-		Widget->SetVisibility(ESlateVisibility::Visible);
+		Widget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		CurWidget = Widget;
 	}
 }
 

@@ -29,5 +29,6 @@ protected:
 
 private:
 	UCanvasPanel* MenuCanvasPanel;
+	UTitleUserWidget* CurWidget;
 	TArray<UTitleUserWidget*> Widgets;
 };

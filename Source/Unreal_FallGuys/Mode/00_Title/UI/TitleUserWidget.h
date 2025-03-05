@@ -20,6 +20,9 @@ public:
 		MenuWidget = _MenuWidget;
 	}
 
+	UFUNCTION(BlueprintCallable)
+	void InputCheck(const FVector2D& _Value);
+
 private:
 	UPROPERTY(Category = "UI", EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UTitleMenuWidget* MenuWidget;
