@@ -45,12 +45,22 @@ void APlayCharacter::BeginPlay()
 	UBaseGameInstance* GameIns = Cast<UBaseGameInstance>(GetGameInstance());
 	if (UGameplayStatics::GetPlayerController(GetWorld(), 0) == GetController())
 	{
+		// 나는 그냥 내 코스츔 하면 된다.
 		GetMesh()->SetSkeletalMesh(GameIns->GetCostumeMesh(this));
-		// CName = GameIns->GetSelectedCostume();
 	}
 	else
 	{
-		// GameIns->ChangeCostume(this, CName);
+		if (nullptr != GetWorld()->GetAuthGameMode())
+		{
+			// 서버에 만들어진 클라 원본 캐릭터
+			int a = 0;
+		}
+		else if (nullptr == GetWorld()->GetAuthGameMode())
+		{
+			// 클라에 만들어진 서버 원 본 캐릭터
+			int a = 0;
+		}
+		// 간단히 말하자면 원본은 따로 있는 녀석.
 	}
 }
 

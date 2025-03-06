@@ -90,6 +90,8 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 
+	// 나 너를 기반으로 생성된 앤데 너 무슨 코스츔이야? 물어보는 함수를 만들 것이다.
+
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* LookAction = nullptr;
