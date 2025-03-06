@@ -9,7 +9,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
-
+#include <Unreal_FallGuys.h>
 #include <Global/FallGlobal.h>
 #include <Global/BaseGameInstance.h>
 
@@ -34,7 +34,6 @@ APlayCharacter::APlayCharacter()
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
 	CameraComponent->SetupAttachment(SpringArmComponent, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	CameraComponent->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
-
 }
 
 // Called when the game starts or when spawned
@@ -49,13 +48,7 @@ void APlayCharacter::BeginPlay()
 	}
 	else
 	{
-		if (nullptr != UGameplayStatics::GetPlayerController(GetWorld(), 1))
-		{
-			APlayerController* Player1_Controller = UGameplayStatics::GetPlayerController(GetWorld(), 1);
-			UBaseGameInstance* Player1_Ins = Cast<UBaseGameInstance>(Player1_Controller->GetGameInstance());
-			FString Player1_CostumeName = Player1_Ins->GetSelectedCostume();
-			GameIns->ChangeCostume(Player1_Controller->GetCharacter(), Player1_CostumeName);
-		}
+
 	}
 }
 
@@ -98,9 +91,7 @@ void APlayCharacter::SetupPlayerInputComponent(UInputComponent* _PlayerInputComp
 				AddControllerYawInput(LookAxisVector.X);
 				AddControllerPitchInput(LookAxisVector.Y);
 			}
-
 		});
-
 }
 
 void APlayCharacter::PlayerWMove()
@@ -122,7 +113,6 @@ void APlayCharacter::PlayerAMove()
 
 void APlayCharacter::TestMove(const FVector2D& _Value)
 {
-
 	const FRotator Rotaion = Controller->GetControlRotation();
 
 	const FRotator YawRoation = FRotator(0.0f, Rotaion.Yaw, 0.0f);
@@ -132,6 +122,5 @@ void APlayCharacter::TestMove(const FVector2D& _Value)
 
 	AddMovementInput(Forward, _Value.X);
 	AddMovementInput(Right, _Value.Y);
-
 }
 
