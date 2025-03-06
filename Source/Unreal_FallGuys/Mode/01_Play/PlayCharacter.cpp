@@ -11,6 +11,7 @@
 
 
 #include <Global/FallGlobal.h>
+#include <Global/BaseGameInstance.h>
 
 
 // Sets default values
@@ -40,15 +41,15 @@ APlayCharacter::APlayCharacter()
 void APlayCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	UBaseGameInstance* GameIns = Cast<UBaseGameInstance>(GetGameInstance());
 	if (UGameplayStatics::GetPlayerController(GetWorld(),0) == GetController())
 	{
-		UFallGlobal::ApplySavedCostume(this);
-
-
+		GameIns->ApplySavedCostume(this);
 	}
 	else
 	{
-		int a = 0;
+		GameIns->ApplySavedCostume(this);
 	}
 
 }

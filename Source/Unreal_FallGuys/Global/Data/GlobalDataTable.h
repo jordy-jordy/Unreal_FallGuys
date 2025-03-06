@@ -19,7 +19,7 @@ struct FDataTableRow : public FTableRowBase
 	~FDataTableRow() {}
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
-	UDataTable* Resources;
+	UDataTable* Resources = nullptr;
 };
 
 USTRUCT(BlueprintType)
@@ -34,17 +34,6 @@ struct FActorClassTableRow : public FTableRowBase
 	TSubclassOf<class AActor> SpawnClass;
 };
 
-USTRUCT(BlueprintType)
-struct FObjectClassTableRow : public FTableRowBase
-{
-	GENERATED_BODY()
-
-	FObjectClassTableRow() {}
-	~FObjectClassTableRow() {}
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
-	UObject* Class;
-};
 
 /**
  * 
@@ -55,7 +44,7 @@ class UNREAL_FALLGUYS_API UGlobalDataTable : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 	
 public:
-	UFUNCTION(BlueprintCallable)
-	static TSubclassOf<AActor> GetActorClass(UWorld* _World, const FString& _Name);
+	//UFUNCTION(BlueprintCallable)
+	//static TSubclassOf<AActor> GetActorClass(UWorld* _World, const FString& _Name);
 	static const FCostumeDataRow* GetCostumeData(UWorld* _World, const FString& _Name);
 };

@@ -61,38 +61,3 @@ void UFallGlobal::ServerConnect(UObject* _Object, FString _IP, FString _Port)
 	GameIns->CServerConnect(CurWorld, _IP, _Port);
 }
 
-void UFallGlobal::ApplySavedCostume(APawn* _Pawn)
-{
-	if (!_Pawn) return;
-
-	UWorld* World = _Pawn->GetWorld();
-	UBaseGameInstance* GameIns = Cast<UBaseGameInstance>(World->GetGameInstance());
-	if (!GameIns) return;
-
-	// 저장된 코스튬 가져오기
-	FString SavedCostume = GameIns->GetSelectedCostume();
-	if (SavedCostume.IsEmpty()) return;
-
-	// 기존 ChangeCostume 함수 호출
-	ChangeCostume(_Pawn, SavedCostume);
-}
-
-void UFallGlobal::ChangeCostume(APawn* _Pawn, FString _CostumeName)
-{
-	UWorld* World = _Pawn->GetWorld();
-	const FCostumeDataRow* CostumeData = UGlobalDataTable::GetCostumeData(World, _CostumeName);
-	if (CostumeData && CostumeData->CostumeMesh)
-	{
-		// _Pawn의 스켈레탈 메시 가져오기
-		if (USkeletalMeshComponent* MeshComp = _Pawn->FindComponentByClass<USkeletalMeshComponent>()) 
-		{
-			MeshComp->SetSkeletalMesh(CostumeData->CostumeMesh);
-			//MeshComp->SetRelativeLocation(CostumeData->CostumePos);
-			//MeshComp->SetRelativeRotation(FRotator::ZeroRotator); // 필요하면 CostumePivot 반영
-		}
-	}
-	else
-	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("Invalid Costume Data or Mesh"));
-	}
-}

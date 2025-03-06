@@ -25,6 +25,7 @@ public:
 	};
 
 public:
+	static FString GlobalDataTablePath;
 	static FString PlayLevelName;
 	static const int MinPlayerCount = 2;
 

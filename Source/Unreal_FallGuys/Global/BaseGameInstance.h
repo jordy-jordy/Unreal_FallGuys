@@ -25,8 +25,17 @@ public:
 
 	// 코스튬 저장
 	UFUNCTION(BlueprintCallable, Reliable, Server, Category = "Costume")
-	void SaveSelectedCostume(const FString& CostumeName);
-	void SaveSelectedCostume_Implementation(const FString& CostumeName);
+	void SaveSelectedCostume(const FString& _CostumeName);
+	void SaveSelectedCostume_Implementation(const FString& _CostumeName);
+
+	// 현정 코스튬 변경 테스트용
+	UFUNCTION(BlueprintCallable, Reliable, Server, Category = "Costume")
+	void ChangeCostume(APawn* _Pawn, const FString& _CostumeName);
+	void ChangeCostume_Implementation(APawn* _Pawn, const FString& _CostumeName);
+
+	UFUNCTION(BlueprintCallable, Reliable, Server, Category = "Costume")
+	void ApplySavedCostume(APawn* _Pawn);
+	void ApplySavedCostume_Implementation(APawn* _Pawn);
 
 	// 저장된 코스튬 반환
 	UFUNCTION(BlueprintCallable, Category = "Costume")
@@ -49,9 +58,11 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Data")
 	class UDataTable* DataTables = nullptr;
-	class UDataTable* ActorDataTable = nullptr;
 	class UDataTable* CostumeDataTable = nullptr;
+	//class UDataTable* ActorDataTable = nullptr;
 
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_SelectedCostumeName, Category = "Costume")
 	FString SelectedCostumeName = TEXT("TEST00");
+
+	
 };

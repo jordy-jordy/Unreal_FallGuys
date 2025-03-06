@@ -7,8 +7,16 @@
 #include <Global/BaseGameInstance.h>
 
 
-void UTitleWidget::SavedCostume(UGameInstance* _Ins, const FString& _CostumeName)
+void UTitleWidget::SaveCurCostume(const FString& _CostumeName)
 {
-	UBaseGameInstance* GameIns = Cast<UBaseGameInstance>(_Ins);
+	UBaseGameInstance* GameIns = Cast<UBaseGameInstance>(GetGameInstance());
 	GameIns->SaveSelectedCostume(_CostumeName);
+}
+
+void UTitleWidget::ChangeCurCostume(const FString& _CostumeName)
+{
+	APawn* Pawn = GetOwningPlayerPawn();
+	UBaseGameInstance* GameIns = Cast<UBaseGameInstance>(GetGameInstance());
+
+	GameIns->ChangeCostume(Pawn, _CostumeName);
 }
