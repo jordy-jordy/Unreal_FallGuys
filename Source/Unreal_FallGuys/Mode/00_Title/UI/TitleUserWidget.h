@@ -31,24 +31,26 @@ public:
 	void CreateChildWidget(TSubclassOf<UUserWidget> _Widget, bool _IsVisible);
 
 	UFUNCTION(BlueprintCallable)
+	void AllWidgetHidden();
+
+	UFUNCTION(BlueprintCallable)
 	UTitleUserWidget* GetCurUserWidget()
 	{
 		return CurUserWidget;
 	}
+
 	UFUNCTION(BlueprintCallable)
-	void AllWidgetHidden();
-	//UFUNCTION(BlueprintCallable)
-	//void SetCurUserWidget(UTitleUserWidget* _Widget)
-	//{
-	//	//UTitleUserWidget* Widget = Cast<UTitleUserWidget>(_Widget);
-
-	//	CurUserWidget = _Widget;
-
+	void SetCurUserWidget(UTitleUserWidget* _Widget)
+	{
+		CurUserWidget = _Widget;
+	}
 
 	TArray<UTitleUserWidget*> GetAllWidgets()
 	{
 		return Widgets;
 	}
+
+protected:
 
 private:
 	UPROPERTY(Category = "UI", EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
