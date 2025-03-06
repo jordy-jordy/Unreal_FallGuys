@@ -7,25 +7,6 @@
 #include <Unreal_FallGuys.h>
 
 
-TSubclassOf<AActor> UGlobalDataTable::GetActorClass(UWorld* _World, const FString& _Name)
-{
-	UBaseGameInstance* Inst = _World->GetGameInstance<UBaseGameInstance>();
-
-	if (nullptr == Inst->ActorDataTable)
-	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("%S(%u)> if (nullptr == ActorDataTable)"), __FUNCTION__, __LINE__);
-	}
-
-	FActorClassTableRow* Data = Inst->ActorDataTable->FindRow<FActorClassTableRow>(*_Name, nullptr);
-
-	if (nullptr == Data)
-	{
-		return nullptr;
-	}
-
-	return Data->SpawnClass;
-}
-
 const FCostumeDataRow* UGlobalDataTable::GetCostumeData(UWorld* _World, const FString& _Name)
 {
 	UBaseGameInstance* Inst = _World->GetGameInstance<UBaseGameInstance>();
@@ -44,3 +25,22 @@ const FCostumeDataRow* UGlobalDataTable::GetCostumeData(UWorld* _World, const FS
 
 	return Data;
 }
+
+//TSubclassOf<AActor> UGlobalDataTable::GetActorClass(UWorld* _World, const FString& _Name)
+//{
+//	UBaseGameInstance* Inst = _World->GetGameInstance<UBaseGameInstance>();
+//
+//	if (nullptr == Inst->ActorDataTable)
+//	{
+//		UE_LOG(FALL_DEV_LOG, Error, TEXT("%S(%u)> if (nullptr == ActorDataTable)"), __FUNCTION__, __LINE__);
+//	}
+//
+//	FActorClassTableRow* Data = Inst->ActorDataTable->FindRow<FActorClassTableRow>(*_Name, nullptr);
+//
+//	if (nullptr == Data)
+//	{
+//		return nullptr;
+//	}
+//
+//	return Data->SpawnClass;
+//}

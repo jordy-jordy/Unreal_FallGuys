@@ -27,10 +27,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static void ServerConnect(UObject* _Object, FString _IP, FString _Port);
 
-	// 현정 코스튬 변경 테스트용
-	UFUNCTION(BlueprintCallable, Category = "Costume")
-	static void ChangeCostume(APawn* _Pawn, FString _CostumeName);
-
 
 
 };

@@ -16,6 +16,11 @@ class UNREAL_FALLGUYS_API UTitleWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	UFUNCTION(BlueprintCallable)
+	void SaveCurCostume(const FString& _CostumeName);
+
+	UFUNCTION(BlueprintCallable)
+	void ChangeCurCostume(const FString& _CostumeName);
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Server", meta = (AllowPrivateAccess = "true"))

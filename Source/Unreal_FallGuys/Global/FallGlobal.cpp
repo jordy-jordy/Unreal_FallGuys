@@ -61,22 +61,3 @@ void UFallGlobal::ServerConnect(UObject* _Object, FString _IP, FString _Port)
 	GameIns->CServerConnect(CurWorld, _IP, _Port);
 }
 
-void UFallGlobal::ChangeCostume(APawn* _Pawn, FString _CostumeName)
-{
-	UWorld* World = _Pawn->GetWorld();
-	const FCostumeDataRow* CostumeData = UGlobalDataTable::GetCostumeData(World, _CostumeName);
-	if (CostumeData && CostumeData->CostumeMesh)
-	{
-		// _Pawn의 스켈레탈 메시 가져오기
-		if (USkeletalMeshComponent* MeshComp = _Pawn->FindComponentByClass<USkeletalMeshComponent>()) 
-		{
-			MeshComp->SetSkeletalMesh(CostumeData->CostumeMesh);
-			//MeshComp->SetRelativeLocation(CostumeData->CostumePos);
-			//MeshComp->SetRelativeRotation(FRotator::ZeroRotator); // 필요하면 CostumePivot 반영
-		}
-	}
-	else
-	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("Invalid Costume Data or Mesh"));
-	}
-}

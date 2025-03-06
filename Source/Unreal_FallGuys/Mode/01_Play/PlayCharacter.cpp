@@ -7,6 +7,11 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
+
+
+#include <Global/FallGlobal.h>
+#include <Global/BaseGameInstance.h>
 
 
 // Sets default values
@@ -36,7 +41,22 @@ APlayCharacter::APlayCharacter()
 void APlayCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	UBaseGameInstance* GameIns = Cast<UBaseGameInstance>(GetGameInstance());
+	if (UGameplayStatics::GetPlayerController(GetWorld(), 0) == GetController())
+	{
+		GameIns->ApplySavedCostume(this);
+	}
+	else
+	{
+		if (nullptr != UGameplayStatics::GetPlayerController(GetWorld(), 1))
+		{
+			APlayerController* Player1_Controller = UGameplayStatics::GetPlayerController(GetWorld(), 1);
+			UBaseGameInstance* Player1_Ins = Cast<UBaseGameInstance>(Player1_Controller->GetGameInstance());
+			FString Player1_CostumeName = Player1_Ins->GetSelectedCostume();
+			GameIns->ChangeCostume(Player1_Controller->GetCharacter(), Player1_CostumeName);
+		}
+	}
 }
 
 // Called every frame
