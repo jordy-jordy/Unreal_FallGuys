@@ -50,10 +50,7 @@ public:
 	}
 
 	FVector GetControllerForward();
-
 	FVector GetControllerRight();
-
-
 
 
 protected:
