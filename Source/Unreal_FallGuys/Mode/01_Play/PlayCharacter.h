@@ -78,9 +78,9 @@ public:
 	FVector GetControllerForward();
 	FVector GetControllerRight();
 
-	UFUNCTION(BlueprintCallable, Reliable, Client)
-	void S2C_CostumeCheck();
-	void S2C_CostumeCheck_Implementation();
+	UFUNCTION(BlueprintCallable, Reliable, Server)
+	void C2S_CostumeCheck();
+	void C2S_CostumeCheck_Implementation();
 
 	UFUNCTION(BlueprintCallable, Reliable, Server)
 	void C2S_Costume(const FString& _Name);

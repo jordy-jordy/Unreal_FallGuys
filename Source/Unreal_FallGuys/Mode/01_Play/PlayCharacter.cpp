@@ -38,11 +38,11 @@ APlayCharacter::APlayCharacter()
 }
 
 // 실행되는 곳이 클라이언트이다.
-void APlayCharacter::S2C_CostumeCheck_Implementation()
+void APlayCharacter::C2S_CostumeCheck_Implementation()
 {
-	UBaseGameInstance* GameIns = Cast<UBaseGameInstance>(GetGameInstance());
+	CName;
 	// 나는 클라
-	C2S_Costume(GameIns->GetSelectedCostume());
+	// C2S_Costume(GameIns->GetSelectedCostume());
 }
 
 void APlayCharacter::C2S_Costume_Implementation(const FString& _Name)
@@ -67,11 +67,7 @@ void APlayCharacter::BeginPlay()
 	}
 	else
 	{
-		if (nullptr == GetWorld()->GetAuthGameMode())
-		{
-			// S2C_CostumeCheck();
-			GetMesh()->SetSkeletalMesh(GameIns->GetCostumeMesh(this, CName));
-		}
+		GetMesh()->SetSkeletalMesh(GameIns->GetCostumeMesh(this, CName));
 	}
 }
 
@@ -80,7 +76,10 @@ void APlayCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-
+	if (nullptr == GetMesh()->GetSkeletalMeshAsset())
+	{
+		C2S_CostumeCheck();
+	}
 
 }
 
