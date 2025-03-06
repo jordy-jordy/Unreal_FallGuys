@@ -16,7 +16,7 @@ class UNREAL_FALLGUYS_API UTitleCustomizingMainWidget : public UTitleUserWidget
 	GENERATED_BODY()
 
 public:
-	UTitleCustomizingMainWidget();
+	UTitleCustomizingMainWidget(const FObjectInitializer& ObjectInitializer);
 	~UTitleCustomizingMainWidget();
 	
 };

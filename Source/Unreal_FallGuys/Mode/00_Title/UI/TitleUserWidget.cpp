@@ -6,6 +6,12 @@
 #include "Components/CanvasPanelSlot.h"
 
 
+UTitleUserWidget::UTitleUserWidget(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+{
+	bAutomaticallyRegisterInputOnConstruction = true;
+}
+
 void UTitleUserWidget::InputCheck(const FVector2D& _Value)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString::Printf(TEXT("%S(%u)> %s"), __FUNCTION__, __LINE__, *_Value.ToString()));
@@ -36,10 +42,25 @@ void UTitleUserWidget::CreateChildWidget(TSubclassOf<UUserWidget> _Widget, bool 
 		return;
 	}
 
+	FString WidgetName = Widget->GetClass()->GetName();
+
 	SetUserWidget(this);
 	CanvasPanel->AddChild(Widget);
 
-	Widgets.Add(Widget);
+	if (WidgetName.Contains(FString("TitleHome")))
+	{
+		UIType = EUIType::TitleHome;
+	}
+	else if (WidgetName.Contains(FString("Custom")) || WidgetName.Contains(FString("Btn")))
+	{
+		UIType = EUIType::TitleCustom;
+	}
+	else if (WidgetName.Contains(FString("TitleEntrance")))
+	{
+		UIType = EUIType::TitleEntrance;
+	}
+
+	Widgets.Emplace(UIType, Widget);
 
 	UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>(Widget->Slot);
 	CanvasSlot->SetAnchors(FAnchors(0.0f, 0.0f, 1.0f, 1.0f));
@@ -59,9 +80,29 @@ void UTitleUserWidget::CreateChildWidget(TSubclassOf<UUserWidget> _Widget, bool 
 
 void UTitleUserWidget::AllWidgetHidden()
 {
-	for (size_t i = 0; i < Widgets.Num(); i++)
+	for (TPair<EUIType, UTitleUserWidget*> AllWidgets : Widgets)
 	{
-		Widgets[i]->SetVisibility(ESlateVisibility::Hidden);
+		AllWidgets.Value->SetVisibility(ESlateVisibility::Hidden);
 	}
 }
 
+void UTitleUserWidget::SwitchMenu(EUIType _UIType)
+{
+	TMultiMap<EUIType, UTitleUserWidget*> AllWidget = GetAllWidgets();
+
+	UTitleUserWidget* Value = *AllWidget.Find(_UIType);
+	if (nullptr == Value)
+	{
+		return;
+	}
+
+	UTitleUserWidget* CurWidget = GetCurUserWidget();
+	if (CurWidget == Value)
+	{
+		return;
+	}
+
+	CurWidget->SetVisibility(ESlateVisibility::Hidden);
+	Value->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	SetCurUserWidget(Value);
+}

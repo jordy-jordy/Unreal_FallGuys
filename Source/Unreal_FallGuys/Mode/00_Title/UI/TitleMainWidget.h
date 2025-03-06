@@ -4,17 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "Mode/00_Title/UI/TitleUserWidget.h"
-#include "TitleMenuWidget.generated.h"
+#include "TitleMainWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class UNREAL_FALLGUYS_API UTitleMenuWidget : public UTitleUserWidget
+class UNREAL_FALLGUYS_API UTitleMainWidget : public UTitleUserWidget
 {
 	GENERATED_BODY()
-	
+
 public:
+	UTitleMainWidget(const FObjectInitializer& ObjectInitializer);
 
 protected:
 

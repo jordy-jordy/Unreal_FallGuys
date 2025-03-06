@@ -3,7 +3,8 @@
 
 #include "Mode/00_Title/UI/TitleCustomizingMainWidget.h"
 
-UTitleCustomizingMainWidget::UTitleCustomizingMainWidget()
+UTitleCustomizingMainWidget::UTitleCustomizingMainWidget(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
 {
 }
 
