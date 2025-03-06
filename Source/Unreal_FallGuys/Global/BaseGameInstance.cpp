@@ -75,7 +75,7 @@ void UBaseGameInstance::CServerConnect(UWorld* _World, FString _IP, FString _Por
     UGameplayStatics::OpenLevel(_World, FName(*ConnectLevelName));
 }
 
-void UBaseGameInstance::SaveSelectedCostume_Implementation(const FString& _CostumeName)
+void UBaseGameInstance::SaveSelectedCostume(const FString& _CostumeName)
 {
 	SelectedCostumeName = _CostumeName;
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("Selected Costume Saved: %s"), *SelectedCostumeName);
@@ -133,9 +133,9 @@ void UBaseGameInstance::ChangeCostume(APawn* _Pawn, const FString& _CostumeName)
 	}
 }
 
-USkeletalMesh* UBaseGameInstance::GetCostumeMesh(APawn* _Pawn)
+USkeletalMesh* UBaseGameInstance::GetCostumeMesh(APawn* _Pawn, FString _MeshName)
 {
-	const FCostumeDataRow* CostumeData = UGlobalDataTable::GetCostumeData(_Pawn->GetWorld(), GetSelectedCostume());
+	const FCostumeDataRow* CostumeData = UGlobalDataTable::GetCostumeData(_Pawn->GetWorld(), _MeshName);
 	if (CostumeData && CostumeData->CostumeMesh)
 	{
 		return CostumeData->CostumeMesh;

@@ -78,6 +78,14 @@ public:
 	FVector GetControllerForward();
 	FVector GetControllerRight();
 
+	UFUNCTION(BlueprintCallable, Reliable, Client)
+	void S2C_CostumeCheck();
+	void S2C_CostumeCheck_Implementation();
+
+	UFUNCTION(BlueprintCallable, Reliable, Server)
+	void C2S_Costume(const FString& _Name);
+	void C2S_Costume_Implementation(const FString& _Name);
+
 
 protected:
 	// Called when the game starts or when spawned
