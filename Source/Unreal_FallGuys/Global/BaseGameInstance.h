@@ -43,7 +43,6 @@ public:
 
 	UFUNCTION()
 	void OnRep_SelectedCostumeName();
-
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 
 protected:
@@ -61,8 +60,6 @@ private:
 	class UDataTable* CostumeDataTable = nullptr;
 	//class UDataTable* ActorDataTable = nullptr;
 
-	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_SelectedCostumeName, Category = "Costume")
+	UPROPERTY(VisibleAnywhere, Replicated, Category = "Costume")
 	FString SelectedCostumeName = TEXT("TEST00");
-
-	
 };
