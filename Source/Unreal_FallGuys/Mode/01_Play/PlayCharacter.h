@@ -74,6 +74,18 @@ public:
 		DiveTime = 0.0f;
 	}
 
+	UFUNCTION(BlueprintCallable)
+	void AddGetUpTime(float _Deltatime)
+	{
+		GetUpTime += _Deltatime;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	void ResetGetUpTime(float _Deltatime)
+	{
+		GetUpTime = 0.0f;
+	}
+
 
 	FVector GetControllerForward();
 	FVector GetControllerRight();
@@ -113,5 +125,8 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	float DiveTime = 0.0f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	float GetUpTime = 0.0f;
 
 };
