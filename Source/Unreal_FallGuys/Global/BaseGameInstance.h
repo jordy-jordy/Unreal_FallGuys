@@ -43,7 +43,6 @@ public:
 
 	UFUNCTION()
 	void OnRep_SelectedCostumeName();
-
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 
 protected:
@@ -63,6 +62,4 @@ private:
 
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_SelectedCostumeName, Category = "Costume")
 	FString SelectedCostumeName = TEXT("TEST00");
-
-	
 };
