@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 
+#include <Global/GlobalEnum.h>
+
 #include "CostumeDataTable.generated.h"
 
 
@@ -18,13 +20,16 @@ struct FCostumeDataRow : public FTableRowBase
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CostumeData")
-	USkeletalMesh* CostumeMesh = nullptr;
+	ECostumeColor Color = ECostumeColor::NONE;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CostumeData")
 	FVector CostumePos = FVector::ZeroVector;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CostumeData")
 	FVector CostumePivot = FVector::ZeroVector;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CostumeData")
+	USkeletalMesh* CostumeMesh = nullptr;
 
 };
 
