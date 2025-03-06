@@ -113,7 +113,7 @@ void UBaseGameInstance::ApplySavedCostume_Implementation(APawn* _Pawn)
 	ChangeCostume(_Pawn, SavedCostume);
 }
 
-void UBaseGameInstance::ChangeCostume_Implementation(APawn* _Pawn, const FString& _CostumeName)
+void UBaseGameInstance::ChangeCostume(APawn* _Pawn, const FString& _CostumeName)
 {
 	UWorld* World = _Pawn->GetWorld();
 	const FCostumeDataRow* CostumeData = UGlobalDataTable::GetCostumeData(World, _CostumeName);
@@ -131,4 +131,19 @@ void UBaseGameInstance::ChangeCostume_Implementation(APawn* _Pawn, const FString
 	{
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("Invalid Costume Data or Mesh"));
 	}
+}
+
+USkeletalMesh* UBaseGameInstance::GetCostumeMesh(APawn* _Pawn)
+{
+	const FCostumeDataRow* CostumeData = UGlobalDataTable::GetCostumeData(_Pawn->GetWorld(), GetSelectedCostume());
+	if (CostumeData && CostumeData->CostumeMesh)
+	{
+		return CostumeData->CostumeMesh;
+	}
+	else
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("Invalid Costume Data or Mesh"));
+	}
+
+	return nullptr;
 }

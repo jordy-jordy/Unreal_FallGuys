@@ -12,6 +12,7 @@
 #include <Unreal_FallGuys.h>
 #include <Global/FallGlobal.h>
 #include <Global/BaseGameInstance.h>
+#include "Net/UnrealNetwork.h"
 
 
 // Sets default values
@@ -44,11 +45,12 @@ void APlayCharacter::BeginPlay()
 	UBaseGameInstance* GameIns = Cast<UBaseGameInstance>(GetGameInstance());
 	if (UGameplayStatics::GetPlayerController(GetWorld(), 0) == GetController())
 	{
-		GameIns->ApplySavedCostume(this);
+		GetMesh()->SetSkeletalMesh(GameIns->GetCostumeMesh(this));
+		// CName = GameIns->GetSelectedCostume();
 	}
 	else
 	{
-
+		// GameIns->ChangeCostume(this, CName);
 	}
 }
 
@@ -56,6 +58,8 @@ void APlayCharacter::BeginPlay()
 void APlayCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+
 
 }
 
@@ -124,3 +128,10 @@ void APlayCharacter::TestMove(const FVector2D& _Value)
 	AddMovementInput(Right, _Value.Y);
 }
 
+
+void APlayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(APlayCharacter, CName);
+}

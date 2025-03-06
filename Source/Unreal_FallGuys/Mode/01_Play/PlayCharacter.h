@@ -88,6 +88,7 @@ protected:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
@@ -114,4 +115,6 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	float DiveTime = 0.0f;
 
+	UPROPERTY(VisibleAnywhere, Replicated, BlueprintReadOnly, Category = "GM", meta = (AllowPrivateAccess = "true"))
+	FString CName = TEXT("");
 };
