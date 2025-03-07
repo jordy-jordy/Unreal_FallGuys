@@ -14,6 +14,7 @@ enum class ECostumeColor : uint8
 	PINK UMETA(DisplayName = "Pink"),
 	YELLOW UMETA(DisplayName = "Yellow"),
 	BLUE UMETA(DisplayName = "Blue"),
+	MAX UMETA(DisplayName = "Max")
 };
 
 UENUM(BlueprintType)

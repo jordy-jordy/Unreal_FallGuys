@@ -17,9 +17,6 @@ class UNREAL_FALLGUYS_API UTitleWidget : public UUserWidget
 
 public:
 	UFUNCTION(BlueprintCallable)
-	void SaveCurCostume(const FString& _CostumeName);
-
-	UFUNCTION(BlueprintCallable)
 	void ChangeCurCostume(const FString& _CostumeName);
 
 private:

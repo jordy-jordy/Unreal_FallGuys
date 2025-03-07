@@ -61,3 +61,9 @@ void UFallGlobal::ServerConnect(UObject* _Object, FString _IP, FString _Port)
 	GameIns->CServerConnect(CurWorld, _IP, _Port);
 }
 
+void UFallGlobal::ChangeCurCostume(APawn* _Pawn, const FString& _CostumeName)
+{
+	//UBaseGameInstance* GameIns = Cast<UBaseGameInstance>(GetGameInstance());
+	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
+	GameIns->ChangeCostume(_Pawn, _CostumeName);
+}

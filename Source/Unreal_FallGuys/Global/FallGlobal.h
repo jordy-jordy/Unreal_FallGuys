@@ -27,6 +27,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static void ServerConnect(UObject* _Object, FString _IP, FString _Port);
 
+	UFUNCTION(BlueprintCallable)
+	static void ChangeCurCostume(APawn* _Pawn, const FString& _CostumeName);
 
 
 };

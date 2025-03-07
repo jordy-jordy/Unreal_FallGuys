@@ -110,6 +110,8 @@ void UBaseGameInstance::ChangeCostume(APawn* _Pawn, const FString& _CostumeName)
 	{
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("ChangeCostume :: Invalid Costume Data or Mesh"));
 	}
+
+	SaveSelectedCostume(_CostumeName);
 }
 
 // 저장된 코스튬의 이름 반환
