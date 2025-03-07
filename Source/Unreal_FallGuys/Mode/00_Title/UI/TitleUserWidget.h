@@ -48,13 +48,18 @@ public:
 		CurUserWidget = _Widget;
 	}
 
-	TMultiMap<EUIType, UTitleUserWidget*> GetAllWidgets()
+	TMap<EUIType, UTitleUserWidget*> GetAllWidgets()
 	{
 		return Widgets;
 	}
 
+	EUIType GetCurUIType()
+	{
+		return CurUIType;
+	}
+
 	UFUNCTION(BlueprintCallable)
-	void SwitchMenu(EUIType _UIType);
+	void SwitchWidget(EUIType _UIType);
 
 protected:
 
@@ -64,7 +69,9 @@ private:
 	class UTitleUserWidget* CurUserWidget;
 
 	UCanvasPanel* CanvasPanel;
-	//TArray<UTitleUserWidget*> Widgets;
+
 	EUIType UIType;
-	TMultiMap<EUIType, UTitleUserWidget*> Widgets;
+	EUIType CurUIType;
+
+	TMap<EUIType, UTitleUserWidget*> Widgets;
 };

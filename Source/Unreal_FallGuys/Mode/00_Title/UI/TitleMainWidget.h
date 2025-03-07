@@ -17,6 +17,9 @@ class UNREAL_FALLGUYS_API UTitleMainWidget : public UTitleUserWidget
 public:
 	UTitleMainWidget(const FObjectInitializer& ObjectInitializer);
 
+	UFUNCTION(BlueprintCallable)
+	void SwitchWidgetInMain(const FVector2D _Value);
+
 protected:
 
 private:

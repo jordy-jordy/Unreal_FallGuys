@@ -51,13 +51,17 @@ void UTitleUserWidget::CreateChildWidget(TSubclassOf<UUserWidget> _Widget, bool 
 	{
 		UIType = EUIType::TitleHome;
 	}
-	else if (WidgetName.Contains(FString("Custom")) || WidgetName.Contains(FString("Btn")))
+	else if (WidgetName.Contains(FString("Custom")))
 	{
 		UIType = EUIType::TitleCustom;
 	}
 	else if (WidgetName.Contains(FString("TitleEntrance")))
 	{
 		UIType = EUIType::TitleEntrance;
+	}
+	else if (WidgetName.Contains(FString("Btn")))
+	{
+		UIType = EUIType::CustomInven;
 	}
 
 	Widgets.Emplace(UIType, Widget);
@@ -86,9 +90,9 @@ void UTitleUserWidget::AllWidgetHidden()
 	}
 }
 
-void UTitleUserWidget::SwitchMenu(EUIType _UIType)
+void UTitleUserWidget::SwitchWidget(EUIType _UIType)
 {
-	TMultiMap<EUIType, UTitleUserWidget*> AllWidget = GetAllWidgets();
+	TMap<EUIType, UTitleUserWidget*> AllWidget = GetAllWidgets();
 
 	UTitleUserWidget* Value = *AllWidget.Find(_UIType);
 	if (nullptr == Value)
@@ -105,4 +109,6 @@ void UTitleUserWidget::SwitchMenu(EUIType _UIType)
 	CurWidget->SetVisibility(ESlateVisibility::Hidden);
 	Value->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	SetCurUserWidget(Value);
+
+	CurUIType = _UIType;
 }
