@@ -39,15 +39,13 @@ APlayCharacter::APlayCharacter()
 
 void APlayCharacter::S2M_Costume_Implementation(const FString& _Name)
 {
-	UBaseGameInstance* GameIns = Cast<UBaseGameInstance>(GetGameInstance());
-	GetMesh()->SetSkeletalMesh(GameIns->GetCostumeMesh(this, _Name));
+	GetMesh()->SetSkeletalMesh(UFallGlobal::GetCostumeMesh(this, _Name));
 	CName = _Name;
 }
 
 void APlayCharacter::C2S_Costume_Implementation(const FString& _Name)
 {
-	UBaseGameInstance* GameIns = Cast<UBaseGameInstance>(GetGameInstance());
-	GetMesh()->SetSkeletalMesh(GameIns->GetCostumeMesh(this, _Name));
+	GetMesh()->SetSkeletalMesh(UFallGlobal::GetCostumeMesh(this, _Name));
 	CName = _Name;
 	S2M_Costume(CName);
 }
@@ -62,12 +60,12 @@ void APlayCharacter::BeginPlay()
 	{
 		// 나는 그냥 내 코스츔 하면 된다.
 		CName = GameIns->GetSelectedCostume();
-		GetMesh()->SetSkeletalMesh(GameIns->GetCostumeMesh(this, CName));
+		GetMesh()->SetSkeletalMesh(UFallGlobal::GetCostumeMesh(this, CName));
 		C2S_Costume(CName);
 	}
 	else
 	{
-		GetMesh()->SetSkeletalMesh(GameIns->GetCostumeMesh(this, CName));
+		GetMesh()->SetSkeletalMesh(UFallGlobal::GetCostumeMesh(this, CName));
 	}
 }
 

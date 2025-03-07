@@ -61,9 +61,39 @@ void UFallGlobal::ServerConnect(UObject* _Object, FString _IP, FString _Port)
 	GameIns->CServerConnect(CurWorld, _IP, _Port);
 }
 
+// Pawn의 코스튬 변경
 void UFallGlobal::ChangeCurCostume(APawn* _Pawn, const FString& _CostumeName)
 {
-	//UBaseGameInstance* GameIns = Cast<UBaseGameInstance>(GetGameInstance());
 	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
 	GameIns->ChangeCostume(_Pawn, _CostumeName);
+}
+
+// 저장된 코스튬의 이름 반환
+FString UFallGlobal::GetSelectedCostume(APawn* _Pawn)
+{
+	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
+	return GameIns->SelectedCostumeName;
+}
+
+// 저장된 코스튬의 스켈레탈 메시 반환
+USkeletalMesh* UFallGlobal::GetCostumeMesh(APawn* _Pawn, const FString& _MeshName/* = TEXT("NULL")*/)
+{
+	const FCostumeDataRow* CostumeData = UGlobalDataTable::GetCostumeData(_Pawn->GetWorld(), _MeshName);
+	if (CostumeData && CostumeData->CostumeMesh)
+	{
+		return CostumeData->CostumeMesh;
+	}
+	else
+	{
+		if (_MeshName.IsEmpty())
+		{
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("GetCostumeMesh :: Empty Costume Data or Mesh"));
+		}
+		else
+		{
+			UE_LOG(FALL_DEV_LOG, Error, TEXT("GetCostumeMesh :: Invalid Costume Data or Mesh"));
+		}
+	}
+
+	return nullptr;
 }

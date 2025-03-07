@@ -27,8 +27,17 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static void ServerConnect(UObject* _Object, FString _IP, FString _Port);
 
+	// Pawn의 코스튬 변경
 	UFUNCTION(BlueprintCallable)
 	static void ChangeCurCostume(APawn* _Pawn, const FString& _CostumeName);
+	
+	// 저장된 코스튬의 이름 반환
+	UFUNCTION(BlueprintCallable)
+	static FString GetSelectedCostume(APawn* _Pawn);
+
+	// 저장된 코스튬의 스켈레탈 메시 반환
+	UFUNCTION(BlueprintCallable)
+	static USkeletalMesh* GetCostumeMesh(APawn* _Pawn, const FString& _MeshName = TEXT("NULL"));
 
 
 };
