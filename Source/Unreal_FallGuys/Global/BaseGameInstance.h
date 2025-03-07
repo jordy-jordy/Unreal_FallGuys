@@ -11,7 +11,7 @@
 
 
 /**
- * 
+ *
  */
 UCLASS()
 class UNREAL_FALLGUYS_API UBaseGameInstance : public UGameInstance
@@ -19,28 +19,41 @@ class UNREAL_FALLGUYS_API UBaseGameInstance : public UGameInstance
 	GENERATED_BODY()
 	friend class UFallGlobal;
 	friend class UGlobalDataTable;
-	
+
 public:
 	UBaseGameInstance();
 
 	// 코스튬 이름 저장
 	UFUNCTION(BlueprintCallable, Category = "Costume")
-	void SaveSelectedCostume(const FString& _CostumeName);
+	void InsSaveCostumeName(const FString& _CostumeName);
 
 	// Pawn의 코스튬 변경
 	UFUNCTION(BlueprintCallable, Category = "Costume")
-	void ChangeCostume(APawn* _Pawn, const FString& _CostumeName);
+	void InsChangeCostume(APawn* _Pawn, const FString& _CostumeName);
 
 	// 저장된 코스튬의 이름 반환
 	UFUNCTION(BlueprintCallable, Category = "Costume")
-	FString GetSelectedCostume() const;
+	FString InsGetCostumeName() const
+	{
+		return CostumeName;
+	}
 
 	// 저장된 코스튬의 스켈레탈 메시 반환
 	UFUNCTION(BlueprintCallable, Category = "Costume")
-	USkeletalMesh* GetCostumeMesh(APawn* _Pawn, const FString& _MeshName = TEXT("NULL"));
+	USkeletalMesh* InsGetCostumeMesh(APawn* _Pawn, const FString& _MeshName = TEXT("NULL"));
 
-	UFUNCTION()
-	void OnRep_SelectedCostumeName();
+	// 저장된 닉네임 반환
+	UFUNCTION(BlueprintCallable, Category = "Name")
+	FString InsGetNickname() const
+	{
+		return Nickname;
+	}
+
+	// 닉네임 변경
+	UFUNCTION(BlueprintCallable, Category = "Name")
+	void InsChangeNickname(const FString& _NewNickname);
+
+	// 동기화 변수
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 
 protected:
@@ -59,5 +72,8 @@ private:
 	//class UDataTable* ActorDataTable = nullptr;
 
 	UPROPERTY(VisibleAnywhere, Replicated, Category = "Costume")
-	FString SelectedCostumeName = TEXT("NULL");
+	FString CostumeName = TEXT("NULL");
+
+	UPROPERTY(VisibleAnywhere, Replicated, Category = "Name")
+	FString Nickname = TEXT("TEST_JORDY");
 };

@@ -52,13 +52,13 @@ void UBaseGameInstance::CServerStart(UWorld* _World, FString _Port)
 		return;
 	}
 
-    FString OpenLevel;
-    FString LevelPath = TEXT("");
+	FString OpenLevel;
+	FString LevelPath = TEXT("");
 
-    UFallGlobal::AssetPackagePath(UWorld::StaticClass(), UFallConst::PlayLevelName, LevelPath);
-    OpenLevel = FString::Printf(TEXT(":%s%s"), *_Port, *LevelPath);
+	UFallGlobal::AssetPackagePath(UWorld::StaticClass(), UFallConst::PlayLevelName, LevelPath);
+	OpenLevel = FString::Printf(TEXT(":%s%s"), *_Port, *LevelPath);
 
-    UGameplayStatics::OpenLevel(_World, *OpenLevel, true, TEXT("listen"));
+	UGameplayStatics::OpenLevel(_World, *OpenLevel, true, TEXT("listen"));
 }
 
 // 서버 접속
@@ -70,31 +70,28 @@ void UBaseGameInstance::CServerConnect(UWorld* _World, FString _IP, FString _Por
 		return;
 	}
 
-    FString ConnectLevelName = FString::Printf(TEXT("%s:%s"), *_IP, *_Port);
+	FString ConnectLevelName = FString::Printf(TEXT("%s:%s"), *_IP, *_Port);
 
-    UGameplayStatics::OpenLevel(_World, FName(*ConnectLevelName));
+	UGameplayStatics::OpenLevel(_World, FName(*ConnectLevelName));
 }
 
+// 동기화 변수
 void UBaseGameInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(UBaseGameInstance, SelectedCostumeName); 
-}
-
-void UBaseGameInstance::OnRep_SelectedCostumeName()
-{
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SelectedCostumeName Replicated: %s"), *SelectedCostumeName);
+	DOREPLIFETIME(UBaseGameInstance, CostumeName);
+	DOREPLIFETIME(UBaseGameInstance, Nickname);
 }
 
 // 코스튬 이름 저장
-void UBaseGameInstance::SaveSelectedCostume(const FString& _CostumeName)
+void UBaseGameInstance::InsSaveCostumeName(const FString& _CostumeName)
 {
-	SelectedCostumeName = _CostumeName;
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("Selected Costume Saved: %s"), *SelectedCostumeName);
+	CostumeName = _CostumeName;
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("Selected Costume Saved: %s"), *CostumeName);
 }
 
 // Pawn의 코스튬 변경
-void UBaseGameInstance::ChangeCostume(APawn* _Pawn, const FString& _CostumeName)
+void UBaseGameInstance::InsChangeCostume(APawn* _Pawn, const FString& _CostumeName)
 {
 	UWorld* World = _Pawn->GetWorld();
 	const FCostumeDataRow* CostumeData = UGlobalDataTable::GetCostumeData(World, _CostumeName);
@@ -111,17 +108,11 @@ void UBaseGameInstance::ChangeCostume(APawn* _Pawn, const FString& _CostumeName)
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("ChangeCostume :: Invalid Costume Data or Mesh"));
 	}
 
-	SaveSelectedCostume(_CostumeName);
-}
-
-// 저장된 코스튬의 이름 반환
-FString UBaseGameInstance::GetSelectedCostume() const
-{
-	return SelectedCostumeName;
+	InsSaveCostumeName(_CostumeName);
 }
 
 // 저장된 코스튬의 스켈레탈 메시 반환
-USkeletalMesh* UBaseGameInstance::GetCostumeMesh(APawn* _Pawn, const FString& _MeshName/* = TEXT("NULL")*/)
+USkeletalMesh* UBaseGameInstance::InsGetCostumeMesh(APawn* _Pawn, const FString& _MeshName/* = TEXT("NULL")*/)
 {
 	const FCostumeDataRow* CostumeData = UGlobalDataTable::GetCostumeData(_Pawn->GetWorld(), _MeshName);
 	if (CostumeData && CostumeData->CostumeMesh)
@@ -141,4 +132,10 @@ USkeletalMesh* UBaseGameInstance::GetCostumeMesh(APawn* _Pawn, const FString& _M
 	}
 
 	return nullptr;
+}
+
+// 닉네임 변경
+void UBaseGameInstance::InsChangeNickname(const FString& _NewNickname)
+{
+	Nickname = _NewNickname;
 }
