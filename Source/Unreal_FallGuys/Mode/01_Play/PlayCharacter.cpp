@@ -37,12 +37,11 @@ APlayCharacter::APlayCharacter()
 	CameraComponent->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 }
 
-// 실행되는 곳이 클라이언트이다.
-void APlayCharacter::C2S_CostumeCheck_Implementation()
+void APlayCharacter::S2M_Costume_Implementation(const FString& _Name)
 {
-	CName;
-	// 나는 클라
-	// C2S_Costume(GameIns->GetSelectedCostume());
+	UBaseGameInstance* GameIns = Cast<UBaseGameInstance>(GetGameInstance());
+	GetMesh()->SetSkeletalMesh(GameIns->GetCostumeMesh(this, _Name));
+	CName = _Name;
 }
 
 void APlayCharacter::C2S_Costume_Implementation(const FString& _Name)
@@ -50,6 +49,7 @@ void APlayCharacter::C2S_Costume_Implementation(const FString& _Name)
 	UBaseGameInstance* GameIns = Cast<UBaseGameInstance>(GetGameInstance());
 	GetMesh()->SetSkeletalMesh(GameIns->GetCostumeMesh(this, _Name));
 	CName = _Name;
+	S2M_Costume(CName);
 }
 
 // Called when the game starts or when spawned
@@ -75,12 +75,6 @@ void APlayCharacter::BeginPlay()
 void APlayCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (nullptr == GetMesh()->GetSkeletalMeshAsset())
-	{
-		C2S_CostumeCheck();
-	}
-
 }
 
 FVector APlayCharacter::GetControllerForward()
