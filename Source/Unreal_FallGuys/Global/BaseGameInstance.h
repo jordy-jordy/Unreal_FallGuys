@@ -23,10 +23,7 @@ class UNREAL_FALLGUYS_API UBaseGameInstance : public UGameInstance
 public:
 	UBaseGameInstance();
 
-	// 코스튬 저장
-	UFUNCTION(BlueprintCallable, Reliable, Server, Category = "Costume")
 	void SaveSelectedCostume(const FString& _CostumeName);
-	void SaveSelectedCostume_Implementation(const FString& _CostumeName);
 
 	void ChangeCostume(APawn* _Pawn, const FString& _CostumeName);
 
@@ -34,7 +31,7 @@ public:
 	void ApplySavedCostume(APawn* _Pawn);
 	void ApplySavedCostume_Implementation(APawn* _Pawn);
 
-	USkeletalMesh* GetCostumeMesh(APawn* _Pawn);
+	USkeletalMesh* GetCostumeMesh(APawn* _Pawn, FString _MeshName);
 
 	// 저장된 코스튬 반환
 	UFUNCTION(BlueprintCallable, Category = "Costume")

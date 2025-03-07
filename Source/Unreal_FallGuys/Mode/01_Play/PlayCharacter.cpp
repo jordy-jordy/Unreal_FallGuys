@@ -37,6 +37,21 @@ APlayCharacter::APlayCharacter()
 	CameraComponent->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 }
 
+void APlayCharacter::S2M_Costume_Implementation(const FString& _Name)
+{
+	UBaseGameInstance* GameIns = Cast<UBaseGameInstance>(GetGameInstance());
+	GetMesh()->SetSkeletalMesh(GameIns->GetCostumeMesh(this, _Name));
+	CName = _Name;
+}
+
+void APlayCharacter::C2S_Costume_Implementation(const FString& _Name)
+{
+	UBaseGameInstance* GameIns = Cast<UBaseGameInstance>(GetGameInstance());
+	GetMesh()->SetSkeletalMesh(GameIns->GetCostumeMesh(this, _Name));
+	CName = _Name;
+	S2M_Costume(CName);
+}
+
 // Called when the game starts or when spawned
 void APlayCharacter::BeginPlay()
 {
@@ -46,21 +61,13 @@ void APlayCharacter::BeginPlay()
 	if (UGameplayStatics::GetPlayerController(GetWorld(), 0) == GetController())
 	{
 		// 나는 그냥 내 코스츔 하면 된다.
-		GetMesh()->SetSkeletalMesh(GameIns->GetCostumeMesh(this));
+		CName = GameIns->GetSelectedCostume();
+		GetMesh()->SetSkeletalMesh(GameIns->GetCostumeMesh(this, CName));
+		C2S_Costume(CName);
 	}
 	else
 	{
-		if (nullptr != GetWorld()->GetAuthGameMode())
-		{
-			// 서버에 만들어진 클라 원본 캐릭터
-			int a = 0;
-		}
-		else if (nullptr == GetWorld()->GetAuthGameMode())
-		{
-			// 클라에 만들어진 서버 원 본 캐릭터
-			int a = 0;
-		}
-		// 간단히 말하자면 원본은 따로 있는 녀석.
+		GetMesh()->SetSkeletalMesh(GameIns->GetCostumeMesh(this, CName));
 	}
 }
 
@@ -68,9 +75,6 @@ void APlayCharacter::BeginPlay()
 void APlayCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-
-
 }
 
 FVector APlayCharacter::GetControllerForward()
