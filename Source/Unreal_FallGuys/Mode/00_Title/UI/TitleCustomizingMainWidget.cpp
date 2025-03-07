@@ -3,11 +3,4 @@
 
 #include "Mode/00_Title/UI/TitleCustomizingMainWidget.h"
 
-UTitleCustomizingMainWidget::UTitleCustomizingMainWidget(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
-{
-}
 
-UTitleCustomizingMainWidget::~UTitleCustomizingMainWidget()
-{
-}
