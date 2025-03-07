@@ -37,6 +37,9 @@ public:
 	void AllWidgetHidden();
 
 	UFUNCTION(BlueprintCallable)
+	void AllWidgetSelfHitTestInvisible();
+
+	UFUNCTION(BlueprintCallable)
 	UTitleUserWidget* GetCurUserWidget()
 	{
 		return CurUserWidget;
@@ -48,7 +51,7 @@ public:
 		CurUserWidget = _Widget;
 	}
 
-	TMap<EUIType, UTitleUserWidget*> GetAllWidgets()
+	TMultiMap<EUIType, UTitleUserWidget*> GetAllWidgets()
 	{
 		return Widgets;
 	}
@@ -73,5 +76,5 @@ private:
 	EUIType UIType;
 	EUIType CurUIType;
 
-	TMap<EUIType, UTitleUserWidget*> Widgets;
+	TMultiMap<EUIType, UTitleUserWidget*> Widgets;
 };
