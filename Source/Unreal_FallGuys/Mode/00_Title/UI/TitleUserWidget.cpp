@@ -83,16 +83,24 @@ void UTitleUserWidget::CreateChildWidget(TSubclassOf<UUserWidget> _Widget, bool 
 }
 
 void UTitleUserWidget::AllWidgetHidden()
-{
+{	
 	for (TPair<EUIType, UTitleUserWidget*> AllWidgets : Widgets)
 	{
 		AllWidgets.Value->SetVisibility(ESlateVisibility::Hidden);
 	}
 }
 
+void UTitleUserWidget::AllWidgetSelfHitTestInvisible()
+{
+	for (TPair<EUIType, UTitleUserWidget*> AllWidgets : Widgets)
+	{
+		AllWidgets.Value->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	}
+}
+
 void UTitleUserWidget::SwitchWidget(EUIType _UIType)
 {
-	TMap<EUIType, UTitleUserWidget*> AllWidget = GetAllWidgets();
+	TMultiMap<EUIType, UTitleUserWidget*> AllWidget = GetAllWidgets();
 
 	UTitleUserWidget* Value = *AllWidget.Find(_UIType);
 	if (nullptr == Value)
