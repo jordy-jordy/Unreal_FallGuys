@@ -3,10 +3,3 @@
 
 #include "Mode/00_Title/UI/TitleCustomWidget.h"
 
-UTitleCustomWidget::UTitleCustomWidget()
-{
-}
-
-UTitleCustomWidget::~UTitleCustomWidget()
-{
-}

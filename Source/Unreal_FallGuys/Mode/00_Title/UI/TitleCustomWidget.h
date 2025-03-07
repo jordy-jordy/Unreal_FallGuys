@@ -14,7 +14,5 @@ class UNREAL_FALLGUYS_API UTitleCustomWidget : public UTitleUserWidget
 {
 	GENERATED_BODY()
 public:
-	UTitleCustomWidget();
-	~UTitleCustomWidget();
 	
 };
