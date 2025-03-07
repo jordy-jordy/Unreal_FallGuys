@@ -59,7 +59,7 @@ void APlayCharacter::BeginPlay()
 	if (UGameplayStatics::GetPlayerController(GetWorld(), 0) == GetController())
 	{
 		// 나는 그냥 내 코스츔 하면 된다.
-		CName = UFallGlobal::GetCostumeName(this);
+		CName = GameIns->GetSelectedCostume();
 		GetMesh()->SetSkeletalMesh(UFallGlobal::GetCostumeMesh(this, CName));
 		C2S_Costume(CName);
 	}

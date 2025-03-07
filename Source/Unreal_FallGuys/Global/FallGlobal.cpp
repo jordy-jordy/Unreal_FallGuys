@@ -47,7 +47,6 @@ TArray<FAssetData> UFallGlobal::AssetsPath(UClass* _Class)
 	return MapList;
 }
 
-// 서버 시작
 void UFallGlobal::ServerStart(UObject* _Object, FString _Port)
 {
 	UWorld* CurWorld = _Object->GetWorld();
@@ -55,7 +54,6 @@ void UFallGlobal::ServerStart(UObject* _Object, FString _Port)
 	GameIns->CServerStart(CurWorld, _Port);
 }
 
-// 서버 접속
 void UFallGlobal::ServerConnect(UObject* _Object, FString _IP, FString _Port)
 {
 	UWorld* CurWorld = _Object->GetWorld();
@@ -64,17 +62,17 @@ void UFallGlobal::ServerConnect(UObject* _Object, FString _IP, FString _Port)
 }
 
 // Pawn의 코스튬 변경
-void UFallGlobal::ChangeCostume(APawn* _Pawn, const FString& _CostumeName)
+void UFallGlobal::ChangeCurCostume(APawn* _Pawn, const FString& _CostumeName)
 {
 	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
-	GameIns->InsChangeCostume(_Pawn, _CostumeName);
+	GameIns->ChangeCostume(_Pawn, _CostumeName);
 }
 
 // 저장된 코스튬의 이름 반환
-FString UFallGlobal::GetCostumeName(APawn* _Pawn)
+FString UFallGlobal::GetSelectedCostume(APawn* _Pawn)
 {
 	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
-	return GameIns->InsGetCostumeName();
+	return GameIns->SelectedCostumeName;
 }
 
 // 저장된 코스튬의 스켈레탈 메시 반환
@@ -98,16 +96,4 @@ USkeletalMesh* UFallGlobal::GetCostumeMesh(APawn* _Pawn, const FString& _MeshNam
 	}
 
 	return nullptr;
-}
-
-FString UFallGlobal::GetNickname(APawn* _Pawn)
-{
-	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
-	return GameIns->InsGetNickname();
-}
-
-void UFallGlobal::ChangeNickname(APawn* _Pawn, const FString& _NewNickname)
-{
-	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
-	return GameIns->InsChangeNickname(_NewNickname);
 }

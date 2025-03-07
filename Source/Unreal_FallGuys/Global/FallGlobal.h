@@ -29,22 +29,15 @@ public:
 
 	// Pawn의 코스튬 변경
 	UFUNCTION(BlueprintCallable)
-	static void ChangeCostume(APawn* _Pawn, const FString& _CostumeName);
+	static void ChangeCurCostume(APawn* _Pawn, const FString& _CostumeName);
 	
 	// 저장된 코스튬의 이름 반환
 	UFUNCTION(BlueprintCallable)
-	static FString GetCostumeName(APawn* _Pawn);
+	static FString GetSelectedCostume(APawn* _Pawn);
 
 	// 저장된 코스튬의 스켈레탈 메시 반환
 	UFUNCTION(BlueprintCallable)
 	static USkeletalMesh* GetCostumeMesh(APawn* _Pawn, const FString& _MeshName = TEXT("NULL"));
 
-	// 닉네임 반환
-	UFUNCTION(BlueprintCallable)
-	static FString GetNickname(APawn* _Pawn);
-
-	// 닉네임 저장
-	UFUNCTION(BlueprintCallable)
-	static void ChangeNickname(APawn* _Pawn, const FString& _NewNickname);
 
 };

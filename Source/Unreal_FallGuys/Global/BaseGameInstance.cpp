@@ -75,23 +75,26 @@ void UBaseGameInstance::CServerConnect(UWorld* _World, FString _IP, FString _Por
     UGameplayStatics::OpenLevel(_World, FName(*ConnectLevelName));
 }
 
-// 동기화 변수
 void UBaseGameInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(UBaseGameInstance, CostumeName);
-	DOREPLIFETIME(UBaseGameInstance, Nickname);
+	DOREPLIFETIME(UBaseGameInstance, SelectedCostumeName); 
+}
+
+void UBaseGameInstance::OnRep_SelectedCostumeName()
+{
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SelectedCostumeName Replicated: %s"), *SelectedCostumeName);
 }
 
 // 코스튬 이름 저장
-void UBaseGameInstance::InsSaveCostumeName(const FString& _CostumeName)
+void UBaseGameInstance::SaveSelectedCostume(const FString& _CostumeName)
 {
-	CostumeName = _CostumeName;
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("Selected Costume Saved: %s"), *CostumeName);
+	SelectedCostumeName = _CostumeName;
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("Selected Costume Saved: %s"), *SelectedCostumeName);
 }
 
 // Pawn의 코스튬 변경
-void UBaseGameInstance::InsChangeCostume(APawn* _Pawn, const FString& _CostumeName)
+void UBaseGameInstance::ChangeCostume(APawn* _Pawn, const FString& _CostumeName)
 {
 	UWorld* World = _Pawn->GetWorld();
 	const FCostumeDataRow* CostumeData = UGlobalDataTable::GetCostumeData(World, _CostumeName);
@@ -108,11 +111,17 @@ void UBaseGameInstance::InsChangeCostume(APawn* _Pawn, const FString& _CostumeNa
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("ChangeCostume :: Invalid Costume Data or Mesh"));
 	}
 
-	InsSaveCostumeName(_CostumeName);
+	SaveSelectedCostume(_CostumeName);
+}
+
+// 저장된 코스튬의 이름 반환
+FString UBaseGameInstance::GetSelectedCostume() const
+{
+	return SelectedCostumeName;
 }
 
 // 저장된 코스튬의 스켈레탈 메시 반환
-USkeletalMesh* UBaseGameInstance::InsGetCostumeMesh(APawn* _Pawn, const FString& _MeshName/* = TEXT("NULL")*/)
+USkeletalMesh* UBaseGameInstance::GetCostumeMesh(APawn* _Pawn, const FString& _MeshName/* = TEXT("NULL")*/)
 {
 	const FCostumeDataRow* CostumeData = UGlobalDataTable::GetCostumeData(_Pawn->GetWorld(), _MeshName);
 	if (CostumeData && CostumeData->CostumeMesh)
@@ -132,10 +141,4 @@ USkeletalMesh* UBaseGameInstance::InsGetCostumeMesh(APawn* _Pawn, const FString&
 	}
 
 	return nullptr;
-}
-
-// 닉네임 변경
-void UBaseGameInstance::InsChangeNickname(const FString& _NewNickname)
-{
-	Nickname = _NewNickname;
 }

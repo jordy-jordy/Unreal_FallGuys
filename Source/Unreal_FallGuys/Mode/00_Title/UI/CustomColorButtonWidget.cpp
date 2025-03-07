@@ -66,7 +66,7 @@ void UCustomColorButtonWidget::ChangePawnColor(ECostumeColor color)
 		break;
 
 	}
-	GetGameInstance<UBaseGameInstance>()->InsChangeCostume(GetOwningPlayerPawn(), CustomName);
+	GetGameInstance<UBaseGameInstance>()->ChangeCostume(GetOwningPlayerPawn(), CustomName);
 
 }
 

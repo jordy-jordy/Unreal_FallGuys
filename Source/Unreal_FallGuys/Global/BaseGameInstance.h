@@ -25,35 +25,22 @@ public:
 
 	// 코스튬 이름 저장
 	UFUNCTION(BlueprintCallable, Category = "Costume")
-	void InsSaveCostumeName(const FString& _CostumeName);
+	void SaveSelectedCostume(const FString& _CostumeName);
 
 	// Pawn의 코스튬 변경
 	UFUNCTION(BlueprintCallable, Category = "Costume")
-	void InsChangeCostume(APawn* _Pawn, const FString& _CostumeName);
+	void ChangeCostume(APawn* _Pawn, const FString& _CostumeName);
 
 	// 저장된 코스튬의 이름 반환
 	UFUNCTION(BlueprintCallable, Category = "Costume")
-	FString InsGetCostumeName() const
-	{
-		return CostumeName;
-	}
+	FString GetSelectedCostume() const;
 
 	// 저장된 코스튬의 스켈레탈 메시 반환
 	UFUNCTION(BlueprintCallable, Category = "Costume")
-	USkeletalMesh* InsGetCostumeMesh(APawn* _Pawn, const FString& _MeshName = TEXT("NULL"));
+	USkeletalMesh* GetCostumeMesh(APawn* _Pawn, const FString& _MeshName = TEXT("NULL"));
 
-	// 저장된 닉네임 반환
-	UFUNCTION(BlueprintCallable, Category = "Name")
-	FString InsGetNickname() const
-	{
-		return Nickname;
-	}
-
-	// 닉네임 변경
-	UFUNCTION(BlueprintCallable, Category = "Name")
-	void InsChangeNickname(const FString& _NewNickname);
-
-	// 동기화 변수
+	UFUNCTION()
+	void OnRep_SelectedCostumeName();
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 
 protected:
@@ -72,8 +59,5 @@ private:
 	//class UDataTable* ActorDataTable = nullptr;
 
 	UPROPERTY(VisibleAnywhere, Replicated, Category = "Costume")
-	FString CostumeName = TEXT("NULL");
-	
-	UPROPERTY(VisibleAnywhere, Replicated, Category = "Name")
-	FString Nickname = TEXT("TEST_JORDY");
+	FString SelectedCostumeName = TEXT("NULL");
 };
