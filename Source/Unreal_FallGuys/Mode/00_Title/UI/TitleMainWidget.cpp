@@ -12,21 +12,21 @@ UTitleMainWidget::UTitleMainWidget(const FObjectInitializer& ObjectInitializer)
 
 void UTitleMainWidget::SwitchWidgetInMain(const FVector2D _Value)
 {
-	UTitleUserWidget* CurWidget = GetCurUserWidget();
-	FString WidgetName = CurWidget->GetClass()->GetName();
-	EUIType CurType = CurWidget->GetCurUIType();
+	//UTitleUserWidget* CurWidget = GetCurUserWidget();
+	//FString WidgetName = CurWidget->GetClass()->GetName();
+	//EUIType CurType = CurWidget->GetCurUIType();
 
-	if (WidgetName.Contains(FString("TitleMenu")))
-	{
-		CurType = CurWidget->GetCurUserWidget()->GetCurUIType();
-	}
+	//if (WidgetName.Contains(FString("TitleMenu")))
+	//{
+	//	CurType = CurWidget->GetCurUserWidget()->GetCurUIType();
+	//}
 
-	if (_Value.Y > 0 && _Value.X == 0 && CurType == EUIType::TitleHome)
+	if (_Value.Y > 0 && _Value.X == 0 && GetCurUIType() == EUIType::TitleHome)
 	{
 		SwitchWidget(EUIType::TitleEntrance);
 		return;
 	}
-	else if (_Value.Y < 0 && _Value.X == 0 && CurType == EUIType::TitleEntrance)
+	else if (_Value.Y < 0 && _Value.X == 0 && GetCurUIType() == EUIType::TitleEntrance)
 	{
 		SwitchWidget(EUIType::TitleHome);
 		return;
