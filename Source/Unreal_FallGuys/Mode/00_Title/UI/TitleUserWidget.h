@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/CanvasPanel.h"
+#include "Global/GlobalEnum.h"
 #include "TitleUserWidget.generated.h"
 
 /**
@@ -16,6 +17,8 @@ class UNREAL_FALLGUYS_API UTitleUserWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	UTitleUserWidget(const FObjectInitializer& ObjectInitializer);
+
 	void SetUserWidget(class UTitleUserWidget* _UserWidget)
 	{
 		UserWidget = _UserWidget;
@@ -45,10 +48,18 @@ public:
 		CurUserWidget = _Widget;
 	}
 
-	TArray<UTitleUserWidget*> GetAllWidgets()
+	TMap<EUIType, UTitleUserWidget*> GetAllWidgets()
 	{
 		return Widgets;
 	}
+
+	EUIType GetCurUIType()
+	{
+		return CurUIType;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	void SwitchWidget(EUIType _UIType);
 
 protected:
 
@@ -58,5 +69,9 @@ private:
 	class UTitleUserWidget* CurUserWidget;
 
 	UCanvasPanel* CanvasPanel;
-	TArray<UTitleUserWidget*> Widgets;
+
+	EUIType UIType;
+	EUIType CurUIType;
+
+	TMap<EUIType, UTitleUserWidget*> Widgets;
 };

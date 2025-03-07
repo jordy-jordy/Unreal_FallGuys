@@ -5,20 +5,14 @@
 #include "Components/CanvasPanelSlot.h"
 
 
-void UTitleMenuWidget::SwitchMenu()
+void UTitleMenuWidget::SwitchWidgetInMenu(const FVector2D _Value)
 {
-	TArray<UTitleUserWidget*> AllWidgets = GetAllWidgets();
-	for (int i = 0; i < AllWidgets.Num(); i++)
+	if (_Value.X > 0 && _Value.Y == 0 && GetCurUIType() != EUIType::TitleCustom)
 	{
-		if (ESlateVisibility::Hidden == AllWidgets[i]->GetVisibility())
-		{
-			AllWidgets[i]->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			SetCurUserWidget(AllWidgets[i]);
-			UTitleUserWidget* CurWidget = GetCurUserWidget();
-		}
-		else if (ESlateVisibility::SelfHitTestInvisible == AllWidgets[i]->GetVisibility())
-		{
-			AllWidgets[i]->SetVisibility(ESlateVisibility::Hidden);
-		}
+		SwitchWidget(EUIType::TitleCustom);
+	}
+	else if (_Value.X < 0 && _Value.Y == 0 && GetCurUIType() != EUIType::TitleHome)
+	{
+		SwitchWidget(EUIType::TitleHome);
 	}
 }

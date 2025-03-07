@@ -15,10 +15,10 @@ class UNREAL_FALLGUYS_API UTitleMenuWidget : public UTitleUserWidget
 	GENERATED_BODY()
 	
 public:
+	UFUNCTION(BlueprintCallable)
+	void SwitchWidgetInMenu(const FVector2D _Value);
 
 protected:
-	UFUNCTION(BlueprintCallable)
-	void SwitchMenu();
 
 private:
 

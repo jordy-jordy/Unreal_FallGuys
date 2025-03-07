@@ -16,6 +16,16 @@ enum class ECostumeColor : uint8
 	BLUE UMETA(DisplayName = "Blue"),
 };
 
+UENUM(BlueprintType)
+enum class EUIType : uint8
+{
+	TitleHome UMETA(DisplayName = "TitleHome"),
+	TitleCustom UMETA(DisplayName = "TitleCustom"),
+	TitleEntrance UMETA(DisplayName = "TitleEntrance"),
+	CustomInven UMETA(DisplayName = "CustomInven"),
+	MAX UMETA(DisplayName = "MAX"),
+};
+
 /**
  * 
  */

@@ -10,7 +10,7 @@ public class Unreal_FallGuys : ModuleRules
 
 		PublicIncludePaths.Add(ModuleDirectory);
 
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "HairStrandsCore" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "HairStrandsCore", "Slate", "SlateCore" ,"UMG"});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
