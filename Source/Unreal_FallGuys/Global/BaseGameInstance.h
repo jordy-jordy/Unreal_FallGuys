@@ -23,19 +23,21 @@ class UNREAL_FALLGUYS_API UBaseGameInstance : public UGameInstance
 public:
 	UBaseGameInstance();
 
+	// 코스튬 이름 저장
+	UFUNCTION(BlueprintCallable, Category = "Costume")
 	void SaveSelectedCostume(const FString& _CostumeName);
 
+	// Pawn의 코스튬 변경
+	UFUNCTION(BlueprintCallable, Category = "Costume")
 	void ChangeCostume(APawn* _Pawn, const FString& _CostumeName);
 
-	UFUNCTION(BlueprintCallable, Reliable, Server, Category = "Costume")
-	void ApplySavedCostume(APawn* _Pawn);
-	void ApplySavedCostume_Implementation(APawn* _Pawn);
-
-	USkeletalMesh* GetCostumeMesh(APawn* _Pawn, FString _MeshName);
-
-	// 저장된 코스튬 반환
+	// 저장된 코스튬의 이름 반환
 	UFUNCTION(BlueprintCallable, Category = "Costume")
 	FString GetSelectedCostume() const;
+
+	// 저장된 코스튬의 스켈레탈 메시 반환
+	UFUNCTION(BlueprintCallable, Category = "Costume")
+	USkeletalMesh* GetCostumeMesh(APawn* _Pawn, const FString& _MeshName = TEXT("NULL"));
 
 	UFUNCTION()
 	void OnRep_SelectedCostumeName();
@@ -57,5 +59,5 @@ private:
 	//class UDataTable* ActorDataTable = nullptr;
 
 	UPROPERTY(VisibleAnywhere, Replicated, Category = "Costume")
-	FString SelectedCostumeName = TEXT("TEST00");
+	FString SelectedCostumeName = TEXT("NULL");
 };
