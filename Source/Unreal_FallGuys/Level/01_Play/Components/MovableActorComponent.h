@@ -13,12 +13,12 @@ enum class EAxisType : uint8
 	Pitch UMETA(DisplayName = "Y축 회전"),
 	Yaw UMETA(DisplayName = "Z축 회전"),
 };
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class UNREAL_FALLGUYS_API UMovableActorComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	// Sets default values for this component's properties
 	UMovableActorComponent();
 
@@ -26,13 +26,13 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LMH", meta = (AllowPrivateAccess = "true"))
 	float CurrentPivot;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LMH", meta = (AllowPrivateAccess = "true"))
 	float MaxPivot;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LMH", meta = (AllowPrivateAccess = "true"))
