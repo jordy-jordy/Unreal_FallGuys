@@ -29,7 +29,6 @@ public:
 	static FString PlayLevelName;
 	static const int MinPlayerCount = 2;
 
-	static FName MenuPanelName;
 
 private:
 
