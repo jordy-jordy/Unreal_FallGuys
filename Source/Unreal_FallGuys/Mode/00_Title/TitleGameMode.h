@@ -18,6 +18,10 @@ protected:
 	void BeginPlay() override;
 	void Tick(float _Delta) override;
 
+	UFUNCTION(BlueprintCallable, Category = "Level")
+	FString GetMapName() { return MapName; }
+
+
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Level", meta = (AllowPrivateAccess = "true"))
 	FString MapName = TEXT("");	
