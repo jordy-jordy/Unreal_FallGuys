@@ -7,28 +7,20 @@
 
 void UTitleMenuWidget::SwitchWidgetInMenu(const FVector2D _Value)
 {
-	//UTitleUserWidget* CurWidget = GetCurUserWidget();
-	//FString WidgetName = CurWidget->GetClass()->GetName();
-	//EUIType CurType = CurWidget->GetCurUIType();
+	UTitleUserWidget* CurWg = GetCurUserWidget();
+	EUIType CurType = CurWg->GetCurUIType();
 
-	//if (CurType == EUIType::CustomInven)
-	//{
-	//	CurType = EUIType::TitleCustom;
-	//}
-
-	//if (WidgetName.Contains(FString("TitleMenu")))
-	//{
-	//	CurType = CurWidget->GetCurUserWidget()->GetCurUIType();
-	//}
-
-	if (_Value.X > 0 && _Value.Y == 0 && GetCurUIType() == EUIType::TitleHome)
+	if (GetCurUserWidget()->GetCurUIType() != EUIType::TitleEntrance)
 	{
-		SwitchWidget(EUIType::TitleCustom);
-		return;
-	}
-	else if (_Value.X < 0 && _Value.Y == 0 && GetCurUIType() == EUIType::TitleCustom)
-	{
-		SwitchWidget(EUIType::TitleHome);
-		return;
+		if (_Value.X > 0 && _Value.Y == 0 && GetCurUserWidget()->GetCurUIType() == EUIType::TitleHome)
+		{
+			SwitchWidget(EUIType::TitleCustom);
+			return;
+		}
+		else if (_Value.X < 0 && _Value.Y == 0 && GetCurUserWidget()->GetCurUIType() == EUIType::TitleCustom)
+		{
+			SwitchWidget(EUIType::TitleHome);
+			return;
+		}
 	}
 }

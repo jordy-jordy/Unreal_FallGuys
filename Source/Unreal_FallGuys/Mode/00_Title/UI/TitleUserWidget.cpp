@@ -20,7 +20,7 @@ bool UTitleUserWidget::InputCheck(const FVector2D& _Value)
 	{
 		return true;
 	}
-	else if (_Value.X == 0)
+	if (_Value.X == 0)
 	{
 		return false;
 	}
@@ -129,5 +129,5 @@ void UTitleUserWidget::SwitchWidget(EUIType _UIType)
 	CurWidget->SetVisibility(ESlateVisibility::Hidden);
 	Value->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	SetCurUserWidget(Value);
-	CurUIType = _UIType;
+	Value->CurUIType = _UIType;
 }

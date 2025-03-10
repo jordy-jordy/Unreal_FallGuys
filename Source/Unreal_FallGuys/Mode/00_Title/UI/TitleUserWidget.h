@@ -70,16 +70,16 @@ public:
 	}
 
 protected:
+	class UTitleUserWidget* CurUserWidget;
+	EUIType CurUIType;
 
 private:
 	UPROPERTY(Category = "UI", EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UTitleUserWidget* UserWidget;
-	class UTitleUserWidget* CurUserWidget;
 
 	UCanvasPanel* CanvasPanel;
 
 	EUIType UIType;
-	EUIType CurUIType;
 
 	TMultiMap<EUIType, UTitleUserWidget*> Widgets;
 };

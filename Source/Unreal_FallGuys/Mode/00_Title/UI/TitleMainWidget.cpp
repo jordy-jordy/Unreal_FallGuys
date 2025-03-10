@@ -13,16 +13,20 @@ UTitleMainWidget::UTitleMainWidget(const FObjectInitializer& ObjectInitializer)
 void UTitleMainWidget::SwitchWidgetInMain(const FVector2D _Value)
 {
 	UTitleUserWidget* CurWg = GetCurUserWidget();
+	EUIType CurType = CurWg->GetCurUIType();
 
-	if (_Value.Y > 0 && _Value.X == 0 && GetCurUIType() == EUIType::TitleHome)
+	if (GetCurUserWidget()->GetCurUIType() != EUIType::TitleCustom)
 	{
-		SwitchWidget(EUIType::TitleEntrance);
-		return;
-	}
-	else if (_Value.Y < 0 && _Value.X == 0 && GetCurUIType() == EUIType::TitleEntrance)
-	{
-		SwitchWidget(EUIType::TitleHome);
-		return;
+		if (_Value.Y > 0 && _Value.X == 0 && GetCurUserWidget()->GetCurUIType() == EUIType::TitleHome)
+		{
+			SwitchWidget(EUIType::TitleEntrance);
+			return;
+		}
+		else if (_Value.Y < 0 && _Value.X == 0 && GetCurUserWidget()->GetCurUIType() == EUIType::TitleEntrance)
+		{
+			SwitchWidget(EUIType::TitleHome);
+			return;
+		}
 	}
 }
 
