@@ -12,9 +12,20 @@ UTitleUserWidget::UTitleUserWidget(const FObjectInitializer& ObjectInitializer)
 	bAutomaticallyRegisterInputOnConstruction = true;
 }
 
-void UTitleUserWidget::InputCheck(const FVector2D& _Value)
+bool UTitleUserWidget::InputCheck(const FVector2D& _Value)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString::Printf(TEXT("%S(%u)> %s"), __FUNCTION__, __LINE__, *_Value.ToString()));
+
+	if (_Value.Y == 0)
+	{
+		return true;
+	}
+	else if (_Value.X == 0)
+	{
+		return false;
+	}
+
+	return true;
 }
 
 void UTitleUserWidget::WidgetInit(FName _PanelName)
@@ -51,7 +62,7 @@ void UTitleUserWidget::CreateChildWidget(TSubclassOf<UUserWidget> _Widget, bool 
 	{
 		UIType = EUIType::TitleHome;
 	}
-	else if (WidgetName.Contains(FString("Custom")))
+	else if (WidgetName.Contains(FString("Customize")))
 	{
 		UIType = EUIType::TitleCustom;
 	}
@@ -109,6 +120,15 @@ void UTitleUserWidget::SwitchWidget(EUIType _UIType)
 	}
 
 	UTitleUserWidget* CurWidget = GetCurUserWidget();
+	if (CurWidget->GetClass()->GetName().Contains("TitleMenu"))
+	{
+		CurWidget = CurWidget->GetCurUserWidget();
+	}
+	if (Value->GetClass()->GetName().Contains("TitleMenu"))
+	{
+		Value = Value->GetCurUserWidget();
+	}
+
 	if (CurWidget == Value)
 	{
 		return;
@@ -118,5 +138,5 @@ void UTitleUserWidget::SwitchWidget(EUIType _UIType)
 	Value->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	SetCurUserWidget(Value);
 
-	CurUIType = _UIType;
+	Value->CurUIType = _UIType;
 }
