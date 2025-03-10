@@ -46,4 +46,8 @@ private:
 
 	// 선택된 레벨을 저장하는 변수
 	FString SelectedLevel;
+
+//LMH
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Level", meta = (AllowPrivateAccess = "true"))
+	FString MapName = TEXT("");
 };
