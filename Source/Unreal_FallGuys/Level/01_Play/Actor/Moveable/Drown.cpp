@@ -9,7 +9,8 @@ ADrown::ADrown()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	SetDrown();
+	SetDrownLocation();
+
 }
 
 // Called when the game starts or when spawned
@@ -17,7 +18,8 @@ void ADrown::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	SetDirection();
+	SetDrownMesh();
+	SetDrownRotation();
 }
 
 // Called every frame
@@ -28,7 +30,7 @@ void ADrown::Tick(float DeltaTime)
 	MovePropeller();
 }
 
-void ADrown::SetDrown()
+void ADrown::SetDrownLocation()
 {
 	// SetMesh And Location
 	RootScene = CreateDefaultSubobject<USceneComponent>(TEXT("RootScene"));
@@ -55,7 +57,7 @@ void ADrown::SetDrown()
 	DrownLightArrow->SetRelativeLocation({ 0, 0, 0 });
 }
 
-void ADrown::SetDirection()
+void ADrown::SetDrownRotation()
 {
 	// Rotation
 	float BodyAngle = 0.0f;
@@ -78,6 +80,121 @@ void ADrown::SetDirection()
 	RootScene->SetRelativeRotation({ 0, BodyAngle , 0 });
 	DrownLight->SetRelativeRotation({ 0, LightAngle, 0 });
 	DrownLightArrow->SetRelativeRotation({ 0, ArrowAngle, 0 });
+}
+
+void ADrown::SetDrownMesh_B()
+{
+	UStaticMesh* BodyMesh = LoadObject<UStaticMesh>(nullptr, *DrownBody_B);
+	if (BodyMesh)
+	{
+		DrownBody->SetStaticMesh(BodyMesh);
+	}
+
+	UStaticMesh* LeftPropellerMesh = LoadObject<UStaticMesh>(nullptr, *LeftPropeller_B);
+	if (LeftPropellerMesh)
+	{
+		DrownPropeller_Left->SetStaticMesh(LeftPropellerMesh);
+	}
+	
+	UStaticMesh* RightPropellerMesh = LoadObject<UStaticMesh>(nullptr, *RightPropeller_B);
+	if (RightPropellerMesh)
+	{
+		DrownPropeller_Right->SetStaticMesh(RightPropellerMesh);
+	}
+
+	UStaticMesh* LightMesh = LoadObject<UStaticMesh>(nullptr, *DrownLight_B);
+	if (LightMesh)
+	{
+		DrownLight->SetStaticMesh(LightMesh);
+	}
+
+	UStaticMesh* ArrowMesh = LoadObject<UStaticMesh>(nullptr, *LightArrow_B);
+	if (ArrowMesh)
+	{
+		DrownLightArrow->SetStaticMesh(ArrowMesh);
+	}
+}
+
+void ADrown::SetDrownMesh_R()
+{
+	UStaticMesh* BodyMesh = LoadObject<UStaticMesh>(nullptr, *DrownBody_R);
+	if (BodyMesh)
+	{
+		DrownBody->SetStaticMesh(BodyMesh);
+	}
+
+	UStaticMesh* LeftPropellerMesh = LoadObject<UStaticMesh>(nullptr, *LeftPropeller_R);
+	if (LeftPropellerMesh)
+	{
+		DrownPropeller_Left->SetStaticMesh(LeftPropellerMesh);
+	}
+
+	UStaticMesh* RightPropellerMesh = LoadObject<UStaticMesh>(nullptr, *RightPropeller_R);
+	if (RightPropellerMesh)
+	{
+		DrownPropeller_Right->SetStaticMesh(RightPropellerMesh);
+	}
+
+	UStaticMesh* LightMesh = LoadObject<UStaticMesh>(nullptr, *DrownLight_R);
+	if (LightMesh)
+	{
+		DrownLight->SetStaticMesh(LightMesh);
+	}
+
+	UStaticMesh* ArrowMesh = LoadObject<UStaticMesh>(nullptr, *LightArrow_R);
+	if (ArrowMesh)
+	{
+		DrownLightArrow->SetStaticMesh(ArrowMesh);
+	}
+}
+
+void ADrown::SetDrownMesh_M()
+{
+	UStaticMesh* BodyMesh = LoadObject<UStaticMesh>(nullptr, *DrownBody_M);
+	if (BodyMesh)
+	{
+		DrownBody->SetStaticMesh(BodyMesh);
+	}
+
+	UStaticMesh* LeftPropellerMesh = LoadObject<UStaticMesh>(nullptr, *LeftPropeller_M);
+	if (LeftPropellerMesh)
+	{
+		DrownPropeller_Left->SetStaticMesh(LeftPropellerMesh);
+	}
+
+	UStaticMesh* RightPropellerMesh = LoadObject<UStaticMesh>(nullptr, *RightPropeller_M);
+	if (RightPropellerMesh)
+	{
+		DrownPropeller_Right->SetStaticMesh(RightPropellerMesh);
+	}
+
+	UStaticMesh* LightMesh = LoadObject<UStaticMesh>(nullptr, *DrownLight_M);
+	if (LightMesh)
+	{
+		DrownLight->SetStaticMesh(LightMesh);
+	}
+
+	UStaticMesh* ArrowMesh = LoadObject<UStaticMesh>(nullptr, *LightArrow_M);
+	if (ArrowMesh)
+	{
+		DrownLightArrow->SetStaticMesh(ArrowMesh);
+	}
+}
+
+void ADrown::SetDrownMesh()
+{
+	switch (DrownType)
+	{
+	case EDrownType::BLUE:
+		SetDrownMesh_B();
+		break;
+	case EDrownType::RED:
+		SetDrownMesh_R();
+		break;
+	case EDrownType::MINT:
+		SetDrownMesh_M();
+		break;
+	}
 }
 
 void ADrown::MovePropeller()
