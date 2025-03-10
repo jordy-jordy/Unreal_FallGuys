@@ -32,6 +32,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
+	// Variables
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drown", meta = (AllowPrivateAccess = "true"))
 	EDrownType DrownType;
 
@@ -39,7 +40,7 @@ public:
 	bool IsLeft;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drown", meta = (AllowPrivateAccess = "true"))
-	float RotateSpeed;
+	float RotateSpeed = 5.0f;
 
 	// MeshComponenet
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Drown")
@@ -60,6 +61,13 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Drown")
 	UStaticMeshComponent* DrownLightArrow;
 
+private:
 	UFUNCTION()
-	void SetDrownDirection();
+	void SetDrown();
+
+	UFUNCTION()
+	void SetDirection();
+
+	UFUNCTION()
+	void MovePropeller();
 };
