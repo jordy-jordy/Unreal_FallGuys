@@ -120,14 +120,6 @@ void UTitleUserWidget::SwitchWidget(EUIType _UIType)
 	}
 
 	UTitleUserWidget* CurWidget = GetCurUserWidget();
-	if (CurWidget->GetClass()->GetName().Contains("TitleMenu"))
-	{
-		CurWidget = CurWidget->GetCurUserWidget();
-	}
-	if (Value->GetClass()->GetName().Contains("TitleMenu"))
-	{
-		Value = Value->GetCurUserWidget();
-	}
 
 	if (CurWidget == Value)
 	{
@@ -137,6 +129,5 @@ void UTitleUserWidget::SwitchWidget(EUIType _UIType)
 	CurWidget->SetVisibility(ESlateVisibility::Hidden);
 	Value->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	SetCurUserWidget(Value);
-
-	Value->CurUIType = _UIType;
+	CurUIType = _UIType;
 }

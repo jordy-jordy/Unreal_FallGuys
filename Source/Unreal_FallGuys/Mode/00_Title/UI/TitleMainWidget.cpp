@@ -12,14 +12,7 @@ UTitleMainWidget::UTitleMainWidget(const FObjectInitializer& ObjectInitializer)
 
 void UTitleMainWidget::SwitchWidgetInMain(const FVector2D _Value)
 {
-	//UTitleUserWidget* CurWidget = GetCurUserWidget();
-	//FString WidgetName = CurWidget->GetClass()->GetName();
-	//EUIType CurType = CurWidget->GetCurUIType();
-
-	//if (WidgetName.Contains(FString("TitleMenu")))
-	//{
-	//	CurType = CurWidget->GetCurUserWidget()->GetCurUIType();
-	//}
+	UTitleUserWidget* CurWg = GetCurUserWidget();
 
 	if (_Value.Y > 0 && _Value.X == 0 && GetCurUIType() == EUIType::TitleHome)
 	{
