@@ -61,6 +61,24 @@ void UBaseGameInstance::CServerStart(UWorld* _World, FString _Port)
 	UGameplayStatics::OpenLevel(_World, *OpenLevel, true, TEXT("listen"));
 }
 
+// 서버 오픈 : 레벨 선택 필요
+void UBaseGameInstance::InsSelectedServerStart(UWorld* _World, FString _Port, FString _OpenLevel)
+{
+	if (!_World)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("CServerStart: _World is nullptr"));
+		return;
+	}
+
+	FString OpenLevel;
+	FString LevelPath = TEXT("");
+
+	UFallGlobal::AssetPackagePath(UWorld::StaticClass(), _OpenLevel, LevelPath);
+	OpenLevel = FString::Printf(TEXT(":%s%s"), *_Port, *LevelPath);
+
+	UGameplayStatics::OpenLevel(_World, *OpenLevel, true, TEXT("listen"));
+}
+
 // 서버 접속
 void UBaseGameInstance::CServerConnect(UWorld* _World, FString _IP, FString _Port)
 {

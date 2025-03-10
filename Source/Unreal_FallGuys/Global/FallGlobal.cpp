@@ -55,6 +55,14 @@ void UFallGlobal::ServerStart(UObject* _Object, FString _Port)
 	GameIns->CServerStart(CurWorld, _Port);
 }
 
+// 서버 시작 : 선택 필요
+void UFallGlobal::SelectedServerStart(UObject* _Object, FString _Port, FString _OpenLevel)
+{
+	UWorld* CurWorld = _Object->GetWorld();
+	UBaseGameInstance* GameIns = Cast<UBaseGameInstance>(_Object->GetWorld()->GetGameInstance());
+	GameIns->InsSelectedServerStart(CurWorld, _Port, _OpenLevel);
+}
+
 // 서버 접속
 void UFallGlobal::ServerConnect(UObject* _Object, FString _IP, FString _Port)
 {
@@ -110,4 +118,29 @@ void UFallGlobal::ChangeNickname(APawn* _Pawn, const FString& _NewNickname)
 {
 	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
 	return GameIns->InsChangeNickname(_NewNickname);
+}
+
+TArray<FString> UFallGlobal::GetAvailableLevels()
+{
+	TArray<FString> LevelNames;
+
+	if (!FModuleManager::Get().IsModuleLoaded("AssetRegistry"))
+	{
+		FModuleManager::Get().LoadModule("AssetRegistry");
+	}
+
+	IAssetRegistry& AssetRegistry = FModuleManager::Get().LoadModuleChecked<FAssetRegistryModule>("AssetRegistry").Get();
+
+	TArray<FAssetData> AssetDataList;
+
+	// UE5에서는 FTopLevelAssetPath를 사용해야 함
+	AssetRegistry.GetAssetsByClass(FTopLevelAssetPath(TEXT("/Script/Engine.World")), AssetDataList);
+
+	for (const FAssetData& AssetData : AssetDataList)
+	{
+		FString LevelName = FPaths::GetBaseFilename(AssetData.PackageName.ToString());
+		LevelNames.Add(LevelName);
+	}
+
+	return LevelNames;
 }

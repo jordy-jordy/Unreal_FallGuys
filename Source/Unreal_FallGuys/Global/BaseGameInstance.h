@@ -17,8 +17,8 @@ UCLASS()
 class UNREAL_FALLGUYS_API UBaseGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
-	friend class UFallGlobal;
 	friend class UGlobalDataTable;
+	friend class UFallGlobal;
 
 public:
 	UBaseGameInstance();
@@ -62,6 +62,9 @@ protected:
 private:
 	UFUNCTION(BlueprintCallable, Category = "Server")
 	void CServerStart(UWorld* _World, FString _Port);
+
+	UFUNCTION(BlueprintCallable, Category = "Server")
+	void InsSelectedServerStart(UWorld* _World, FString _Port, FString _OpenLevel);
 
 	UFUNCTION(BlueprintCallable, Category = "Server")
 	void CServerConnect(UWorld* _World, FString _IP, FString _Port);

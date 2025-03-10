@@ -18,6 +18,14 @@ class UNREAL_FALLGUYS_API UTitleWidget : public UUserWidget
 public:
 	UFUNCTION(BlueprintCallable)
 	void ChangeCurCostume(const FString& _CostumeName);
+	
+	virtual void NativeConstruct() override;
+	
+	// 선택된 레벨 반환 함수
+	UFUNCTION(BlueprintCallable)
+	FString GetSelectedLevel() const;
+
+protected:
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Server", meta = (AllowPrivateAccess = "true"))
@@ -26,4 +34,16 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Server", meta = (AllowPrivateAccess = "true"))
 	FString Port = TEXT("30000");
 
+	void PopulateLevelSelection();
+
+	// 레벨 선택 콤보박스 (드롭 메뉴)
+	UPROPERTY(meta = (BindWidget))
+	class UComboBoxString* LevelSelection;
+
+	// 콤보박스에서 선택한 값을 저장하는 함수
+	UFUNCTION()
+	void OnLevelSelected(FString SelectedItem, ESelectInfo::Type SelectionType);
+
+	// 선택된 레벨을 저장하는 변수
+	FString SelectedLevel;
 };
