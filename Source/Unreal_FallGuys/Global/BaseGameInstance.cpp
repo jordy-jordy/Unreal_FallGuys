@@ -28,6 +28,13 @@ UBaseGameInstance::UBaseGameInstance()
 			{
 				UE_LOG(FALL_DEV_LOG, Error, TEXT("%S(%u)> if (nullptr == CostumeDataTable)"), __FUNCTION__, __LINE__);
 			}
+
+			//PlayLevelDataTable = DataTables->FindRow<FDataTableRow>("DT_PlayLevelDataTable", nullptr)->Resources;
+			//if (nullptr == PlayLevelDataTable)
+			//{
+			//	UE_LOG(FALL_DEV_LOG, Error, TEXT("%S(%u)> if (nullptr == PlayLevelDataTable)"), __FUNCTION__, __LINE__);
+			//}
+
 		}
 
 		//if (nullptr != DataTables)

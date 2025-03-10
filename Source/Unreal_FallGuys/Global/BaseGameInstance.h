@@ -72,6 +72,7 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Data")
 	class UDataTable* DataTables = nullptr;
 	class UDataTable* CostumeDataTable = nullptr;
+	class UDataTable* PlayLevelDataTable = nullptr;
 	//class UDataTable* ActorDataTable = nullptr;
 
 	UPROPERTY(VisibleAnywhere, Replicated, Category = "Costume")

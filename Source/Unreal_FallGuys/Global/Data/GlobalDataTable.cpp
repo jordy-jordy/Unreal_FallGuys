@@ -26,6 +26,25 @@ const FCostumeDataRow* UGlobalDataTable::GetCostumeData(UWorld* _World, const FS
 	return Data;
 }
 
+const TSoftObjectPtr<UWorld> UGlobalDataTable::GetPlayLevelData(UWorld* _World, const FString& _Name)
+{
+	UBaseGameInstance* Inst = _World->GetGameInstance<UBaseGameInstance>();
+
+	if (nullptr == Inst->PlayLevelDataTable)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("%S(%u)> if (nullptr == Inst->PlayLevelDataTable)"), __FUNCTION__, __LINE__);
+	}
+
+	FPlayLevelDataRow* Data = Inst->PlayLevelDataTable->FindRow<FPlayLevelDataRow>(*_Name, nullptr);
+
+	if (nullptr == Data)
+	{
+		return nullptr;
+	}
+
+	return Data->Level;
+}
+
 //TSubclassOf<AActor> UGlobalDataTable::GetActorClass(UWorld* _World, const FString& _Name)
 //{
 //	UBaseGameInstance* Inst = _World->GetGameInstance<UBaseGameInstance>();
