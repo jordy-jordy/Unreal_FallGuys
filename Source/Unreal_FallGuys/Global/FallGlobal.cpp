@@ -4,8 +4,10 @@
 #include "Global/FallGlobal.h"
 #include "AssetRegistry/AssetRegistryModule.h"
 
+#include <Engine/DataTable.h>
 #include <Unreal_FallGuys.h>
 #include <Global/BaseGameInstance.h>
+#include <Global/Data/PlayLevelDataTable.h>
 
 
 void UFallGlobal::AssetPackagePath(UClass* _Class, const FString& _AssetName, FString& _Path)
@@ -124,22 +126,50 @@ TArray<FString> UFallGlobal::GetAvailableLevels()
 {
 	TArray<FString> LevelNames;
 
-	if (!FModuleManager::Get().IsModuleLoaded("AssetRegistry"))
+	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GWorld->GetGameInstance());
+	if (!GameInstance)
 	{
-		FModuleManager::Get().LoadModule("AssetRegistry");
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("GetAvailableLevels: GameInstance is null!"));
+		return LevelNames;
 	}
 
-	IAssetRegistry& AssetRegistry = FModuleManager::Get().LoadModuleChecked<FAssetRegistryModule>("AssetRegistry").Get();
-
-	TArray<FAssetData> AssetDataList;
-
-	// UE5에서는 FTopLevelAssetPath를 사용해야 함
-	AssetRegistry.GetAssetsByClass(FTopLevelAssetPath(TEXT("/Script/Engine.World")), AssetDataList);
-
-	for (const FAssetData& AssetData : AssetDataList)
+	// PlayLevelDataTable 가져오기
+	UDataTable* LevelDataTable = GameInstance->GetPlayLevelDataTable(); // 이 함수는 BaseGameInstance에서 PlayLevelDataTable을 가져오는 함수로 가정
+	if (!LevelDataTable)
 	{
-		FString LevelName = FPaths::GetBaseFilename(AssetData.PackageName.ToString());
-		LevelNames.Add(LevelName);
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("GetAvailableLevels: PlayLevelDataTable is null!"));
+		return LevelNames;
+	}
+
+	// 데이터 테이블의 모든 행 가져오기
+	static const FString ContextString(TEXT("Name"));
+	TArray<FPlayLevelDataRow*> LevelRows;
+	LevelDataTable->GetAllRows<FPlayLevelDataRow>(ContextString, LevelRows);
+
+	for (const FPlayLevelDataRow* Row : LevelRows)
+	{
+		if (Row)
+		{
+			UE_LOG(FALL_DEV_LOG, Log, TEXT("Row Name: %s"), *Row->Name);
+			UE_LOG(FALL_DEV_LOG, Log, TEXT("Row Level Path: %s"), *Row->Level.ToString());
+
+			// 강제로 동기 로드하여 확인
+			UWorld* LoadedLevel = Row->Level.LoadSynchronous();
+			if (!LoadedLevel)
+			{
+				UE_LOG(FALL_DEV_LOG, Warning, TEXT("Row->Level failed to load synchronously!"));
+			}
+			else
+			{
+				UE_LOG(FALL_DEV_LOG, Log, TEXT("Row->Level loaded successfully!"));
+			}
+		}
+
+		if (Row && Row->Level.IsValid())
+		{
+			FString LevelName = Row->Level.GetAssetName();
+			LevelNames.Add(LevelName);
+		}
 	}
 
 	return LevelNames;

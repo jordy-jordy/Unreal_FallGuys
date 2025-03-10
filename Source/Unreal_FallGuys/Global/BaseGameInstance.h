@@ -56,7 +56,10 @@ public:
 	// 동기화 변수
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 
+
 protected:
+	UFUNCTION(BlueprintCallable, Category = "DataTable")
+	UDataTable* GetPlayLevelDataTable() const { return PlayLevelDataTable; }
 
 
 private:

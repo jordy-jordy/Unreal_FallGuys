@@ -16,10 +16,10 @@ struct FPlayLevelDataRow : public FTableRowBase
 	~FPlayLevelDataRow() {}
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CostumeData")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Level")
 	FString Name;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CostumeData")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Level")
 	TSoftObjectPtr<UWorld> Level;  // 변경된 부분
 };
 
