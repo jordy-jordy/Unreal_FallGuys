@@ -25,7 +25,7 @@ public:
 	}
 
 	UFUNCTION(BlueprintCallable)
-	void InputCheck(const FVector2D& _Value);
+	bool InputCheck(const FVector2D& _Value);
 
 	UFUNCTION(BlueprintCallable)
 	void WidgetInit(FName _PanelName);
@@ -56,13 +56,18 @@ public:
 		return Widgets;
 	}
 
+	UFUNCTION(BlueprintCallable)
+	void SwitchWidget(EUIType _UIType);
+
 	EUIType GetCurUIType()
 	{
 		return CurUIType;
 	}
 
-	UFUNCTION(BlueprintCallable)
-	void SwitchWidget(EUIType _UIType);
+	void SetCurUIType(EUIType _UIType)
+	{
+		CurUIType = _UIType;
+	}
 
 protected:
 

@@ -13,4 +13,3 @@ FName UFallConst::Collision::CollisionProfile_CheckPoint = TEXT("CheckPointColl"
 
 FString UFallConst::GlobalDataTablePath = TEXT("/Script/Engine.DataTable'/Game/BP/Global/Data/DT_GlobalDataTable.DT_GlobalDataTable'");
 
-FName UFallConst::MenuPanelName = TEXT("TitleMenu");
