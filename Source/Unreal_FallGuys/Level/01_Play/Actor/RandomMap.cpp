@@ -3,6 +3,7 @@
 
 #include "Level/01_Play/Actor/RandomMap.h"
 #include <Kismet/GameplayStatics.h>
+#include "Global/FallGlobal.h"
 
 // Sets default values
 ARandomMap::ARandomMap()
@@ -19,9 +20,12 @@ void ARandomMap::BeginPlay()
 
 	
 
-	MapList.Add(TEXT("Zero"));
-	MapList.Add(TEXT("One"));
-	MapList.Add(TEXT("Two"));
+	for (FString MapName : UFallGlobal::GetAvailableLevels())
+	{
+		MapList.Add(MapName);
+
+	}
+
 	
 	
 	
