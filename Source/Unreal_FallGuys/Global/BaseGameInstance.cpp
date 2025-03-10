@@ -28,6 +28,13 @@ UBaseGameInstance::UBaseGameInstance()
 			{
 				UE_LOG(FALL_DEV_LOG, Error, TEXT("%S(%u)> if (nullptr == CostumeDataTable)"), __FUNCTION__, __LINE__);
 			}
+
+			//PlayLevelDataTable = DataTables->FindRow<FDataTableRow>("DT_PlayLevelDataTable", nullptr)->Resources;
+			//if (nullptr == PlayLevelDataTable)
+			//{
+			//	UE_LOG(FALL_DEV_LOG, Error, TEXT("%S(%u)> if (nullptr == PlayLevelDataTable)"), __FUNCTION__, __LINE__);
+			//}
+
 		}
 
 		//if (nullptr != DataTables)
@@ -56,6 +63,24 @@ void UBaseGameInstance::CServerStart(UWorld* _World, FString _Port)
 	FString LevelPath = TEXT("");
 
 	UFallGlobal::AssetPackagePath(UWorld::StaticClass(), UFallConst::PlayLevelName, LevelPath);
+	OpenLevel = FString::Printf(TEXT(":%s%s"), *_Port, *LevelPath);
+
+	UGameplayStatics::OpenLevel(_World, *OpenLevel, true, TEXT("listen"));
+}
+
+// 서버 오픈 : 레벨 선택 필요
+void UBaseGameInstance::InsSelectedServerStart(UWorld* _World, FString _Port, FString _OpenLevel)
+{
+	if (!_World)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("CServerStart: _World is nullptr"));
+		return;
+	}
+
+	FString OpenLevel;
+	FString LevelPath = TEXT("");
+
+	UFallGlobal::AssetPackagePath(UWorld::StaticClass(), _OpenLevel, LevelPath);
 	OpenLevel = FString::Printf(TEXT(":%s%s"), *_Port, *LevelPath);
 
 	UGameplayStatics::OpenLevel(_World, *OpenLevel, true, TEXT("listen"));

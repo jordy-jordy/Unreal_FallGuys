@@ -25,6 +25,9 @@ public:
 	static void ServerStart(UObject* _Object, FString _Port);
 
 	UFUNCTION(BlueprintCallable)
+	static void SelectedServerStart(UObject* _Object, FString _Port, FString _OpenLevel);
+
+	UFUNCTION(BlueprintCallable)
 	static void ServerConnect(UObject* _Object, FString _IP, FString _Port);
 
 	// Pawn의 코스튬 변경
@@ -46,5 +49,9 @@ public:
 	// 닉네임 저장
 	UFUNCTION(BlueprintCallable)
 	static void ChangeNickname(APawn* _Pawn, const FString& _NewNickname);
+
+	UFUNCTION(BlueprintCallable)
+	static TArray<FString> GetAvailableLevels();
+
 
 };
