@@ -74,6 +74,10 @@ void UTitleUserWidget::CreateChildWidget(TSubclassOf<UUserWidget> _Widget, bool 
 	{
 		UIType = EUIType::CustomInven;
 	}
+	else if (WidgetName.Contains(FString("IPPort")))
+	{
+		UIType = EUIType::TitleIPPort;
+	}
 
 	Widgets.Emplace(UIType, Widget);
 

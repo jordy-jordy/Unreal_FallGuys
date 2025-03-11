@@ -13,6 +13,10 @@ UCLASS()
 class UNREAL_FALLGUYS_API UTitleEntranceWidget : public UTitleUserWidget
 {
 	GENERATED_BODY()
+
+public:
+	UFUNCTION(BlueprintCallable)
+	void OpenValueInputPanel(bool _IsVisible);
 	
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Server", meta = (AllowPrivateAccess = "true"))
