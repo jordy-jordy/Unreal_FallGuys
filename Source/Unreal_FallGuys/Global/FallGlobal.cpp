@@ -177,3 +177,9 @@ TArray<FString> UFallGlobal::GetAvailableLevels()
 
 	return LevelNames;
 }
+
+TArray<FServerInfo> UFallGlobal::GetServerList(APawn* _Pawn)
+{
+	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
+	return GameIns->InsGetServerList();
+}

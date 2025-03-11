@@ -54,5 +54,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static TArray<FString> GetAvailableLevels();
 
+	UFUNCTION(BlueprintCallable)
+	static TArray<struct FServerInfo> GetServerList(APawn* _Pawn);
+
+
 
 };

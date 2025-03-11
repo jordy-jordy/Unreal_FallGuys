@@ -4,11 +4,27 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+#include "Sockets.h"
+#include "SocketSubsystem.h"
+#include "Common/UdpSocketBuilder.h"
+#include "IPAddress.h"
 
 #include <Global/Data/GlobalDataTable.h>
 
 #include "BaseGameInstance.generated.h"
 
+
+USTRUCT(BlueprintType)
+struct FServerInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite)
+	FString IP;
+
+	UPROPERTY(BlueprintReadWrite)
+	FString Port;
+};
 
 /**
  *
@@ -56,6 +72,21 @@ public:
 	// 동기화 변수
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 
+	// 서버 정보 브로드캐스트 (UDP)
+	void InsStartServerBroadcast(FString _Port);
+	void InsSendBroadcast();
+
+	// 클라이언트가 서버 리스트를 받기 위한 함수
+	void InsStartListeningForServers();
+	bool InsReceiveBroadcast(float _DeltaTime);
+	void InsParseAndStoreServerInfo(FString _Message);
+
+	// 서버 리스트 반환 (UI에서 사용 가능)
+	UFUNCTION(BlueprintCallable, Category = "Server")
+	TArray<FServerInfo> InsGetServerList();
+
+	UFUNCTION(BlueprintCallable, Category = "Network")
+	FString InsGetLocalIP();
 
 protected:
 	UFUNCTION(BlueprintCallable, Category = "DataTable")
@@ -83,4 +114,13 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Replicated, Category = "Name")
 	FString Nickname = TEXT("TEST_JORDY");
+
+	TArray<FServerInfo> ServerList;
+
+	// 네트워크 관련 변수
+	FSocket* SenderSocket;
+	FSocket* ReceiverSocket;
+	FTimerHandle BroadcastTimerHandle;
+	FIPv4Address BroadcastAddress;
+	FIPv4Endpoint BroadcastEndpoint;
 };
