@@ -37,7 +37,7 @@ private:
 	void PopulateLevelSelection();
 
 	// 레벨 선택 콤보박스 (드롭 메뉴)
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(meta = (BindWidgetOptional))
 	class UComboBoxString* LevelSelection;
 
 	// 콤보박스에서 선택한 값을 저장하는 함수
