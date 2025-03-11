@@ -6,6 +6,15 @@
 #include "EnhancedInputComponent.h"
 
 
+void ATitlePlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+
+	FInputModeUIOnly Mode;
+	SetInputMode(Mode);
+	SetShowMouseCursor(true);
+}
+
 void ATitlePlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();

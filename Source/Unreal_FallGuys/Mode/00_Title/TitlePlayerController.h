@@ -22,7 +22,8 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void SetupInputComponentEvent();
 
-private:
+protected:
+	void BeginPlay() override;
 	void SetupInputComponent();
 
 private:
