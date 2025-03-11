@@ -110,18 +110,21 @@ USkeletalMesh* UFallGlobal::GetCostumeMesh(APawn* _Pawn, const FString& _MeshNam
 	return nullptr;
 }
 
+// 닉네임 반환
 FString UFallGlobal::GetNickname(APawn* _Pawn)
 {
 	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
 	return GameIns->InsGetNickname();
 }
 
+// 닉네임 저장
 void UFallGlobal::ChangeNickname(APawn* _Pawn, const FString& _NewNickname)
 {
 	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
 	return GameIns->InsChangeNickname(_NewNickname);
 }
 
+// 플레이 가능한 레벨 반환
 TArray<FString> UFallGlobal::GetAvailableLevels()
 {
 	TArray<FString> LevelNames;

@@ -17,25 +17,30 @@ class UNREAL_FALLGUYS_API APlayGameMode : public AGameMode
 public:
 	APlayGameMode();
 
-	/** 현재 접속한 플레이어 수 */
+	// 접속한 플레이어의 수
 	UPROPERTY(ReplicatedUsing = OnRep_ConnectedPlayers)
 	int32 ConnectedPlayers;
 
-	/** 플레이어 수 변경 시 클라이언트에서 실행되는 함수 */
+	// 플레이어 수가 변경되면 클라이언트에서 실행되는 함수
 	UFUNCTION()
 	void OnRep_ConnectedPlayers();
 
-	/** 플레이어 접속 시 실행되는 함수 */
+	// 플레이어 접속시 실행되는 함수
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 
-	UFUNCTION(BlueprintCallable, Category = "Game")
-	bool IsMinPlayersReached(); // 최소 3명 도달 여부 체크
+	// 최소 인원 체크
+	UFUNCTION(BlueprintCallable, Category = "GAME")
+	bool IsMinPlayersReached();
 
-	UFUNCTION(BlueprintCallable, Category = "Game")
+	// 게임 시작
+	UFUNCTION(BlueprintCallable, Reliable, NetMulticast, Category = "GAME")
 	void StartGame();
+	void StartGame_Implementation();
 
 
 protected:
 	void BeginPlay() override;
+
+	// 동기화 변수
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };

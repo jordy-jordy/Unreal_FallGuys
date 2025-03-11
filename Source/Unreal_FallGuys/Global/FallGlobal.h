@@ -50,6 +50,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static void ChangeNickname(APawn* _Pawn, const FString& _NewNickname);
 
+	// 플레이 가능한 레벨 반환
 	UFUNCTION(BlueprintCallable)
 	static TArray<FString> GetAvailableLevels();
 

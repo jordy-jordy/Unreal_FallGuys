@@ -15,6 +15,7 @@ class UNREAL_FALLGUYS_API UFallConst : public UObject
 	GENERATED_BODY()
 
 public:
+	// 충돌 프로파일
 	class Collision
 	{
 	public:
@@ -25,8 +26,13 @@ public:
 	};
 
 public:
+	// 글로벌 데이터 테이블 경로
 	static FString GlobalDataTablePath;
+
+	// 플레이 레벨 수동 지정
 	static FString PlayLevelName;
+
+	// 게임 시작을 위한 최소 플레이어 수
 	static const int MinPlayerCount = 2;
 
 

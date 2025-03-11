@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -18,6 +18,7 @@ protected:
 	void BeginPlay() override;
 	void Tick(float _Delta) override;
 
+	// 랜덤하게 선택된 맵의 이름 반환
 	UFUNCTION(BlueprintCallable, Category = "Level")
 	FString GetMapName() { return MapName; }
 

@@ -1,4 +1,4 @@
-ï»¿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Global/BaseGameInstance.h"
@@ -45,11 +45,11 @@ UBaseGameInstance::UBaseGameInstance()
 		//	}
 		//}
 	}
-	// í°ìƒ‰
+	// Èò»ö
 	UE_LOG(FALL_DEV_LOG, Log, TEXT("%S(%u)> DataTableLoading End"), __FUNCTION__, __LINE__);
 }
 
-// ì„œë²„ ì˜¤í”ˆ
+// ¼­¹ö ¿ÀÇÂ
 void UBaseGameInstance::CServerStart(UWorld* _World, FString _Port)
 {
 	if (!_World)
@@ -67,7 +67,7 @@ void UBaseGameInstance::CServerStart(UWorld* _World, FString _Port)
 	UGameplayStatics::OpenLevel(_World, *OpenLevel, true, TEXT("listen"));
 }
 
-// ì„œë²„ ì˜¤í”ˆ : ë ˆë²¨ ì„ íƒ í•„ìš”
+// ¼­¹ö ¿ÀÇÂ : ·¹º§ ¼±ÅÃ ÇÊ¿ä
 void UBaseGameInstance::InsSelectedServerStart(UWorld* _World, FString _Port, FString _OpenLevel)
 {
 	if (!_World)
@@ -85,7 +85,7 @@ void UBaseGameInstance::InsSelectedServerStart(UWorld* _World, FString _Port, FS
 	UGameplayStatics::OpenLevel(_World, *OpenLevel, true, TEXT("listen"));
 }
 
-// ì„œë²„ ì ‘ì†
+// ¼­¹ö Á¢¼Ó
 void UBaseGameInstance::CServerConnect(UWorld* _World, FString _IP, FString _Port)
 {
 	if (!_World)
@@ -99,7 +99,7 @@ void UBaseGameInstance::CServerConnect(UWorld* _World, FString _IP, FString _Por
 	UGameplayStatics::OpenLevel(_World, FName(*ConnectLevelName));
 }
 
-// ë™ê¸°í™” ë³€ìˆ˜
+// µ¿±âÈ­ º¯¼ö
 void UBaseGameInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -107,21 +107,21 @@ void UBaseGameInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	DOREPLIFETIME(UBaseGameInstance, Nickname);
 }
 
-// ì½”ìŠ¤íŠ¬ ì´ë¦„ ì €ì¥
+// ÄÚ½ºÆ¬ ÀÌ¸§ ÀúÀå
 void UBaseGameInstance::InsSaveCostumeName(const FString& _CostumeName)
 {
 	CostumeName = _CostumeName;
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("Selected Costume Saved: %s"), *CostumeName);
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("ÀúÀåµÈ ÄÚ½ºÆ¬ ÀÌ¸§ : %s"), *CostumeName);
 }
 
-// Pawnì˜ ì½”ìŠ¤íŠ¬ ë³€ê²½
+// PawnÀÇ ÄÚ½ºÆ¬ º¯°æ
 void UBaseGameInstance::InsChangeCostume(APawn* _Pawn, const FString& _CostumeName)
 {
 	UWorld* World = _Pawn->GetWorld();
 	const FCostumeDataRow* CostumeData = UGlobalDataTable::GetCostumeData(World, _CostumeName);
 	if (CostumeData && CostumeData->CostumeMesh)
 	{
-		// _Pawnì˜ ìŠ¤ì¼ˆë ˆíƒˆ ë©”ì‹œ ê°€ì ¸ì˜¤ê¸°
+		// _PawnÀÇ ½ºÄÌ·¹Å» ¸Ş½Ã °¡Á®¿À±â
 		if (USkeletalMeshComponent* MeshComp = _Pawn->FindComponentByClass<USkeletalMeshComponent>())
 		{
 			MeshComp->SetSkeletalMesh(CostumeData->CostumeMesh);
@@ -135,7 +135,7 @@ void UBaseGameInstance::InsChangeCostume(APawn* _Pawn, const FString& _CostumeNa
 	InsSaveCostumeName(_CostumeName);
 }
 
-// ì €ì¥ëœ ì½”ìŠ¤íŠ¬ì˜ ìŠ¤ì¼ˆë ˆíƒˆ ë©”ì‹œ ë°˜í™˜
+// ÀúÀåµÈ ÄÚ½ºÆ¬ÀÇ ½ºÄÌ·¹Å» ¸Ş½Ã ¹İÈ¯
 USkeletalMesh* UBaseGameInstance::InsGetCostumeMesh(APawn* _Pawn, const FString& _MeshName/* = TEXT("NULL")*/)
 {
 	const FCostumeDataRow* CostumeData = UGlobalDataTable::GetCostumeData(_Pawn->GetWorld(), _MeshName);
@@ -158,7 +158,7 @@ USkeletalMesh* UBaseGameInstance::InsGetCostumeMesh(APawn* _Pawn, const FString&
 	return nullptr;
 }
 
-// ë‹‰ë„¤ì„ ë³€ê²½
+// ´Ğ³×ÀÓ º¯°æ
 void UBaseGameInstance::InsChangeNickname(const FString& _NewNickname)
 {
 	Nickname = _NewNickname;

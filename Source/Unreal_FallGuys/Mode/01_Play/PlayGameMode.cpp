@@ -18,60 +18,61 @@ void APlayGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (HasAuthority()) // 서버에서만 실행
+	// 서버장에게만 보이는 메세지
+	if (HasAuthority())
 	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("Server: PlayGameMode Started!"));
-	}
-	else
-	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("Client: PlayGameMode Started!"));
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("서버: PlayGameMode가 시작되었습니다. 당신은 서버장입니다."));
 	}
 }
 
+// 플레이어 접속시 실행되는 함수
 void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 
 	FString CurrentLevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
 
-	if (HasAuthority()) // 서버에서만 실행
+	// 서버에서만 실행
+	if (HasAuthority())
 	{
 		ConnectedPlayers++;
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("Join To %s"), *CurrentLevelName);
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("Server: Player Joined, Cur Player Number = %d"), ConnectedPlayers);
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("%s 에 접속합니다."), *CurrentLevelName);
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("서버: 플레이어가 접속했습니다. 현재 플레이어 수 = %d"), ConnectedPlayers);
 		// 네트워크 동기화를 강제 실행하여 클라이언트와 데이터 맞추기
 		ForceNetUpdate();
-		//OnRep_ConnectedPlayers();
 	}
 
+	// 최소 인원 충족했을 경우
 	if (IsMinPlayersReached())
 	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("MIN PLAYER READY. TRY GAME START"));
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("플레이를 위한 최소 인원이 충족되었습니다. 게임 시작이 가능합니다."));
 		StartGame();
 	}
 }
 
 void APlayGameMode::OnRep_ConnectedPlayers()
 {
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("Client: Player Number Synced = %d"), ConnectedPlayers);
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("클라이언트: 플레이어 수 동기화 = %d"), ConnectedPlayers);
 }
 
-void APlayGameMode::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(APlayGameMode, ConnectedPlayers);
-}
-
+// 최소 인원 체크
 bool APlayGameMode::IsMinPlayersReached()
 {
 	return ConnectedPlayers >= UFallConst::MinPlayerCount;
 }
 
-void APlayGameMode::StartGame()
+// 게임 시작
+void APlayGameMode::StartGame_Implementation()
 {
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("GAME START READY"));
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("게임이 시작되었습니다."));
 	// 여기에 실제 게임 시작 로직 추가 예정
 }
 
+// 동기화 변수
+void APlayGameMode::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(APlayGameMode, ConnectedPlayers);
+}
 
 
