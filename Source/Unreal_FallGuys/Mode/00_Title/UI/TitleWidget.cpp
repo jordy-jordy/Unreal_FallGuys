@@ -10,12 +10,6 @@
 #include <Global/BaseGameInstance.h>
 
 
-void UTitleWidget::ChangeCurCostume(const FString& _CostumeName)
-{
-	APawn* Pawn = GetOwningPlayerPawn();
-	UFallGlobal::ChangeCostume(Pawn, _CostumeName);
-}
-
 void UTitleWidget::PopulateLevelSelection()
 {
     if (!LevelSelection) return;
