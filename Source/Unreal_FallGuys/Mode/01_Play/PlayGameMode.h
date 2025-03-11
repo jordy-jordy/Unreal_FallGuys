@@ -37,8 +37,38 @@ public:
 	void StartGame();
 	void StartGame_Implementation();
 
+//LMH
+private:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Server", meta = (AllowPrivateAccess = "true"))
+	int FinishPlayer = 2;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Server", meta = (AllowPrivateAccess = "true"))
+	int CurFinishPlayer = 0;
+
+	bool IsEndGame = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Server", meta = (AllowPrivateAccess = "true"))
+	FString NextLevel= TEXT("TestTravelMap");
+public:
+	
+
+	UFUNCTION()
+	void ServerTravelToNextMap(const FString& url);
+
+	UFUNCTION(BlueprintCallable)
+	void OnPlayerFinished()
+	{
+		CurFinishPlayer += 1;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	void SetFinishPlayerCount(int _p)
+	{
+		FinishPlayer = _p;
+	}
 
 protected:
+	virtual void Tick(float DeltaSeconds) override;
 	void BeginPlay() override;
 
 	// 동기화 변수

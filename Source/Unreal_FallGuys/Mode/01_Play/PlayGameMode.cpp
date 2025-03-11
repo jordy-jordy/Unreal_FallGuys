@@ -25,6 +25,28 @@ void APlayGameMode::BeginPlay()
 	}
 }
 
+void APlayGameMode::ServerTravelToNextMap(const FString& url)
+{
+	//클라이언트 데리고 다같이 서버 트래블
+	GetWorld()->ServerTravel(url,false);
+}
+
+void APlayGameMode::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	
+	
+	if (true == IsEndGame) return;
+	if (CurFinishPlayer >= FinishPlayer)
+	{
+		IsEndGame = true;
+		
+		ServerTravelToNextMap(NextLevel);
+		//
+	}
+}
+
 // 플레이어 접속시 실행되는 함수
 void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 {
