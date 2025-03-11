@@ -14,4 +14,10 @@ class UNREAL_FALLGUYS_API UTitleEntranceWidget : public UTitleUserWidget
 {
 	GENERATED_BODY()
 	
+private:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Server", meta = (AllowPrivateAccess = "true"))
+	FString IP = TEXT("127.0.0.1");
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Server", meta = (AllowPrivateAccess = "true"))
+	FString Port = TEXT("30000");
 };
