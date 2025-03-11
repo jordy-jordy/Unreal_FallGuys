@@ -65,7 +65,7 @@ bool APlayGameMode::IsMinPlayersReached()
 void APlayGameMode::StartGame_Implementation()
 {
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("게임이 시작되었습니다."));
-	// 여기에 실제 게임 시작 로직 추가 예정
+	UFallConst::CanStart = true;
 }
 
 // 동기화 변수

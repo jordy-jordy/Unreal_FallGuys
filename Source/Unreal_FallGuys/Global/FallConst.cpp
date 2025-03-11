@@ -16,3 +16,5 @@ FString UFallConst::PlayLevelName = TEXT("Race2Map");
 // 글로벌 데이터 테이블 경로
 FString UFallConst::GlobalDataTablePath = TEXT("/Script/Engine.DataTable'/Game/BP/Global/Data/DT_GlobalDataTable.DT_GlobalDataTable'");
 
+// 게임 시작이 가능한지 체크
+bool UFallConst::CanStart = false;
