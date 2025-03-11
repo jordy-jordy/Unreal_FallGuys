@@ -163,3 +163,25 @@ void UBaseGameInstance::InsChangeNickname(const FString& _NewNickname)
 {
 	Nickname = _NewNickname;
 }
+
+FString UBaseGameInstance::InsGetRandomLevel()
+{
+	for (FString MapName : UFallGlobal::GetAvailableLevels())
+	{
+		MapList.Add(MapName);
+	}
+
+	int Random = 0;
+	int RandomIndex = 0;
+	FString MapName = TEXT("");
+	do {
+		Random = FMath::RandRange(1, MapList.Num());
+		RandomIndex = Random - 1;
+
+	} while (PlayedMapList.Contains(RandomIndex)); // 이미 선택된 맵인지 확인
+
+	PlayedMapList.Add(RandomIndex); // 선택된 맵 추가
+	MapName = MapList[RandomIndex];
+
+	return MapList[RandomIndex]; // 랜덤으로 선택된 맵 반환
+}

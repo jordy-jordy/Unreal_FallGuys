@@ -53,6 +53,10 @@ public:
 	// 플레이 가능한 레벨 반환
 	UFUNCTION(BlueprintCallable)
 	static TArray<FString> GetAvailableLevels();
+	
+	// 랜덤 스테이지 반환
+	UFUNCTION(BlueprintCallable)
+	static FString GetRandomLevel(APawn* _Pawn);
 
 
 };

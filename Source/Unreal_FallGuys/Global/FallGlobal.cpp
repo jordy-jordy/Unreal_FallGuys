@@ -177,3 +177,10 @@ TArray<FString> UFallGlobal::GetAvailableLevels()
 
 	return LevelNames;
 }
+
+// 랜덤 스테이지 반환
+FString UFallGlobal::GetRandomLevel(APawn* _Pawn)
+{
+	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
+	return GameIns->InsGetRandomLevel();
+}

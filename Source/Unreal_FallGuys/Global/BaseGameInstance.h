@@ -53,6 +53,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Name")
 	void InsChangeNickname(const FString& _NewNickname);
 
+	UFUNCTION(BlueprintCallable, Category = "Level")
+	FString InsGetRandomLevel();
+
 	// 동기화 변수
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 
@@ -83,4 +86,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Replicated, Category = "Name")
 	FString Nickname = TEXT("TEST_JORDY");
+
+	// 맵리스트
+	TArray<FString> MapList;
+	TSet<int> PlayedMapList;
+
 };
