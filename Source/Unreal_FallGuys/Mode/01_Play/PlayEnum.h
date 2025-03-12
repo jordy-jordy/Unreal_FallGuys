@@ -21,6 +21,13 @@ enum class EPlayerAnimation : uint8
 	MAX UMETA(DisplayName = "MAX"),
 };
 
+//LMH
+UENUM(BlueprintType)
+enum class ERaceOverAnimation : uint8
+{
+	Idle UMETA(DisplayName = "Idle"),
+	Falling UMETA(DisplayName = "Falling")
+};
 /**
  * 
  */

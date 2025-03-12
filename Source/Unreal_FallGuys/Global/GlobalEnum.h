@@ -18,6 +18,16 @@ enum class ECostumeColor : uint8
 	MAX UMETA(DisplayName = "Max")
 };
 
+// 코스튬 상하의
+UENUM(BlueprintType)
+enum class ECostumeType : uint8
+{
+	NONE UMETA(DisplayName = "None"),
+	TOP UMETA(DisplayName = "Top"),
+	BOTTOM UMETA(DisplayName = "Bottom"),
+	MAX UMETA(DisplayName = "Max")
+};
+
 UENUM(BlueprintType)
 enum class EUIType : uint8
 {

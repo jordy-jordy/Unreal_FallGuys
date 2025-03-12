@@ -34,6 +34,13 @@ UBaseGameInstance::UBaseGameInstance()
 				UE_LOG(FALL_DEV_LOG, Error, TEXT("%S(%u)> if (nullptr == CostumeDataTable)"), __FUNCTION__, __LINE__);
 			}
 
+			// 코스튬 컬러 데이터 로드
+			CostumeColorDataTable = DataTables->FindRow<FDataTableRow>("DT_CostumeColorDataTable", nullptr)->Resources;
+			if (nullptr == CostumeColorDataTable)
+			{
+				UE_LOG(FALL_DEV_LOG, Error, TEXT("%S(%u)> if (nullptr == DT_CostumeColorDataTable)"), __FUNCTION__, __LINE__);
+			}
+
 			// 플레이 레벨(맵) 데이터 로드
 			PlayLevelDataTable = DataTables->FindRow<FDataTableRow>("DT_PlayLevelDataTable", nullptr)->Resources;
 			if (nullptr == PlayLevelDataTable)
@@ -200,13 +207,13 @@ void UBaseGameInstance::InsSaveCostumeName(const FString& _CostumeName)
 void UBaseGameInstance::InsChangeCostume(APawn* _Pawn, const FString& _CostumeName)
 {
 	UWorld* World = _Pawn->GetWorld();
-	const FCostumeDataRow* CostumeData = UGlobalDataTable::GetCostumeData(World, _CostumeName);
-	if (CostumeData && CostumeData->CostumeMesh)
+	const FCostumeColorDataRow* CostumeColorData = UGlobalDataTable::GetCostumeColorData(World, _CostumeName);
+	if (CostumeColorData && CostumeColorData->CostumeMesh)
 	{
 		// _Pawn의 스켈레탈 메시 가져오기
 		if (USkeletalMeshComponent* MeshComp = _Pawn->FindComponentByClass<USkeletalMeshComponent>())
 		{
-			MeshComp->SetSkeletalMesh(CostumeData->CostumeMesh);
+			MeshComp->SetSkeletalMesh(CostumeColorData->CostumeMesh);
 		}
 	}
 	else
@@ -220,10 +227,10 @@ void UBaseGameInstance::InsChangeCostume(APawn* _Pawn, const FString& _CostumeNa
 // 저장된 코스튬의 스켈레탈 메시 반환
 USkeletalMesh* UBaseGameInstance::InsGetCostumeMesh(APawn* _Pawn, const FString& _MeshName/* = TEXT("NULL")*/)
 {
-	const FCostumeDataRow* CostumeData = UGlobalDataTable::GetCostumeData(_Pawn->GetWorld(), _MeshName);
-	if (CostumeData && CostumeData->CostumeMesh)
+	const FCostumeColorDataRow* CostumeColorData = UGlobalDataTable::GetCostumeColorData(_Pawn->GetWorld(), _MeshName);
+	if (CostumeColorData && CostumeColorData->CostumeMesh)
 	{
-		return CostumeData->CostumeMesh;
+		return CostumeColorData->CostumeMesh;
 	}
 	else
 	{
