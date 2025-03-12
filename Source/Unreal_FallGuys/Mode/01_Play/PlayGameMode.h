@@ -17,10 +17,6 @@ class UNREAL_FALLGUYS_API APlayGameMode : public AGameMode
 public:
 	APlayGameMode();
 
-	// 플레이어 수가 변경되면 클라이언트에서 실행되는 함수
-	UFUNCTION()
-	void OnRep_ConnectedPlayers();
-
 	// 플레이어 접속시 실행되는 함수
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 
@@ -33,6 +29,14 @@ public:
 	void StartGame();
 	void StartGame_Implementation();
 
+	// 플레이어 태그 설정
+	void AssignPlayerTag(APlayerController* _NewPlayer);
+
+	// 플레이어 태그 동기화
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastAssignPlayerTag(APlayerController* _NewPlayer, const FString& _Tag);
+	void MulticastAssignPlayerTag_Implementation(APlayerController* _NewPlayer, const FString& _Tag);
+
 protected:
 	virtual void Tick(float DeltaSeconds) override;
 	void BeginPlay() override;
@@ -42,7 +46,23 @@ protected:
 
 	// 접속한 플레이어의 수
 	UPROPERTY(ReplicatedUsing = OnRep_ConnectedPlayers)
-	int32 ConnectedPlayers;
+	int ConnectedPlayers;
+
+	// 현재 태그 숫자 카운트
+	UPROPERTY(ReplicatedUsing = OnRep_PlayerCount)
+	int PlayerCount = 0;
+
+	// 플레이어 수가 변경되면 클라이언트에서 실행되는 함수
+	UFUNCTION()
+	void OnRep_ConnectedPlayers();
+
+	// PlayerCount 변경 시 클라이언트에서 실행될 함수
+	UFUNCTION()
+	void OnRep_PlayerCount();
+
+private:
+	// 플레이어 컨트롤러와 태그를 매핑하는 변수
+	TMap<APlayerController*, FString> PlayerTags;
 
 //LMH
 private:

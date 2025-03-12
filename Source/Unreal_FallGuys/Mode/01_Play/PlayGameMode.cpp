@@ -59,6 +59,10 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 		ConnectedPlayers++;
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("%s 에 접속합니다."), *CurrentLevelName);
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("서버: 플레이어가 접속했습니다. 현재 플레이어 수 = %d"), ConnectedPlayers);
+
+		// 플레이어 태그 할당
+		AssignPlayerTag(NewPlayer);
+
 		// 네트워크 동기화를 강제 실행하여 클라이언트와 데이터 맞추기
 		ForceNetUpdate();
 	}
@@ -69,11 +73,6 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("플레이를 위한 최소 인원이 충족되었습니다. 게임 시작이 가능합니다."));
 		StartGame();
 	}
-}
-
-void APlayGameMode::OnRep_ConnectedPlayers()
-{
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("클라이언트: 플레이어 수 동기화 = %d"), ConnectedPlayers);
 }
 
 // 최소 인원 체크
@@ -89,11 +88,61 @@ void APlayGameMode::StartGame_Implementation()
 	UFallConst::CanStart = true;
 }
 
+// 플레이어 태그 설정
+void APlayGameMode::AssignPlayerTag(APlayerController* _NewPlayer)
+{
+	if (!_NewPlayer)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("AssignPlayerTag: NewPlayer is nullptr!"));
+		return;
+	}
+
+	// 서버에서만 태그 증가
+	if (HasAuthority())
+	{
+		FString UniqueTag = FString::Printf(TEXT("Player_%d"), PlayerCount);
+		PlayerTags.Add(_NewPlayer, UniqueTag);
+		_NewPlayer->Tags.AddUnique(FName(*UniqueTag));
+
+		// PlayerCount 증가 후 동기화
+		PlayerCount++;
+		ForceNetUpdate();
+
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("서버: Player %s assigned tag: %s"), *_NewPlayer->GetName(), *UniqueTag);
+
+		// 모든 클라이언트에게 태그 동기화
+		MulticastAssignPlayerTag(_NewPlayer, UniqueTag);
+	}
+}
+
+// 플레이어 태그 동기화
+void APlayGameMode::MulticastAssignPlayerTag_Implementation(APlayerController* _NewPlayer, const FString& _Tag)
+{
+	if (_NewPlayer)
+	{
+		if (!_NewPlayer->Tags.Contains(FName(*_Tag))) // 중복 추가 방지
+		{
+			_NewPlayer->Tags.AddUnique(FName(*_Tag));
+			UE_LOG(FALL_DEV_LOG, Log, TEXT("클라이언트: Player %s assigned tag: %s"), *_NewPlayer->GetName(), *_Tag);
+		}
+	}
+}
+
+void APlayGameMode::OnRep_ConnectedPlayers()
+{
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("클라이언트: ConnectedPlayers 동기화 = %d"), ConnectedPlayers);
+}
+
+void APlayGameMode::OnRep_PlayerCount()
+{
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("클라이언트: PlayerCount 동기화 = %d"), PlayerCount);
+}
+
 // 동기화 변수
 void APlayGameMode::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(APlayGameMode, ConnectedPlayers);
+	DOREPLIFETIME(APlayGameMode, PlayerCount);
 }
-
 
