@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+#include "Mode/00_Title/UI/CustomButtonWidget.h"
 #include <Components/Image.h>
 #include <Components/Button.h>
 #include <Global/GlobalEnum.h>
@@ -22,7 +22,7 @@
  //};
 
 UCLASS()
-class UNREAL_FALLGUYS_API UCustomColorButtonWidget : public UUserWidget
+class UNREAL_FALLGUYS_API UCustomColorButtonWidget : public UCustomButtonWidget
 {
 	GENERATED_BODY()
 
@@ -44,11 +44,6 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
 	ECostumeColor Color = ECostumeColor::YELLOW;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"), meta = (BindWidget))
-	UButton* Button;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"), meta = (BindWidget))
-	UImage* Img_color;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
 	FString CustomName = "";
