@@ -46,7 +46,7 @@ void UMoveCycleActorComponent::Spin(float DeltaTime)
 	{
 		if (IsSpinLeft)
 		{
-			TargetMesh->K2_AddRelativeRotation(AddRotation, false, , false);
+			
 		}
 		else
 		{
@@ -67,7 +67,7 @@ void UMoveCycleActorComponent::MoveCycle(float DeltaTime)
 		Move(DeltaTime);
 	}
 
-	if (AddRotation != FVector::ZeroVector)
+	if (AddRotation != FRotator::ZeroRotator)
 	{
 		Spin(DeltaTime);
 	}
