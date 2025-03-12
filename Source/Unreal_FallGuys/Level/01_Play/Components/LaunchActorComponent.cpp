@@ -32,7 +32,7 @@ void ULaunchActorComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 	// ...
 }
 
-void ULaunchActorComponent::Launch(AActor* TartgetActor, float LaunchForce)
+void ULaunchActorComponent::Launch(AActor* TartgetActor)
 {
 	if (ACharacter* Character = Cast<ACharacter>(TartgetActor))
 	{
@@ -40,7 +40,7 @@ void ULaunchActorComponent::Launch(AActor* TartgetActor, float LaunchForce)
 		FVector TargetLocation = TartgetActor->GetActorLocation();
 		FVector LaunchDirection = (TargetLocation - SelfLocation).GetSafeNormal();
 		FVector LaunchVelocity = LaunchDirection * LaunchForce;
-		LaunchVelocity.Z = 0.0;
+		LaunchVelocity.Z = JumpForce;
 		Character->LaunchCharacter(LaunchVelocity, false, false);
 	}
 }

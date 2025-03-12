@@ -25,6 +25,12 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Launch", meta = (AllowPrivateAccess = "true"))
+	float LaunchForce = 680.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Launch", meta = (AllowPrivateAccess = "true"))
+	float JumpForce = 0.0f;
+
 	UFUNCTION()
-	void Launch(AActor* TartgetActor, float LaunchForce);
+	void Launch(AActor* TartgetActor);
 };

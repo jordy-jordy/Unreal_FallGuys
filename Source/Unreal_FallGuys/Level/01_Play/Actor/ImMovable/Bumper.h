@@ -5,23 +5,26 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Level/01_Play/Components/LaunchActorComponent.h"
-#include "Pillar.generated.h"
+#include "Bumper.generated.h"
+
 
 UENUM(BlueprintType)
-enum class EPillarType : uint8
+enum class EBumperType : uint8
 {
-	PINK,
-	SCARLET
+	PINKPILLAR,
+	SCARLETPILLAR,
+	TRIBUMPER,
+	SQBUMPER
 };
 
 UCLASS()
-class UNREAL_FALLGUYS_API APillar : public AActor
+class UNREAL_FALLGUYS_API ABumper : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	APillar();
+	ABumper();
 
 protected:
 	// Called when the game starts or when spawned
@@ -33,40 +36,44 @@ public:
 
 public:
 	// ActorComponent
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Pillar")
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Launch")
 	ULaunchActorComponent* LaunchComponent;
 
 	// MeshComponent
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Pillar")
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Bumper")
 	USceneComponent* RootScene;
 
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Pillar")
-	UStaticMeshComponent* PillarBody;
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Bumper")
+	UStaticMeshComponent* BumperBody;
 
 	// Variables
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pillar", meta = (AllowPrivateAccess = "true"))
-	EPillarType PillarType;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Launch", meta = (AllowPrivateAccess = "true"))
-	float LaunchForce = 0.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bumper", meta = (AllowPrivateAccess = "true"))
+	EBumperType BumperType;
 
 private:
 	// MeshAddress
 	FString PinkPillar = TEXT("/Game/Platformer_2/Meshes/SM_obstacle_10_001.SM_obstacle_10_001");
 	FString ScarletPillar = TEXT("/Game/Platformer_2/Meshes/SM_tower_003.SM_tower_003");
+	FString TriBumper = TEXT("/Game/Platformer_2/Meshes/SM_obstacle_19_001.SM_obstacle_19_001");
+	FString SqBumper = TEXT("/Game/Platformer_2/Meshes/SM_obstacle_18_001.SM_obstacle_18_001");
 
 	// Function
 	UFUNCTION()
 	void OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 	UFUNCTION()
-	void SetDrownMesh_P();
+	void SetPillarMesh_P();
 
 	UFUNCTION()
-	void SetDrownMesh_S();
-
+	void SetPillarMesh_S();
 
 	UFUNCTION()
-	void SetDrownMesh();
+	void SetBumperMesh_Tri();
+
+	UFUNCTION()
+	void SetBumperMesh_Sq();
+
+	UFUNCTION()
+	void SetBumperMesh();
 
 };
