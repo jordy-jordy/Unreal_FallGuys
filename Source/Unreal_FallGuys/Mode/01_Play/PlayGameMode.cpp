@@ -110,7 +110,7 @@ void APlayGameMode::AssignPlayerTag(APlayerController* _NewPlayer)
 			return;
 		}
 
-		FString UniqueTag = FString::Printf(TEXT("Player_%d"), PlayerCount);
+		FString UniqueTag = FString::Printf(TEXT("Player%d"), PlayerCount);
 		PlayerTags.Add(_NewPlayer, UniqueTag);
 		_NewPlayer->Tags.AddUnique(FName(*UniqueTag));
 
