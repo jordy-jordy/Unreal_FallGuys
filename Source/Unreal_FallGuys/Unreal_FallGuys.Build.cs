@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+ï»¿// Copyright Epic Games, Inc. All Rights Reserved.
 
 using UnrealBuildTool;
 
@@ -20,8 +20,8 @@ public class Unreal_FallGuys : ModuleRules
         "Slate",
         "SlateCore",
         "UMG",
-        "Sockets",        // ¼ÒÄÏ °ü·Ã ±â´É Ãß°¡
-        "Networking"      // ISocketSubsystem »ç¿ëÀ» À§ÇØ ÇÊ¿ä
+        "Sockets",        // ì†Œì¼“ ê´€ë ¨ ê¸°ëŠ¥ ì¶”ê°€
+        "Networking"      // ISocketSubsystem ì‚¬ìš©ì„ ìœ„í•´ í•„ìš”
         });
 
         PrivateDependencyModuleNames.AddRange(new string[] { });
