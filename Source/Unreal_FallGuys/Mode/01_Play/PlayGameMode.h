@@ -30,12 +30,21 @@ public:
 	void StartGame_Implementation();
 
 	// 플레이어 태그 설정
+	UFUNCTION(BlueprintCallable, Category = "GAME")
 	void AssignPlayerTag(APlayerController* _NewPlayer);
 
 	// 플레이어 태그 동기화
-	UFUNCTION(NetMulticast, Reliable)
+	UFUNCTION(BlueprintCallable, Reliable, NetMulticast, Category = "GAME")
 	void MulticastAssignPlayerTag(APlayerController* _NewPlayer, const FString& _Tag);
 	void MulticastAssignPlayerTag_Implementation(APlayerController* _NewPlayer, const FString& _Tag);
+
+	// 특정 플레이어의 태그 반환
+	UFUNCTION(BlueprintCallable, Category = "Player")
+	FString GetPlayerTag(APlayerController* _PlayerController) const;
+
+	// 전체 플레이어 태그 리스트 반환
+	UFUNCTION(BlueprintCallable, Category = "Player")
+	TMap<APlayerController*, FString> GetAllPlayerTags() const;
 
 protected:
 	virtual void Tick(float DeltaSeconds) override;

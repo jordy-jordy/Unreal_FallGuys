@@ -28,20 +28,20 @@ void APlayGameMode::BeginPlay()
 void APlayGameMode::ServerTravelToNextMap(const FString& url)
 {
 	//클라이언트 데리고 다같이 서버 트래블
-	GetWorld()->ServerTravel(url,false);
+	GetWorld()->ServerTravel(url, false);
 }
 
 void APlayGameMode::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	
+
 	// 게임 종료 체크
 	if (true == IsEndGame) return;
 	// 골인한 플레이어 수와 목표 인원 수 체크
 	if (CurFinishPlayer >= FinishPlayer)
 	{
 		IsEndGame = true;
-		
+
 		ServerTravelToNextMap(NextLevel);
 	}
 }
@@ -60,8 +60,12 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("%s 에 접속합니다."), *CurrentLevelName);
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("서버: 플레이어가 접속했습니다. 현재 플레이어 수 = %d"), ConnectedPlayers);
 
-		// 플레이어 태그 할당
-		AssignPlayerTag(NewPlayer);
+		// 일정 시간 후 태그 할당 (비동기 대기)
+		FTimerHandle TimerHandle;
+		GetWorldTimerManager().SetTimer(TimerHandle, [this, NewPlayer]()
+			{
+				AssignPlayerTag(NewPlayer);
+			}, 1.0f, false);
 
 		// 네트워크 동기화를 강제 실행하여 클라이언트와 데이터 맞추기
 		ForceNetUpdate();
@@ -100,6 +104,12 @@ void APlayGameMode::AssignPlayerTag(APlayerController* _NewPlayer)
 	// 서버에서만 태그 증가
 	if (HasAuthority())
 	{
+		if (PlayerTags.Contains(_NewPlayer)) // 중복 체크
+		{
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("AssignPlayerTag: Player already has a tag!"));
+			return;
+		}
+
 		FString UniqueTag = FString::Printf(TEXT("Player_%d"), PlayerCount);
 		PlayerTags.Add(_NewPlayer, UniqueTag);
 		_NewPlayer->Tags.AddUnique(FName(*UniqueTag));
@@ -120,12 +130,41 @@ void APlayGameMode::MulticastAssignPlayerTag_Implementation(APlayerController* _
 {
 	if (_NewPlayer)
 	{
+		if (!PlayerTags.Contains(_NewPlayer)) // 클라이언트에서 비어있을 경우 덮어쓰기
+		{
+			PlayerTags.Add(_NewPlayer, _Tag);
+		}
+
 		if (!_NewPlayer->Tags.Contains(FName(*_Tag))) // 중복 추가 방지
 		{
 			_NewPlayer->Tags.AddUnique(FName(*_Tag));
 			UE_LOG(FALL_DEV_LOG, Log, TEXT("클라이언트: Player %s assigned tag: %s"), *_NewPlayer->GetName(), *_Tag);
 		}
 	}
+}
+
+// 특정 플레이어의 태그 반환
+FString APlayGameMode::GetPlayerTag(APlayerController* _PlayerController) const
+{
+	if (!_PlayerController)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("GetPlayerTag: PlayerController is nullptr!"));
+		return TEXT("Invalid");
+	}
+
+	if (PlayerTags.Contains(_PlayerController))
+	{
+		return PlayerTags[_PlayerController];
+	}
+
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("GetPlayerTag: PlayerController has no tag assigned!"));
+	return TEXT("NoTag");
+}
+
+// 전체 플레이어 태그 리스트 반환
+TMap<APlayerController*, FString> APlayGameMode::GetAllPlayerTags() const
+{
+	return PlayerTags;
 }
 
 void APlayGameMode::OnRep_ConnectedPlayers()
@@ -145,4 +184,3 @@ void APlayGameMode::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 	DOREPLIFETIME(APlayGameMode, ConnectedPlayers);
 	DOREPLIFETIME(APlayGameMode, PlayerCount);
 }
-
