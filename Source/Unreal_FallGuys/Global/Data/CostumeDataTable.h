@@ -20,7 +20,7 @@ struct FCostumeDataRow : public FTableRowBase
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CostumeData")
-	ECostumeColor Color = ECostumeColor::NONE;
+	ECostumeType Type = ECostumeType::NONE;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CostumeData")
 	FVector CostumePos = FVector::ZeroVector;
@@ -29,8 +29,7 @@ public:
 	FVector CostumePivot = FVector::ZeroVector;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CostumeData")
-	USkeletalMesh* CostumeMesh = nullptr;
-
+	UStaticMesh* CostumeMesh = nullptr;
 };
 
 /**
@@ -40,5 +39,4 @@ UCLASS()
 class UNREAL_FALLGUYS_API UCostumeDataTable : public UObject
 {
 	GENERATED_BODY()
-	
 };
