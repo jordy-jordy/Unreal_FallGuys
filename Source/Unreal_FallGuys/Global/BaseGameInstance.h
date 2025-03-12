@@ -53,8 +53,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Name")
 	void InsChangeNickname(const FString& _NewNickname);
 
+	// 랜덤 플레이 레벨의 이름 반환
 	UFUNCTION(BlueprintCallable, Category = "Level")
 	FString InsGetRandomLevel();
+
+	// 리소스의 스테틱 메시 반환
+	UFUNCTION(BlueprintCallable, Category = "Resource")
+	UStaticMesh* InsGetResourceMesh(APawn* _Pawn, const FString& _MeshName = TEXT("NULL"));
 
 	// 동기화 변수
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
@@ -82,9 +87,11 @@ private:
 	class UDataTable* ResourceDataTable = nullptr;
 	//class UDataTable* ActorDataTable = nullptr;
 
+	// 코스튬 네임
 	UPROPERTY(VisibleAnywhere, Replicated, Category = "Costume")
 	FString CostumeName = TEXT("NULL");
 
+	// 닉네임
 	UPROPERTY(VisibleAnywhere, Replicated, Category = "Name")
 	FString Nickname = TEXT("TEST_JORDY");
 

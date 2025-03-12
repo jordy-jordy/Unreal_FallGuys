@@ -90,24 +90,8 @@ FString UFallGlobal::GetCostumeName(APawn* _Pawn)
 // 저장된 코스튬의 스켈레탈 메시 반환
 USkeletalMesh* UFallGlobal::GetCostumeMesh(APawn* _Pawn, const FString& _MeshName/* = TEXT("NULL")*/)
 {
-	const FCostumeDataRow* CostumeData = UGlobalDataTable::GetCostumeData(_Pawn->GetWorld(), _MeshName);
-	if (CostumeData && CostumeData->CostumeMesh)
-	{
-		return CostumeData->CostumeMesh;
-	}
-	else
-	{
-		if (_MeshName.IsEmpty())
-		{
-			UE_LOG(FALL_DEV_LOG, Warning, TEXT("GetCostumeMesh :: Empty Costume Data or Mesh"));
-		}
-		else
-		{
-			UE_LOG(FALL_DEV_LOG, Error, TEXT("GetCostumeMesh :: Invalid Costume Data or Mesh"));
-		}
-	}
-
-	return nullptr;
+	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
+	return GameIns->InsGetCostumeMesh(_Pawn, _MeshName);
 }
 
 // 닉네임 반환
@@ -184,3 +168,11 @@ FString UFallGlobal::GetRandomLevel(APawn* _Pawn)
 	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
 	return GameIns->InsGetRandomLevel();
 }
+
+// 리소스의 스테틱 메시 반환
+UStaticMesh* UFallGlobal::GetResourceMesh(APawn* _Pawn, const FString& _MeshName/* = TEXT("NULL")*/)
+{
+	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
+	return GameIns->InsGetResourceMesh(_Pawn, _MeshName);
+}
+

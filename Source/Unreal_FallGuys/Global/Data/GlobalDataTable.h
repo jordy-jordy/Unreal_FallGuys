@@ -7,6 +7,7 @@
 
 #include <Global/Data/CostumeDataTable.h>
 #include <Global/Data/PlayLevelDataTable.h>
+#include <Global/Data/ResourceDataTable.h>
 
 #include "GlobalDataTable.generated.h"
 
@@ -49,4 +50,5 @@ public:
 	//static TSubclassOf<AActor> GetActorClass(UWorld* _World, const FString& _Name);
 	static const FCostumeDataRow* GetCostumeData(UWorld* _World, const FString& _Name);
 	static const TSoftObjectPtr<UWorld> GetPlayLevelData(UWorld* _World, const FString& _Name);
+	static const FResourceDataRow* GetResourceData(UWorld* _World, const FString& _Name);
 };

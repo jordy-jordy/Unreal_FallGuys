@@ -40,7 +40,7 @@ public:
 
 	// 저장된 코스튬의 스켈레탈 메시 반환
 	UFUNCTION(BlueprintCallable)
-	static USkeletalMesh* GetCostumeMesh(APawn* _Pawn, const FString& _MeshName = TEXT("NULL"));
+	static USkeletalMesh* GetCostumeMesh(APawn* _Pawn, const FString& _MeshName);
 
 	// 닉네임 반환
 	UFUNCTION(BlueprintCallable)
@@ -58,5 +58,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static FString GetRandomLevel(APawn* _Pawn);
 
-
+	// 리소스의 스테틱 메시 반환
+	UFUNCTION(BlueprintCallable)
+	static UStaticMesh* GetResourceMesh(APawn* _Pawn, const FString& _MeshName);
 };

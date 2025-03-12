@@ -138,7 +138,7 @@ void UBaseGameInstance::InsChangeCostume(APawn* _Pawn, const FString& _CostumeNa
 	}
 	else
 	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("ChangeCostume :: Invalid Costume Data or Mesh"));
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsChangeCostume :: Invalid Costume Data or Mesh"));
 	}
 
 	InsSaveCostumeName(_CostumeName);
@@ -156,11 +156,11 @@ USkeletalMesh* UBaseGameInstance::InsGetCostumeMesh(APawn* _Pawn, const FString&
 	{
 		if (_MeshName.IsEmpty())
 		{
-			UE_LOG(FALL_DEV_LOG, Warning, TEXT("GetCostumeMesh :: Empty Costume Data or Mesh"));
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsGetCostumeMesh :: Empty Costume Data or Mesh"));
 		}
 		else
 		{
-			UE_LOG(FALL_DEV_LOG, Error, TEXT("GetCostumeMesh :: Invalid Costume Data or Mesh"));
+			UE_LOG(FALL_DEV_LOG, Error, TEXT("InsGetCostumeMesh :: Invalid Costume Data or Mesh"));
 		}
 	}
 
@@ -193,4 +193,27 @@ FString UBaseGameInstance::InsGetRandomLevel()
 	MapName = MapList[RandomIndex];
 
 	return MapList[RandomIndex]; // 랜덤으로 선택된 맵 반환
+}
+
+// 리소스의 스테틱 메시 반환
+UStaticMesh* UBaseGameInstance::InsGetResourceMesh(APawn* _Pawn, const FString& _MeshName/* = TEXT("NULL")*/)
+{
+	const FResourceDataRow* ResourceData = UGlobalDataTable::GetResourceData(_Pawn->GetWorld(), _MeshName);
+	if (ResourceData && ResourceData->Mesh)
+	{
+		return ResourceData->Mesh;
+	}
+	else
+	{
+		if (_MeshName.IsEmpty())
+		{
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsGetResourceMesh :: Empty Resource Data or Mesh"));
+		}
+		else
+		{
+			UE_LOG(FALL_DEV_LOG, Error, TEXT("InsGetResourceMesh :: Invalid Resource Data or Mesh"));
+		}
+	}
+
+	return nullptr;
 }
