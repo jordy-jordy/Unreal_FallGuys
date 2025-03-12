@@ -99,4 +99,6 @@ private:
 	TArray<FString> MapList;
 	TSet<int> PlayedMapList;
 
+	// 서버 연결 상태 변수
+	bool bIsConnected = false;
 };

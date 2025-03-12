@@ -5,6 +5,10 @@
 #include "Kismet/GameplayStatics.h"
 
 #include <Net/UnrealNetwork.h>
+#include <Sockets.h>
+#include <SocketSubsystem.h>
+#include <IPAddress.h>
+#include <Interfaces/IPv4/IPv4Address.h>
 #include <Unreal_FallGuys.h>
 #include <Global/FallGlobal.h>
 #include <Global/FallConst.h>
@@ -61,6 +65,12 @@ UBaseGameInstance::UBaseGameInstance()
 // 서버 오픈
 void UBaseGameInstance::CServerStart(UWorld* _World, FString _Port)
 {
+	if (bIsConnected)
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("현재 서버에 연결된 상태이므로 서버를 다시 시작할 수 없습니다."));
+		return;
+	}
+		
 	if (!_World)
 	{
 		UE_LOG(FALL_DEV_LOG, Error, TEXT("CServerStart: _World is nullptr"));
@@ -79,6 +89,12 @@ void UBaseGameInstance::CServerStart(UWorld* _World, FString _Port)
 // 서버 오픈 : 레벨 선택 필요
 void UBaseGameInstance::InsSelectedServerStart(UWorld* _World, FString _Port, FString _OpenLevel)
 {
+	if (bIsConnected)
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("현재 서버에 연결된 상태이므로 서버를 다시 시작할 수 없습니다."));
+		return;
+	}
+
 	if (!_World)
 	{
 		UE_LOG(FALL_DEV_LOG, Error, TEXT("CServerStart: _World is nullptr"));
@@ -97,14 +113,71 @@ void UBaseGameInstance::InsSelectedServerStart(UWorld* _World, FString _Port, FS
 // 서버 접속
 void UBaseGameInstance::CServerConnect(UWorld* _World, FString _IP, FString _Port)
 {
+	if (bIsConnected)
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("이미 서버에 연결된 상태입니다."));
+		return;
+	}
+
+	// IP 유효성 검사
+	TSharedRef<FInternetAddr> Addr = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateInternetAddr();
+	bool bIsValidIP = false;
+	Addr->SetIp(*_IP, bIsValidIP);
+
+	if (!bIsValidIP)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("잘못된 IP 주소: %s"), *_IP);
+		return;
+	}
+
+	// 포트 유효성 검사
+	if (!_Port.IsNumeric())
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("포트 번호가 숫자가 아닙니다: %s"), *_Port);
+		return;
+	}
+
+	int32 PortNum = FCString::Atoi(*_Port);
+	if (PortNum <= 0 || PortNum > 65535)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("잘못된 포트 번호 범위: %d"), PortNum);
+		return;
+	}
+
+	// 서버 연결 확인 (소켓 테스트)
+	Addr->SetPort(PortNum);
+
+	// 로컬 서버(127.0.0.1)인 경우 연결 확인을 건너뜀
+	if (_IP != "127.0.0.1")
+	{
+		FSocket* TestSocket = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateSocket(NAME_Stream, TEXT("TestSocket"), false);
+		if (!TestSocket || !TestSocket->Connect(*Addr))
+		{
+			UE_LOG(FALL_DEV_LOG, Error, TEXT("서버 연결 실패: %s:%d"), *_IP, PortNum);
+			if (TestSocket)
+			{
+				TestSocket->Close();
+				ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->DestroySocket(TestSocket);
+			}
+			return;
+		}
+
+		// 소켓 해제
+		TestSocket->Close();
+		ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->DestroySocket(TestSocket);
+	}
+
 	if (!_World)
 	{
 		UE_LOG(FALL_DEV_LOG, Error, TEXT("CServerConnect: _World is nullptr"));
 		return;
 	}
 
-	FString ConnectLevelName = FString::Printf(TEXT("%s:%s"), *_IP, *_Port);
+	// 연결 성공 -> 상태 업데이트
+	bIsConnected = true;
 
+	FString ConnectLevelName = FString::Printf(TEXT("%s:%s"), *_IP, *_Port);
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("서버 접속 시도: %s"), *ConnectLevelName);
 	UGameplayStatics::OpenLevel(_World, FName(*ConnectLevelName));
 }
 
