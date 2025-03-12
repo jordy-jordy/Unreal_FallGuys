@@ -69,9 +69,23 @@ public:
 		CurUIType = _UIType;
 	}
 
+	EUIType GetWidgetUIType()
+	{
+		return UIType;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	void ChangePlayerName(FString _Target)
+	{
+		Name = _Target;
+	}
+
 protected:
 	class UTitleUserWidget* CurUserWidget;
 	EUIType CurUIType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
+	FString Name = "";
 
 private:
 	UPROPERTY(Category = "UI", EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
@@ -82,4 +96,5 @@ private:
 	EUIType UIType;
 
 	TMultiMap<EUIType, UTitleUserWidget*> Widgets;
+
 };
