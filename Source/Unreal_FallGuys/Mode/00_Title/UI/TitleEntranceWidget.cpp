@@ -5,16 +5,15 @@
 #include "Global/GlobalEnum.h"
 
 
-void UTitleEntranceWidget::OpenValueInputPanel(bool _IsVisible)
+void UTitleEntranceWidget::VisibleInputPanel(UTitleUserWidget* _CurWidget)
 {
-	UTitleUserWidget* Widget = *GetAllWidgets().Find(EUIType::TitleIPPort);
-
-	if (true == _IsVisible)
+	if (_CurWidget->GetName().Contains("IPPort"))
 	{
-		Widget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		_CurWidget->SetVisibility(ESlateVisibility::Hidden);
 	}
 	else
 	{
-		Widget->SetVisibility(ESlateVisibility::Hidden);
+		UTitleUserWidget* Widget = *_CurWidget->GetAllWidgets().Find(EUIType::TitleIPPort);
+		Widget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	}
 }
