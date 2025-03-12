@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "RandomMap.generated.h"
+#include "PushBox.generated.h"
 
 UCLASS()
-class UNREAL_FALLGUYS_API ARandomMap : public AActor
+class UNREAL_FALLGUYS_API APushBox : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	ARandomMap();
+	APushBox();
 
 protected:
 	// Called when the game starts or when spawned
@@ -22,12 +22,5 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	UFUNCTION(BlueprintCallable)
-	FString GetRandomLevel();
-
-private:
-	TArray<FString> MapList;
-	TSet<int> PlayedMapList;
 
 };
