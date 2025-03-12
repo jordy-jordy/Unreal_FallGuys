@@ -39,19 +39,21 @@ public:
 
 //LMH
 private:
+	// 골인 목표 인원 수
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Server", meta = (AllowPrivateAccess = "true"))
 	int FinishPlayer = 2;
 
+	// 골인한 플레이어 수
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Server", meta = (AllowPrivateAccess = "true"))
 	int CurFinishPlayer = 0;
 
 	bool IsEndGame = false;
 
+	// 다음 스테이지 이름
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Server", meta = (AllowPrivateAccess = "true"))
 	FString NextLevel= TEXT("TestTravelMap");
-public:
-	
 
+public:
 	UFUNCTION()
 	void ServerTravelToNextMap(const FString& url);
 

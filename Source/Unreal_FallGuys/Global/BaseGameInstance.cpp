@@ -23,16 +23,25 @@ UBaseGameInstance::UBaseGameInstance()
 
 		if (nullptr != DataTables)
 		{
+			// 코스튬 데이터 로드
 			CostumeDataTable = DataTables->FindRow<FDataTableRow>("DT_CostumeDataTable", nullptr)->Resources;
 			if (nullptr == CostumeDataTable)
 			{
 				UE_LOG(FALL_DEV_LOG, Error, TEXT("%S(%u)> if (nullptr == CostumeDataTable)"), __FUNCTION__, __LINE__);
 			}
 
+			// 플레이 레벨(맵) 데이터 로드
 			PlayLevelDataTable = DataTables->FindRow<FDataTableRow>("DT_PlayLevelDataTable", nullptr)->Resources;
 			if (nullptr == PlayLevelDataTable)
 			{
 				UE_LOG(FALL_DEV_LOG, Error, TEXT("%S(%u)> if (nullptr == PlayLevelDataTable)"), __FUNCTION__, __LINE__);
+			}
+
+			// 리소스 데이터 로드
+			ResourceDataTable = DataTables->FindRow<FDataTableRow>("DT_ResourceDataTable", nullptr)->Resources;
+			if (nullptr == ResourceDataTable)
+			{
+				UE_LOG(FALL_DEV_LOG, Error, TEXT("%S(%u)> if (nullptr == ResourceDataTable)"), __FUNCTION__, __LINE__);
 			}
 		}
 

@@ -18,3 +18,9 @@ FString UFallConst::GlobalDataTablePath = TEXT("/Script/Engine.DataTable'/Game/B
 
 // 게임 시작이 가능한지 체크
 bool UFallConst::CanStart = false;
+
+// 기본 로컬 아이피
+FString UFallConst::DefaultIP = TEXT("127.0.0.1");
+
+// 기본 로컬 포트
+FString UFallConst::DefaultPort = TEXT("30000");

@@ -34,16 +34,15 @@ void APlayGameMode::ServerTravelToNextMap(const FString& url)
 void APlayGameMode::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-
 	
-	
+	// 게임 종료 체크
 	if (true == IsEndGame) return;
+	// 골인한 플레이어 수와 목표 인원 수 체크
 	if (CurFinishPlayer >= FinishPlayer)
 	{
 		IsEndGame = true;
 		
 		ServerTravelToNextMap(NextLevel);
-		//
 	}
 }
 

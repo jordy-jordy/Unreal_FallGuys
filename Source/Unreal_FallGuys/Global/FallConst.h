@@ -38,6 +38,12 @@ public:
 	// 게임 시작이 가능한지 체크
 	static bool CanStart;
 
+	// 기본 로컬 아이피
+	static FString DefaultIP;
+
+	// 기본 로컬 포트
+	static FString DefaultPort;
+
 private:
 
 };
