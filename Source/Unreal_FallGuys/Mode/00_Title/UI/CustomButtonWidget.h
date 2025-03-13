@@ -19,10 +19,15 @@ class UNREAL_FALLGUYS_API UCustomButtonWidget : public UUserWidget
 	
 
 protected:
+	UFUNCTION()
+	void SetButtonStyle(UMaterial* Mat,FString Path);
+	UFUNCTION()
+	void SetButtonStyle(UTexture2D* Texture,FString Path);
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"), meta = (BindWidget))
 	UButton* Button;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"), meta = (BindWidget))
-	UImage* Img_color;
+	UImage* Img_View;
 };

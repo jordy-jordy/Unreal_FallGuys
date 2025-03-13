@@ -3,3 +3,44 @@
 
 #include "Mode/00_Title/UI/CustomButtonWidget.h"
 
+void UCustomButtonWidget::SetButtonStyle(UMaterial* Mat, FString _Path)
+{
+	FText Path = FText::FromString(_Path);
+
+	Mat = LoadObject<UMaterial>(nullptr, *_Path);
+
+	if (Mat)
+	{
+		//FButtonStyle ButtonStyle = Button->GetStyle();
+		//ButtonStyle.Normal.SetResourceObject(Texture);
+		//Button->SetStyle(ButtonStyle);
+
+		Img_View->SetBrushResourceObject(Mat);
+
+		FSlateBrush& Brush = Img_View->Brush;
+		Brush.SetResourceObject(Mat);
+		Img_View->SetBrush(Brush);
+
+	}
+}
+
+void UCustomButtonWidget::SetButtonStyle(UTexture2D* Texture, FString Path)
+{
+	FText Path = FText::FromString(Path);
+
+	Texture = LoadObject<UTexture2D>(nullptr, *Path);
+
+	if (Texture)
+	{
+		//FButtonStyle ButtonStyle = Button->GetStyle();
+		//ButtonStyle.Normal.SetResourceObject(Texture);
+		//Button->SetStyle(ButtonStyle);
+
+		Img_View->SetBrushResourceObject(Texture);
+
+		FSlateBrush& Brush = Img_View->Brush;
+		Brush.SetResourceObject(Texture);
+		Img_View->SetBrush(Brush);
+
+	}
+}

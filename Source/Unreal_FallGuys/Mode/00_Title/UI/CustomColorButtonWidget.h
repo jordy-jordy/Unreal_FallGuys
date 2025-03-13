@@ -32,8 +32,7 @@ public:
 
 	void NativeConstruct() override;
 
-	UFUNCTION()
-	void SetButtonStyle(FString Path);
+	
 
 	UFUNCTION(BlueprintCallable)
 	void ChangePawnColor(ECostumeColor color);
@@ -48,7 +47,7 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
 	FString CustomName = "";
 
-	UTexture2D* NewTexture = nullptr;
+	UMaterial* Mat = nullptr;
 
 	bool IsSeleted = false;
 
