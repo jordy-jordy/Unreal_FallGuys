@@ -4,7 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameMode.h"
+
+#include <Global/GlobalEnum.h>
+
 #include "PlayGameMode.generated.h"
+
 
 /**
  * 
@@ -29,14 +33,14 @@ public:
 	void StartGame();
 	void StartGame_Implementation();
 
-	// 플레이어 태그 설정
-	UFUNCTION(BlueprintCallable, Category = "GAME")
-	void AssignPlayerTag(APlayerController* _NewPlayer);
+	// 플레이어 정보 설정
+	UFUNCTION(BlueprintCallable, Category = "Game")
+	void AssignPlayerInfo(APlayerController* _NewPlayer);
 
-	// 플레이어 태그 동기화
-	UFUNCTION(BlueprintCallable, Reliable, NetMulticast, Category = "GAME")
-	void MulticastAssignPlayerTag(APlayerController* _NewPlayer, const FString& _Tag);
-	void MulticastAssignPlayerTag_Implementation(APlayerController* _NewPlayer, const FString& _Tag);
+	// 플레이어 정보 동기화
+	UFUNCTION(NetMulticast, Reliable, BlueprintCallable, Category = "Game")
+	void S2M_AssignPlayerInfo(APlayerController* _NewPlayer, const FString& _Tag, EPlayerStatus _Status);
+	void S2M_AssignPlayerInfo_Implementation(APlayerController* _NewPlayer, const FString& _Tag, EPlayerStatus _Status);
 
 protected:
 	virtual void Tick(float DeltaSeconds) override;

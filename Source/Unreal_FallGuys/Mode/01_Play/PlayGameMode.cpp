@@ -31,7 +31,7 @@ void APlayGameMode::ServerTravelToNextMap(const FString& url)
 	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
 	if (HasAuthority() && GameInstance)
 	{
-		GameInstance->SavePlayerTags();
+		GameInstance->InsSavePlayerInfo();
 	}
 
 	//클라이언트 데리고 다같이 서버 트래블
@@ -70,12 +70,24 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 
 		if (false == GameInstance->IsMovedLevel)
 		{
-			AssignPlayerTag(NewPlayer);
+			AssignPlayerInfo(NewPlayer);
 		}
 
 		if (true == GameInstance->IsMovedLevel)
 		{
-			GameInstance->LoadPlayerTags();
+			GameInstance->InsLoadPlayerInfo();
+
+			// 모든 플레이어 정보 클라이언트에 동기화
+			for (const auto& Entry : GameInstance->InsGetAllPlayerInfo())
+			{
+				APlayerController* PlayerController = Entry.Key;
+				const FPlayerInfo& PlayerInfo = Entry.Value;
+
+				if (PlayerController)
+				{
+					S2M_AssignPlayerInfo(PlayerController, PlayerInfo.Tag, PlayerInfo.Status);
+				}
+			}
 		}
 
 		// 네트워크 동기화를 강제 실행하여 클라이언트와 데이터 맞추기
@@ -103,51 +115,52 @@ void APlayGameMode::StartGame_Implementation()
 	UFallConst::CanStart = true;
 }
 
-// 플레이어 태그 설정
-void APlayGameMode::AssignPlayerTag(APlayerController* _NewPlayer)
+// 플레이어 정보 설정
+void APlayGameMode::AssignPlayerInfo(APlayerController* _NewPlayer)
 {
 	if (!_NewPlayer)
 	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("AssignPlayerTag: NewPlayer is nullptr!"));
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("AssignPlayerInfo: NewPlayer is nullptr!"));
 		return;
 	}
 
-	// 서버에서만 태그 증가
 	if (HasAuthority())
 	{
 		UBaseGameInstance* Ins = Cast<UBaseGameInstance>(GetGameInstance());
 
-		if (Ins->InsGetAllPlayerTags().Contains(_NewPlayer)) // 중복 체크
+		if (Ins->InsGetAllPlayerInfo().Contains(_NewPlayer)) // 중복 체크
 		{
-			UE_LOG(FALL_DEV_LOG, Warning, TEXT("AssignPlayerTag: Player already has a tag!"));
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("AssignPlayerInfo: Player already exists!"));
 			return;
 		}
 
 		FString UniqueTag = FString::Printf(TEXT("Player%d"), PlayerCount);
-		Ins->PlayerTags.Add(_NewPlayer, UniqueTag);
+		Ins->InsSetPlayerInfo(_NewPlayer, UniqueTag, EPlayerStatus::DEFAULT);
 		_NewPlayer->Tags.AddUnique(FName(*UniqueTag));
 
-		// PlayerCount 증가 후 동기화
 		PlayerCount++;
 		ForceNetUpdate();
 
-		UE_LOG(FALL_DEV_LOG, Log, TEXT("서버: Player %s assigned tag: %s"), *_NewPlayer->GetName(), *UniqueTag);
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("서버: Player %s assigned tag: %s with status DEFAULT"), *_NewPlayer->GetName(), *UniqueTag);
 
-		// 모든 클라이언트에게 태그 동기화
-		MulticastAssignPlayerTag(_NewPlayer, UniqueTag);
+		// 모든 클라이언트에게 정보 동기화
+		if (_NewPlayer)
+		{
+			S2M_AssignPlayerInfo(_NewPlayer, UniqueTag, EPlayerStatus::DEFAULT);
+		}
 	}
 }
 
-// 플레이어 태그 동기화
-void APlayGameMode::MulticastAssignPlayerTag_Implementation(APlayerController* _NewPlayer, const FString& _Tag)
+// 플레이어 정보 동기화
+void APlayGameMode::S2M_AssignPlayerInfo_Implementation(APlayerController* _NewPlayer, const FString& _Tag, EPlayerStatus _Status)
 {
 	UBaseGameInstance* Ins = Cast<UBaseGameInstance>(GetGameInstance());
 
 	if (_NewPlayer)
 	{
-		if (!Ins->InsGetAllPlayerTags().Contains(_NewPlayer)) // 클라이언트에서 비어있을 경우 덮어쓰기
+		if (!Ins->InsGetAllPlayerInfo().Contains(_NewPlayer)) // 클라이언트에서 없으면 추가
 		{
-			Ins->PlayerTags.Add(_NewPlayer, _Tag);
+			Ins->InsSetPlayerInfo(_NewPlayer, _Tag, _Status);
 		}
 
 		if (!_NewPlayer->Tags.Contains(FName(*_Tag))) // 중복 추가 방지

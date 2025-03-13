@@ -6,9 +6,31 @@
 #include "Engine/GameInstance.h"
 
 #include <Global/Data/GlobalDataTable.h>
+#include <Global/GlobalEnum.h>
 
 #include "BaseGameInstance.generated.h"
 
+
+USTRUCT(BlueprintType)
+struct FPlayerInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	FString Tag;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	EPlayerStatus Status;
+
+	// 명확한 생성자 추가
+	FPlayerInfo()
+		: Tag(TEXT("NoTag")), Status(EPlayerStatus::DEFAULT) {
+	}
+
+	FPlayerInfo(const FString& InTag, EPlayerStatus InStatus)
+		: Tag(InTag), Status(InStatus) {
+	}
+};
 
 /**
  *
@@ -61,29 +83,33 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Resource")
 	UStaticMesh* InsGetResourceMesh(APawn* _Pawn, const FString& _MeshName = TEXT("NULL"));
 
-	// 특정 플레이어의 태그 반환
-	UFUNCTION(BlueprintCallable, Category = "Player")
-	FString InsGetPlayerTag(APlayerController* _PlayerController) const;
-
-	// 전체 플레이어 태그 리스트 반환
-	UFUNCTION(BlueprintCallable, Category = "Player")
-	TMap<APlayerController*, FString> InsGetAllPlayerTags() const;
-
-	// 플레이어 컨트롤러와 태그를 매핑하는 변수
+	// 플레이어 컨트롤러와 정보(태그 + 상태)를 매핑하는 변수
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player")
-	TMap<APlayerController*, FString> PlayerTags;
+	TMap<APlayerController*, FPlayerInfo> PlayerInfoMap;
 
-	// PlayerTags를 백업하기 위한 변수
+	// PlayerInfoMap을 백업하기 위한 변수 (레벨 이동 시 사용)
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player")
-	TMap<FString, FString> PersistentPlayerTags; // 컨트롤러의 이름을 키로 사용
+	TMap<FString, FPlayerInfo> PersistentPlayerInfoMap; // 컨트롤러의 이름을 키로 사용
 
-	// PlayerTags를 백업
+	// 특정 플레이어의 정보 가져오기
 	UFUNCTION(BlueprintCallable, Category = "Player")
-	void SavePlayerTags();
+	FPlayerInfo InsGetPlayerInfo(APlayerController* _PlayerController) const;
 
-	// PlayerTags를 복원
+	// 특정 플레이어의 정보 설정
 	UFUNCTION(BlueprintCallable, Category = "Player")
-	void LoadPlayerTags();
+	void InsSetPlayerInfo(APlayerController* _PlayerController, const FString& _Tag, EPlayerStatus _Status);
+
+	// 모든 플레이어 정보 반환
+	UFUNCTION(BlueprintCallable, Category = "Player")
+	TMap<APlayerController*, FPlayerInfo> InsGetAllPlayerInfo() const;
+
+	// PlayerInfoMap을 저장 (레벨 이동 시 사용)
+	UFUNCTION(BlueprintCallable, Category = "Player")
+	void InsSavePlayerInfo();
+
+	// PlayerInfoMap을 복원 (레벨 이동 후)
+	UFUNCTION(BlueprintCallable, Category = "Player")
+	void InsLoadPlayerInfo();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player")
 	bool IsMovedLevel = false;

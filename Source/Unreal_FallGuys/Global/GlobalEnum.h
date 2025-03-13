@@ -28,6 +28,17 @@ enum class ECostumeType : uint8
 	MAX UMETA(DisplayName = "Max")
 };
 
+// 코스튬 상하의
+UENUM(BlueprintType)
+enum class EPlayerStatus : uint8
+{
+	NONE UMETA(DisplayName = "None"),
+	DEFAULT UMETA(DisplayName = "Default"),
+	FAIL UMETA(DisplayName = "Fail"),
+	SUCCESS UMETA(DisplayName = "Success"),
+	MAX UMETA(DisplayName = "Max")
+};
+
 UENUM(BlueprintType)
 enum class EUIType : uint8
 {

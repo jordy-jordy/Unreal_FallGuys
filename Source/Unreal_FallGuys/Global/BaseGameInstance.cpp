@@ -299,60 +299,80 @@ UStaticMesh* UBaseGameInstance::InsGetResourceMesh(APawn* _Pawn, const FString& 
 	return nullptr;
 }
 
-// 특정 플레이어의 태그 반환
-FString UBaseGameInstance::InsGetPlayerTag(APlayerController* _PlayerController) const
+// 특정 플레이어의 정보 가져오기
+FPlayerInfo UBaseGameInstance::InsGetPlayerInfo(APlayerController* _PlayerController) const
 {
 	if (!_PlayerController)
 	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("GetPlayerTag: PlayerController is nullptr!"));
-		return TEXT("Invalid");
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("InsGetPlayerInfo: PlayerController is nullptr!"));
+		return FPlayerInfo();
 	}
 
-	if (PlayerTags.Contains(_PlayerController))
+	if (PlayerInfoMap.Contains(_PlayerController))
 	{
-		return PlayerTags[_PlayerController];
+		return PlayerInfoMap[_PlayerController];
 	}
 
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("GetPlayerTag: PlayerController has no tag assigned!"));
-	return TEXT("NoTag");
+	return FPlayerInfo();
 }
 
-// 전체 플레이어 태그 리스트 반환
-TMap<APlayerController*, FString> UBaseGameInstance::InsGetAllPlayerTags() const
+// 특정 플레이어의 정보 설정
+void UBaseGameInstance::InsSetPlayerInfo(APlayerController* _PlayerController, const FString& _Tag, EPlayerStatus _Status)
 {
-	return PlayerTags;
+	if (!_PlayerController)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("InsSetPlayerInfo: PlayerController is nullptr!"));
+		return;
+	}
+
+	PlayerInfoMap.Add(_PlayerController, FPlayerInfo(_Tag, _Status));
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("InsSetPlayerInfo: %s -> Tag: %s, Status: %d"), *_PlayerController->GetName(), *_Tag, (uint8)_Status);
 }
 
-void UBaseGameInstance::SavePlayerTags()
+// 모든 플레이어 정보 반환
+TMap<APlayerController*, FPlayerInfo> UBaseGameInstance::InsGetAllPlayerInfo() const
 {
-	PersistentPlayerTags.Empty();
-	for (const auto& Entry : PlayerTags)
+	return PlayerInfoMap;
+}
+
+// PlayerInfoMap을 저장 (레벨 이동 시 사용)
+void UBaseGameInstance::InsSavePlayerInfo()
+{
+	PersistentPlayerInfoMap.Empty();
+	for (const auto& Entry : PlayerInfoMap)
 	{
 		if (Entry.Key) // 유효한 PlayerController 확인
 		{
 			FString PlayerName = Entry.Key->GetName();
-			PersistentPlayerTags.Add(PlayerName, Entry.Value);
+			PersistentPlayerInfoMap.Add(PlayerName, Entry.Value);
 		}
 	}
 
 	IsMovedLevel = true;
 }
 
-void UBaseGameInstance::LoadPlayerTags()
+// PlayerInfoMap을 복원 (레벨 이동 후)
+void UBaseGameInstance::InsLoadPlayerInfo()
 {
-	PlayerTags.Empty();
+	PlayerInfoMap.Empty();
 	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
 	{
 		APlayerController* PlayerController = It->Get();
 		if (PlayerController)
 		{
 			FString PlayerName = PlayerController->GetName();
-			if (PersistentPlayerTags.Contains(PlayerName))
+			if (PersistentPlayerInfoMap.Contains(PlayerName))
 			{
-				PlayerTags.Add(PlayerController, PersistentPlayerTags[PlayerName]);
-				UE_LOG(FALL_DEV_LOG, Log, TEXT("서버: Player %s assigned tag: %s"), *PlayerName, *PersistentPlayerTags[PlayerName]);
+				if (!PlayerInfoMap.Contains(PlayerController)) // 중복 추가 방지
+				{
+					PlayerInfoMap.Add(PlayerController, PersistentPlayerInfoMap[PlayerName]);
+				}
+
+				UE_LOG(FALL_DEV_LOG, Log, TEXT("서버: Player %s assigned tag: %s, status: %d"),
+					*PlayerName,
+					*PersistentPlayerInfoMap[PlayerName].Tag,
+					(uint8)PersistentPlayerInfoMap[PlayerName].Status);
 			}
 		}
 	}
-
 }
