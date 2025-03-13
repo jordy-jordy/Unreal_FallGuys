@@ -61,9 +61,16 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Resource")
 	UStaticMesh* InsGetResourceMesh(APawn* _Pawn, const FString& _MeshName = TEXT("NULL"));
 
+	// 특정 플레이어의 태그 반환
+	UFUNCTION(BlueprintCallable, Category = "Player")
+	FString InsGetPlayerTag(APlayerController* _PlayerController) const;
+
+	// 전체 플레이어 태그 리스트 반환
+	UFUNCTION(BlueprintCallable, Category = "Player")
+	TMap<APlayerController*, FString> InsGetAllPlayerTags() const;
+
 	// 동기화 변수
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
-
 
 protected:
 	UFUNCTION(BlueprintCallable, Category = "DataTable")
@@ -102,4 +109,8 @@ private:
 
 	// 서버 연결 상태 변수
 	bool bIsConnected = false;
+	
+	// 플레이어 컨트롤러와 태그를 매핑하는 변수
+	TMap<APlayerController*, FString> PlayerTags;
 };
+
