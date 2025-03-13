@@ -69,6 +69,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Player")
 	TMap<APlayerController*, FString> InsGetAllPlayerTags() const;
 
+
+	// 플레이어 컨트롤러와 태그를 매핑하는 변수
+	TMap<APlayerController*, FString> PlayerTags;
+
 	// 동기화 변수
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 
@@ -109,8 +113,6 @@ private:
 
 	// 서버 연결 상태 변수
 	bool bIsConnected = false;
-	
-	// 플레이어 컨트롤러와 태그를 매핑하는 변수
-	TMap<APlayerController*, FString> PlayerTags;
+
 };
 

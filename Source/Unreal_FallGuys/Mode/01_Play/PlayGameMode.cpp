@@ -61,12 +61,7 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("%s 에 접속합니다."), *CurrentLevelName);
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("서버: 플레이어가 접속했습니다. 현재 플레이어 수 = %d"), ConnectedPlayers);
 
-		// 일정 시간 후 태그 할당 (비동기 대기)
-		FTimerHandle TimerHandle;
-		GetWorldTimerManager().SetTimer(TimerHandle, [this, NewPlayer]()
-			{
-				AssignPlayerTag(NewPlayer);
-			}, 1.0f, false);
+		AssignPlayerTag(NewPlayer);
 
 		// 네트워크 동기화를 강제 실행하여 클라이언트와 데이터 맞추기
 		ForceNetUpdate();
@@ -114,7 +109,7 @@ void APlayGameMode::AssignPlayerTag(APlayerController* _NewPlayer)
 		}
 
 		FString UniqueTag = FString::Printf(TEXT("Player%d"), PlayerCount);
-		Ins->InsGetAllPlayerTags().Add(_NewPlayer, UniqueTag);
+		Ins->PlayerTags.Add(_NewPlayer, UniqueTag);
 		_NewPlayer->Tags.AddUnique(FName(*UniqueTag));
 
 		// PlayerCount 증가 후 동기화
@@ -137,7 +132,7 @@ void APlayGameMode::MulticastAssignPlayerTag_Implementation(APlayerController* _
 	{
 		if (!Ins->InsGetAllPlayerTags().Contains(_NewPlayer)) // 클라이언트에서 비어있을 경우 덮어쓰기
 		{
-			Ins->InsGetAllPlayerTags().Add(_NewPlayer, _Tag);
+			Ins->PlayerTags.Add(_NewPlayer, _Tag);
 		}
 
 		if (!_NewPlayer->Tags.Contains(FName(*_Tag))) // 중복 추가 방지
