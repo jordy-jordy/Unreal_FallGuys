@@ -14,4 +14,7 @@ class UNREAL_FALLGUYS_API UTitleHomeWidget : public UTitleUserWidget
 {
 	GENERATED_BODY()
 
+private:
+	FString PlayerName = "";
+
 };
