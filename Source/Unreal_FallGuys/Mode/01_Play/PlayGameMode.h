@@ -77,10 +77,10 @@ private:
 
 	// 다음 스테이지 이름
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Server", meta = (AllowPrivateAccess = "true"))
-	FString NextLevel= TEXT("TestTravelMap");
+	FString NextLevel= TEXT("PlayLevel");
 
 public:
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void ServerTravelToNextMap(const FString& url);
 
 	UFUNCTION(BlueprintCallable)

@@ -69,9 +69,24 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Player")
 	TMap<APlayerController*, FString> InsGetAllPlayerTags() const;
 
-
 	// 플레이어 컨트롤러와 태그를 매핑하는 변수
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player")
 	TMap<APlayerController*, FString> PlayerTags;
+
+	// PlayerTags를 백업하기 위한 변수
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player")
+	TMap<FString, FString> PersistentPlayerTags; // 컨트롤러의 이름을 키로 사용
+
+	// PlayerTags를 백업
+	UFUNCTION(BlueprintCallable, Category = "Player")
+	void SavePlayerTags();
+
+	// PlayerTags를 복원
+	UFUNCTION(BlueprintCallable, Category = "Player")
+	void LoadPlayerTags();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player")
+	bool IsMovedLevel = false;
 
 	// 동기화 변수
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;

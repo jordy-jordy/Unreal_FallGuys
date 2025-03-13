@@ -68,5 +68,5 @@ public:
 
 	// 전체 플레이어 태그 리스트 반환
 	UFUNCTION(BlueprintCallable)
-	TMap<APlayerController*, FString> GetAllPlayerTags(APlayerController* _PlayerController);
+	static TMap<APlayerController*, FString> GetAllPlayerTags(APlayerController* _PlayerController);
 };

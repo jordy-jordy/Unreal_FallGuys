@@ -12,6 +12,7 @@
 #include <Unreal_FallGuys.h>
 #include <Global/FallGlobal.h>
 #include <Global/FallConst.h>
+#include <Unreal_FallGuys.h>
 
 
 UBaseGameInstance::UBaseGameInstance()
@@ -77,7 +78,7 @@ void UBaseGameInstance::CServerStart(UWorld* _World, FString _Port)
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("현재 서버에 연결된 상태이므로 서버를 다시 시작할 수 없습니다."));
 		return;
 	}
-		
+
 	if (!_World)
 	{
 		UE_LOG(FALL_DEV_LOG, Error, TEXT("CServerStart: _World is nullptr"));
@@ -320,4 +321,38 @@ FString UBaseGameInstance::InsGetPlayerTag(APlayerController* _PlayerController)
 TMap<APlayerController*, FString> UBaseGameInstance::InsGetAllPlayerTags() const
 {
 	return PlayerTags;
+}
+
+void UBaseGameInstance::SavePlayerTags()
+{
+	PersistentPlayerTags.Empty();
+	for (const auto& Entry : PlayerTags)
+	{
+		if (Entry.Key) // 유효한 PlayerController 확인
+		{
+			FString PlayerName = Entry.Key->GetName();
+			PersistentPlayerTags.Add(PlayerName, Entry.Value);
+		}
+	}
+
+	IsMovedLevel = true;
+}
+
+void UBaseGameInstance::LoadPlayerTags()
+{
+	PlayerTags.Empty();
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	{
+		APlayerController* PlayerController = It->Get();
+		if (PlayerController)
+		{
+			FString PlayerName = PlayerController->GetName();
+			if (PersistentPlayerTags.Contains(PlayerName))
+			{
+				PlayerTags.Add(PlayerController, PersistentPlayerTags[PlayerName]);
+				UE_LOG(FALL_DEV_LOG, Log, TEXT("서버: Player %s assigned tag: %s"), *PlayerName, *PersistentPlayerTags[PlayerName]);
+			}
+		}
+	}
+
 }

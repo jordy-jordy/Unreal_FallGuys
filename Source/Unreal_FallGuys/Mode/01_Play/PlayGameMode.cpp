@@ -28,6 +28,12 @@ void APlayGameMode::BeginPlay()
 
 void APlayGameMode::ServerTravelToNextMap(const FString& url)
 {
+	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
+	if (HasAuthority() && GameInstance)
+	{
+		GameInstance->SavePlayerTags();
+	}
+
 	//클라이언트 데리고 다같이 서버 트래블
 	GetWorld()->ServerTravel(url, false);
 }
@@ -53,6 +59,7 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 	Super::PostLogin(NewPlayer);
 
 	FString CurrentLevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
+	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
 
 	// 서버에서만 실행
 	if (HasAuthority())
@@ -61,7 +68,15 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("%s 에 접속합니다."), *CurrentLevelName);
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("서버: 플레이어가 접속했습니다. 현재 플레이어 수 = %d"), ConnectedPlayers);
 
-		AssignPlayerTag(NewPlayer);
+		if (false == GameInstance->IsMovedLevel)
+		{
+			AssignPlayerTag(NewPlayer);
+		}
+
+		if (true == GameInstance->IsMovedLevel)
+		{
+			GameInstance->LoadPlayerTags();
+		}
 
 		// 네트워크 동기화를 강제 실행하여 클라이언트와 데이터 맞추기
 		ForceNetUpdate();
