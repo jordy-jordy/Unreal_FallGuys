@@ -78,6 +78,10 @@ void UTitleUserWidget::CreateChildWidget(TSubclassOf<UUserWidget> _Widget, bool 
 	{
 		UIType = EUIType::TitleIPPort;
 	}
+	else if (WidgetName.Contains(FString("TitleName")))
+	{
+		UIType = EUIType::TitleName;
+	}
 
 	Widgets.Emplace(UIType, Widget);
 
@@ -116,6 +120,10 @@ void UTitleUserWidget::AllWidgetSelfHitTestInvisible()
 void UTitleUserWidget::SwitchWidget(EUIType _UIType)
 {
 	TMultiMap<EUIType, UTitleUserWidget*> AllWidget = GetAllWidgets();
+	if (true == AllWidget.IsEmpty())
+	{
+		return;
+	}
 
 	UTitleUserWidget* Value = *AllWidget.Find(_UIType);
 	if (nullptr == Value)

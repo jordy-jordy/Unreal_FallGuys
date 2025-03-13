@@ -61,4 +61,12 @@ public:
 	// 리소스의 스테틱 메시 반환
 	UFUNCTION(BlueprintCallable)
 	static UStaticMesh* GetResourceMesh(APawn* _Pawn, const FString& _MeshName);
+
+	// 특정 플레이어의 태그 반환
+	UFUNCTION(BlueprintCallable)
+	static FString GetPlayerTag(APlayerController* _PlayerController);
+
+	// 전체 플레이어 태그 리스트 반환
+	UFUNCTION(BlueprintCallable)
+	TMap<APlayerController*, FString> GetAllPlayerTags(APlayerController* _PlayerController);
 };

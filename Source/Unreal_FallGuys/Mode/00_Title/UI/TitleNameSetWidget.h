@@ -4,14 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "Mode/00_Title/UI/TitleUserWidget.h"
-#include "TitleHomeWidget.generated.h"
+#include "TitleNameSetWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class UNREAL_FALLGUYS_API UTitleHomeWidget : public UTitleUserWidget
+class UNREAL_FALLGUYS_API UTitleNameSetWidget : public UTitleUserWidget
 {
 	GENERATED_BODY()
-
+	
 };

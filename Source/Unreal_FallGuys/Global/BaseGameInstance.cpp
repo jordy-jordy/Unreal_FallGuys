@@ -297,3 +297,27 @@ UStaticMesh* UBaseGameInstance::InsGetResourceMesh(APawn* _Pawn, const FString& 
 
 	return nullptr;
 }
+
+// 특정 플레이어의 태그 반환
+FString UBaseGameInstance::InsGetPlayerTag(APlayerController* _PlayerController) const
+{
+	if (!_PlayerController)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("GetPlayerTag: PlayerController is nullptr!"));
+		return TEXT("Invalid");
+	}
+
+	if (PlayerTags.Contains(_PlayerController))
+	{
+		return PlayerTags[_PlayerController];
+	}
+
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("GetPlayerTag: PlayerController has no tag assigned!"));
+	return TEXT("NoTag");
+}
+
+// 전체 플레이어 태그 리스트 반환
+TMap<APlayerController*, FString> UBaseGameInstance::InsGetAllPlayerTags() const
+{
+	return PlayerTags;
+}

@@ -36,6 +36,7 @@ enum class EUIType : uint8
 	TitleEntrance UMETA(DisplayName = "TitleEntrance"),
 	CustomInven UMETA(DisplayName = "CustomInven"),
 	TitleIPPort UMETA(DisplayName = "TitleIPPort"),
+	TitleName UMETA(DisplayName = "TitleName"),
 	MAX UMETA(DisplayName = "MAX"),
 };
 

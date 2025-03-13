@@ -38,14 +38,6 @@ public:
 	void MulticastAssignPlayerTag(APlayerController* _NewPlayer, const FString& _Tag);
 	void MulticastAssignPlayerTag_Implementation(APlayerController* _NewPlayer, const FString& _Tag);
 
-	// 특정 플레이어의 태그 반환
-	UFUNCTION(BlueprintCallable, Category = "Player")
-	FString GetPlayerTag(APlayerController* _PlayerController) const;
-
-	// 전체 플레이어 태그 리스트 반환
-	UFUNCTION(BlueprintCallable, Category = "Player")
-	TMap<APlayerController*, FString> GetAllPlayerTags() const;
-
 protected:
 	virtual void Tick(float DeltaSeconds) override;
 	void BeginPlay() override;
@@ -70,8 +62,6 @@ protected:
 	void OnRep_PlayerCount();
 
 private:
-	// 플레이어 컨트롤러와 태그를 매핑하는 변수
-	TMap<APlayerController*, FString> PlayerTags;
 
 //LMH
 private:

@@ -7,6 +7,7 @@
 
 #include <Unreal_FallGuys.h>
 #include <Global/FallConst.h>
+#include <Global/BaseGameInstance.h>
 
 
 APlayGameMode::APlayGameMode()
@@ -104,14 +105,16 @@ void APlayGameMode::AssignPlayerTag(APlayerController* _NewPlayer)
 	// 서버에서만 태그 증가
 	if (HasAuthority())
 	{
-		if (PlayerTags.Contains(_NewPlayer)) // 중복 체크
+		UBaseGameInstance* Ins = Cast<UBaseGameInstance>(GetGameInstance());
+
+		if (Ins->InsGetAllPlayerTags().Contains(_NewPlayer)) // 중복 체크
 		{
 			UE_LOG(FALL_DEV_LOG, Warning, TEXT("AssignPlayerTag: Player already has a tag!"));
 			return;
 		}
 
 		FString UniqueTag = FString::Printf(TEXT("Player%d"), PlayerCount);
-		PlayerTags.Add(_NewPlayer, UniqueTag);
+		Ins->InsGetAllPlayerTags().Add(_NewPlayer, UniqueTag);
 		_NewPlayer->Tags.AddUnique(FName(*UniqueTag));
 
 		// PlayerCount 증가 후 동기화
@@ -128,11 +131,13 @@ void APlayGameMode::AssignPlayerTag(APlayerController* _NewPlayer)
 // 플레이어 태그 동기화
 void APlayGameMode::MulticastAssignPlayerTag_Implementation(APlayerController* _NewPlayer, const FString& _Tag)
 {
+	UBaseGameInstance* Ins = Cast<UBaseGameInstance>(GetGameInstance());
+
 	if (_NewPlayer)
 	{
-		if (!PlayerTags.Contains(_NewPlayer)) // 클라이언트에서 비어있을 경우 덮어쓰기
+		if (!Ins->InsGetAllPlayerTags().Contains(_NewPlayer)) // 클라이언트에서 비어있을 경우 덮어쓰기
 		{
-			PlayerTags.Add(_NewPlayer, _Tag);
+			Ins->InsGetAllPlayerTags().Add(_NewPlayer, _Tag);
 		}
 
 		if (!_NewPlayer->Tags.Contains(FName(*_Tag))) // 중복 추가 방지
@@ -141,30 +146,6 @@ void APlayGameMode::MulticastAssignPlayerTag_Implementation(APlayerController* _
 			UE_LOG(FALL_DEV_LOG, Log, TEXT("클라이언트: Player %s assigned tag: %s"), *_NewPlayer->GetName(), *_Tag);
 		}
 	}
-}
-
-// 특정 플레이어의 태그 반환
-FString APlayGameMode::GetPlayerTag(APlayerController* _PlayerController) const
-{
-	if (!_PlayerController)
-	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("GetPlayerTag: PlayerController is nullptr!"));
-		return TEXT("Invalid");
-	}
-
-	if (PlayerTags.Contains(_PlayerController))
-	{
-		return PlayerTags[_PlayerController];
-	}
-
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("GetPlayerTag: PlayerController has no tag assigned!"));
-	return TEXT("NoTag");
-}
-
-// 전체 플레이어 태그 리스트 반환
-TMap<APlayerController*, FString> APlayGameMode::GetAllPlayerTags() const
-{
-	return PlayerTags;
 }
 
 void APlayGameMode::OnRep_ConnectedPlayers()

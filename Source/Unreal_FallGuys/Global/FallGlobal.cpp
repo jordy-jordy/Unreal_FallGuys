@@ -176,3 +176,17 @@ UStaticMesh* UFallGlobal::GetResourceMesh(APawn* _Pawn, const FString& _MeshName
 	return GameIns->InsGetResourceMesh(_Pawn, _MeshName);
 }
 
+// 특정 플레이어의 태그 반환
+FString UFallGlobal::GetPlayerTag(APlayerController* _PlayerController)
+{
+	UBaseGameInstance* GameIns = _PlayerController->GetGameInstance<UBaseGameInstance>();
+	return GameIns->InsGetPlayerTag(_PlayerController);
+}
+
+// 전체 플레이어 태그 리스트 반환
+TMap<APlayerController*, FString> UFallGlobal::GetAllPlayerTags(APlayerController* _PlayerController)
+{
+	UBaseGameInstance* GameIns = _PlayerController->GetGameInstance<UBaseGameInstance>();
+	return GameIns->InsGetAllPlayerTags();
+}
+
