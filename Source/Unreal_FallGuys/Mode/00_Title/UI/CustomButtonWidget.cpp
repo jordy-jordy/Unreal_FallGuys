@@ -24,11 +24,11 @@ void UCustomButtonWidget::SetButtonStyle(UMaterial* Mat, FString _Path)
 	}
 }
 
-void UCustomButtonWidget::SetButtonStyle(UTexture2D* Texture, FString Path)
+void UCustomButtonWidget::SetButtonStyle(UTexture2D* Texture, FString _Path)
 {
-	FText Path = FText::FromString(Path);
+	FText Path = FText::FromString(_Path);
 
-	Texture = LoadObject<UTexture2D>(nullptr, *Path);
+	Texture = LoadObject<UTexture2D>(nullptr, *_Path);
 
 	if (Texture)
 	{

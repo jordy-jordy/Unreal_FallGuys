@@ -19,9 +19,9 @@ class UNREAL_FALLGUYS_API UCustomButtonWidget : public UUserWidget
 	
 
 protected:
-	UFUNCTION()
+	//UFUNCTION()
 	void SetButtonStyle(UMaterial* Mat,FString Path);
-	UFUNCTION()
+	//UFUNCTION()
 	void SetButtonStyle(UTexture2D* Texture,FString Path);
 
 
