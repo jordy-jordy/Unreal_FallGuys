@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Level/01_Play/Components/MovementActorComponent.h"
+#include "Level/01_Play/Components/LaunchActorComponent.h"
 #include "RotatePlatform.generated.h"
 
 
@@ -12,6 +14,7 @@ enum class EPlatformType: uint8
 {
 	NONE,
 	YELLOW,
+	PURPLE,
 	RED,
 	FAN
 };
@@ -43,52 +46,92 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
-	// MeshComponenet
+	// ActorComponent
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Movement")
+	UMovementActorComponent* MovementComponent;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Launch")
+	ULaunchActorComponent* LaunchComponent;
+
+	// PlatformMesh
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "RotatePlatform")
 	USceneComponent* RootScene;
-
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "RotatePlatform")
-	UStaticMeshComponent* RotateAxis;
 	
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "RotatePlatform")
-	UStaticMeshComponent* RotatePlatform;
+	UStaticMeshComponent* PlatformAxis;
 
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "RotatePlatform")
+	UStaticMeshComponent* PlatformBody;
+
+	// StickMesh
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "RotateStick")
-	UStaticMeshComponent* RotateStick;
+	UStaticMeshComponent* StickBody;
 
 	// Variables
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RotatePlatform", meta = (AllowPrivateAccess = "true"))
-	EPlatformType PlatformType;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RotatePlatform", meta = (AllowPrivateAccess = "true"))
-	bool IsLeft_Platform;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RotatePlatform", meta = (AllowPrivateAccess = "true"))
-	float RotateSpeed_Platform = 5.0f;
+	EPlatformType PlatformType = EPlatformType::NONE;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RotateStick", meta = (AllowPrivateAccess = "true"))
-	EStickType StickType;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RotateStick", meta = (AllowPrivateAccess = "true"))
-	bool IsLeft_Stick;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RotateStick", meta = (AllowPrivateAccess = "true"))
-	float RotateSpeed_Stick = 5.0f;
+	EStickType StickType = EStickType::NONE;
 
 private:
 	// MeshAddress
-	// RotatePlate
-	FString RotateAxis_Y = TEXT("");
-	FString RotatePlate_Y = TEXT("");
+	// Platform_Y
+	FString PlatformAxis_Y = TEXT("/Game/Platformer_2/Meshes/SM_obstacle_14_001.SM_obstacle_14_001");
+	FString PlatformBody_Y = TEXT("/Game/Platformer_2/Meshes/SM_obstacle_14_002.SM_obstacle_14_002");
 
-	FString RotateAxis_R = TEXT("");
-	FString RotatePlate_R = TEXT("");
+	// Platform_P
+	FString PlatformAxis_P = TEXT("/Game/Platformer_2/Meshes/SM_obstacle_15_001.SM_obstacle_15_001");
+	FString PlatformBody_P = TEXT("/Game/Platformer_2/Meshes/SM_obstacle_15_002.SM_obstacle_15_002");
 
-	// RotateStick
-	FString RotateStick_S = TEXT("");
-	FString RotateStick_C = TEXT("");
+	// Platform_R
+	FString PlatformAxis_R = TEXT("/Game/Platformer_2/Meshes/SM_obstacle_26_001.SM_obstacle_26_001");
+	FString PlatformBody_R = TEXT("/Game/Platformer_2/Meshes/SM_obstacle_26_002.SM_obstacle_26_002");
+
+	// Platform_F
+	FString PlatformAxis_F = TEXT("/Game/Platformer_2/Meshes/SM_obstacle_16_001.SM_obstacle_16_001");
+	FString PlatformBody_F = TEXT("/Game/Platformer_2/Meshes/SM_obstacle_16_002.SM_obstacle_16_002");
+
+	// Stick
+	FString StraightStick = TEXT("/Game/Platformer_2/Meshes/SM_obstacle_17_001.SM_obstacle_17_001");
+	FString CrossStick = TEXT("/Game/Platformer_2/Meshes/SM_obstacle_12_001.SM_obstacle_12_001");
 
 	// Functions
 	UFUNCTION()
+	void OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
+	UFUNCTION()
+	void SetMesh();
+
+	UFUNCTION()
 	void SetRotateMesh();
+
+#pragma region SetPlatforms
+	UFUNCTION()
+	void SetPlatform_Y();
+
+	UFUNCTION()
+	void SetPlatform_P();
+
+	UFUNCTION()
+	void SetPlatform_R();
+
+	UFUNCTION()
+	void SetPlatform_F();
+
+	UFUNCTION()
+	void SetPlatform();
+#pragma endregion
+
+#pragma region SetSticks
+	UFUNCTION()
+	void SetStick_S();
+
+	UFUNCTION()
+	void SetStick_C();
+
+	UFUNCTION()
+	void SetStick();
+#pragma endregion
+
 };

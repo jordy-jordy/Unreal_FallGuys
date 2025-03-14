@@ -17,44 +17,35 @@ void UCustomColorButtonWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	
+
 	SetButtonColor();
 }
 
-
+FString UCustomColorButtonWidget::GetCustomValueAsString(ECostumeColor _Color)
+{
+	FString Data = UEnum::GetValueAsString(TEXT("/Script/Unreal_FallGuys.GlobalEnum.ECostumeColor"), _Color);
+	return Data;
+}
 
 void UCustomColorButtonWidget::ChangePawnColor(ECostumeColor color)
 {
+	CustomName = GetCustomValueAsString(color);
+	const FCostumeColorDataRow* CostumeColorData = UGlobalDataTable::GetCostumeColorData(GetWorld(), CustomName);
 
-	switch (color)
+	
+	if (CostumeColorData && CostumeColorData->CostumeMesh)
 	{
-	case ECostumeColor::NONE:
-		CustomName = "TEST00";
-
-		break;
-	case ECostumeColor::PINK:
-		CustomName = "TEST01";
-
-		break;
-	case ECostumeColor::YELLOW:
-		CustomName = "TEST00";
-
-		break;
-	case ECostumeColor::BLUE:
-		CustomName = "TEST02";
-
-		break;
-	default:
-		break;
+		GetGameInstance<UBaseGameInstance>()->InsChangeCostume(GetOwningPlayerPawn(), CustomName);
 
 	}
-	GetGameInstance<UBaseGameInstance>()->InsChangeCostume(GetOwningPlayerPawn(), CustomName);
-
 }
 
 void UCustomColorButtonWidget::SetButtonColor()
 {
 	//LoadTexture
-	//
+
+	// String 혹은 Enum Color 를 주면 -> 해당 이미지 리소스 경로 주는 함수
 	switch (Color)
 	{
 	case ECostumeColor::NONE:
@@ -73,6 +64,10 @@ void UCustomColorButtonWidget::SetButtonColor()
 		break;
 
 	}
+}
+
+void UCustomColorButtonWidget::GetResourceFromName()
+{
 }
 
 

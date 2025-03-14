@@ -25,6 +25,12 @@ public:
 		static FName CollisionProfile_CheckPoint;
 	};
 
+	class UI
+	{
+	public:
+		static FName MainPanelName;
+	};
+
 public:
 	// 글로벌 데이터 테이블 경로
 	static FString GlobalDataTablePath;

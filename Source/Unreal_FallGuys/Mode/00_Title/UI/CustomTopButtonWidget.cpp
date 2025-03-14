@@ -2,6 +2,8 @@
 
 
 #include "Mode/00_Title/UI/CustomTopButtonWidget.h"
+#include "Mode/00_Title/TitlePawn.h"
+#include "Global/GlobalEnum.h"
 
 
 void UCustomTopButtonWidget::NativeConstruct()
@@ -15,24 +17,20 @@ void UCustomTopButtonWidget::SetButtonTopStyle()
 	//LoadTexture
 	//
 
-	
-	SetButtonStyle(NewTexture,"/Script/Engine.Texture2D'/Game/Resources/UI/Custom/Character/UI_Icon_Bottom_Tanager_Variant01.UI_Icon_Bottom_Tanager_Variant01'");
 
-	/*switch (Type)
-	{
-	case ECostumeType::NONE:
-
-		break;
-	case ECostumeType::TOP:
-
-		break;
-	case ECostumeType::BOTTOM:
-		break;
-	case ECostumeType::MAX:
-		break;
-	default:
-		break;
-	}*/
+	//SetButtonStyle(NewTexture, "/Script/Engine.Texture2D'/Game/Resources/UI/Custom/Character/UI_Icon_Bottom_Tanager_Variant01.UI_Icon_Bottom_Tanager_Variant01'");
 
 
+
+}
+
+void UCustomTopButtonWidget::AttachCustomStaticMesh()
+{
+
+	//static mesh load
+
+	ATitlePawn* MyPawn = Cast<ATitlePawn>(GetOwningPlayerPawn());
+
+
+	MyPawn->AttachCustomStaticMesh(Type, ImgName);
 }

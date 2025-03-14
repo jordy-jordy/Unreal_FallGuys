@@ -8,7 +8,7 @@
 #include "CustomTopButtonWidget.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class UNREAL_FALLGUYS_API UCustomTopButtonWidget : public UCustomButtonWidget
@@ -35,4 +35,6 @@ private:
 
 	UFUNCTION()
 	void SetButtonTopStyle();
+	UFUNCTION(BlueprintCallable)
+	void AttachCustomStaticMesh();
 };

@@ -48,6 +48,7 @@ enum class EUIType : uint8
 	CustomInven UMETA(DisplayName = "CustomInven"),
 	TitleIPPort UMETA(DisplayName = "TitleIPPort"),
 	TitleName UMETA(DisplayName = "TitleName"),
+	TitleMenu UMETA(DisplayName = "TitleMenu"),
 	MAX UMETA(DisplayName = "MAX"),
 };
 
