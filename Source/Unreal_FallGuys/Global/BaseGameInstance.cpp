@@ -9,10 +9,11 @@
 #include <SocketSubsystem.h>
 #include <IPAddress.h>
 #include <Interfaces/IPv4/IPv4Address.h>
+
 #include <Unreal_FallGuys.h>
 #include <Global/FallGlobal.h>
 #include <Global/FallConst.h>
-#include <Unreal_FallGuys.h>
+#include <Mode/01_Play/PlayGameState.h>
 
 
 UBaseGameInstance::UBaseGameInstance()
@@ -299,79 +300,46 @@ UStaticMesh* UBaseGameInstance::InsGetResourceMesh(APawn* _Pawn, const FString& 
 	return nullptr;
 }
 
-// 특정 플레이어의 정보 가져오기
-FPlayerInfo UBaseGameInstance::InsGetPlayerInfo(APlayerController* _PlayerController) const
-{
-	if (!_PlayerController)
-	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("InsGetPlayerInfo: PlayerController is nullptr!"));
-		return FPlayerInfo();
-	}
-
-	if (PlayerInfoMap.Contains(_PlayerController))
-	{
-		return PlayerInfoMap[_PlayerController];
-	}
-
-	return FPlayerInfo();
-}
-
-// 특정 플레이어의 정보 설정
-void UBaseGameInstance::InsSetPlayerInfo(APlayerController* _PlayerController, const FString& _Tag, EPlayerStatus _Status)
-{
-	if (!_PlayerController)
-	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("InsSetPlayerInfo: PlayerController is nullptr!"));
-		return;
-	}
-
-	PlayerInfoMap.Add(_PlayerController, FPlayerInfo(_Tag, _Status));
-	UE_LOG(FALL_DEV_LOG, Log, TEXT("InsSetPlayerInfo: %s -> Tag: %s, Status: %d"), *_PlayerController->GetName(), *_Tag, (uint8)_Status);
-}
-
-// 모든 플레이어 정보 반환
-TMap<APlayerController*, FPlayerInfo> UBaseGameInstance::InsGetAllPlayerInfo() const
-{
-	return PlayerInfoMap;
-}
-
-// PlayerInfoMap을 저장 (레벨 이동 시 사용)
 void UBaseGameInstance::InsSavePlayerInfo()
 {
-	PersistentPlayerInfoMap.Empty();
-	for (const auto& Entry : PlayerInfoMap)
+	APlayGameState* GameState = GetWorld()->GetGameState<APlayGameState>();
+	if (!GameState) return;
+
+	PersistentPlayerInfoArray.Empty();
+
+	for (APlayerState* PlayerState : GameState->PlayerArray)
 	{
-		if (Entry.Key) // 유효한 PlayerController 확인
+		APlayPlayerState* PlayPlayerState = Cast<APlayPlayerState>(PlayerState);
+		if (PlayPlayerState)
 		{
-			FString PlayerName = Entry.Key->GetName();
-			PersistentPlayerInfoMap.Add(PlayerName, Entry.Value);
+			if (PlayPlayerState->PlayerUniqueId.IsEmpty() && PlayPlayerState->GetUniqueId().IsValid())
+			{
+				PlayPlayerState->PlayerUniqueId = PlayPlayerState->GetUniqueId()->ToString();
+			}
+
+			PersistentPlayerInfoArray.Add(FPersistentPlayerInfo(PlayPlayerState->PlayerUniqueId, PlayPlayerState->PlayerInfo));
 		}
 	}
-
-	IsMovedLevel = true;
 }
 
-// PlayerInfoMap을 복원 (레벨 이동 후)
 void UBaseGameInstance::InsLoadPlayerInfo()
 {
-	PlayerInfoMap.Empty();
 	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
 	{
 		APlayerController* PlayerController = It->Get();
 		if (PlayerController)
 		{
-			FString PlayerName = PlayerController->GetName();
-			if (PersistentPlayerInfoMap.Contains(PlayerName))
+			APlayPlayerState* PlayerState = Cast<APlayPlayerState>(PlayerController->PlayerState);
+			if (PlayerState)
 			{
-				if (!PlayerInfoMap.Contains(PlayerController)) // 중복 추가 방지
+				for (const FPersistentPlayerInfo& SavedInfo : PersistentPlayerInfoArray)
 				{
-					PlayerInfoMap.Add(PlayerController, PersistentPlayerInfoMap[PlayerName]);
+					if (SavedInfo.PlayerUniqueId == PlayerState->PlayerUniqueId)
+					{
+						PlayerState->SetPlayerInfo(SavedInfo.PlayerInfo.Tag, SavedInfo.PlayerInfo.Status);
+						break;
+					}
 				}
-
-				UE_LOG(FALL_DEV_LOG, Log, TEXT("서버: Player %s assigned tag: %s, status: %d"),
-					*PlayerName,
-					*PersistentPlayerInfoMap[PlayerName].Tag,
-					(uint8)PersistentPlayerInfoMap[PlayerName].Status);
 			}
 		}
 	}

@@ -7,28 +7,27 @@
 
 #include <Global/Data/GlobalDataTable.h>
 #include <Global/GlobalEnum.h>
+#include <Mode/01_Play/PlayGameState.h>
+#include <Mode/01_Play/PlayPlayerState.h>
 
 #include "BaseGameInstance.generated.h"
 
 
 USTRUCT(BlueprintType)
-struct FPlayerInfo
+struct FPersistentPlayerInfo
 {
 	GENERATED_BODY()
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	FString Tag;
+	FString PlayerUniqueId;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	EPlayerStatus Status;
+	FPlayerInfo PlayerInfo;
 
-	// 명확한 생성자 추가
-	FPlayerInfo()
-		: Tag(TEXT("NoTag")), Status(EPlayerStatus::DEFAULT) {
-	}
+	FPersistentPlayerInfo() : PlayerUniqueId(TEXT("")), PlayerInfo() {}
 
-	FPlayerInfo(const FString& InTag, EPlayerStatus InStatus)
-		: Tag(InTag), Status(InStatus) {
+	FPersistentPlayerInfo(const FString& InUniqueId, const FPlayerInfo& InPlayerInfo)
+		: PlayerUniqueId(InUniqueId), PlayerInfo(InPlayerInfo) {
 	}
 };
 
@@ -83,25 +82,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Resource")
 	UStaticMesh* InsGetResourceMesh(APawn* _Pawn, const FString& _MeshName = TEXT("NULL"));
 
-	// 플레이어 컨트롤러와 정보(태그 + 상태)를 매핑하는 변수
+	// 레벨 이동 시 플레이어 정보 백업
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player")
-	TMap<APlayerController*, FPlayerInfo> PlayerInfoMap;
-
-	// PlayerInfoMap을 백업하기 위한 변수 (레벨 이동 시 사용)
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player")
-	TMap<FString, FPlayerInfo> PersistentPlayerInfoMap; // 컨트롤러의 이름을 키로 사용
-
-	// 특정 플레이어의 정보 가져오기
-	UFUNCTION(BlueprintCallable, Category = "Player")
-	FPlayerInfo InsGetPlayerInfo(APlayerController* _PlayerController) const;
-
-	// 특정 플레이어의 정보 설정
-	UFUNCTION(BlueprintCallable, Category = "Player")
-	void InsSetPlayerInfo(APlayerController* _PlayerController, const FString& _Tag, EPlayerStatus _Status);
-
-	// 모든 플레이어 정보 반환
-	UFUNCTION(BlueprintCallable, Category = "Player")
-	TMap<APlayerController*, FPlayerInfo> InsGetAllPlayerInfo() const;
+	TArray<FPersistentPlayerInfo> PersistentPlayerInfoArray;
 
 	// PlayerInfoMap을 저장 (레벨 이동 시 사용)
 	UFUNCTION(BlueprintCallable, Category = "Player")

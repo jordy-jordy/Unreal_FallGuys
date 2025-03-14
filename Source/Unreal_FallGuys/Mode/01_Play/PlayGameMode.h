@@ -33,14 +33,10 @@ public:
 	void StartGame();
 	void StartGame_Implementation();
 
-	// 플레이어 정보 설정
-	UFUNCTION(BlueprintCallable, Category = "Game")
-	void AssignPlayerInfo(APlayerController* _NewPlayer);
-
 	// 플레이어 정보 동기화
 	UFUNCTION(NetMulticast, Reliable, BlueprintCallable, Category = "Game")
-	void S2M_AssignPlayerInfo(APlayerController* _NewPlayer, const FString& _Tag, EPlayerStatus _Status);
-	void S2M_AssignPlayerInfo_Implementation(APlayerController* _NewPlayer, const FString& _Tag, EPlayerStatus _Status);
+	void SyncPlayerInfo(APlayerController* _NewPlayer);
+	void SyncPlayerInfo_Implementation(APlayerController* _NewPlayer);
 
 protected:
 	virtual void Tick(float DeltaSeconds) override;
@@ -53,17 +49,9 @@ protected:
 	UPROPERTY(ReplicatedUsing = OnRep_ConnectedPlayers)
 	int ConnectedPlayers;
 
-	// 현재 태그 숫자 카운트
-	UPROPERTY(ReplicatedUsing = OnRep_PlayerCount)
-	int PlayerCount = 0;
-
-	// 플레이어 수가 변경되면 클라이언트에서 실행되는 함수
+	// 플레이어 수 변경 시 클라이언트에서 실행될 함수
 	UFUNCTION()
-	void OnRep_ConnectedPlayers();
-
-	// PlayerCount 변경 시 클라이언트에서 실행될 함수
-	UFUNCTION()
-	void OnRep_PlayerCount();
+void OnRep_ConnectedPlayers(); 
 
 private:
 
