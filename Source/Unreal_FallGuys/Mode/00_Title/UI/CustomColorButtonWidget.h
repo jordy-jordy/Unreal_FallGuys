@@ -32,6 +32,9 @@ public:
 
 	void NativeConstruct() override;
 
+	FString GetCustomValueAsString(ECostumeColor _Color);
+
+
 	
 
 	UFUNCTION(BlueprintCallable)
@@ -39,6 +42,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetButtonColor();
+
+	UFUNCTION()
+	void GetResourceFromName();
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
 	ECostumeColor Color = ECostumeColor::YELLOW;
