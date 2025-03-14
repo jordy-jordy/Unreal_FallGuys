@@ -5,13 +5,13 @@
 #include "CoreMinimal.h"
 #include "Mode/00_Title/UI/CustomButtonWidget.h"
 #include <Global/GlobalEnum.h>
-#include "CustomTopButtonWidget.generated.h"
+#include "CustomBottomButtonWidget.generated.h"
 
 /**
- *
+ * 
  */
 UCLASS()
-class UNREAL_FALLGUYS_API UCustomTopButtonWidget : public UCustomButtonWidget
+class UNREAL_FALLGUYS_API UCustomBottomButtonWidget : public UCustomButtonWidget
 {
 	GENERATED_BODY()
 

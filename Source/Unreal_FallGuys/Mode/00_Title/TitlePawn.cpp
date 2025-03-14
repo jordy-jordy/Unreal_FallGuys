@@ -4,13 +4,24 @@
 #include "Mode/00_Title/TitlePawn.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include <Global/BaseGameInstance.h>
 
 
 // Sets default values
 ATitlePawn::ATitlePawn()
 {
- 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	USceneComponent* RootSceneComp = CreateDefaultSubobject<USceneComponent>(TEXT("RootComp"));
+	RootComponent = RootSceneComp;
+	UpComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Up"));
+
+	UpComp->SetupAttachment(RootComponent);
+
+	LowComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Low"));
+
+	LowComp->SetupAttachment(RootComponent);
 
 }
 
@@ -18,7 +29,7 @@ ATitlePawn::ATitlePawn()
 void ATitlePawn::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 
 // Called every frame
@@ -63,5 +74,35 @@ void ATitlePawn::PawnRotation(UStaticMeshComponent* _Target, const FVector2D& _V
 		_Target->AddLocalRotation(FRotator(0.0f, -1.0f, 0.0f));
 	}
 }
+void ATitlePawn::AttachCustomStaticMesh(ECostumeType Type, FString& _ImgName)
+{
+	// _ImgName 에 해당하는 리소스 가져오기
 
+	UBaseGameInstance* GameIns = GetGameInstance<UBaseGameInstance>();
+
+
+	const FCostumeDataRow* CostumeData = UGlobalDataTable::GetCostumeData(GetWorld(), _ImgName);
+	if (CostumeData && CostumeData->CostumeMesh)
+	{
+		switch (Type)
+		{
+		case ECostumeType::NONE:
+			break;
+		case ECostumeType::TOP:
+			UpComp->SetStaticMesh(CostumeData->CostumeMesh);
+			CurUpStaticMesh = CostumeData->CostumeMesh;
+			break;
+		case ECostumeType::BOTTOM:
+			LowComp->SetStaticMesh(CostumeData->CostumeMesh);
+			CurLowStaticMesh = CostumeData->CostumeMesh;
+			break;
+		case ECostumeType::MAX:
+			break;
+		default:
+			break;
+		}
+	}
+
+
+}
 
