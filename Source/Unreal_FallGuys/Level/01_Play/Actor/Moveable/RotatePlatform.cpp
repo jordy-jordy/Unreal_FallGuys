@@ -167,6 +167,20 @@ void ARotatePlatform::SetStick_S()
 	{
 		StickBody->SetStaticMesh(StickMesh);
 	}
+
+	// Set Location And Scale
+	switch (PlatformType)
+	{
+	case EPlatformType::YELLOW:
+		break;
+	case EPlatformType::PURPLE:
+	case EPlatformType::RED:
+		StickBody->SetRelativeLocation({ 0, 0, 65 });
+		break;
+	case EPlatformType::FAN:
+		StickBody->SetRelativeLocation({ 0, 0, 36 });
+		break;
+	}
 }
 
 void ARotatePlatform::SetStick_C()
