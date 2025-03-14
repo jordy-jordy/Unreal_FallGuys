@@ -28,7 +28,7 @@ enum class ECostumeType : uint8
 	MAX UMETA(DisplayName = "Max")
 };
 
-// 코스튬 상하의
+// 플레이어 상태
 UENUM(BlueprintType)
 enum class EPlayerStatus : uint8
 {

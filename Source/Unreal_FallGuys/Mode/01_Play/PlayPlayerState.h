@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -16,16 +16,16 @@ struct FPlayerInfo
     GENERATED_BODY()
 
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-    FString Tag; // °íÀ¯ ÅÂ±× (¿¹: "Player1")
+    FString Tag; // ê³ ìœ  íƒœê·¸ (ì˜ˆ: "Player1")
 
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-    EPlayerStatus Status; // ÇöÀç ÇÃ·¹ÀÌ¾î »óÅÂ (¿¹: »ıÁ¸, Å»¶ô µî)
+    EPlayerStatus Status; // í˜„ì¬ í”Œë ˆì´ì–´ ìƒíƒœ (ì˜ˆ: ìƒì¡´, íƒˆë½ ë“±)
 
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-    int32 Score; // Á¡¼ö
+    int32 Score; // ì ìˆ˜
 
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-    FString Costume; // Âø¿ëÇÑ ÄÚ½ºÆ¬
+    FString Costume; // ì°©ìš©í•œ ì½”ìŠ¤íŠ¬
 
     FPlayerInfo()
         : Tag(TEXT("NoTag")), Status(EPlayerStatus::DEFAULT), Score(0), Costume(TEXT("Default")) {
@@ -47,15 +47,15 @@ class UNREAL_FALLGUYS_API APlayPlayerState : public APlayerState
 public:
     APlayPlayerState();
 
-    // °³º° ÇÃ·¹ÀÌ¾î Á¤º¸ (·¹º§ ÀÌµ¿ ÈÄ¿¡µµ ÀÚµ¿ À¯ÁöµÊ)
+    // ê°œë³„ í”Œë ˆì´ì–´ ì •ë³´ (ë ˆë²¨ ì´ë™ í›„ì—ë„ ìë™ ìœ ì§€ë¨)
     UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category = "Player")
     FPlayerInfo PlayerInfo;
 
-    // ÇÃ·¹ÀÌ¾îÀÇ °íÀ¯ ID ÀúÀå (¼­¹ö¿¡¼­¸¸ À¯ÁöµÊ)
+    // í”Œë ˆì´ì–´ì˜ ê³ ìœ  ID ì €ì¥ (ì„œë²„ì—ì„œë§Œ ìœ ì§€ë¨)
     UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category = "Player")
     FString PlayerUniqueId;
 
-    // ÇÃ·¹ÀÌ¾î Á¤º¸ ¼³Á¤
+    // í”Œë ˆì´ì–´ ì •ë³´ ì„¤ì •
     UFUNCTION(BlueprintCallable, Category = "Player")
     void SetPlayerInfo(const FString& _Tag, EPlayerStatus _Status);
 

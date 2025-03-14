@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Mode/01_Play/PlayPlayerState.h"
@@ -15,7 +15,7 @@ void APlayPlayerState::SetPlayerInfo(const FString& _Tag, EPlayerStatus _Status)
     PlayerInfo.Tag = _Tag;
     PlayerInfo.Status = _Status;
 
-    // UniqueId°¡ ¾øÀ» °æ¿ì »õ·Î ¼³Á¤
+    // UniqueIdê°€ ì—†ì„ ê²½ìš° ìƒˆë¡œ ì„¤ì •
     if (PlayerUniqueId.IsEmpty() && GetUniqueId().IsValid())
     {
         PlayerUniqueId = GetUniqueId()->ToString();
