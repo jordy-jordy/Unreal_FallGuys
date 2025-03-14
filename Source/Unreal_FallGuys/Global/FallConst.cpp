@@ -24,3 +24,5 @@ FString UFallConst::DefaultIP = TEXT("127.0.0.1");
 
 // 기본 로컬 포트
 FString UFallConst::DefaultPort = TEXT("30000");
+
+FName UFallConst::UI::MainPanelName = TEXT("TitleMain");

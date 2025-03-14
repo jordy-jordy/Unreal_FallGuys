@@ -16,8 +16,8 @@ class UNREAL_FALLGUYS_API UTitleEntranceWidget : public UTitleUserWidget
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable)
-	void VisibleInputPanel(UTitleUserWidget* _CurWidget);
+	//UFUNCTION(BlueprintCallable)
+	//void VisibleInputPanel(UTitleUserWidget* _CurWidget);
 	
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Server", meta = (AllowPrivateAccess = "true"))

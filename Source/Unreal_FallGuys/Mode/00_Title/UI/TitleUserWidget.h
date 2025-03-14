@@ -19,88 +19,93 @@ class UNREAL_FALLGUYS_API UTitleUserWidget : public UUserWidget
 public:
 	UTitleUserWidget(const FObjectInitializer& ObjectInitializer);
 
-	void SetUserWidget(class UTitleUserWidget* _UserWidget)
+	void SetMainWidget(class UTitleMainWidget* _MainWidget)
 	{
-		UserWidget = _UserWidget;
+		MainWidget = MainWidget;
 	}
 
-	UFUNCTION(BlueprintCallable)
-	bool InputCheck(const FVector2D& _Value);
-
-	UFUNCTION(BlueprintCallable)
-	void WidgetInit(FName _PanelName);
-
-	UFUNCTION(BlueprintCallable)
-	void CreateChildWidget(TSubclassOf<UUserWidget> _Widget, bool _IsVisible);
-
-	UFUNCTION(BlueprintCallable)
-	void AllWidgetHidden();
-
-	UFUNCTION(BlueprintCallable)
-	void AllWidgetSelfHitTestInvisible();
-
-	UFUNCTION(BlueprintCallable)
-	UTitleUserWidget* GetCurUserWidget()
+	UTitleMainWidget* GetMainWidget()
 	{
-		return CurUserWidget;
+		return MainWidget;
 	}
 
-	UFUNCTION(BlueprintCallable)
-	void SetCurUserWidget(UTitleUserWidget* _Widget)
-	{
-		CurUserWidget = _Widget;
-	}
+	//UFUNCTION(BlueprintCallable)
+	//bool InputCheck(const FVector2D& _Value);
 
-	TMultiMap<EUIType, UTitleUserWidget*> GetAllWidgets()
-	{
-		return Widgets;
-	}
+	//UFUNCTION(BlueprintCallable)
+	//void WidgetInit(FName _PanelName);
 
-	UFUNCTION(BlueprintCallable)
-	void SwitchWidget(EUIType _UIType);
+	//UFUNCTION(BlueprintCallable)
+	//void CreateChildWidget(TSubclassOf<UUserWidget> _Widget, bool _IsVisible);
 
-	EUIType GetCurUIType()
-	{
-		return CurUIType;
-	}
+	//UFUNCTION(BlueprintCallable)
+	//void AllWidgetHidden();
 
-	void SetCurUIType(EUIType _UIType)
-	{
-		CurUIType = _UIType;
-	}
+	//UFUNCTION(BlueprintCallable)
+	//void AllWidgetSelfHitTestInvisible();
 
-	EUIType GetWidgetUIType()
-	{
-		return UIType;
-	}
+	//UFUNCTION(BlueprintCallable)
+	//UTitleUserWidget* GetCurUserWidget()
+	//{
+	//	return CurUserWidget;
+	//}
 
-	UFUNCTION(BlueprintCallable)
-	void ChangePlayerName(FString _Target)
-	{
-		Name = _Target;
-	}
+	//UFUNCTION(BlueprintCallable)
+	//void SetCurUserWidget(UTitleUserWidget* _Widget)
+	//{
+	//	CurUserWidget = _Widget;
+	//}
 
-	UFUNCTION(BlueprintCallable)
-	FString& GetPlayerName()
-	{
-		return Name;
-	}
+	//TMultiMap<EUIType, UTitleUserWidget*> GetAllWidgets()
+	//{
+	//	return Widgets;
+	//}
+
+	//UFUNCTION(BlueprintCallable)
+	//void SwitchWidget(EUIType _UIType);
+
+	//EUIType GetCurUIType()
+	//{
+	//	return CurUIType;
+	//}
+
+	//void SetCurUIType(EUIType _UIType)
+	//{
+	//	CurUIType = _UIType;
+	//}
+
+	//EUIType GetWidgetUIType()
+	//{
+	//	return UIType;
+	//}
+
+	//UFUNCTION(BlueprintCallable)
+	//void ChangePlayerName(FString _Target)
+	//{
+	//	Name = _Target;
+	//}
+
+	//UFUNCTION(BlueprintCallable)
+	//FString& GetPlayerName()
+	//{
+	//	return Name;
+	//}
 
 protected:
-	class UTitleUserWidget* CurUserWidget;
-	EUIType CurUIType;
+	//class UTitleUserWidget* CurUserWidget;
+	//EUIType CurUIType;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
-	FString Name = "";
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
+	//FString Name = "";
 
 private:
 	UPROPERTY(Category = "UI", EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	class UTitleUserWidget* UserWidget;
+	class UTitleMainWidget* MainWidget;
 
-	UCanvasPanel* CanvasPanel;
+	//UCanvasPanel* CanvasPanel;
 
-	EUIType UIType;
+	//EUIType UIType;
 
-	TMultiMap<EUIType, UTitleUserWidget*> Widgets;
+	//TMultiMap<EUIType, UTitleUserWidget*> Widgets;
 
 };
