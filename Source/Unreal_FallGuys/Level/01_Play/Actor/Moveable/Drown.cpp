@@ -10,7 +10,6 @@ ADrown::ADrown()
 	PrimaryActorTick.bCanEverTick = true;
 
 	SetDrownLocation();
-
 }
 
 // Called when the game starts or when spawned
