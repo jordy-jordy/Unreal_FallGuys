@@ -80,6 +80,12 @@ public:
 		Name = _Target;
 	}
 
+	UFUNCTION(BlueprintCallable)
+	FString& GetPlayerName()
+	{
+		return Name;
+	}
+
 protected:
 	class UTitleUserWidget* CurUserWidget;
 	EUIType CurUIType;
