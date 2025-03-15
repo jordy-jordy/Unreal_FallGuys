@@ -25,7 +25,7 @@ void APlayGameState::SyncPlayerInfoFromPlayerState()
 			PlayerInfoArray.Add(FPlayerInfoEntry(Controller, PlayPlayerState->PlayerInfo));
 
 			UE_LOG(FALL_DEV_LOG, Log, TEXT("GameState: 플레이어 정보 동기화 - Controller: %s, UniqueId: %s, Tag: %s"),
-				*Controller->GetName(), *PlayPlayerState->PlayerInfo.PlayerUniqueId, *PlayPlayerState->PlayerInfo.Tag);
+				*Controller->GetName(), *PlayPlayerState->PlayerInfo.UniqueID, *PlayPlayerState->PlayerInfo.Tag);
 		}
 	}
 }

@@ -25,16 +25,16 @@ public:
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 
 	// 최소 인원 체크
-	UFUNCTION(BlueprintCallable, Category = "GAME")
+	UFUNCTION(BlueprintCallable, Category = "PLAY GAME")
 	bool IsMinPlayersReached();
 
 	// 게임 시작
-	UFUNCTION(BlueprintCallable, Reliable, NetMulticast, Category = "GAME")
+	UFUNCTION(BlueprintCallable, Reliable, NetMulticast, Category = "PLAY GAME")
 	void StartGame();
 	void StartGame_Implementation();
 
 	// 플레이어 정보 동기화
-	UFUNCTION(NetMulticast, Reliable, BlueprintCallable, Category = "Game")
+	UFUNCTION(NetMulticast, Reliable, BlueprintCallable, Category = "PLAY GAME")
 	void SyncPlayerInfo(APlayerController* _NewPlayer);
 	void SyncPlayerInfo_Implementation(APlayerController* _NewPlayer);
 

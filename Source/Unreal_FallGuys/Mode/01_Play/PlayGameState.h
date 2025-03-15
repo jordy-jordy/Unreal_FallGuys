@@ -40,11 +40,11 @@ public:
     APlayGameState();
 
     // 전체 플레이어 정보 목록 (GameState에서 관리)
-    UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category = "Player")
+    UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category = "PLAYER LIST")
     TArray<FPlayerInfoEntry> PlayerInfoArray;
 
     // `PlayerState`에서 데이터 동기화
-    UFUNCTION(BlueprintCallable, Category = "Player")
+    UFUNCTION(BlueprintCallable, Category = "PLAYER LIST")
     void SyncPlayerInfoFromPlayerState();
 
     void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;

@@ -25,7 +25,7 @@ struct FPlayerInfo
 
     // 플레이어의 고유 ID 저장
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-    FString PlayerUniqueId;
+    FString UniqueID;
 
     FPlayerInfo()
         : Tag(TEXT("NoTag")), Status(EPlayerStatus::DEFAULT) 
@@ -50,11 +50,11 @@ public:
     APlayPlayerState();
 
     // 개별 플레이어 정보
-    UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category = "Player")
+    UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category = "PLAYER INFO")
     FPlayerInfo PlayerInfo;
     
     // 플레이어 정보 설정
-    UFUNCTION(BlueprintCallable, Category = "Player")
+    UFUNCTION(BlueprintCallable, Category = "PLAYER INFO")
     void SetPlayerInfo(const FString& _Tag, EPlayerStatus _Status);
 
     void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;

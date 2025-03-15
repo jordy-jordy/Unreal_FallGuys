@@ -14,7 +14,7 @@ void APlayPlayerState::SetPlayerInfo(const FString& _Tag, EPlayerStatus _Status)
 {
     PlayerInfo.Tag = _Tag;
     PlayerInfo.Status = _Status;
-    PlayerInfo.PlayerUniqueId = GetUniqueId()->ToString();
+    PlayerInfo.UniqueID = GetUniqueId()->ToString();
 }
 
 void APlayPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
