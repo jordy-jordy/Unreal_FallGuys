@@ -87,6 +87,8 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
     // 모든 클라이언트에게 정보 동기화
     SyncPlayerInfo(NewPlayer);
 
+	ConnectedPlayers++;
+
     if (IsMinPlayersReached())
     {
         UE_LOG(FALL_DEV_LOG, Warning, TEXT("최소 인원 충족, 게임 시작 가능"));
