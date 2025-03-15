@@ -31,8 +31,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SwitchWidget(EUIType _UIType);
 
-	//void SwitchWidgetType(EUIType _UIType);
-
 	TMultiMap<EUIType, UTitleUserWidget*> GetAllWidgets()
 	{
 		return Widgets;
@@ -56,6 +54,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void WidgetHidden(EUIType _Type);
+
+	UTitleUserWidget* FindWidget(EUIType _Type, int _Index = 0);
 
 protected:
 
