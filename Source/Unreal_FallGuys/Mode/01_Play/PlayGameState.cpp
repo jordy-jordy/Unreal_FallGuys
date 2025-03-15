@@ -14,29 +14,24 @@ APlayGameState::APlayGameState()
 
 void APlayGameState::SyncPlayerInfoFromPlayerState()
 {
-    PlayerInfoArray.Empty();
+	PlayerInfoArray.Empty();
 
-    for (APlayerState* PlayerState : PlayerArray)
-    {
-        APlayPlayerState* PlayPlayerState = Cast<APlayPlayerState>(PlayerState);
-        if (PlayPlayerState)
-        {
-            if (PlayPlayerState->PlayerUniqueId.IsEmpty() && PlayPlayerState->GetUniqueId().IsValid())
-            {
-                PlayPlayerState->PlayerUniqueId = PlayPlayerState->GetUniqueId()->ToString();
-            }
+	for (APlayerState* PlayerState : PlayerArray)
+	{
+		APlayPlayerState* PlayPlayerState = Cast<APlayPlayerState>(PlayerState);
+		if (PlayPlayerState)
+		{
+			APlayerController* Controller = Cast<APlayerController>(PlayPlayerState->GetOwner());
+			PlayerInfoArray.Add(FPlayerInfoEntry(Controller, PlayPlayerState->PlayerInfo));
 
-            APlayerController* Controller = Cast<APlayerController>(PlayPlayerState->GetOwner());
-            PlayerInfoArray.Add(FPlayerInfoEntry(Controller, PlayPlayerState->PlayerInfo));
-
-            UE_LOG(FALL_DEV_LOG, Log, TEXT("GameState: 플레이어 정보 동기화 - UniqueId: %s, Tag: %s"),
-                *PlayPlayerState->PlayerUniqueId, *PlayPlayerState->PlayerInfo.Tag);
-        }
-    }
+			UE_LOG(FALL_DEV_LOG, Log, TEXT("GameState: 플레이어 정보 동기화 - Controller: %s, UniqueId: %s, Tag: %s"),
+				*Controller->GetName(), *PlayPlayerState->PlayerInfo.PlayerUniqueId, *PlayPlayerState->PlayerInfo.Tag);
+		}
+	}
 }
 
 void APlayGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
-    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-    DOREPLIFETIME(APlayGameState, PlayerInfoArray);
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(APlayGameState, PlayerInfoArray);
 }

@@ -190,14 +190,6 @@ void UBaseGameInstance::CServerConnect(UWorld* _World, FString _IP, FString _Por
 	UGameplayStatics::OpenLevel(_World, FName(*ConnectLevelName));
 }
 
-// 동기화 변수
-void UBaseGameInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(UBaseGameInstance, CostumeName);
-	DOREPLIFETIME(UBaseGameInstance, Nickname);
-}
-
 // 코스튬 이름 저장
 void UBaseGameInstance::InsSaveCostumeName(const FString& _CostumeName)
 {
@@ -255,6 +247,7 @@ void UBaseGameInstance::InsChangeNickname(const FString& _NewNickname)
 	Nickname = _NewNickname;
 }
 
+// Random PlayLevel의 이름 반환
 FString UBaseGameInstance::InsGetRandomLevel()
 {
 	for (FString MapName : UFallGlobal::GetAvailableLevels())
@@ -298,49 +291,4 @@ UStaticMesh* UBaseGameInstance::InsGetResourceMesh(APawn* _Pawn, const FString& 
 	}
 
 	return nullptr;
-}
-
-void UBaseGameInstance::InsSavePlayerInfo()
-{
-	APlayGameState* GameState = GetWorld()->GetGameState<APlayGameState>();
-	if (!GameState) return;
-
-	PersistentPlayerInfoArray.Empty();
-
-	for (APlayerState* PlayerState : GameState->PlayerArray)
-	{
-		APlayPlayerState* PlayPlayerState = Cast<APlayPlayerState>(PlayerState);
-		if (PlayPlayerState)
-		{
-			if (PlayPlayerState->PlayerUniqueId.IsEmpty() && PlayPlayerState->GetUniqueId().IsValid())
-			{
-				PlayPlayerState->PlayerUniqueId = PlayPlayerState->GetUniqueId()->ToString();
-			}
-
-			PersistentPlayerInfoArray.Add(FPersistentPlayerInfo(PlayPlayerState->PlayerUniqueId, PlayPlayerState->PlayerInfo));
-		}
-	}
-}
-
-void UBaseGameInstance::InsLoadPlayerInfo()
-{
-	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
-	{
-		APlayerController* PlayerController = It->Get();
-		if (PlayerController)
-		{
-			APlayPlayerState* PlayerState = Cast<APlayPlayerState>(PlayerController->PlayerState);
-			if (PlayerState)
-			{
-				for (const FPersistentPlayerInfo& SavedInfo : PersistentPlayerInfoArray)
-				{
-					if (SavedInfo.PlayerUniqueId == PlayerState->PlayerUniqueId)
-					{
-						PlayerState->SetPlayerInfo(SavedInfo.PlayerInfo.Tag, SavedInfo.PlayerInfo.Status);
-						break;
-					}
-				}
-			}
-		}
-	}
 }

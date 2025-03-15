@@ -13,24 +13,6 @@
 #include "BaseGameInstance.generated.h"
 
 
-USTRUCT(BlueprintType)
-struct FPersistentPlayerInfo
-{
-	GENERATED_BODY()
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	FString PlayerUniqueId;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	FPlayerInfo PlayerInfo;
-
-	FPersistentPlayerInfo() : PlayerUniqueId(TEXT("")), PlayerInfo() {}
-
-	FPersistentPlayerInfo(const FString& InUniqueId, const FPlayerInfo& InPlayerInfo)
-		: PlayerUniqueId(InUniqueId), PlayerInfo(InPlayerInfo) {
-	}
-};
-
 /**
  *
  */
@@ -74,7 +56,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Name")
 	void InsChangeNickname(const FString& _NewNickname);
 
-	// 랜덤 플레이 레벨의 이름 반환
+	// Random PlayLevel의 이름 반환
 	UFUNCTION(BlueprintCallable, Category = "Level")
 	FString InsGetRandomLevel();
 
@@ -82,23 +64,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Resource")
 	UStaticMesh* InsGetResourceMesh(APawn* _Pawn, const FString& _MeshName = TEXT("NULL"));
 
-	// 레벨 이동 시 플레이어 정보 백업
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player")
-	TArray<FPersistentPlayerInfo> PersistentPlayerInfoArray;
-
-	// PlayerInfoMap을 저장 (레벨 이동 시 사용)
-	UFUNCTION(BlueprintCallable, Category = "Player")
-	void InsSavePlayerInfo();
-
-	// PlayerInfoMap을 복원 (레벨 이동 후)
-	UFUNCTION(BlueprintCallable, Category = "Player")
-	void InsLoadPlayerInfo();
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player")
 	bool IsMovedLevel = false;
-
-	// 동기화 변수
-	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 
 protected:
 	UFUNCTION(BlueprintCallable, Category = "DataTable")
@@ -124,11 +91,11 @@ private:
 	//class UDataTable* ActorDataTable = nullptr;
 
 	// 코스튬 네임
-	UPROPERTY(VisibleAnywhere, Replicated, Category = "Costume")
+	UPROPERTY(VisibleAnywhere, Category = "Costume")
 	FString CostumeName = TEXT("NULL");
 
 	// 닉네임
-	UPROPERTY(VisibleAnywhere, Replicated, Category = "Name")
+	UPROPERTY(VisibleAnywhere, Category = "Name")
 	FString Nickname = TEXT("TEST_JORDY");
 
 	// 맵리스트

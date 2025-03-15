@@ -24,14 +24,6 @@ void APlayGameMode::BeginPlay()
 	if (HasAuthority()) // 서버에서만 실행
 	{
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("서버: PlayGameMode가 시작되었습니다."));
-
-		UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
-		if (GameInstance && GameInstance->IsMovedLevel)
-		{
-			UE_LOG(FALL_DEV_LOG, Log, TEXT("서버: 레벨 변경 감지, 저장된 플레이어 정보 복원 중..."));
-			GameInstance->InsLoadPlayerInfo();
-			GameInstance->IsMovedLevel = false; // 복원 완료 후 플래그 초기화
-		}
 	}
 }
 
@@ -42,8 +34,6 @@ void APlayGameMode::ServerTravelToNextMap(const FString& url)
 	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
 	if (GameInstance)
 	{
-		UE_LOG(FALL_DEV_LOG, Log, TEXT("서버: 레벨 이동 전 플레이어 정보 저장 중..."));
-		GameInstance->InsSavePlayerInfo();
 		GameInstance->IsMovedLevel = true;
 	}
 
@@ -78,28 +68,6 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
     {
         UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayerState is nullptr!"));
         return;
-    }
-
-    // 플레이어의 고유 ID 설정
-    if (PlayerState->PlayerUniqueId.IsEmpty() && PlayerState->GetUniqueId().IsValid())
-    {
-        PlayerState->PlayerUniqueId = PlayerState->GetUniqueId()->ToString();
-    }
-
-    // 기존 데이터 복원 (BaseGameInstance에서 확인)
-    UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
-    if (GameInstance)
-    {
-        for (const FPersistentPlayerInfo& SavedInfo : GameInstance->PersistentPlayerInfoArray)
-        {
-            if (SavedInfo.PlayerUniqueId == PlayerState->PlayerUniqueId)
-            {
-                PlayerState->SetPlayerInfo(SavedInfo.PlayerInfo.Tag, SavedInfo.PlayerInfo.Status);
-                UE_LOG(FALL_DEV_LOG, Log, TEXT("서버: 기존 플레이어 정보 복원 완료 - UniqueId: %s, Tag: %s"),
-                    *PlayerState->PlayerUniqueId, *SavedInfo.PlayerInfo.Tag);
-                return;
-            }
-        }
     }
 
     // 새로운 플레이어 등록
