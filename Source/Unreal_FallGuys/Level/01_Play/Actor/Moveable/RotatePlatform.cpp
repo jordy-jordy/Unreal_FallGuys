@@ -31,7 +31,9 @@ void ARotatePlatform::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	MovementComponent->Spin(DeltaTime, RootScene);
+	MovementComponent->Spin(DeltaTime, PlatformAxis);
+	MovementComponent->Spin(DeltaTime, PlatformBody);
+	MovementComponent->Spin(-DeltaTime, StickBody);
 }
 
 void ARotatePlatform::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -66,7 +68,7 @@ void ARotatePlatform::SetMesh()
 	PlatformAxis->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
 	PlatformBody = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RotatePlatform"));
-	PlatformBody->SetupAttachment(RootScene);
+	PlatformBody->SetupAttachment(PlatformAxis);
 	PlatformBody->SetRelativeLocation({ 0, 0, 0 });
 	PlatformBody->SetCollisionProfileName(TEXT("CollisionProfile_LevelOBJ"));
 	PlatformBody->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);

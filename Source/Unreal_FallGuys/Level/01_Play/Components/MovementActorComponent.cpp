@@ -32,15 +32,15 @@ void UMovementActorComponent::TickComponent(float DeltaTime, ELevelTick TickType
 	// ...
 }
 
-void UMovementActorComponent::Spin(float DeltaTime, USceneComponent* RootScene)
+void UMovementActorComponent::Spin(float DeltaTime, UStaticMeshComponent* Target)
 {
 	if (IsSpinLeft)
 	{
-		RootScene->AddRelativeRotation(SpinSpeed * DeltaTime);
+		Target->AddRelativeRotation(SpinSpeed * DeltaTime);
 	}
 	else
 	{
-		RootScene->AddRelativeRotation(SpinSpeed * -DeltaTime);
+		Target->AddRelativeRotation(SpinSpeed * -DeltaTime);
 	}
 }
 

@@ -35,6 +35,6 @@ public:
 
 	// Functions
 	UFUNCTION()
-	void Spin(float DeltaTime, USceneComponent* RootScene);
+	void Spin(float DeltaTime, UStaticMeshComponent* Target);
 
 };

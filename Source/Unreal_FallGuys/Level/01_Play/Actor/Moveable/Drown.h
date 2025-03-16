@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Level/01_Play/Components/MovementActorComponent.h"
 #include "Drown.generated.h"
 
 UENUM(BlueprintType)
@@ -32,6 +33,10 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
+	// ActorComponent
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Movement")
+	UMovementActorComponent* MovementComponent;
+
 	// MeshComponenet
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Drown")
 	USceneComponent* RootScene;
@@ -57,10 +62,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drown", meta = (AllowPrivateAccess = "true"))
 	bool IsLeft;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drown", meta = (AllowPrivateAccess = "true"))
-	float RotateSpeed = 5.0f;
-
 
 private:
 	// MeshAddress
@@ -105,5 +106,5 @@ private:
 	void SetDrownMesh();
 
 	UFUNCTION()
-	void MovePropeller();
+	void SpinPropeller(float DeltaTime);
 };

@@ -16,6 +16,9 @@ ADrown::ADrown()
 void ADrown::BeginPlay()
 {
 	Super::BeginPlay();
+
+	MovementComponent->IsSpinLeft = IsLeft;
+	MovementComponent->SpinSpeed = FRotator({ 0.0f, 180.0f, 0.0f });
 	
 	SetDrownMesh();
 	SetDrownRotation();
@@ -26,11 +29,14 @@ void ADrown::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	MovePropeller();
+	SpinPropeller(DeltaTime);
 }
 
 void ADrown::SetDrownLocation()
 {
+	// ActorComponent
+	MovementComponent = CreateDefaultSubobject<UMovementActorComponent>(FName("MovementComponent"));
+
 	// SetMesh And Location
 	RootScene = CreateDefaultSubobject<USceneComponent>(TEXT("RootScene"));
 	RootComponent = RootScene;
@@ -40,11 +46,11 @@ void ADrown::SetDrownLocation()
 	DrownBody->SetRelativeLocation({ 0, 0, 0 });
 
 	DrownPropeller_Left = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DrownPropeller_Left"));
-	DrownPropeller_Left->SetupAttachment(RootScene);
+	DrownPropeller_Left->SetupAttachment(DrownBody);
 	DrownPropeller_Left->SetRelativeLocation({ -135, -1, 100 });
 
 	DrownPropeller_Right = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DrownPropeller_Right"));
-	DrownPropeller_Right->SetupAttachment(RootScene);
+	DrownPropeller_Right->SetupAttachment(DrownBody);
 	DrownPropeller_Right->SetRelativeLocation({ 135, -1, 100 });
 
 	DrownLight = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DrownLight"));
@@ -52,7 +58,7 @@ void ADrown::SetDrownLocation()
 	DrownLight->SetRelativeLocation({ 0, 0, 0 });
 
 	DrownLightArrow = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DrownLightArrow"));
-	DrownLightArrow->SetupAttachment(RootScene);
+	DrownLightArrow->SetupAttachment(DrownLight);
 	DrownLightArrow->SetRelativeLocation({ 0, 0, 0 });
 }
 
@@ -196,9 +202,14 @@ void ADrown::SetDrownMesh()
 	}
 }
 
-void ADrown::MovePropeller()
+void ADrown::SpinPropeller(float DeltaTime)
 {
-	DrownPropeller_Left->AddRelativeRotation({ 0, RotateSpeed, 0 });
-	DrownPropeller_Right->AddRelativeRotation({ 0, -RotateSpeed, 0 });
+	float Delta_L = DeltaTime;
+	float Delta_R = DeltaTime;
+
+	(IsLeft) ? Delta_R *= -1 : Delta_L *= -1;
+	
+	MovementComponent->Spin(Delta_L, DrownPropeller_Left);
+	MovementComponent->Spin(Delta_R, DrownPropeller_Right);
 }
 

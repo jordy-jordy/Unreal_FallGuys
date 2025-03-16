@@ -53,10 +53,10 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Launch")
 	ULaunchActorComponent* LaunchComponent;
 
-	// PlatformMesh
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "RotatePlatform")
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "RootScene")
 	USceneComponent* RootScene;
-	
+
+	// PlatformMesh	
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "RotatePlatform")
 	UStaticMeshComponent* PlatformAxis;
 
