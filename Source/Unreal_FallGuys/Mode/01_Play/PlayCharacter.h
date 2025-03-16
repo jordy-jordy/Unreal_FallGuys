@@ -141,4 +141,19 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Replicated, BlueprintReadOnly, Category = "GM", meta = (AllowPrivateAccess = "true"))
 	FString CName = TEXT("");
+
+
+//LMH
+public:
+	UPROPERTY(VisibleAnywhere, Replicated, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	bool IsDie = false;
+
+	UFUNCTION(BlueprintCallable, Reliable, Server)
+	void C2S_IsDie(bool _val);
+	void C2S_IsDie_Implementation(bool _val);
+
+
+
+	
+
 };

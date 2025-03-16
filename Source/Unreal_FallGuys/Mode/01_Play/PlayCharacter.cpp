@@ -47,7 +47,7 @@ void APlayCharacter::C2S_Costume_Implementation(const FString& _Name)
 {
 	GetMesh()->SetSkeletalMesh(UFallGlobal::GetCostumeMesh(this, _Name));
 	CName = _Name;
-	S2M_Costume(CName);
+	S2M_Costume(_Name);
 }
 
 // Called when the game starts or when spawned
@@ -56,16 +56,26 @@ void APlayCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	UBaseGameInstance* GameIns = Cast<UBaseGameInstance>(GetGameInstance());
+
 	if (UGameplayStatics::GetPlayerController(GetWorld(), 0) == GetController())
 	{
 		// 나는 그냥 내 코스츔 하면 된다.
 		CName = UFallGlobal::GetCostumeName(this);
+
 		GetMesh()->SetSkeletalMesh(UFallGlobal::GetCostumeMesh(this, CName));
+
 		C2S_Costume(CName);
 	}
 	else
 	{
 		GetMesh()->SetSkeletalMesh(UFallGlobal::GetCostumeMesh(this, CName));
+	}
+
+	if (UGameplayStatics::GetPlayerController(GetWorld(), 0) == GetController())
+	{
+		IsDie = GameIns->GetIsDie();
+		int a = 0;
+		C2S_IsDie(IsDie);
 	}
 }
 
@@ -146,4 +156,16 @@ void APlayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(APlayCharacter, CName);
+	DOREPLIFETIME(APlayCharacter, IsDie);
 }
+
+void APlayCharacter::C2S_IsDie_Implementation(bool _val)
+{
+	IsDie = _val;
+	//
+}
+
+
+
+
+

@@ -17,7 +17,7 @@ void UCustomButtonWidget::SetButtonStyle(UMaterial* Mat, FString _Path)
 
 		Img_View->SetBrushResourceObject(Mat);
 
-		FSlateBrush& Brush = Img_View->Brush;
+		FSlateBrush Brush = Img_View->GetBrush();
 		Brush.SetResourceObject(Mat);
 		Img_View->SetBrush(Brush);
 
@@ -38,7 +38,7 @@ void UCustomButtonWidget::SetButtonStyle(UTexture2D* Texture, FString _Path)
 
 		Img_View->SetBrushResourceObject(Texture);
 
-		FSlateBrush& Brush = Img_View->Brush;
+		FSlateBrush Brush = Img_View->GetBrush();
 		Brush.SetResourceObject(Texture);
 		Img_View->SetBrush(Brush);
 

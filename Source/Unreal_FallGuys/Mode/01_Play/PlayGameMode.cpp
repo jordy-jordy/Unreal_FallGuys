@@ -33,7 +33,7 @@ void APlayGameMode::ServerTravelToNextMap(const FString& url)
 	{
 		GameInstance->SavePlayerTags();
 	}
-
+	//Seamless
 	//클라이언트 데리고 다같이 서버 트래블
 	GetWorld()->ServerTravel(url, false);
 }
