@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Global/FallConst.h"
 #include "Mode/00_Title/UI/TitleUserWidget.h"
 #include "TitleEntranceWidget.generated.h"
 
@@ -18,11 +17,4 @@ class UNREAL_FALLGUYS_API UTitleEntranceWidget : public UTitleUserWidget
 public:
 	//UFUNCTION(BlueprintCallable)
 	//void VisibleInputPanel(UTitleUserWidget* _CurWidget);
-	
-private:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Server", meta = (AllowPrivateAccess = "true"))
-	FString IP = UFallConst::DefaultIP;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Server", meta = (AllowPrivateAccess = "true"))
-	FString Port = UFallConst::DefaultPort;
 };

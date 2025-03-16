@@ -55,6 +55,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void WidgetHidden(EUIType _Type);
 
+	UFUNCTION(BlueprintCallable)
 	UTitleUserWidget* FindWidget(EUIType _Type, int _Index = 0);
 
 protected:

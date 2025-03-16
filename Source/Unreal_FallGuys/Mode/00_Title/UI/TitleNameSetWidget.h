@@ -14,4 +14,6 @@ class UNREAL_FALLGUYS_API UTitleNameSetWidget : public UTitleUserWidget
 {
 	GENERATED_BODY()
 	
+private:
+	FString Nickname = "";
 };

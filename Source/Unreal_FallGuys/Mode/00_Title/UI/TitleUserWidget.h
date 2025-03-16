@@ -21,7 +21,13 @@ public:
 
 	void SetMainWidget(class UTitleMainWidget* _MainWidget)
 	{
-		MainWidget = MainWidget;
+		MainWidget = _MainWidget;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	UTitleMainWidget* GetMainWidget()
+	{
+		return MainWidget;
 	}
 
 protected:

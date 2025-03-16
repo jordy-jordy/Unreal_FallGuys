@@ -39,7 +39,7 @@ void UTitleMainWidget::CreateChildWidget(TSubclassOf<UUserWidget> _Widget, bool 
 
 	FString WidgetName = Widget->GetClass()->GetName();
 
-	SetMainWidget(this);
+	Widget->SetMainWidget(this);
 	CanvasPanel->AddChild(Widget);
 
 	SetWidgetUIType(WidgetName);
@@ -305,6 +305,8 @@ void UTitleMainWidget::AllWidgetSelfHitTestInvisible()
 
 UTitleUserWidget* UTitleMainWidget::FindWidget(EUIType _Type, int _Index/* = 0*/)
 {
+	//TMultiMap<EUIType, UTitleUserWidget*> Widget = GetAllWidgets();
+
 	if (EUIType::CustomInven != _Type)
 	{
 		for (TPair<EUIType, UTitleUserWidget*> Pair : Widgets)
@@ -315,14 +317,10 @@ UTitleUserWidget* UTitleMainWidget::FindWidget(EUIType _Type, int _Index/* = 0*/
 			}
 		}
 	}
-	else
-	{
-		TArray<UTitleUserWidget*> CustomInvens;
-		Widgets.MultiFind(EUIType::CustomInven, CustomInvens);
-		return CustomInvens[_Index];
-	}
 
-	return nullptr;
+	TArray<UTitleUserWidget*> CustomInvens;
+	Widgets.MultiFind(EUIType::CustomInven, CustomInvens);
+	return CustomInvens[_Index];
 }
 
 

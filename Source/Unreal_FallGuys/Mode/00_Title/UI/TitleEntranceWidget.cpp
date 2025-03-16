@@ -3,6 +3,8 @@
 
 #include "Mode/00_Title/UI/TitleEntranceWidget.h"
 #include "Global/GlobalEnum.h"
+#include "Mode/00_Title/UI/TitleMainWidget.h"
+#include "Mode/00_Title/UI/TitleIPPortWidget.h"
 
 
 //void UTitleEntranceWidget::VisibleInputPanel(UTitleUserWidget* _CurWidget)
