@@ -269,7 +269,10 @@ FString UBaseGameInstance::InsGetRandomLevel()
 	} while (PlayedMapList.Contains(RandomIndex));
 
 	PlayedMapList.Add(RandomIndex);
-	return MapList[RandomIndex];
+
+	LevelName = MapList[RandomIndex];
+
+	return LevelName;
 }
 
 // 리소스의 스테틱 메시 반환

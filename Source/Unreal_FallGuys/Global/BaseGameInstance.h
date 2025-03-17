@@ -73,6 +73,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "PLAYER DATA")
 	bool InsGetBackedUpPlayerInfo(const FString& _UniqueID, FPlayerInfo& _OutPlayerInfo) const;
 
+	// 랜덤 레벨 함수에서 얻은 이름 반환
+	UFUNCTION(BlueprintCallable, Category = "LEVEL")
+	FString GetLevelName()
+	{
+		return LevelName;
+	}
+
 protected:
 	// 플레이 레벨 데이터 테이블을 얻는 함수
 	UFUNCTION(BlueprintCallable, Category = "DATA")
@@ -106,6 +113,10 @@ private:
 	// 닉네임
 	UPROPERTY(VisibleAnywhere, Category = "PLAYER NICKNAME")
 	FString Nickname = TEXT("TEST_JORDY");
+
+	// 랜덤 레벨 네임
+	UPROPERTY(VisibleAnywhere, Category = "LEVEL")
+	FString LevelName = TEXT("");
 
 	// 맵리스트
 	TArray<FString> MapList;
