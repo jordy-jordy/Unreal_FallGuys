@@ -5,6 +5,7 @@
 #include "Components/Button.h" // or the appropriate header where FButtonStyle is defined
 
 #include "Global/BaseGameInstance.h"
+#include <Global/Data/GlobalDataTable.h>
 
 //void UCustomColorButtonWidget::Tick(FGeometry MyGeometry, float InDeltaTime)
 //{

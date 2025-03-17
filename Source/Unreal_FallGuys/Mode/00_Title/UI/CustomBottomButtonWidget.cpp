@@ -4,6 +4,7 @@
 #include "Mode/00_Title/UI/CustomBottomButtonWidget.h"
 
 #include "Global/GlobalEnum.h"
+#include <Global/Data/GlobalDataTable.h>
 
 void UCustomBottomButtonWidget::NativeConstruct()
 {
@@ -13,8 +14,13 @@ void UCustomBottomButtonWidget::NativeConstruct()
 
 void UCustomBottomButtonWidget::SetButtonTopStyle()
 {
+	const FCostumeDataRow* Data=UGlobalDataTable::GetCostumeData(GetWorld(),ImgName);
 
-	//SetButtonStyle(NewTexture, "/Script/Engine.Texture2D'/Game/Resources/UI/Custom/Character/UI_Icon_Bottom_Tanager_Variant01.UI_Icon_Bottom_Tanager_Variant01'");
+
+	auto s = Data->CostumeIMG;
+
+	int a = 0;
+	//SetButtonStyle(NewTexture, Data->CostumeIMG);
 
 }
 
