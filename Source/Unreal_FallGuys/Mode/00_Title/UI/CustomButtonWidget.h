@@ -7,7 +7,9 @@
 
 #include <Components/Button.h>
 #include <Components/Image.h>
+#include <Global/GlobalEnum.h>
 #include "CustomButtonWidget.generated.h"
+
 
 /**
  * 
@@ -23,11 +25,25 @@ protected:
 	void SetButtonStyle(UMaterial* Mat,FString Path);
 	//UFUNCTION()
 	void SetButtonStyle(UTexture2D* Texture,FString Path);
+	UFUNCTION()
+	void AttachCustomStaticMesh();
+	UFUNCTION()
+	void DettachCustomStaticMesh();
 
+	UFUNCTION(BlueprintCallable)
+	void CustomStaticMesh();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"), meta = (BindWidget))
 	UButton* Button;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"), meta = (BindWidget))
 	UImage* Img_View;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom", meta = (AllowPrivateAccess = "true"))
+	FString ImgName = TEXT("");
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom", meta = (AllowPrivateAccess = "true"))
+	ECostumeType Type = ECostumeType::TOP;
+
+
 };

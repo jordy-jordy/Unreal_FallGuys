@@ -2,6 +2,7 @@
 
 
 #include "Mode/00_Title/UI/CustomButtonWidget.h"
+#include "Mode/00_Title/TitlePawn.h"
 
 void UCustomButtonWidget::SetButtonStyle(UMaterial* Mat, FString _Path)
 {
@@ -42,5 +43,35 @@ void UCustomButtonWidget::SetButtonStyle(UTexture2D* Texture, FString _Path)
 		Brush.SetResourceObject(Texture);
 		Img_View->SetBrush(Brush);
 
+	}
+}
+void UCustomButtonWidget::AttachCustomStaticMesh()
+{
+
+	//static mesh load
+
+	ATitlePawn* MyPawn = Cast<ATitlePawn>(GetOwningPlayerPawn());
+
+
+	MyPawn->AttachCustomStaticMesh(Type, ImgName);
+}
+
+void UCustomButtonWidget::DettachCustomStaticMesh()
+{
+	ATitlePawn* MyPawn = Cast<ATitlePawn>(GetOwningPlayerPawn());
+
+
+	MyPawn->DeAttachCustomStaticMesh(Type, ImgName);
+}
+
+void UCustomButtonWidget::CustomStaticMesh()
+{
+	if (ImgName == "")
+	{
+		DettachCustomStaticMesh();
+	}
+	else
+	{
+		AttachCustomStaticMesh();
 	}
 }

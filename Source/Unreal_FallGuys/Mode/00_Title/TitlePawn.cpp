@@ -5,6 +5,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include <Global/BaseGameInstance.h>
+#include "Global/Data/GlobalDataTable.h"
 
 
 // Sets default values
@@ -103,6 +104,33 @@ void ATitlePawn::AttachCustomStaticMesh(ECostumeType Type, FString& _ImgName)
 		}
 	}
 
+
+}
+
+void ATitlePawn::DeAttachCustomStaticMesh(ECostumeType Type, FString& _ImgName)
+{
+	//UBaseGameInstance* GameIns = GetGameInstance<UBaseGameInstance>();
+
+
+	//const FCostumeDataRow* CostumeData = UGlobalDataTable::GetCostumeData(GetWorld(), _ImgName);
+	
+		switch (Type)
+		{
+		case ECostumeType::NONE:
+			break;
+		case ECostumeType::TOP:
+			UpComp->SetStaticMesh(nullptr);
+			CurUpStaticMesh = nullptr;
+			break;
+		case ECostumeType::BOTTOM:
+			LowComp->SetStaticMesh(nullptr);
+			CurLowStaticMesh = nullptr;
+			break;
+		case ECostumeType::MAX:
+			break;
+		default:
+			break;
+		}
 
 }
 

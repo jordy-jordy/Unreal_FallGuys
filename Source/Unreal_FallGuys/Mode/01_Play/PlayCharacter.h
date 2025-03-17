@@ -146,7 +146,7 @@ private:
 //LMH
 public:
 	UPROPERTY(VisibleAnywhere, Replicated, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	bool IsDie = false;
+	bool IsDie = true;
 
 	UFUNCTION(BlueprintCallable, Reliable, Server)
 	void C2S_IsDie(bool _val);

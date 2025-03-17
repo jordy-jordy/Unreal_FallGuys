@@ -20,21 +20,18 @@ public:
 protected:
 
 private:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom", meta = (AllowPrivateAccess = "true"))
-	ECostumeType Type = ECostumeType::TOP;
+
 
 
 	/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom", meta = (AllowPrivateAccess = "true"))
 	FString TypeName = "";*/
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom", meta = (AllowPrivateAccess = "true"))
-	FString ImgName = TEXT("");
+	
 
 	UTexture2D* NewTexture = nullptr;
 
 
 	UFUNCTION()
 	void SetButtonTopStyle();
-	UFUNCTION(BlueprintCallable)
-	void AttachCustomStaticMesh();
+
 };

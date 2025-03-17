@@ -52,5 +52,8 @@ public:
 	UFUNCTION()
 	void AttachCustomStaticMesh(ECostumeType Type, FString& _ImgName);
 
+	UFUNCTION()
+	void DeAttachCustomStaticMesh(ECostumeType Type, FString& _ImgName);
+
 
 };

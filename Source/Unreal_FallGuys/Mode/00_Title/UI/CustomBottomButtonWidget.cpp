@@ -2,7 +2,7 @@
 
 
 #include "Mode/00_Title/UI/CustomBottomButtonWidget.h"
-#include "Mode/00_Title/TitlePawn.h"
+
 #include "Global/GlobalEnum.h"
 
 void UCustomBottomButtonWidget::NativeConstruct()
@@ -18,13 +18,4 @@ void UCustomBottomButtonWidget::SetButtonTopStyle()
 
 }
 
-void UCustomBottomButtonWidget::AttachCustomStaticMesh()
-{
 
-	//static mesh load
-
-	ATitlePawn* MyPawn = Cast<ATitlePawn>(GetOwningPlayerPawn());
-
-
-	MyPawn->AttachCustomStaticMesh(Type, ImgName);
-}

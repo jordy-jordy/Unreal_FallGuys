@@ -130,6 +130,6 @@ public:
 	}
 
 	UPROPERTY(BlueprintReadWrite)
-	bool IsDie = false;
+	bool IsDie = true;
 };
 

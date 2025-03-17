@@ -24,13 +24,4 @@ void UCustomTopButtonWidget::SetButtonTopStyle()
 
 }
 
-void UCustomTopButtonWidget::AttachCustomStaticMesh()
-{
 
-	//static mesh load
-
-	ATitlePawn* MyPawn = Cast<ATitlePawn>(GetOwningPlayerPawn());
-
-
-	MyPawn->AttachCustomStaticMesh(Type, ImgName);
-}
