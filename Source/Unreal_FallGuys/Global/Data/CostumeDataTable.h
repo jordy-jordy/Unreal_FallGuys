@@ -37,7 +37,7 @@ public:
 
 	// 코스튬 UI용 이미지
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "COSTUME DATA")
-	UTexture* CostumeIMG = nullptr;
+	UTexture2D* CostumeIMG = nullptr;
 
 };
 

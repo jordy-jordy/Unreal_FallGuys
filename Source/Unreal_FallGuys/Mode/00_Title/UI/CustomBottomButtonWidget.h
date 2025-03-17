@@ -32,6 +32,6 @@ private:
 
 
 	UFUNCTION()
-	void SetButtonTopStyle();
+	void SetButtonBottomStyle();
 
 };

@@ -52,14 +52,14 @@ void UCustomColorButtonWidget::SetButtonColor()
 	case ECostumeColor::NONE:
 		break;
 	case ECostumeColor::PINK:
-		SetButtonStyle(Mat,"/Game/BP/HUD/Custom/Mat/M_PinkColor.M_PinkColor");
+		//SetButtonStyle(Mat,"/Game/BP/HUD/Custom/Mat/M_PinkColor.M_PinkColor");
 		break;
 	case ECostumeColor::YELLOW:
 
-		SetButtonStyle(Mat,"/Game/BP/HUD/Custom/Mat/M_YellowColor.M_YellowColor");
+		//SetButtonStyle(Mat,"/Game/BP/HUD/Custom/Mat/M_YellowColor.M_YellowColor");
 		break;
 	case ECostumeColor::BLUE:
-		SetButtonStyle(Mat,"/Game/BP/HUD/Custom/Mat/M_BlueColor.M_BlueColor");
+		//SetButtonStyle(Mat,"/Game/BP/HUD/Custom/Mat/M_BlueColor.M_BlueColor");
 		break;
 	default:
 		break;

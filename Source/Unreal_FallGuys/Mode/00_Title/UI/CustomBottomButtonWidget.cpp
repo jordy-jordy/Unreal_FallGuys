@@ -9,18 +9,20 @@
 void UCustomBottomButtonWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-	SetButtonTopStyle();
+	SetButtonBottomStyle();
 }
 
-void UCustomBottomButtonWidget::SetButtonTopStyle()
+void UCustomBottomButtonWidget::SetButtonBottomStyle()
 {
+	if (ImgName == "") return;
+
 	const FCostumeDataRow* Data=UGlobalDataTable::GetCostumeData(GetWorld(),ImgName);
 
 
-	auto s = Data->CostumeIMG;
+	UTexture2D* Texture = Data->CostumeIMG;
 
-	int a = 0;
-	//SetButtonStyle(NewTexture, Data->CostumeIMG);
+
+	SetButtonStyle(Texture);
 
 }
 
