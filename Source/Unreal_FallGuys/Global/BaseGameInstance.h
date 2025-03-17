@@ -5,9 +5,6 @@
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 
-#include <Global/Data/GlobalDataTable.h>
-#include <Global/GlobalEnum.h>
-#include <Mode/01_Play/PlayGameState.h>
 #include <Mode/01_Play/PlayPlayerState.h>
 
 #include "BaseGameInstance.generated.h"
@@ -64,13 +61,25 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "RESOURCE")
 	UStaticMesh* InsGetResourceMesh(APawn* _Pawn, const FString& _MeshName = TEXT("NULL"));
 
+	// 레벨 이동했는지 체크하는 변수
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player")
 	bool IsMovedLevel = false;
 
-protected:
-	UFUNCTION(BlueprintCallable, Category = "DATA")
-	UDataTable* GetPlayLevelDataTable() const { return PlayLevelDataTable; }
+	// 플레이어 정보 백업 함수
+	UFUNCTION(BlueprintCallable, Category = "PLAYER DATA")
+	void InsBackupPlayerInfo(const FString& _UniqueID, const FPlayerInfo& _PlayerInfo);
 
+	// 백업된 플레이어 정보 가져오기 함수
+	UFUNCTION(BlueprintCallable, Category = "PLAYER DATA")
+	bool InsGetBackedUpPlayerInfo(const FString& _UniqueID, FPlayerInfo& _OutPlayerInfo) const;
+
+protected:
+	// 플레이 레벨 데이터 테이블을 얻는 함수
+	UFUNCTION(BlueprintCallable, Category = "DATA")
+	class UDataTable* GetPlayLevelDataTable() const;
+
+	// 플레이어 UniqueID -> FPlayerInfo 매핑 저장소
+	TMap<FString, struct FPlayerInfo> PlayerInfoBackup;
 
 private:
 	UFUNCTION(BlueprintCallable, Category = "SERVER")

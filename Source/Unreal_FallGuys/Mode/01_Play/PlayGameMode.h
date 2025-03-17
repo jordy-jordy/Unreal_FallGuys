@@ -34,7 +34,7 @@ public:
 	void StartGame_Implementation();
 
 	// 플레이어 정보 동기화
-	UFUNCTION(NetMulticast, Reliable, BlueprintCallable, Category = "PLAY GAME")
+	UFUNCTION(BlueprintCallable, Reliable, NetMulticast, Category = "PLAY GAME")
 	void SyncPlayerInfo(APlayerController* _NewPlayer);
 	void SyncPlayerInfo_Implementation(APlayerController* _NewPlayer);
 

@@ -5,29 +5,26 @@
 
 #include <Net/UnrealNetwork.h>
 #include <Unreal_FallGuys.h>
-#include <Mode/01_Play/PlayPlayerState.h>
 
 
 APlayGameState::APlayGameState()
 {
 }
 
-void APlayGameState::SyncPlayerInfoFromPlayerState()
+void APlayGameState::SyncPlayerInfoFromPlayerState_Implementation()
 {
-	PlayerInfoArray.Empty();
+    PlayerInfoArray.Empty();
 
-	for (APlayerState* PlayerState : PlayerArray)
-	{
-		APlayPlayerState* PlayPlayerState = Cast<APlayPlayerState>(PlayerState);
-		if (PlayPlayerState)
-		{
-			APlayerController* Controller = Cast<APlayerController>(PlayPlayerState->GetOwner());
-			PlayerInfoArray.Add(FPlayerInfoEntry(Controller, PlayPlayerState->PlayerInfo));
-
-			UE_LOG(FALL_DEV_LOG, Log, TEXT("GameState: 플레이어 정보 동기화 - Controller: %s, UniqueId: %s, Tag: %s"),
-				*Controller->GetName(), *PlayPlayerState->PlayerInfo.UniqueID, *PlayPlayerState->PlayerInfo.Tag);
-		}
-	}
+    for (APlayerState* PlayerState : PlayerArray)
+    {
+        APlayPlayerState* PlayPlayerState = Cast<APlayPlayerState>(PlayerState);
+        if (PlayPlayerState)
+        {
+            PlayerInfoArray.Add(FPlayerInfoEntry(PlayPlayerState->PlayerInfo.UniqueID, PlayPlayerState->PlayerInfo));
+            UE_LOG(FALL_DEV_LOG, Log, TEXT("GameState: 플레이어 정보 동기화 - UniqueId: %s, Tag: %s"),
+                *PlayPlayerState->PlayerInfo.UniqueID, *PlayPlayerState->PlayerInfo.Tag);
+        }
+    }
 }
 
 void APlayGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

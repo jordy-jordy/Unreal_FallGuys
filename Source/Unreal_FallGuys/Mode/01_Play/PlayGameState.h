@@ -16,15 +16,18 @@ struct FPlayerInfoEntry
     GENERATED_BODY()
 
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-    APlayerController* PlayerController;
+    FString UniqueID;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
     FPlayerInfo PlayerInfo;
 
-    FPlayerInfoEntry() : PlayerController(nullptr), PlayerInfo() {}
+    FPlayerInfoEntry() : UniqueID(TEXT("")), PlayerInfo() 
+    {
+    }
 
-    FPlayerInfoEntry(APlayerController* InController, const FPlayerInfo& InInfo)
-        : PlayerController(InController), PlayerInfo(InInfo) {
+    FPlayerInfoEntry(const FString& _InUniqueID, const FPlayerInfo& _InInfo)
+        : UniqueID(_InUniqueID), PlayerInfo(_InInfo) 
+    {
     }
 };
 
@@ -44,8 +47,9 @@ public:
     TArray<FPlayerInfoEntry> PlayerInfoArray;
 
     // `PlayerState`에서 데이터 동기화
-    UFUNCTION(BlueprintCallable, Category = "PLAYER LIST")
+    UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "PLAYER LIST")
     void SyncPlayerInfoFromPlayerState();
+    void SyncPlayerInfoFromPlayerState_Implementation();
 
     void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };

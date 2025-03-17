@@ -31,9 +31,23 @@ void APlayGameMode::ServerTravelToNextMap(const FString& url)
 {
 	if (!HasAuthority()) return;
 
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT(":: 서버트래블 감지 ::"));
+
 	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
 	if (GameInstance)
 	{
+		// 현재 게임 상태 가져오기
+		APlayGameState* PlayGameState = GetGameState<APlayGameState>();
+		if (PlayGameState)
+		{
+			for (const FPlayerInfoEntry& PlayerEntry : PlayGameState->PlayerInfoArray)
+			{
+				GameInstance->InsBackupPlayerInfo(PlayerEntry.UniqueID, PlayerEntry.PlayerInfo);
+				UE_LOG(FALL_DEV_LOG, Log, TEXT("ServerTravelToNextMap :: 플레이어 정보 백업 완료 - UniqueID = %s, Tag = %s"),
+					*PlayerEntry.UniqueID, *PlayerEntry.PlayerInfo.Tag);
+			}
+		}
+
 		GameInstance->IsMovedLevel = true;
 	}
 
@@ -61,32 +75,57 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 {
     Super::PostLogin(NewPlayer);
 
+	// 서버장이 아닐시 리턴
     if (!HasAuthority()) return;
 
+	// PlayerState가 없을시 리턴
     APlayPlayerState* PlayerState = Cast<APlayPlayerState>(NewPlayer->PlayerState);
     if (!PlayerState)
     {
-        UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayerState is nullptr!"));
+        UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayerState가 nullptr 입니다."));
         return;
     }
 
-    // 새로운 플레이어 등록
+    // GameState가 없을시 리턴
     APlayGameState* FallState = GetGameState<APlayGameState>();
     if (!FallState)
     {
-        UE_LOG(FALL_DEV_LOG, Error, TEXT("GameState is nullptr!"));
+        UE_LOG(FALL_DEV_LOG, Error, TEXT("GameState가 nullptr 입니다."));
         return;
     }
 
-    FString UniqueTag = FString::Printf(TEXT("Player%d"), FallState->PlayerInfoArray.Num());
-    PlayerState->SetPlayerInfo(UniqueTag, EPlayerStatus::DEFAULT);
+	// 기존 Player 정보 백업
+	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
+	if (GameInstance && GameInstance->IsMovedLevel)
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PostLogin :: 기존 플레이어 감지. 정보를 로드합니다."));
 
-    UE_LOG(FALL_DEV_LOG, Log, TEXT("서버: 신규 플레이어 태그 부여 - Controller = %s, Tag = %s"),
-        *NewPlayer->GetName(), *UniqueTag);
+		FPlayerInfo RestoredInfo;
+		if (GameInstance->InsGetBackedUpPlayerInfo(PlayerState->GetUniqueId()->ToString(), RestoredInfo))
+		{
+			RestoredInfo.Status = EPlayerStatus::DEFAULT;  // Status 초기화
+			PlayerState->PlayerInfo = RestoredInfo;
+
+			UE_LOG(FALL_DEV_LOG, Log, TEXT("PostLogin :: 플레이어 정보 로드 완료 - UniqueID = %s, Tag = %s"),
+				*RestoredInfo.UniqueID, *RestoredInfo.Tag);
+		}
+	}
+	else
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PostLogin :: 신규 플레이어 감지. 정보를 세팅합니다."));
+
+		// 새로운 Player 등록 및 세팅
+		FString UniqueTag = FString::Printf(TEXT("Player%d"), FallState->PlayerInfoArray.Num());
+		PlayerState->SetPlayerInfo(UniqueTag, EPlayerStatus::DEFAULT);
+
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("PostLogin :: 신규 플레이어 정보 세팅 - UniqueID = %s, Tag = %s"),
+			*PlayerState->PlayerInfo.UniqueID, *UniqueTag);
+	}
 
     // 모든 클라이언트에게 정보 동기화
     SyncPlayerInfo(NewPlayer);
 
+	// 접속중인 Player 수 증가
 	ConnectedPlayers++;
 
     if (IsMinPlayersReached())

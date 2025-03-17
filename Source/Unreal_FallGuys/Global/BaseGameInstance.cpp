@@ -13,7 +13,8 @@
 #include <Unreal_FallGuys.h>
 #include <Global/FallGlobal.h>
 #include <Global/FallConst.h>
-#include <Mode/01_Play/PlayGameState.h>
+#include <Global/Data/GlobalDataTable.h>
+#include <Mode/01_Play/PlayPlayerState.h>
 
 
 UBaseGameInstance::UBaseGameInstance()
@@ -291,4 +292,39 @@ UStaticMesh* UBaseGameInstance::InsGetResourceMesh(APawn* _Pawn, const FString& 
 	}
 
 	return nullptr;
+}
+
+// 플레이 레벨 데이터 테이블을 얻는 함수
+UDataTable* UBaseGameInstance::GetPlayLevelDataTable() const
+{
+	return PlayLevelDataTable; 
+}
+
+// 플레이어 정보 백업 함수
+void UBaseGameInstance::InsBackupPlayerInfo(const FString& _UniqueID, const FPlayerInfo& _PlayerInfo)
+{
+	if (_UniqueID.IsEmpty())
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsBackupPlayerInfo :: Invalid UniqueID"));
+		return;
+	}
+
+	PlayerInfoBackup.Add(_UniqueID, _PlayerInfo);
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("InsBackupPlayerInfo :: UniqueID = %s, PlayerTag = %s"),
+		*_UniqueID, *_PlayerInfo.Tag);
+}
+
+// 백업된 플레이어 정보 가져오기 함수
+bool UBaseGameInstance::InsGetBackedUpPlayerInfo(const FString& _UniqueID, FPlayerInfo& _OutPlayerInfo) const
+{
+	const FPlayerInfo* FoundInfo = PlayerInfoBackup.Find(_UniqueID);
+	if (FoundInfo)
+	{
+		_OutPlayerInfo = *FoundInfo;
+		return true;
+	}
+
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsGetBackedUpPlayerInfo :: No PlayerInfo found for UniqueID = %s"),
+		*_UniqueID);
+	return false;
 }
