@@ -135,7 +135,7 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 	}
 
 	// 접속 여부 bool값 true로 변경
-	GameInstance->SetbIsConnectedTrue();
+	GameInstance->InsSetbIsConnectedTrue();
 
     // 모든 클라이언트에게 정보 동기화
     SyncPlayerInfo();

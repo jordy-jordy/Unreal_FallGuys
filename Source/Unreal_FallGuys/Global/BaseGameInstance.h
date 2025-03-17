@@ -75,13 +75,14 @@ public:
 
 	// 랜덤 레벨 함수에서 얻은 이름 반환
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
-	FString GetLevelName()
+	FString InsGetLevelName()
 	{
 		return LevelName;
 	}
 
+	// 서버 연결 상태를 TRUE로 전환
 	UFUNCTION(BlueprintCallable, Category = "SERVER")
-	void SetbIsConnectedTrue()
+	void InsSetbIsConnectedTrue()
 	{
 		bIsConnected = true;
 	}

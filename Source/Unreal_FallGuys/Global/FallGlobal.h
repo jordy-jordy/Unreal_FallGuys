@@ -61,4 +61,9 @@ public:
 	// 리소스의 스테틱 메시 반환
 	UFUNCTION(BlueprintCallable)
 	static UStaticMesh* GetResourceMesh(APawn* _Pawn, const FString& _MeshName);
+
+	// 랜덤 레벨 함수에서 얻은 이름 반환
+	UFUNCTION(BlueprintCallable)
+	static FString GetLevelName(APawn* _Pawn);
+
 };

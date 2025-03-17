@@ -88,7 +88,7 @@ FString UFallGlobal::GetCostumeName(APawn* _Pawn)
 }
 
 // 저장된 코스튬의 스켈레탈 메시 반환
-USkeletalMesh* UFallGlobal::GetCostumeMesh(APawn* _Pawn, const FString& _MeshName/* = TEXT("NULL")*/)
+USkeletalMesh* UFallGlobal::GetCostumeMesh(APawn* _Pawn, const FString& _MeshName)
 {
 	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
 	return GameIns->InsGetCostumeMesh(_Pawn, _MeshName);
@@ -121,7 +121,7 @@ TArray<FString> UFallGlobal::GetAvailableLevels()
 	}
 
 	// PlayLevelDataTable 가져오기
-	UDataTable* LevelDataTable = GameInstance->GetPlayLevelDataTable(); // 이 함수는 BaseGameInstance에서 PlayLevelDataTable을 가져오는 함수로 가정
+	UDataTable* LevelDataTable = GameInstance->GetPlayLevelDataTable();
 	if (!LevelDataTable)
 	{
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("GetAvailableLevels: PlayLevelDataTable is null!"));
@@ -170,8 +170,15 @@ FString UFallGlobal::GetRandomLevel(APawn* _Pawn)
 }
 
 // 리소스의 스테틱 메시 반환
-UStaticMesh* UFallGlobal::GetResourceMesh(APawn* _Pawn, const FString& _MeshName/* = TEXT("NULL")*/)
+UStaticMesh* UFallGlobal::GetResourceMesh(APawn* _Pawn, const FString& _MeshName)
 {
 	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
 	return GameIns->InsGetResourceMesh(_Pawn, _MeshName);
+}
+
+// 랜덤 레벨 함수에서 얻은 이름 반환
+FString UFallGlobal::GetLevelName(APawn* _Pawn)
+{
+	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
+	return GameIns->InsGetLevelName();
 }
