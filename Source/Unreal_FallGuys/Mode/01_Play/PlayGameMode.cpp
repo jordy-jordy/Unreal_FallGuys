@@ -96,12 +96,14 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 
 	// 기존 Player 정보 백업
 	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
+	FString PlayerUniqueID = PlayerState->GetUniqueId()->ToString(); // UniqueID 얻음
+
 	if (GameInstance && GameInstance->IsMovedLevel)
 	{
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PostLogin :: 기존 플레이어 감지. 정보를 로드합니다."));
 
 		FPlayerInfo RestoredInfo;
-		if (GameInstance->InsGetBackedUpPlayerInfo(PlayerState->GetUniqueId()->ToString(), RestoredInfo))
+		if (GameInstance->InsGetBackedUpPlayerInfo(PlayerUniqueID, RestoredInfo))
 		{
 			RestoredInfo.Status = EPlayerStatus::DEFAULT;  // Status 초기화
 			PlayerState->PlayerInfo = RestoredInfo;
@@ -123,10 +125,13 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 	}
 
     // 모든 클라이언트에게 정보 동기화
-    SyncPlayerInfo(NewPlayer);
+    SyncPlayerInfo();
 
-	// 접속중인 Player 수 증가
-	ConnectedPlayers++;
+	if (!GameInstance->IsMovedLevel)
+	{
+		// 접속중인 Player 수 증가
+		ConnectedPlayers++;
+	}
 
     if (IsMinPlayersReached())
     {
@@ -136,12 +141,12 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 }
 
 // 플레이어 인포 동기화
-void APlayGameMode::SyncPlayerInfo_Implementation(APlayerController* _NewPlayer)
+void APlayGameMode::SyncPlayerInfo_Implementation()
 {
 	APlayGameState* FallState = GetGameState<APlayGameState>();
 	if (!FallState)
 	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("GameState is nullptr!"));
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("GameState가 nullptr 입니다. 일정 시간 후 다시 시도합니다."));
 		return;
 	}
 
@@ -172,3 +177,4 @@ void APlayGameMode::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(APlayGameMode, ConnectedPlayers);
 }
+

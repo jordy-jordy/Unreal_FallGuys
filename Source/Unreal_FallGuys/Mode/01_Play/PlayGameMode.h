@@ -35,8 +35,8 @@ public:
 
 	// 플레이어 정보 동기화
 	UFUNCTION(BlueprintCallable, Reliable, NetMulticast, Category = "PLAY GAME")
-	void SyncPlayerInfo(APlayerController* _NewPlayer);
-	void SyncPlayerInfo_Implementation(APlayerController* _NewPlayer);
+	void SyncPlayerInfo();
+	void SyncPlayerInfo_Implementation();
 
 protected:
 	virtual void Tick(float DeltaSeconds) override;

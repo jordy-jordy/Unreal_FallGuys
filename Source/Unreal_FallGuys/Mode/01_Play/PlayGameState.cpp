@@ -13,18 +13,23 @@ APlayGameState::APlayGameState()
 
 void APlayGameState::SyncPlayerInfoFromPlayerState_Implementation()
 {
-    PlayerInfoArray.Empty();
+	TMap<FString, FPlayerInfo> TempMap;
+	for (APlayerState* PlayerState : PlayerArray)
+	{
+		APlayPlayerState* PlayPlayerState = Cast<APlayPlayerState>(PlayerState);
+		if (PlayPlayerState)
+		{
+			TempMap.Add(PlayPlayerState->PlayerInfo.UniqueID, PlayPlayerState->PlayerInfo);
+		}
+	}
 
-    for (APlayerState* PlayerState : PlayerArray)
-    {
-        APlayPlayerState* PlayPlayerState = Cast<APlayPlayerState>(PlayerState);
-        if (PlayPlayerState)
-        {
-            PlayerInfoArray.Add(FPlayerInfoEntry(PlayPlayerState->PlayerInfo.UniqueID, PlayPlayerState->PlayerInfo));
-            UE_LOG(FALL_DEV_LOG, Log, TEXT("GameState: 플레이어 정보 동기화 - UniqueId: %s, Tag: %s"),
-                *PlayPlayerState->PlayerInfo.UniqueID, *PlayPlayerState->PlayerInfo.Tag);
-        }
-    }
+	PlayerInfoArray.Empty();
+	for (const auto& Elem : TempMap)
+	{
+		PlayerInfoArray.Add(FPlayerInfoEntry(Elem.Key, Elem.Value));
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("GameState: 플레이어 정보 동기화 - UniqueId: %s, Tag: %s"),
+			*Elem.Key, *Elem.Value.Tag);
+	}
 }
 
 void APlayGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

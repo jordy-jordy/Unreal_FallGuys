@@ -114,12 +114,16 @@ private:
 	// 서버 연결 상태 변수
 	bool bIsConnected = false;
 
+	// 디버그용
+	UFUNCTION(BlueprintCallable, Category = "DEBUG")
+	void InsPrintPlayerInfo();
+
 //LMH
 public:
 	UFUNCTION(BlueprintCallable)
 	bool GetIsDie() { return IsDie; } const
 
-		UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable)
 	void SetIsDie(bool _val)
 	{
 		IsDie = _val;

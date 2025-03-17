@@ -14,6 +14,7 @@
 #include <Global/FallGlobal.h>
 #include <Global/FallConst.h>
 #include <Global/Data/GlobalDataTable.h>
+#include <Mode/01_Play/PlayGameState.h>
 #include <Mode/01_Play/PlayPlayerState.h>
 
 
@@ -251,24 +252,24 @@ void UBaseGameInstance::InsChangeNickname(const FString& _NewNickname)
 // Random PlayLevel의 이름 반환
 FString UBaseGameInstance::InsGetRandomLevel()
 {
-	for (FString MapName : UFallGlobal::GetAvailableLevels())
+	if (MapList.Num() == 0)
 	{
-		MapList.Add(MapName);
+		MapList = UFallGlobal::GetAvailableLevels(); // 중복 추가 방지
 	}
 
-	int Random = 0;
+	if (MapList.Num() == 0)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("InsGetRandomLevel :: 사용 가능한 맵이 없습니다."));
+		return TEXT("DefaultMap");
+	}
+
 	int RandomIndex = 0;
-	FString MapName = TEXT("");
 	do {
-		Random = FMath::RandRange(1, MapList.Num());
-		RandomIndex = Random - 1;
+		RandomIndex = FMath::RandRange(0, MapList.Num() - 1);
+	} while (PlayedMapList.Contains(RandomIndex));
 
-	} while (PlayedMapList.Contains(RandomIndex)); // 이미 선택된 맵인지 확인
-
-	PlayedMapList.Add(RandomIndex); // 선택된 맵 추가
-	MapName = MapList[RandomIndex];
-
-	return MapList[RandomIndex]; // 랜덤으로 선택된 맵 반환
+	PlayedMapList.Add(RandomIndex);
+	return MapList[RandomIndex];
 }
 
 // 리소스의 스테틱 메시 반환
@@ -327,4 +328,66 @@ bool UBaseGameInstance::InsGetBackedUpPlayerInfo(const FString& _UniqueID, FPlay
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsGetBackedUpPlayerInfo :: No PlayerInfo found for UniqueID = %s"),
 		*_UniqueID);
 	return false;
+}
+
+// 디버그용
+void UBaseGameInstance::InsPrintPlayerInfo()
+{
+	APlayGameState* PlayGameState = GetWorld()->GetGameState<APlayGameState>();
+	if (!PlayGameState)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("PrintPlayerInfo: GameState가 nullptr 입니다."));
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Error: GameState가 nullptr 입니다."));
+		}
+		return;
+	}
+
+	// 콘솔 로그
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("=== PlayerInfoArray 목록 ==="));
+
+	// 화면 출력용 문자열
+	FString ScreenMessage = TEXT("=== PlayerInfoArray 목록 ===\n");
+
+	for (const FPlayerInfoEntry& Entry : PlayGameState->PlayerInfoArray)
+	{
+		FString LogMessage = FString::Printf(TEXT("UniqueID: %s, Tag: %s, Status: %d"),
+			*Entry.UniqueID, *Entry.PlayerInfo.Tag, static_cast<int32>(Entry.PlayerInfo.Status));
+
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("%s"), *LogMessage);
+
+		// 화면에 출력 (GEngine 사용)
+		if (GEngine)
+		{
+			ScreenMessage += LogMessage + TEXT("\n");
+		}
+	}
+
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("=== 각 플레이어의 PlayerInfo ==="));
+	ScreenMessage += TEXT("=== 각 플레이어의 PlayerInfo ===\n");
+
+	for (APlayerState* PlayerState : PlayGameState->PlayerArray)
+	{
+		APlayPlayerState* PlayPlayerState = Cast<APlayPlayerState>(PlayerState);
+		if (PlayPlayerState)
+		{
+			FString LogMessage = FString::Printf(TEXT("UniqueID: %s, Tag: %s, Status: %d"),
+				*PlayPlayerState->PlayerInfo.UniqueID, *PlayPlayerState->PlayerInfo.Tag,
+				static_cast<int32>(PlayPlayerState->PlayerInfo.Status));
+
+			UE_LOG(FALL_DEV_LOG, Log, TEXT("%s"), *LogMessage);
+
+			if (GEngine)
+			{
+				ScreenMessage += LogMessage + TEXT("\n");
+			}
+		}
+	}
+
+	// 최종적으로 화면에 출력
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan, ScreenMessage);
+	}
 }
