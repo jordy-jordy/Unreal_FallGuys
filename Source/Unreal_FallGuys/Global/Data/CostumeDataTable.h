@@ -30,6 +30,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CostumeData")
 	UStaticMesh* CostumeMesh = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CostumeData")
+	UTexture* CostumeIMG = nullptr;
+
 };
 
 /**
