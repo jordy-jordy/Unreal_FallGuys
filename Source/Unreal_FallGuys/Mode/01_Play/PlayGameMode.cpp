@@ -8,6 +8,8 @@
 #include <Unreal_FallGuys.h>
 #include <Global/FallConst.h>
 #include <Global/BaseGameInstance.h>
+#include <Mode/01_Play/PlayGameState.h>
+#include <Mode/01_Play/PlayPlayerState.h>
 
 
 APlayGameMode::APlayGameMode()
@@ -19,22 +21,36 @@ void APlayGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// 서버장에게만 보이는 메세지
-	if (HasAuthority())
+	if (HasAuthority()) // 서버에서만 실행
 	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("서버: PlayGameMode가 시작되었습니다. 당신은 서버장입니다."));
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("서버: PlayGameMode가 시작되었습니다."));
 	}
 }
 
 void APlayGameMode::ServerTravelToNextMap(const FString& url)
 {
+	if (!HasAuthority()) return;
+
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT(":: 서버트래블 감지 ::"));
+
 	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
-	if (HasAuthority() && GameInstance)
+	if (GameInstance)
 	{
-		GameInstance->SavePlayerTags();
+		// 현재 게임 상태 가져오기
+		APlayGameState* PlayGameState = GetGameState<APlayGameState>();
+		if (PlayGameState)
+		{
+			for (const FPlayerInfoEntry& PlayerEntry : PlayGameState->PlayerInfoArray)
+			{
+				GameInstance->InsBackupPlayerInfo(PlayerEntry.UniqueID, PlayerEntry.PlayerInfo);
+				UE_LOG(FALL_DEV_LOG, Log, TEXT("ServerTravelToNextMap :: 플레이어 정보 백업 완료 - UniqueID = %s, Tag = %s"),
+					*PlayerEntry.UniqueID, *PlayerEntry.PlayerInfo.Tag);
+			}
+		}
+
+		GameInstance->IsMovedLevel = true;
 	}
-	//Seamless
-	//클라이언트 데리고 다같이 서버 트래블
+
 	GetWorld()->ServerTravel(url, false);
 }
 
@@ -44,6 +60,7 @@ void APlayGameMode::Tick(float DeltaSeconds)
 
 	// 게임 종료 체크
 	if (true == IsEndGame) return;
+
 	// 골인한 플레이어 수와 목표 인원 수 체크
 	if (CurFinishPlayer >= FinishPlayer)
 	{
@@ -53,41 +70,82 @@ void APlayGameMode::Tick(float DeltaSeconds)
 	}
 }
 
-// 플레이어 접속시 실행되는 함수
+// 접속시 실행되는 함수
 void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 {
-	Super::PostLogin(NewPlayer);
+    Super::PostLogin(NewPlayer);
 
-	FString CurrentLevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
+	// 서버장이 아닐시 리턴
+    if (!HasAuthority()) return;
+
+	// PlayerState가 없을시 리턴
+    APlayPlayerState* PlayerState = Cast<APlayPlayerState>(NewPlayer->PlayerState);
+    if (!PlayerState)
+    {
+        UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayerState가 nullptr 입니다."));
+        return;
+    }
+
+    // GameState가 없을시 리턴
+    APlayGameState* FallState = GetGameState<APlayGameState>();
+    if (!FallState)
+    {
+        UE_LOG(FALL_DEV_LOG, Error, TEXT("GameState가 nullptr 입니다."));
+        return;
+    }
+
+	// 기존 Player 정보 백업
 	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
-
-	// 서버에서만 실행
-	if (HasAuthority())
+	if (GameInstance && GameInstance->IsMovedLevel)
 	{
-		ConnectedPlayers++;
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("%s 에 접속합니다."), *CurrentLevelName);
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("서버: 플레이어가 접속했습니다. 현재 플레이어 수 = %d"), ConnectedPlayers);
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PostLogin :: 기존 플레이어 감지. 정보를 로드합니다."));
 
-		if (false == GameInstance->IsMovedLevel)
+		FPlayerInfo RestoredInfo;
+		if (GameInstance->InsGetBackedUpPlayerInfo(PlayerState->GetUniqueId()->ToString(), RestoredInfo))
 		{
-			AssignPlayerTag(NewPlayer);
-		}
+			RestoredInfo.Status = EPlayerStatus::DEFAULT;  // Status 초기화
+			PlayerState->PlayerInfo = RestoredInfo;
 
-		if (true == GameInstance->IsMovedLevel)
-		{
-			GameInstance->LoadPlayerTags();
+			UE_LOG(FALL_DEV_LOG, Log, TEXT("PostLogin :: 플레이어 정보 로드 완료 - UniqueID = %s, Tag = %s"),
+				*RestoredInfo.UniqueID, *RestoredInfo.Tag);
 		}
+	}
+	else
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PostLogin :: 신규 플레이어 감지. 정보를 세팅합니다."));
 
-		// 네트워크 동기화를 강제 실행하여 클라이언트와 데이터 맞추기
-		ForceNetUpdate();
+		// 새로운 Player 등록 및 세팅
+		FString UniqueTag = FString::Printf(TEXT("Player%d"), FallState->PlayerInfoArray.Num());
+		PlayerState->SetPlayerInfo(UniqueTag, EPlayerStatus::DEFAULT);
+
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("PostLogin :: 신규 플레이어 정보 세팅 - UniqueID = %s, Tag = %s"),
+			*PlayerState->PlayerInfo.UniqueID, *UniqueTag);
 	}
 
-	// 최소 인원 충족했을 경우
-	if (IsMinPlayersReached())
+    // 모든 클라이언트에게 정보 동기화
+    SyncPlayerInfo(NewPlayer);
+
+	// 접속중인 Player 수 증가
+	ConnectedPlayers++;
+
+    if (IsMinPlayersReached())
+    {
+        UE_LOG(FALL_DEV_LOG, Warning, TEXT("최소 인원 충족, 게임 시작 가능"));
+        StartGame();
+    }
+}
+
+// 플레이어 인포 동기화
+void APlayGameMode::SyncPlayerInfo_Implementation(APlayerController* _NewPlayer)
+{
+	APlayGameState* FallState = GetGameState<APlayGameState>();
+	if (!FallState)
 	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("플레이를 위한 최소 인원이 충족되었습니다. 게임 시작이 가능합니다."));
-		StartGame();
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("GameState is nullptr!"));
+		return;
 	}
+
+	FallState->SyncPlayerInfoFromPlayerState();
 }
 
 // 최소 인원 체크
@@ -103,69 +161,9 @@ void APlayGameMode::StartGame_Implementation()
 	UFallConst::CanStart = true;
 }
 
-// 플레이어 태그 설정
-void APlayGameMode::AssignPlayerTag(APlayerController* _NewPlayer)
-{
-	if (!_NewPlayer)
-	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("AssignPlayerTag: NewPlayer is nullptr!"));
-		return;
-	}
-
-	// 서버에서만 태그 증가
-	if (HasAuthority())
-	{
-		UBaseGameInstance* Ins = Cast<UBaseGameInstance>(GetGameInstance());
-
-		if (Ins->InsGetAllPlayerTags().Contains(_NewPlayer)) // 중복 체크
-		{
-			UE_LOG(FALL_DEV_LOG, Warning, TEXT("AssignPlayerTag: Player already has a tag!"));
-			return;
-		}
-
-		FString UniqueTag = FString::Printf(TEXT("Player%d"), PlayerCount);
-		Ins->PlayerTags.Add(_NewPlayer, UniqueTag);
-		_NewPlayer->Tags.AddUnique(FName(*UniqueTag));
-
-		// PlayerCount 증가 후 동기화
-		PlayerCount++;
-		ForceNetUpdate();
-
-		UE_LOG(FALL_DEV_LOG, Log, TEXT("서버: Player %s assigned tag: %s"), *_NewPlayer->GetName(), *UniqueTag);
-
-		// 모든 클라이언트에게 태그 동기화
-		MulticastAssignPlayerTag(_NewPlayer, UniqueTag);
-	}
-}
-
-// 플레이어 태그 동기화
-void APlayGameMode::MulticastAssignPlayerTag_Implementation(APlayerController* _NewPlayer, const FString& _Tag)
-{
-	UBaseGameInstance* Ins = Cast<UBaseGameInstance>(GetGameInstance());
-
-	if (_NewPlayer)
-	{
-		if (!Ins->InsGetAllPlayerTags().Contains(_NewPlayer)) // 클라이언트에서 비어있을 경우 덮어쓰기
-		{
-			Ins->PlayerTags.Add(_NewPlayer, _Tag);
-		}
-
-		if (!_NewPlayer->Tags.Contains(FName(*_Tag))) // 중복 추가 방지
-		{
-			_NewPlayer->Tags.AddUnique(FName(*_Tag));
-			UE_LOG(FALL_DEV_LOG, Log, TEXT("클라이언트: Player %s assigned tag: %s"), *_NewPlayer->GetName(), *_Tag);
-		}
-	}
-}
-
 void APlayGameMode::OnRep_ConnectedPlayers()
 {
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("클라이언트: ConnectedPlayers 동기화 = %d"), ConnectedPlayers);
-}
-
-void APlayGameMode::OnRep_PlayerCount()
-{
-	UE_LOG(FALL_DEV_LOG, Log, TEXT("클라이언트: PlayerCount 동기화 = %d"), PlayerCount);
 }
 
 // 동기화 변수
@@ -173,5 +171,4 @@ void APlayGameMode::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(APlayGameMode, ConnectedPlayers);
-	DOREPLIFETIME(APlayGameMode, PlayerCount);
 }

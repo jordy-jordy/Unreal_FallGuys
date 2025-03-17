@@ -9,10 +9,12 @@
 #include <SocketSubsystem.h>
 #include <IPAddress.h>
 #include <Interfaces/IPv4/IPv4Address.h>
+
 #include <Unreal_FallGuys.h>
 #include <Global/FallGlobal.h>
 #include <Global/FallConst.h>
-#include <Unreal_FallGuys.h>
+#include <Global/Data/GlobalDataTable.h>
+#include <Mode/01_Play/PlayPlayerState.h>
 
 
 UBaseGameInstance::UBaseGameInstance()
@@ -189,14 +191,6 @@ void UBaseGameInstance::CServerConnect(UWorld* _World, FString _IP, FString _Por
 	UGameplayStatics::OpenLevel(_World, FName(*ConnectLevelName));
 }
 
-// 동기화 변수
-void UBaseGameInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(UBaseGameInstance, CostumeName);
-	DOREPLIFETIME(UBaseGameInstance, Nickname);
-}
-
 // 코스튬 이름 저장
 void UBaseGameInstance::InsSaveCostumeName(const FString& _CostumeName)
 {
@@ -254,6 +248,7 @@ void UBaseGameInstance::InsChangeNickname(const FString& _NewNickname)
 	Nickname = _NewNickname;
 }
 
+// Random PlayLevel의 이름 반환
 FString UBaseGameInstance::InsGetRandomLevel()
 {
 	for (FString MapName : UFallGlobal::GetAvailableLevels())
@@ -299,60 +294,37 @@ UStaticMesh* UBaseGameInstance::InsGetResourceMesh(APawn* _Pawn, const FString& 
 	return nullptr;
 }
 
-// 특정 플레이어의 태그 반환
-FString UBaseGameInstance::InsGetPlayerTag(APlayerController* _PlayerController) const
+// 플레이 레벨 데이터 테이블을 얻는 함수
+UDataTable* UBaseGameInstance::GetPlayLevelDataTable() const
 {
-	if (!_PlayerController)
-	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("GetPlayerTag: PlayerController is nullptr!"));
-		return TEXT("Invalid");
-	}
-
-	if (PlayerTags.Contains(_PlayerController))
-	{
-		return PlayerTags[_PlayerController];
-	}
-
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("GetPlayerTag: PlayerController has no tag assigned!"));
-	return TEXT("NoTag");
+	return PlayLevelDataTable; 
 }
 
-// 전체 플레이어 태그 리스트 반환
-TMap<APlayerController*, FString> UBaseGameInstance::InsGetAllPlayerTags() const
+// 플레이어 정보 백업 함수
+void UBaseGameInstance::InsBackupPlayerInfo(const FString& _UniqueID, const FPlayerInfo& _PlayerInfo)
 {
-	return PlayerTags;
-}
-
-void UBaseGameInstance::SavePlayerTags()
-{
-	PersistentPlayerTags.Empty();
-	for (const auto& Entry : PlayerTags)
+	if (_UniqueID.IsEmpty())
 	{
-		if (Entry.Key) // 유효한 PlayerController 확인
-		{
-			FString PlayerName = Entry.Key->GetName();
-			PersistentPlayerTags.Add(PlayerName, Entry.Value);
-		}
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsBackupPlayerInfo :: Invalid UniqueID"));
+		return;
 	}
 
-	IsMovedLevel = true;
+	PlayerInfoBackup.Add(_UniqueID, _PlayerInfo);
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("InsBackupPlayerInfo :: UniqueID = %s, PlayerTag = %s"),
+		*_UniqueID, *_PlayerInfo.Tag);
 }
 
-void UBaseGameInstance::LoadPlayerTags()
+// 백업된 플레이어 정보 가져오기 함수
+bool UBaseGameInstance::InsGetBackedUpPlayerInfo(const FString& _UniqueID, FPlayerInfo& _OutPlayerInfo) const
 {
-	PlayerTags.Empty();
-	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	const FPlayerInfo* FoundInfo = PlayerInfoBackup.Find(_UniqueID);
+	if (FoundInfo)
 	{
-		APlayerController* PlayerController = It->Get();
-		if (PlayerController)
-		{
-			FString PlayerName = PlayerController->GetName();
-			if (PersistentPlayerTags.Contains(PlayerName))
-			{
-				PlayerTags.Add(PlayerController, PersistentPlayerTags[PlayerName]);
-				UE_LOG(FALL_DEV_LOG, Log, TEXT("서버: Player %s assigned tag: %s"), *PlayerName, *PersistentPlayerTags[PlayerName]);
-			}
-		}
+		_OutPlayerInfo = *FoundInfo;
+		return true;
 	}
 
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsGetBackedUpPlayerInfo :: No PlayerInfo found for UniqueID = %s"),
+		*_UniqueID);
+	return false;
 }

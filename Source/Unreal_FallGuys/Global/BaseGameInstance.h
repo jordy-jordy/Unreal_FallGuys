@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 
-#include <Global/Data/GlobalDataTable.h>
+#include <Mode/01_Play/PlayPlayerState.h>
 
 #include "BaseGameInstance.generated.h"
 
@@ -24,89 +24,74 @@ public:
 	UBaseGameInstance();
 
 	// 코스튬 이름 저장
-	UFUNCTION(BlueprintCallable, Category = "Costume")
+	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
 	void InsSaveCostumeName(const FString& _CostumeName);
 
 	// Pawn의 코스튬 변경
-	UFUNCTION(BlueprintCallable, Category = "Costume")
+	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
 	void InsChangeCostume(APawn* _Pawn, const FString& _CostumeName);
 
 	// 저장된 코스튬의 이름 반환
-	UFUNCTION(BlueprintCallable, Category = "Costume")
+	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
 	FString InsGetCostumeName() const
 	{
 		return CostumeName;
 	}
 
 	// 저장된 코스튬의 스켈레탈 메시 반환
-	UFUNCTION(BlueprintCallable, Category = "Costume")
+	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
 	USkeletalMesh* InsGetCostumeMesh(APawn* _Pawn, const FString& _MeshName = TEXT("NULL"));
 
 	// 저장된 닉네임 반환
-	UFUNCTION(BlueprintCallable, Category = "Name")
+	UFUNCTION(BlueprintCallable, Category = "PLAYER NICKNAME")
 	FString InsGetNickname() const
 	{
 		return Nickname;
 	}
 
 	// 닉네임 변경
-	UFUNCTION(BlueprintCallable, Category = "Name")
+	UFUNCTION(BlueprintCallable, Category = "PLAYER NICKNAME")
 	void InsChangeNickname(const FString& _NewNickname);
 
-	// 랜덤 플레이 레벨의 이름 반환
-	UFUNCTION(BlueprintCallable, Category = "Level")
+	// Random PlayLevel의 이름 반환
+	UFUNCTION(BlueprintCallable, Category = "LEVEL")
 	FString InsGetRandomLevel();
 
 	// 리소스의 스테틱 메시 반환
-	UFUNCTION(BlueprintCallable, Category = "Resource")
+	UFUNCTION(BlueprintCallable, Category = "RESOURCE")
 	UStaticMesh* InsGetResourceMesh(APawn* _Pawn, const FString& _MeshName = TEXT("NULL"));
 
-	// 특정 플레이어의 태그 반환
-	UFUNCTION(BlueprintCallable, Category = "Player")
-	FString InsGetPlayerTag(APlayerController* _PlayerController) const;
-
-	// 전체 플레이어 태그 리스트 반환
-	UFUNCTION(BlueprintCallable, Category = "Player")
-	TMap<APlayerController*, FString> InsGetAllPlayerTags() const;
-
-	// 플레이어 컨트롤러와 태그를 매핑하는 변수
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player")
-	TMap<APlayerController*, FString> PlayerTags;
-
-	// PlayerTags를 백업하기 위한 변수
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player")
-	TMap<FString, FString> PersistentPlayerTags; // 컨트롤러의 이름을 키로 사용
-
-	// PlayerTags를 백업
-	UFUNCTION(BlueprintCallable, Category = "Player")
-	void SavePlayerTags();
-
-	// PlayerTags를 복원
-	UFUNCTION(BlueprintCallable, Category = "Player")
-	void LoadPlayerTags();
-
+	// 레벨 이동했는지 체크하는 변수
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player")
 	bool IsMovedLevel = false;
 
-	// 동기화 변수
-	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
+	// 플레이어 정보 백업 함수
+	UFUNCTION(BlueprintCallable, Category = "PLAYER DATA")
+	void InsBackupPlayerInfo(const FString& _UniqueID, const FPlayerInfo& _PlayerInfo);
+
+	// 백업된 플레이어 정보 가져오기 함수
+	UFUNCTION(BlueprintCallable, Category = "PLAYER DATA")
+	bool InsGetBackedUpPlayerInfo(const FString& _UniqueID, FPlayerInfo& _OutPlayerInfo) const;
 
 protected:
-	UFUNCTION(BlueprintCallable, Category = "DataTable")
-	UDataTable* GetPlayLevelDataTable() const { return PlayLevelDataTable; }
+	// 플레이 레벨 데이터 테이블을 얻는 함수
+	UFUNCTION(BlueprintCallable, Category = "DATA")
+	class UDataTable* GetPlayLevelDataTable() const;
 
+	// 플레이어 UniqueID -> FPlayerInfo 매핑 저장소
+	TMap<FString, struct FPlayerInfo> PlayerInfoBackup;
 
 private:
-	UFUNCTION(BlueprintCallable, Category = "Server")
+	UFUNCTION(BlueprintCallable, Category = "SERVER")
 	void CServerStart(UWorld* _World, FString _Port);
 
-	UFUNCTION(BlueprintCallable, Category = "Server")
+	UFUNCTION(BlueprintCallable, Category = "SERVER")
 	void InsSelectedServerStart(UWorld* _World, FString _Port, FString _OpenLevel);
 
-	UFUNCTION(BlueprintCallable, Category = "Server")
+	UFUNCTION(BlueprintCallable, Category = "SERVER")
 	void CServerConnect(UWorld* _World, FString _IP, FString _Port);
 
-	UPROPERTY(VisibleAnywhere, Category = "Data")
+	UPROPERTY(VisibleAnywhere, Category = "DATA")
 	class UDataTable* DataTables = nullptr;
 	class UDataTable* CostumeDataTable = nullptr;
 	class UDataTable* CostumeColorDataTable = nullptr;
@@ -115,11 +100,11 @@ private:
 	//class UDataTable* ActorDataTable = nullptr;
 
 	// 코스튬 네임
-	UPROPERTY(VisibleAnywhere, Replicated, Category = "Costume")
+	UPROPERTY(VisibleAnywhere, Category = "PLAYER COSTUME")
 	FString CostumeName = TEXT("NULL");
 
 	// 닉네임
-	UPROPERTY(VisibleAnywhere, Replicated, Category = "Name")
+	UPROPERTY(VisibleAnywhere, Category = "PLAYER NICKNAME")
 	FString Nickname = TEXT("TEST_JORDY");
 
 	// 맵리스트
@@ -134,7 +119,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool GetIsDie() { return IsDie; } const
 
-	UFUNCTION(BlueprintCallable)
+		UFUNCTION(BlueprintCallable)
 	void SetIsDie(bool _val)
 	{
 		IsDie = _val;
@@ -142,6 +127,5 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 	bool IsDie = false;
-
 };
 

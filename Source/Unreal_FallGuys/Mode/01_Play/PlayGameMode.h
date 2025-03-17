@@ -4,7 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameMode.h"
+
+#include <Global/GlobalEnum.h>
+
 #include "PlayGameMode.generated.h"
+
 
 /**
  * 
@@ -21,22 +25,18 @@ public:
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 
 	// 최소 인원 체크
-	UFUNCTION(BlueprintCallable, Category = "GAME")
+	UFUNCTION(BlueprintCallable, Category = "PLAY GAME")
 	bool IsMinPlayersReached();
 
 	// 게임 시작
-	UFUNCTION(BlueprintCallable, Reliable, NetMulticast, Category = "GAME")
+	UFUNCTION(BlueprintCallable, Reliable, NetMulticast, Category = "PLAY GAME")
 	void StartGame();
 	void StartGame_Implementation();
 
-	// 플레이어 태그 설정
-	UFUNCTION(BlueprintCallable, Category = "GAME")
-	void AssignPlayerTag(APlayerController* _NewPlayer);
-
-	// 플레이어 태그 동기화
-	UFUNCTION(BlueprintCallable, Reliable, NetMulticast, Category = "GAME")
-	void MulticastAssignPlayerTag(APlayerController* _NewPlayer, const FString& _Tag);
-	void MulticastAssignPlayerTag_Implementation(APlayerController* _NewPlayer, const FString& _Tag);
+	// 플레이어 정보 동기화
+	UFUNCTION(BlueprintCallable, Reliable, NetMulticast, Category = "PLAY GAME")
+	void SyncPlayerInfo(APlayerController* _NewPlayer);
+	void SyncPlayerInfo_Implementation(APlayerController* _NewPlayer);
 
 protected:
 	virtual void Tick(float DeltaSeconds) override;
@@ -49,17 +49,9 @@ protected:
 	UPROPERTY(ReplicatedUsing = OnRep_ConnectedPlayers)
 	int ConnectedPlayers;
 
-	// 현재 태그 숫자 카운트
-	UPROPERTY(ReplicatedUsing = OnRep_PlayerCount)
-	int PlayerCount = 0;
-
-	// 플레이어 수가 변경되면 클라이언트에서 실행되는 함수
+	// 플레이어 수 변경 시 클라이언트에서 실행될 함수
 	UFUNCTION()
-	void OnRep_ConnectedPlayers();
-
-	// PlayerCount 변경 시 클라이언트에서 실행될 함수
-	UFUNCTION()
-	void OnRep_PlayerCount();
+void OnRep_ConnectedPlayers(); 
 
 private:
 
