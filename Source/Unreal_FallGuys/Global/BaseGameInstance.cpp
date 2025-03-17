@@ -189,18 +189,32 @@ void UBaseGameInstance::CServerConnect(UWorld* _World, FString _IP, FString _Por
 	UGameplayStatics::OpenLevel(_World, FName(*ConnectLevelName));
 }
 
-// 코스튬 이름 저장
-void UBaseGameInstance::InsSaveCostumeName(const FString& _CostumeName)
+// 코스튬 컬러 저장
+void UBaseGameInstance::InsSaveCostumeColor(const FString& _CostumeColor)
 {
-	CostumeName = _CostumeName;
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("저장된 코스튬 이름 : %s"), *CostumeName);
+	CostumeColor = _CostumeColor;
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("변경한 코스튬 색상 : %s"), *CostumeColor);
 }
 
-// Pawn의 코스튬 변경
-void UBaseGameInstance::InsChangeCostume(APawn* _Pawn, const FString& _CostumeName)
+// 코스튬 상의 저장
+void UBaseGameInstance::InsSaveCostumeTop(const FString& _CostumeTop)
+{
+	CostumeTop = _CostumeTop;
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("착용한 코스튬(상의) 이름 : %s"), *CostumeTop);
+}
+
+// 코스튬 하의 저장
+void UBaseGameInstance::InsSaveCostumeBot(const FString& _CostumeBot)
+{
+	CostumeBot = _CostumeBot;
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("착용한 코스튬(하의) 이름 : %s"), *CostumeBot);
+}
+
+// Pawn의 코스튬 컬러 변경
+void UBaseGameInstance::InsChangeCostumeColor(APawn* _Pawn, const FString& _CostumeColor)
 {
 	UWorld* World = _Pawn->GetWorld();
-	const FCostumeColorDataRow* CostumeColorData = UGlobalDataTable::GetCostumeColorData(World, _CostumeName);
+	const FCostumeColorDataRow* CostumeColorData = UGlobalDataTable::GetCostumeColorData(World, _CostumeColor);
 	if (CostumeColorData && CostumeColorData->CostumeMesh)
 	{
 		// _Pawn의 스켈레탈 메시 가져오기
@@ -211,14 +225,57 @@ void UBaseGameInstance::InsChangeCostume(APawn* _Pawn, const FString& _CostumeNa
 	}
 	else
 	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsChangeCostume :: Invalid Costume Data or Mesh"));
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsChangeCostume :: Invalid Costume Color Data or Mesh"));
 	}
 
-	InsSaveCostumeName(_CostumeName);
+	InsSaveCostumeColor(_CostumeColor);
 }
 
-// 저장된 코스튬의 스켈레탈 메시 반환
-USkeletalMesh* UBaseGameInstance::InsGetCostumeMesh(APawn* _Pawn, const FString& _MeshName/* = TEXT("Default")*/)
+// Pawn의 코스튬 상의 변경
+void UBaseGameInstance::InsChangeCostumeTop(APawn* _Pawn, const FString& _CostumeTop)
+{
+	UWorld* World = _Pawn->GetWorld();
+	const FCostumeDataRow* CostumeTopData = UGlobalDataTable::GetCostumeData(World, _CostumeTop);
+	if (CostumeTopData && CostumeTopData->CostumeMesh)
+	{
+		// _Pawn의 스테틱 메시 가져오기
+		if (UStaticMeshComponent* MeshComp = _Pawn->FindComponentByClass<UStaticMeshComponent>())
+		{
+			MeshComp->SetStaticMesh(CostumeTopData->CostumeMesh);
+		}
+	}
+	else
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsChangeCostume :: Invalid Costume Top Data or Mesh"));
+	}
+
+	InsSaveCostumeTop(_CostumeTop);
+}
+
+// Pawn의 코스튬 하의 변경
+void UBaseGameInstance::InsChangeCostumeBot(APawn* _Pawn, const FString& _CostumeBot)
+{
+	UWorld* World = _Pawn->GetWorld();
+	const FCostumeDataRow* CostumeBotData = UGlobalDataTable::GetCostumeData(World, _CostumeBot);
+	if (CostumeBotData && CostumeBotData->CostumeMesh)
+	{
+		// _Pawn의 스테틱 메시 가져오기
+		if (UStaticMeshComponent* MeshComp = _Pawn->FindComponentByClass<UStaticMeshComponent>())
+		{
+			MeshComp->SetStaticMesh(CostumeBotData->CostumeMesh);
+		}
+	}
+	else
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsChangeCostume :: Invalid Costume Bot Data or Mesh"));
+	}
+
+	InsSaveCostumeBot(_CostumeBot);
+}
+
+
+// 저장된 코스튬 컬러의 스켈레탈 메시 반환
+USkeletalMesh* UBaseGameInstance::InsGetCostumeColorMesh(APawn* _Pawn, const FString& _MeshName)
 {
 	const FCostumeColorDataRow* CostumeColorData = UGlobalDataTable::GetCostumeColorData(_Pawn->GetWorld(), _MeshName);
 	if (CostumeColorData && CostumeColorData->CostumeMesh)
@@ -229,11 +286,57 @@ USkeletalMesh* UBaseGameInstance::InsGetCostumeMesh(APawn* _Pawn, const FString&
 	{
 		if (_MeshName.IsEmpty())
 		{
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsGetCostumeMesh :: Empty Costume color Data or Mesh"));
+		}
+		else
+		{
+			UE_LOG(FALL_DEV_LOG, Error, TEXT("InsGetCostumeMesh :: Invalid Costume  color Data or Mesh"));
+		}
+	}
+
+	return nullptr;
+}
+
+// 저장된 코스튬의 스테틱 메시 반환
+UStaticMesh* UBaseGameInstance::InsGetCostumeMesh(APawn* _Pawn, const FString& _MeshName)
+{
+	const FCostumeDataRow* CostumeData = UGlobalDataTable::GetCostumeData(_Pawn->GetWorld(), _MeshName);
+	if (CostumeData && CostumeData->CostumeMesh)
+	{
+		return CostumeData->CostumeMesh;
+	}
+	else
+	{
+		if (_MeshName.IsEmpty())
+		{
 			UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsGetCostumeMesh :: Empty Costume Data or Mesh"));
 		}
 		else
 		{
 			UE_LOG(FALL_DEV_LOG, Error, TEXT("InsGetCostumeMesh :: Invalid Costume Data or Mesh"));
+		}
+	}
+
+	return nullptr;
+}
+
+// 리소스의 스테틱 메시 반환
+UStaticMesh* UBaseGameInstance::InsGetResourceMesh(APawn* _Pawn, const FString& _MeshName/* = TEXT("Default")*/)
+{
+	const FResourceDataRow* ResourceData = UGlobalDataTable::GetResourceData(_Pawn->GetWorld(), _MeshName);
+	if (ResourceData && ResourceData->Mesh)
+	{
+		return ResourceData->Mesh;
+	}
+	else
+	{
+		if (_MeshName.IsEmpty())
+		{
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsGetResourceMesh :: Empty Resource Data or Mesh"));
+		}
+		else
+		{
+			UE_LOG(FALL_DEV_LOG, Error, TEXT("InsGetResourceMesh :: Invalid Resource Data or Mesh"));
 		}
 	}
 
@@ -270,29 +373,6 @@ FString UBaseGameInstance::InsGetRandomLevel()
 	LevelName = MapList[RandomIndex];
 
 	return LevelName;
-}
-
-// 리소스의 스테틱 메시 반환
-UStaticMesh* UBaseGameInstance::InsGetResourceMesh(APawn* _Pawn, const FString& _MeshName/* = TEXT("Default")*/)
-{
-	const FResourceDataRow* ResourceData = UGlobalDataTable::GetResourceData(_Pawn->GetWorld(), _MeshName);
-	if (ResourceData && ResourceData->Mesh)
-	{
-		return ResourceData->Mesh;
-	}
-	else
-	{
-		if (_MeshName.IsEmpty())
-		{
-			UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsGetResourceMesh :: Empty Resource Data or Mesh"));
-		}
-		else
-		{
-			UE_LOG(FALL_DEV_LOG, Error, TEXT("InsGetResourceMesh :: Invalid Resource Data or Mesh"));
-		}
-	}
-
-	return nullptr;
 }
 
 // 플레이 레벨 데이터 테이블을 얻는 함수
@@ -391,3 +471,4 @@ void UBaseGameInstance::InsPrintPlayerInfo()
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan, ScreenMessage);
 	}
 }
+
