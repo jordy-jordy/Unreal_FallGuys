@@ -62,7 +62,7 @@ public:
 	UStaticMesh* InsGetResourceMesh(APawn* _Pawn, const FString& _MeshName = TEXT("Default"));
 
 	// 레벨 이동했는지 체크하는 변수
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PLAYER DATA")
 	bool IsMovedLevel = false;
 
 	// 플레이어 정보 백업 함수
@@ -78,6 +78,12 @@ public:
 	FString GetLevelName()
 	{
 		return LevelName;
+	}
+
+	UFUNCTION(BlueprintCallable, Category = "SERVER")
+	void SetbIsConnectedTrue()
+	{
+		bIsConnected = true;
 	}
 
 protected:

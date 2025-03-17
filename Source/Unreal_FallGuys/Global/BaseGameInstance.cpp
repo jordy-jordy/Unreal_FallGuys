@@ -184,9 +184,6 @@ void UBaseGameInstance::CServerConnect(UWorld* _World, FString _IP, FString _Por
 		return;
 	}
 
-	// 연결 성공 -> 상태 업데이트
-	bIsConnected = true;
-
 	FString ConnectLevelName = FString::Printf(TEXT("%s:%s"), *_IP, *_Port);
 	UE_LOG(FALL_DEV_LOG, Log, TEXT("서버 접속 시도: %s"), *ConnectLevelName);
 	UGameplayStatics::OpenLevel(_World, FName(*ConnectLevelName));
