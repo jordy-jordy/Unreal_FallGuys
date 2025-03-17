@@ -221,7 +221,7 @@ void UBaseGameInstance::InsChangeCostume(APawn* _Pawn, const FString& _CostumeNa
 }
 
 // 저장된 코스튬의 스켈레탈 메시 반환
-USkeletalMesh* UBaseGameInstance::InsGetCostumeMesh(APawn* _Pawn, const FString& _MeshName/* = TEXT("NULL")*/)
+USkeletalMesh* UBaseGameInstance::InsGetCostumeMesh(APawn* _Pawn, const FString& _MeshName/* = TEXT("Default")*/)
 {
 	const FCostumeColorDataRow* CostumeColorData = UGlobalDataTable::GetCostumeColorData(_Pawn->GetWorld(), _MeshName);
 	if (CostumeColorData && CostumeColorData->CostumeMesh)
@@ -273,7 +273,7 @@ FString UBaseGameInstance::InsGetRandomLevel()
 }
 
 // 리소스의 스테틱 메시 반환
-UStaticMesh* UBaseGameInstance::InsGetResourceMesh(APawn* _Pawn, const FString& _MeshName/* = TEXT("NULL")*/)
+UStaticMesh* UBaseGameInstance::InsGetResourceMesh(APawn* _Pawn, const FString& _MeshName/* = TEXT("Default")*/)
 {
 	const FResourceDataRow* ResourceData = UGlobalDataTable::GetResourceData(_Pawn->GetWorld(), _MeshName);
 	if (ResourceData && ResourceData->Mesh)

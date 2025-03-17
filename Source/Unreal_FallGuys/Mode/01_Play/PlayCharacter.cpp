@@ -47,7 +47,7 @@ void APlayCharacter::C2S_Costume_Implementation(const FString& _Name)
 {
 	GetMesh()->SetSkeletalMesh(UFallGlobal::GetCostumeMesh(this, _Name));
 	CName = _Name;
-	S2M_Costume(_Name);
+	S2M_Costume(CName);
 }
 
 // Called when the game starts or when spawned

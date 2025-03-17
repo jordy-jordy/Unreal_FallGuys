@@ -40,7 +40,7 @@ public:
 
 	// 저장된 코스튬의 스켈레탈 메시 반환
 	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
-	USkeletalMesh* InsGetCostumeMesh(APawn* _Pawn, const FString& _MeshName = TEXT("NULL"));
+	USkeletalMesh* InsGetCostumeMesh(APawn* _Pawn, const FString& _MeshName = TEXT("Default"));
 
 	// 저장된 닉네임 반환
 	UFUNCTION(BlueprintCallable, Category = "PLAYER NICKNAME")
@@ -59,7 +59,7 @@ public:
 
 	// 리소스의 스테틱 메시 반환
 	UFUNCTION(BlueprintCallable, Category = "RESOURCE")
-	UStaticMesh* InsGetResourceMesh(APawn* _Pawn, const FString& _MeshName = TEXT("NULL"));
+	UStaticMesh* InsGetResourceMesh(APawn* _Pawn, const FString& _MeshName = TEXT("Default"));
 
 	// 레벨 이동했는지 체크하는 변수
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player")
@@ -101,7 +101,7 @@ private:
 
 	// 코스튬 네임
 	UPROPERTY(VisibleAnywhere, Category = "PLAYER COSTUME")
-	FString CostumeName = TEXT("NULL");
+	FString CostumeName = TEXT("Default");
 
 	// 닉네임
 	UPROPERTY(VisibleAnywhere, Category = "PLAYER NICKNAME")
