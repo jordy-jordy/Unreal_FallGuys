@@ -78,6 +78,16 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 	// 서버장이 아닐시 리턴
     if (!HasAuthority()) return;
 
+	// 현재 접속한 플레이어 수가 최소 인원 이상이면 접속 거부
+	if (ConnectedPlayers >= UFallConst::MinPlayerCount)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("접속 거부: 현재 플레이어 수(%d)가 제한(%d) 이상입니다."), ConnectedPlayers, UFallConst::MinPlayerCount);
+
+		// 클라이언트를 강제 종료
+		NewPlayer->ClientTravel(TEXT("/Game/Maps/TitleLevel"), TRAVEL_Absolute);
+		return;
+	}
+
 	// PlayerState가 없을시 리턴
     APlayPlayerState* PlayerState = Cast<APlayPlayerState>(NewPlayer->PlayerState);
     if (!PlayerState)
@@ -123,6 +133,9 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 		UE_LOG(FALL_DEV_LOG, Log, TEXT("PostLogin :: 신규 플레이어 정보 세팅 - UniqueID = %s, Tag = %s"),
 			*PlayerState->PlayerInfo.UniqueID, *UniqueTag);
 	}
+
+	// 접속 여부 bool값 true로 변경
+	GameInstance->SetbIsConnectedTrue();
 
     // 모든 클라이언트에게 정보 동기화
     SyncPlayerInfo();
