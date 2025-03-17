@@ -114,5 +114,18 @@ private:
 	// 서버 연결 상태 변수
 	bool bIsConnected = false;
 
+//LMH
+public:
+	UFUNCTION(BlueprintCallable)
+	bool GetIsDie() { return IsDie; } const
+
+		UFUNCTION(BlueprintCallable)
+	void SetIsDie(bool _val)
+	{
+		IsDie = _val;
+	}
+
+	UPROPERTY(BlueprintReadWrite)
+	bool IsDie = false;
 };
 
