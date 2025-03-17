@@ -10,20 +10,22 @@ ARotatePlatform::ARotatePlatform()
 	PrimaryActorTick.bCanEverTick = true;
 
 	OparateMesh();
+	SetPlatform_R();
+	SetStick_C();
 }
 
 // Called when the game starts or when spawned
 void ARotatePlatform::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	SetRotateMesh();
 
 	if (StickType != EStickType::NONE && StickBody)
 	{
 		StickBody->OnComponentHit.AddDynamic(this, &ARotatePlatform::OnComponentHit);
 		LaunchComponent->SetActive(true);
 	}
+
+	SetRotateMesh();
 }
 
 // Called every frame
@@ -32,7 +34,7 @@ void ARotatePlatform::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	MovementComponent->Spin(DeltaTime, PlatformAxis);
-	MovementComponent->Spin(DeltaTime, PlatformBody);
+	//MovementComponent->Spin(DeltaTime, PlatformBody);
 	MovementComponent->Spin(-DeltaTime, StickBody);
 }
 
@@ -145,6 +147,10 @@ void ARotatePlatform::SetPlatform()
 {
 	switch (PlatformType)
 	{
+	case EPlatformType::NONE:
+		PlatformAxis->SetStaticMesh(nullptr);
+		PlatformBody->SetStaticMesh(nullptr);
+		break;
 	case EPlatformType::YELLOW:
 		SetPlatform_Y();
 		break;

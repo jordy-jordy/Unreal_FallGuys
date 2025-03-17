@@ -10,6 +10,7 @@ ADrown::ADrown()
 	PrimaryActorTick.bCanEverTick = true;
 
 	SetDrownLocation();
+	SetDrownMesh_B();
 }
 
 // Called when the game starts or when spawned
@@ -17,11 +18,10 @@ void ADrown::BeginPlay()
 {
 	Super::BeginPlay();
 
-	MovementComponent->IsSpinLeft = IsLeft;
-	MovementComponent->SpinSpeed = FRotator({ 0.0f, 180.0f, 0.0f });
-	
 	SetDrownMesh();
 	SetDrownRotation();
+	MovementComponent->IsSpinLeft = IsLeft;
+	MovementComponent->SpinSpeed = FRotator({ 0.0f, 180.0f, 0.0f });
 }
 
 // Called every frame
@@ -60,7 +60,7 @@ void ADrown::SetDrownLocation()
 	DrownPropeller_Right->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
 	DrownLight = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DrownLight"));
-	DrownLight->SetupAttachment(RootScene);
+	DrownLight->SetupAttachment(DrownBody);
 	DrownLight->SetRelativeLocation({ 0, 0, 0 });
 	DrownLight->SetCollisionProfileName(TEXT("CollisionProfile_LevelOBJ"));
 	DrownLight->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);

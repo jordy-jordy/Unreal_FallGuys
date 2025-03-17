@@ -17,7 +17,7 @@ void AHorizontalSlider::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SetMeshAndComponent();
+	SetComponent();
 }
 
 // Called every frame
@@ -47,22 +47,6 @@ void AHorizontalSlider::OparateMesh()
 	Slider->SetRelativeLocation({ 0, 0, 70 });
 	Slider->SetCollisionProfileName(TEXT("CollisionProfile_LevelOBJ"));
 	Slider->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-}
-
-
-void AHorizontalSlider::SetMeshAndComponent()
-{
-	// SetMesh
-	RootScene->SetRelativeRotation({ 0, 90, 0 });
-
-	if (MovementComponent->IsMoveCycleLeft)
-	{
-		Slider->SetRelativeLocation({ 280, 0, 70 });
-	}
-	else
-	{
-		Slider->SetRelativeLocation({ -280, 0, 70 });
-	}
 
 	UStaticMesh* LineMesh = LoadObject<UStaticMesh>(nullptr, *Line);
 	if (LineMesh)
@@ -74,6 +58,22 @@ void AHorizontalSlider::SetMeshAndComponent()
 	if (SliderMesh)
 	{
 		Slider->SetStaticMesh(SliderMesh);
+	}
+}
+
+
+void AHorizontalSlider::SetComponent()
+{
+	// SetMesh
+	RootScene->SetRelativeRotation({ 0, 90, 0 });
+
+	if (MovementComponent->IsMoveCycleLeft)
+	{
+		Slider->SetRelativeLocation({ 280, 0, 70 });
+	}
+	else
+	{
+		Slider->SetRelativeLocation({ -280, 0, 70 });
 	}
 
 	// SetComponent

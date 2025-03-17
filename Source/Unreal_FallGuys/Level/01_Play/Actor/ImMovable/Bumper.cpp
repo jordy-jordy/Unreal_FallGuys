@@ -10,6 +10,7 @@ ABumper::ABumper()
 	PrimaryActorTick.bCanEverTick = true;
 
 	OparateMesh();
+	SetPillarMesh_P();
 }
 
 // Called when the game starts or when spawned

@@ -49,5 +49,5 @@ private:
 	void OparateMesh();
 
 	UFUNCTION()
-	void SetMeshAndComponent();
+	void SetComponent();
 };
