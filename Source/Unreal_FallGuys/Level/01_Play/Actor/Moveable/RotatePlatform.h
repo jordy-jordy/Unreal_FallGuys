@@ -101,7 +101,7 @@ private:
 	void OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 	UFUNCTION()
-	void SetMesh();
+	void OparateMesh();
 
 	UFUNCTION()
 	void SetRotateMesh();

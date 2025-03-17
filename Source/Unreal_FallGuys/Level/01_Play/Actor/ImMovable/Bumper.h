@@ -62,6 +62,9 @@ private:
 	void OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 	UFUNCTION()
+	void OparateMesh();
+
+	UFUNCTION()
 	void SetPillarMesh_P();
 
 	UFUNCTION()

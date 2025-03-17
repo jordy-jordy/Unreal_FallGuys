@@ -9,7 +9,7 @@ ARotatePlatform::ARotatePlatform()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	SetMesh();
+	OparateMesh();
 }
 
 // Called when the game starts or when spawned
@@ -44,7 +44,7 @@ void ARotatePlatform::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* 
 	}
 }
 
-void ARotatePlatform::SetMesh()
+void ARotatePlatform::OparateMesh()
 {
 	if (PlatformType == EPlatformType::NONE && StickType == EStickType::NONE)
 	{

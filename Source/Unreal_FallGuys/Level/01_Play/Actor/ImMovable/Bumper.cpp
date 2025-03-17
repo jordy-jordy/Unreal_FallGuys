@@ -9,18 +9,7 @@ ABumper::ABumper()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	// ActorComponent
-	LaunchComponent = CreateDefaultSubobject<ULaunchActorComponent>(FName("LaunchComponent"));
-
-	// SetMesh And Location
-	RootScene = CreateDefaultSubobject<USceneComponent>(TEXT("RootScene"));
-	RootComponent = RootScene;
-
-	BumperBody = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BumperBody"));
-	BumperBody->SetupAttachment(RootScene);
-	BumperBody->SetRelativeLocation({ 0, 0, 0 });
-	BumperBody->SetCollisionProfileName(TEXT("CollisionProfile_LevelOBJ"));
-	BumperBody->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	OparateMesh();
 }
 
 // Called when the game starts or when spawned
@@ -49,6 +38,22 @@ void ABumper::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherAct
 	{
 		LaunchComponent->Launch(OtherActor);
 	}
+}
+
+void ABumper::OparateMesh()
+{
+	// ActorComponent
+	LaunchComponent = CreateDefaultSubobject<ULaunchActorComponent>(FName("LaunchComponent"));
+
+	// SetMesh And Location
+	RootScene = CreateDefaultSubobject<USceneComponent>(TEXT("RootScene"));
+	RootComponent = RootScene;
+
+	BumperBody = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BumperBody"));
+	BumperBody->SetupAttachment(RootScene);
+	BumperBody->SetRelativeLocation({ 0, 0, 0 });
+	BumperBody->SetCollisionProfileName(TEXT("CollisionProfile_LevelOBJ"));
+	BumperBody->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 }
 
 void ABumper::SetPillarMesh_P()

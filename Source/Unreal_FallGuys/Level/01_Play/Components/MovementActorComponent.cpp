@@ -44,3 +44,51 @@ void UMovementActorComponent::Spin(float DeltaTime, UStaticMeshComponent* Target
 	}
 }
 
+void UMovementActorComponent::SpinCycle(float DeltaTime, UStaticMeshComponent* Target, EMoveAxis Axis)
+{
+}
+
+void UMovementActorComponent::MoveCycle(float DeltaTime, UStaticMeshComponent* Target, EMoveAxis Axis)
+{
+	float LeftValue = 0.0f;
+	float RightValue = 0.0f;
+
+	switch (Axis)
+	{
+	case EMoveAxis::ROLL:
+		LeftValue = Target->GetRelativeLocation().X;
+		RightValue = LimitPos.X;
+		break;
+	case EMoveAxis::PITCH:
+		LeftValue = Target->GetRelativeLocation().Y;
+		RightValue = LimitPos.Y;
+		break;
+	case EMoveAxis::YAW:
+		LeftValue = Target->GetRelativeLocation().Z;
+		RightValue = LimitPos.Z;
+		break;
+	}
+
+	if (IsMoveCycleLeft)
+	{
+		if (LeftValue >= -RightValue)
+		{
+			Target->AddRelativeLocation(MoveCycleSpeed * -DeltaTime);
+		}
+		else
+		{
+			IsMoveCycleLeft = false;
+		}
+	}
+	else
+	{
+		if (LeftValue <= RightValue)
+		{
+			Target->AddRelativeLocation(MoveCycleSpeed * DeltaTime);
+		}
+		else
+		{
+			IsMoveCycleLeft = true;
+		}
+	}
+}
