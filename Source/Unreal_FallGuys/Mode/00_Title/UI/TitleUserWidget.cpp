@@ -11,3 +11,13 @@ UTitleUserWidget::UTitleUserWidget(const FObjectInitializer& ObjectInitializer)
 {
 	bAutomaticallyRegisterInputOnConstruction = true;
 }
+
+bool UTitleUserWidget::InputCheck(const FVector2D _Value)
+{
+	if (_Value.X == 0)
+	{
+		return true;
+	}
+
+	return false;
+}

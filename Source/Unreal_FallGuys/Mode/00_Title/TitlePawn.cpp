@@ -64,8 +64,9 @@ void ATitlePawn::SetupPlayerInputComponent(UInputComponent* _PlayerInputComponen
 
 void ATitlePawn::PawnRotation(UStaticMeshComponent* _Target, const FVector2D& _Value)
 {
+#ifdef WITH_EDITOR
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString::Printf(TEXT("%S(%u)> %s"), __FUNCTION__, __LINE__, *_Value.ToString()));
-
+#endif
 	if (_Value.X < 0)
 	{
 		_Target->AddLocalRotation(FRotator(0.0f, 1.0f, 0.0f));

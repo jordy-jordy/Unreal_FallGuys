@@ -13,13 +13,14 @@ UCLASS()
 class UNREAL_FALLGUYS_API UTitleMenuWidget : public UTitleUserWidget
 {
 	GENERATED_BODY()
-	
+
 public:
-	//UFUNCTION(BlueprintCallable)
-	//void SwitchWidgetInMenu(const FVector2D _Value);
+	UTitleMenuWidget(const FObjectInitializer& ObjectInitializer);
 
-protected:
-
+	UFUNCTION(BlueprintCallable)
+	void UIInput(const FVector2D _Value) override;
+	
 private:
-
+	UPROPERTY(Category = "UI", EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	class UUIInputManager* UIInputManager;
 };

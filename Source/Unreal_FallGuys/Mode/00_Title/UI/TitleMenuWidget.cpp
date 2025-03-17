@@ -2,25 +2,16 @@
 
 
 #include "Mode/00_Title/UI/TitleMenuWidget.h"
-#include "Components/CanvasPanelSlot.h"
+#include "Mode/00_Title/UI/UIInputManager.h"
 
 
-//void UTitleMenuWidget::SwitchWidgetInMenu(const FVector2D _Value)
-//{
-//	UTitleUserWidget* CurWg = GetCurUserWidget();
-//	EUIType CurType = CurWg->GetCurUIType();
-//
-//	if (GetCurUserWidget()->GetCurUIType() != EUIType::TitleEntrance)
-//	{
-//		if (_Value.X > 0 && _Value.Y == 0 && GetCurUserWidget()->GetCurUIType() == EUIType::TitleHome)
-//		{
-//			SwitchWidget(EUIType::TitleCustom);
-//			return;
-//		}
-//		else if (_Value.X < 0 && _Value.Y == 0 && GetCurUserWidget()->GetCurUIType() == EUIType::TitleCustom)
-//		{
-//			SwitchWidget(EUIType::TitleHome);
-//			return;
-//		}
-//	}
-//}
+UTitleMenuWidget::UTitleMenuWidget(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+{
+	UIInputManager = CreateDefaultSubobject<UUIInputManager>(TEXT("UIInputManager"));
+}
+
+void UTitleMenuWidget::UIInput(const FVector2D _Value)
+{
+	UIInputManager->UIInput(_Value);
+}

@@ -305,8 +305,6 @@ void UTitleMainWidget::AllWidgetSelfHitTestInvisible()
 
 UTitleUserWidget* UTitleMainWidget::FindWidget(EUIType _Type, int _Index/* = 0*/)
 {
-	//TMultiMap<EUIType, UTitleUserWidget*> Widget = GetAllWidgets();
-
 	if (EUIType::CustomInven != _Type)
 	{
 		for (TPair<EUIType, UTitleUserWidget*> Pair : Widgets)

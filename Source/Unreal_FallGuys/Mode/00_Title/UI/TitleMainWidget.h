@@ -52,6 +52,11 @@ public:
 		CurWidget = _CurWidget;
 	}
 
+	EUIType& GetCurUIType()
+	{
+		return CurUIType;
+	}
+
 	UFUNCTION(BlueprintCallable)
 	void WidgetHidden(EUIType _Type);
 

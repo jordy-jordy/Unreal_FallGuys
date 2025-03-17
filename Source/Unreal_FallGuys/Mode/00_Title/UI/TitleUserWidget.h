@@ -30,7 +30,14 @@ public:
 		return MainWidget;
 	}
 
+	UFUNCTION(BlueprintCallable)
+	bool InputCheck(const FVector2D _Value);
+
 protected:
+	virtual void UIInput(const FVector2D _Value)
+	{
+
+	}
 
 private:
 	UPROPERTY(Category = "UI", EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))

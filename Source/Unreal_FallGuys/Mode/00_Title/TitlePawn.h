@@ -20,7 +20,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void PawnRotation(UStaticMeshComponent* _Target, const FVector2D& _Value);
 
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
