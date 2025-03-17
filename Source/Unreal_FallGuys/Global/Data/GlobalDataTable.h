@@ -21,7 +21,7 @@ struct FDataTableRow : public FTableRowBase
 	FDataTableRow() {}
 	~FDataTableRow() {}
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DATA")
 	UDataTable* Resources = nullptr;
 };
 
@@ -33,7 +33,7 @@ struct FActorClassTableRow : public FTableRowBase
 	FActorClassTableRow() {}
 	~FActorClassTableRow() {}
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DATA")
 	TSubclassOf<class AActor> SpawnClass;
 };
 

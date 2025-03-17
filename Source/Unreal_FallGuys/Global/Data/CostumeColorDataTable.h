@@ -19,10 +19,12 @@ struct FCostumeColorDataRow : public FTableRowBase
 	~FCostumeColorDataRow() {}
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CostumeColor")
+	// 코스튬 컬러
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "COSTUME COLOR")
 	ECostumeColor Color = ECostumeColor::NONE;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CostumeColor")
+	// 코스튬 스켈레탈 메시
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "COSTUME COLOR")
 	USkeletalMesh* CostumeMesh = nullptr;
 };
 

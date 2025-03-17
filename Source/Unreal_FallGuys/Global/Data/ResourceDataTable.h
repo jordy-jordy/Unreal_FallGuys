@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -16,13 +16,16 @@ struct FResourceDataRow : public FTableRowBase
 	~FResourceDataRow() {}
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Resources")
+	// 리소스 이름
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RESOURCE")
 	FString Name;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Resources")
+	// 리소스 컬러
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RESOURCE")
 	FString Color;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Resources")
+	// 리소스 스테틱 메시
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RESOURCE")
 	UStaticMesh* Mesh = nullptr;
 };
 

@@ -19,19 +19,24 @@ struct FCostumeDataRow : public FTableRowBase
 	~FCostumeDataRow() {}
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CostumeData")
+	// 코스튬 타입 :: 상, 하의
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "COSTUME DATA")
 	ECostumeType Type = ECostumeType::NONE;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CostumeData")
+	// 코스튬 위치
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "COSTUME DATA")
 	FVector CostumePos = FVector::ZeroVector;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CostumeData")
+	// 코스튬 피봇
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "COSTUME DATA")
 	FVector CostumePivot = FVector::ZeroVector;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CostumeData")
+	// 코스튬 스테틱 메시
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "COSTUME DATA")
 	UStaticMesh* CostumeMesh = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CostumeData")
+	// 코스튬 UI용 이미지
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "COSTUME DATA")
 	UTexture* CostumeIMG = nullptr;
 
 };
