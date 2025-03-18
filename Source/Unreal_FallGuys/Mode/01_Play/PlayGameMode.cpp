@@ -110,6 +110,9 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 
 	if (GameInstance && GameInstance->IsMovedLevel)
 	{
+		// 스테이지 전환 되었을때 IsDie를 true로 초기화
+		GameInstance->SetIsDie(true);
+
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PostLogin :: 기존 플레이어 감지. 정보를 로드합니다."));
 
 		FPlayerInfo RestoredInfo;

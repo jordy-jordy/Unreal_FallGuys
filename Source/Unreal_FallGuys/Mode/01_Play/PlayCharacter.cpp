@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Mode/01_Play/PlayCharacter.h"
@@ -89,7 +89,6 @@ void APlayCharacter::BeginPlay()
 	if (UGameplayStatics::GetPlayerController(GetWorld(), 0) == GetController())
 	{
 		IsDie = GameIns->GetIsDie();
-		int a = 0;
 		C2S_IsDie(IsDie);
 	}
 }
@@ -179,8 +178,15 @@ void APlayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 void APlayCharacter::C2S_IsDie_Implementation(bool _val)
 {
 	IsDie = _val;
-	//
+	S2M_IsDie(IsDie);
 }
+
+// 이현정 : 캐릭터 상태 동기화를 위한 함수
+void APlayCharacter::S2M_IsDie_Implementation(bool _val)
+{
+	IsDie = _val;
+}
+
 
 
 
