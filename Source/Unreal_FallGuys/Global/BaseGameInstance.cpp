@@ -130,53 +130,28 @@ void UBaseGameInstance::CServerConnect(UWorld* _World, FString _IP, FString _Por
 		return;
 	}
 
-	// IP 유효성 검사
+	// 주소 생성
 	TSharedRef<FInternetAddr> Addr = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateInternetAddr();
-	bool bIsValidIP = false;
-	Addr->SetIp(*_IP, bIsValidIP);
 
-	if (!bIsValidIP)
-	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("잘못된 IP 주소: %s"), *_IP);
-		return;
-	}
-
-	// 포트 유효성 검사
-	if (!_Port.IsNumeric())
-	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("포트 번호가 숫자가 아닙니다: %s"), *_Port);
-		return;
-	}
-
+	// IP 유효성 검사
+	bool ValidIP = false;
+	Addr->SetIp(*_IP, ValidIP);
+	
+	// Port 유효성 검사
 	int32 PortNum = FCString::Atoi(*_Port);
+	Addr->SetPort(PortNum);
+
 	if (PortNum <= 0 || PortNum > 65535)
 	{
 		UE_LOG(FALL_DEV_LOG, Error, TEXT("잘못된 포트 번호 범위: %d"), PortNum);
 		return;
 	}
 
-	// 서버 연결 확인 (소켓 테스트)
-	Addr->SetPort(PortNum);
-
-	// 로컬 서버(127.0.0.1)인 경우 연결 확인을 건너뜀
-	//if (_IP != "127.0.0.1")
-	//{
-	//	FSocket* TestSocket = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateSocket(NAME_Stream, TEXT("TestSocket"), false);
-	//	if (!TestSocket || !TestSocket->Connect(*Addr))
-	//	{
-	//		UE_LOG(FALL_DEV_LOG, Error, TEXT("서버 연결 실패: %s:%d"), *_IP, PortNum);
-	//		if (TestSocket)
-	//		{
-	//			TestSocket->Close();
-	//			ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->DestroySocket(TestSocket);
-	//		}
-	//		return;
-	//	}
-
-	//	// 소켓 해제
-	//	TestSocket->Close();
-	//	ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->DestroySocket(TestSocket);
-	//}
+	if (!_Port.IsNumeric())
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("포트 번호가 숫자가 아닙니다: %s"), *_Port);
+		return;
+	}
 
 	if (!_World)
 	{
