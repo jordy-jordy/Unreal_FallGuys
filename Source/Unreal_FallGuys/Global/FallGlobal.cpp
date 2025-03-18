@@ -73,25 +73,67 @@ void UFallGlobal::ServerConnect(UObject* _Object, FString _IP, FString _Port)
 	GameIns->CServerConnect(CurWorld, _IP, _Port);
 }
 
-// Pawn의 코스튬 변경
-void UFallGlobal::ChangeCostume(APawn* _Pawn, const FString& _CostumeName)
+// 저장된 코스튬의 컬러 반환
+FString UFallGlobal::GetCostumeColor(APawn* _Pawn)
 {
 	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
-	GameIns->InsChangeCostume(_Pawn, _CostumeName);
+	return GameIns->InsGetCostumeColor();
 }
 
-// 저장된 코스튬의 이름 반환
-FString UFallGlobal::GetCostumeName(APawn* _Pawn)
+// 저장된 코스튬의 상의 반환
+FString UFallGlobal::GetCostumeTop(APawn* _Pawn)
 {
 	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
-	return GameIns->InsGetCostumeName();
+	return GameIns->InsGetCostumeTop();
 }
 
-// 저장된 코스튬의 스켈레탈 메시 반환
-USkeletalMesh* UFallGlobal::GetCostumeMesh(APawn* _Pawn, const FString& _MeshName/* = TEXT("NULL")*/)
+// 저장된 코스튬의 하의 반환
+FString UFallGlobal::GetCostumeBot(APawn* _Pawn)
+{
+	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
+	return GameIns->InsGetCostumeBot();
+}
+
+// Pawn의 코스튬 컬러 변경
+void UFallGlobal::ChangeCostumeColor(APawn* _Pawn, const FString& _CostumeColor)
+{
+	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
+	GameIns->InsChangeCostumeColor(_Pawn, _CostumeColor);
+}
+
+// Pawn의 코스튬 상의 변경
+void UFallGlobal::ChangeCostumeTop(APawn* _Pawn, const FString& _CostumeTop)
+{
+	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
+	GameIns->InsChangeCostumeTop(_Pawn, _CostumeTop);
+}
+
+// Pawn의 코스튬 하의 변경
+void UFallGlobal::ChangeCostumeBot(APawn* _Pawn, const FString& _CostumeBot)
+{
+	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
+	GameIns->InsChangeCostumeBot(_Pawn, _CostumeBot);
+}
+
+// 저장된 코스튬 컬러의 스켈레탈 메시 반환
+USkeletalMesh* UFallGlobal::GetCostumeColorMesh(APawn* _Pawn, const FString& _MeshName)
+{
+	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
+	return GameIns->InsGetCostumeColorMesh(_Pawn, _MeshName);
+}
+
+// 저장된 코스튬의 스테틱 메시 반환
+UStaticMesh* UFallGlobal::GetCostumeMesh(APawn* _Pawn, const FString& _MeshName)
 {
 	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
 	return GameIns->InsGetCostumeMesh(_Pawn, _MeshName);
+}
+
+// 리소스의 스테틱 메시 반환
+UStaticMesh* UFallGlobal::GetResourceMesh(APawn* _Pawn, const FString& _MeshName)
+{
+	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
+	return GameIns->InsGetResourceMesh(_Pawn, _MeshName);
 }
 
 // 닉네임 반환
@@ -121,7 +163,7 @@ TArray<FString> UFallGlobal::GetAvailableLevels()
 	}
 
 	// PlayLevelDataTable 가져오기
-	UDataTable* LevelDataTable = GameInstance->GetPlayLevelDataTable(); // 이 함수는 BaseGameInstance에서 PlayLevelDataTable을 가져오는 함수로 가정
+	UDataTable* LevelDataTable = GameInstance->GetPlayLevelDataTable();
 	if (!LevelDataTable)
 	{
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("GetAvailableLevels: PlayLevelDataTable is null!"));
@@ -169,9 +211,9 @@ FString UFallGlobal::GetRandomLevel(APawn* _Pawn)
 	return GameIns->InsGetRandomLevel();
 }
 
-// 리소스의 스테틱 메시 반환
-UStaticMesh* UFallGlobal::GetResourceMesh(APawn* _Pawn, const FString& _MeshName/* = TEXT("NULL")*/)
+// 랜덤 레벨 함수에서 얻은 이름 반환
+FString UFallGlobal::GetLevelName(APawn* _Pawn)
 {
 	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
-	return GameIns->InsGetResourceMesh(_Pawn, _MeshName);
+	return GameIns->InsGetLevelName();
 }

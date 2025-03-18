@@ -51,6 +51,6 @@ public:
 	//static TSubclassOf<AActor> GetActorClass(UWorld* _World, const FString& _Name);
 	static const FCostumeDataRow* GetCostumeData(UWorld* _World, const FString& _Name);
 	static const FCostumeColorDataRow* GetCostumeColorData(UWorld* _World, const FString& _Name);
-	static const TSoftObjectPtr<UWorld> GetPlayLevelData(UWorld* _World, const FString& _Name);
+	static const FPlayLevelDataRow* GetPlayLevelData(UWorld* _World, const FString& _Name);
 	static const FResourceDataRow* GetResourceData(UWorld* _World, const FString& _Name);
 };

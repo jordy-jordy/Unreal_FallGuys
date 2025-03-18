@@ -23,24 +23,62 @@ class UNREAL_FALLGUYS_API UBaseGameInstance : public UGameInstance
 public:
 	UBaseGameInstance();
 
-	// 코스튬 이름 저장
+	// 저장된 코스튬의 컬러 반환
 	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
-	void InsSaveCostumeName(const FString& _CostumeName);
-
-	// Pawn의 코스튬 변경
-	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
-	void InsChangeCostume(APawn* _Pawn, const FString& _CostumeName);
-
-	// 저장된 코스튬의 이름 반환
-	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
-	FString InsGetCostumeName() const
+	FString InsGetCostumeColor() const
 	{
-		return CostumeName;
+		return CostumeColor;
 	}
 
-	// 저장된 코스튬의 스켈레탈 메시 반환
+	// 저장된 코스튬의 상의 반환
 	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
-	USkeletalMesh* InsGetCostumeMesh(APawn* _Pawn, const FString& _MeshName = TEXT("Default"));
+	FString InsGetCostumeTop() const
+	{
+		return CostumeTop;
+	}
+
+	// 저장된 코스튬의 하의 반환
+	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
+	FString InsGetCostumeBot() const
+	{
+		return CostumeBot;
+	}
+
+	// 코스튬 컬러 저장
+	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
+	void InsSaveCostumeColor(const FString& _CostumeColor);
+
+	// 코스튬 상의 저장
+	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
+	void InsSaveCostumeTop(const FString& _CostumeTop);
+
+	// 코스튬 하의 저장
+	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
+	void InsSaveCostumeBot(const FString& _CostumeBot);
+
+	// Pawn의 코스튬 컬러 변경
+	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
+	void InsChangeCostumeColor(APawn* _Pawn, const FString& _CostumeColor);
+
+	// Pawn의 코스튬 상의 변경
+	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
+	void InsChangeCostumeTop(APawn* _Pawn, const FString& _CostumeTop);
+
+	// Pawn의 코스튬 하의 변경
+	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
+	void InsChangeCostumeBot(APawn* _Pawn, const FString& _CostumeBot);
+
+	// 저장된 코스튬 컬러의 스켈레탈 메시 반환
+	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
+	USkeletalMesh* InsGetCostumeColorMesh(APawn* _Pawn, const FString& _MeshName = TEXT("Default"));
+
+	// 저장된 코스튬의 스테틱 메시 반환
+	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
+	UStaticMesh* InsGetCostumeMesh(APawn* _Pawn, const FString& _MeshName = TEXT(""));
+
+	// 리소스의 스테틱 메시 반환
+	UFUNCTION(BlueprintCallable, Category = "RESOURCE")
+	UStaticMesh* InsGetResourceMesh(APawn* _Pawn, const FString& _MeshName = TEXT("Default"));
 
 	// 저장된 닉네임 반환
 	UFUNCTION(BlueprintCallable, Category = "PLAYER NICKNAME")
@@ -57,10 +95,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
 	FString InsGetRandomLevel();
 
-	// 리소스의 스테틱 메시 반환
-	UFUNCTION(BlueprintCallable, Category = "RESOURCE")
-	UStaticMesh* InsGetResourceMesh(APawn* _Pawn, const FString& _MeshName = TEXT("Default"));
-
 	// 레벨 이동했는지 체크하는 변수
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PLAYER DATA")
 	bool IsMovedLevel = false;
@@ -75,13 +109,14 @@ public:
 
 	// 랜덤 레벨 함수에서 얻은 이름 반환
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
-	FString GetLevelName()
+	FString InsGetLevelName()
 	{
 		return LevelName;
 	}
 
+	// 서버 연결 상태를 TRUE로 전환
 	UFUNCTION(BlueprintCallable, Category = "SERVER")
-	void SetbIsConnectedTrue()
+	void InsSetbIsConnectedTrue()
 	{
 		bIsConnected = true;
 	}
@@ -112,9 +147,17 @@ private:
 	class UDataTable* ResourceDataTable = nullptr;
 	//class UDataTable* ActorDataTable = nullptr;
 
-	// 코스튬 네임
+	// 코스튬 컬러
 	UPROPERTY(VisibleAnywhere, Category = "PLAYER COSTUME")
-	FString CostumeName = TEXT("Default");
+	FString CostumeColor = TEXT("Default");
+
+	// 코스튬 상의
+	UPROPERTY(VisibleAnywhere, Category = "PLAYER COSTUME")
+	FString CostumeTop = TEXT("");
+
+	// 코스튬 하의
+	UPROPERTY(VisibleAnywhere, Category = "PLAYER COSTUME")
+	FString CostumeBot = TEXT("");
 
 	// 닉네임
 	UPROPERTY(VisibleAnywhere, Category = "PLAYER NICKNAME")

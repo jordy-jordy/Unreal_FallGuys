@@ -90,12 +90,12 @@ public:
 	FVector GetControllerRight();
 
 	UFUNCTION(BlueprintCallable, Reliable, NetMulticast)
-	void S2M_Costume(const FString& _Name);
-	void S2M_Costume_Implementation(const FString& _Name);
+	void S2M_Costume(const FString& _Color, const FString& _TopName = TEXT(""), const FString& _BotName = TEXT(""));
+	void S2M_Costume_Implementation(const FString& _Color, const FString& _TopName = TEXT(""), const FString& _BotName = TEXT(""));
 
 	UFUNCTION(BlueprintCallable, Reliable, Server)
-	void C2S_Costume(const FString& _Name);
-	void C2S_Costume_Implementation(const FString& _Name);
+	void C2S_Costume(const FString& _Color, const FString& _TopName = TEXT(""), const FString& _BotName = TEXT(""));
+	void C2S_Costume_Implementation(const FString& _Color, const FString& _TopName = TEXT(""), const FString& _BotName = TEXT(""));
 
 
 protected:
@@ -109,9 +109,11 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 
-	// 나 너를 기반으로 생성된 앤데 너 무슨 코스츔이야? 물어보는 함수를 만들 것이다.
 
 private:
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UStaticMeshComponent* CharacterStaticMesh;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* LookAction = nullptr;
 
@@ -139,9 +141,14 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	float GetUpTime = 0.0f;
 
-	UPROPERTY(VisibleAnywhere, Replicated, BlueprintReadOnly, Category = "GM", meta = (AllowPrivateAccess = "true"))
-	FString CName = TEXT("");
+	UPROPERTY(VisibleAnywhere, Replicated, BlueprintReadOnly, Category = "COSTUME", meta = (AllowPrivateAccess = "true"))
+	FString CostumeColor = TEXT("");
 
+	UPROPERTY(VisibleAnywhere, Replicated, BlueprintReadOnly, Category = "COSTUME", meta = (AllowPrivateAccess = "true"))
+	FString CostumeTopName = TEXT("");
+
+	UPROPERTY(VisibleAnywhere, Replicated, BlueprintReadOnly, Category = "COSTUME", meta = (AllowPrivateAccess = "true"))
+	FString CostumeBotName = TEXT("");
 
 //LMH
 public:

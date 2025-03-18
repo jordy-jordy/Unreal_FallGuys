@@ -35,19 +35,30 @@ APlayCharacter::APlayCharacter()
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
 	CameraComponent->SetupAttachment(SpringArmComponent, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	CameraComponent->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+
+	CharacterStaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
+	CharacterStaticMesh->SetupAttachment(RootComponent);
 }
 
-void APlayCharacter::S2M_Costume_Implementation(const FString& _Name)
+void APlayCharacter::C2S_Costume_Implementation(const FString& _Color, const FString& _TopName, const FString& _BotName)
 {
-	GetMesh()->SetSkeletalMesh(UFallGlobal::GetCostumeMesh(this, _Name));
-	CName = _Name;
+	CostumeColor = _Color;
+	CostumeTopName = _TopName;
+	CostumeBotName = _BotName;
+	GetMesh()->SetSkeletalMesh(UFallGlobal::GetCostumeColorMesh(this, _Color));
+	CharacterStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, _TopName));
+	CharacterStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, _BotName));
+	S2M_Costume(CostumeColor, CostumeTopName, CostumeBotName);
 }
 
-void APlayCharacter::C2S_Costume_Implementation(const FString& _Name)
+void APlayCharacter::S2M_Costume_Implementation(const FString& _Color, const FString& _TopName, const FString& _BotName)
 {
-	GetMesh()->SetSkeletalMesh(UFallGlobal::GetCostumeMesh(this, _Name));
-	CName = _Name;
-	S2M_Costume(CName);
+	CostumeColor = _Color;
+	CostumeTopName = _TopName;
+	CostumeBotName = _BotName;
+	GetMesh()->SetSkeletalMesh(UFallGlobal::GetCostumeColorMesh(this, _Color));
+	CharacterStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, _TopName));
+	CharacterStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, _BotName));
 }
 
 // Called when the game starts or when spawned
@@ -59,16 +70,20 @@ void APlayCharacter::BeginPlay()
 
 	if (UGameplayStatics::GetPlayerController(GetWorld(), 0) == GetController())
 	{
-		// 나는 그냥 내 코스츔 하면 된다.
-		CName = UFallGlobal::GetCostumeName(this);
-
-		GetMesh()->SetSkeletalMesh(UFallGlobal::GetCostumeMesh(this, CName));
-
-		C2S_Costume(CName);
+		CostumeColor = UFallGlobal::GetCostumeColor(this);
+		CostumeTopName = UFallGlobal::GetCostumeTop(this);
+		CostumeBotName = UFallGlobal::GetCostumeBot(this);
+		GetMesh()->SetSkeletalMesh(UFallGlobal::GetCostumeColorMesh(this, CostumeColor));
+		CharacterStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, CostumeTopName));
+		CharacterStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, CostumeBotName));
+		
+		C2S_Costume(CostumeColor, CostumeTopName, CostumeBotName);
 	}
 	else
 	{
-		GetMesh()->SetSkeletalMesh(UFallGlobal::GetCostumeMesh(this, CName));
+		GetMesh()->SetSkeletalMesh(UFallGlobal::GetCostumeColorMesh(this, CostumeColor));
+		CharacterStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, CostumeTopName));
+		CharacterStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, CostumeBotName));
 	}
 
 	if (UGameplayStatics::GetPlayerController(GetWorld(), 0) == GetController())
@@ -155,7 +170,9 @@ void APlayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(APlayCharacter, CName);
+	DOREPLIFETIME(APlayCharacter, CostumeColor);
+	DOREPLIFETIME(APlayCharacter, CostumeTopName);
+	DOREPLIFETIME(APlayCharacter, CostumeBotName);
 	DOREPLIFETIME(APlayCharacter, IsDie);
 }
 

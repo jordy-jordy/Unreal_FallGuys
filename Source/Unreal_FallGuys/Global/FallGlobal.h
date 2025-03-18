@@ -30,17 +30,41 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static void ServerConnect(UObject* _Object, FString _IP, FString _Port);
 
-	// Pawn의 코스튬 변경
+	// 저장된 코스튬의 컬러 반환
 	UFUNCTION(BlueprintCallable)
-	static void ChangeCostume(APawn* _Pawn, const FString& _CostumeName);
+	static FString GetCostumeColor(APawn* _Pawn);
 
-	// 저장된 코스튬의 이름 반환
+	// 저장된 코스튬의 상의 반환
 	UFUNCTION(BlueprintCallable)
-	static FString GetCostumeName(APawn* _Pawn);
+	static FString GetCostumeTop(APawn* _Pawn);
 
-	// 저장된 코스튬의 스켈레탈 메시 반환
+	// 저장된 코스튬의 하의 반환
 	UFUNCTION(BlueprintCallable)
-	static USkeletalMesh* GetCostumeMesh(APawn* _Pawn, const FString& _MeshName);
+	static FString GetCostumeBot(APawn* _Pawn);
+
+	// Pawn의 코스튬 컬러 변경
+	UFUNCTION(BlueprintCallable)
+	static void ChangeCostumeColor(APawn* _Pawn, const FString& _CostumeColor);
+
+	// Pawn의 코스튬 상의 변경
+	UFUNCTION(BlueprintCallable)
+	static void ChangeCostumeTop(APawn* _Pawn, const FString& _CostumeTop);
+
+	// Pawn의 코스튬 하의 변경
+	UFUNCTION(BlueprintCallable)
+	static void ChangeCostumeBot(APawn* _Pawn, const FString& _CostumeBot);
+
+	// 저장된 코스튬 컬러의 스켈레탈 메시 반환
+	UFUNCTION(BlueprintCallable)
+	static USkeletalMesh* GetCostumeColorMesh(APawn* _Pawn, const FString& _MeshName);
+
+	// 저장된 코스튬의 스테틱 메시 반환
+	UFUNCTION(BlueprintCallable)
+	static UStaticMesh* GetCostumeMesh(APawn* _Pawn, const FString& _MeshName);
+
+	// 리소스의 스테틱 메시 반환
+	UFUNCTION(BlueprintCallable)
+	static UStaticMesh* GetResourceMesh(APawn* _Pawn, const FString& _MeshName);
 
 	// 닉네임 반환
 	UFUNCTION(BlueprintCallable)
@@ -58,7 +82,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static FString GetRandomLevel(APawn* _Pawn);
 
-	// 리소스의 스테틱 메시 반환
+	// 랜덤 레벨 함수에서 얻은 이름 반환
 	UFUNCTION(BlueprintCallable)
-	static UStaticMesh* GetResourceMesh(APawn* _Pawn, const FString& _MeshName);
+	static FString GetLevelName(APawn* _Pawn);
 };
