@@ -6,6 +6,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Kismet/GameplayStatics.h"
 #include "Global/FallGlobal.h"
+#include "Unreal_FallGuys.h"
 #include "Mode/00_Title/TitlePlayerController.h"
 #include "Mode/00_Title/UI/TitleMainWidget.h"
 
@@ -20,7 +21,6 @@ UUIInputManager::UUIInputManager()
 	// ...
 }
 
-
 // Called when the game starts
 void UUIInputManager::BeginPlay()
 {
@@ -29,7 +29,6 @@ void UUIInputManager::BeginPlay()
 	// ...
 	
 }
-
 
 // Called every frame
 void UUIInputManager::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -45,15 +44,112 @@ void UUIInputManager::SetupPlayerInputComponent(UInputComponent* _PlayerInputCom
 
 	ATitlePlayerController* PlayerController = Cast<ATitlePlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));;
 
-	const UInputAction* Action = PlayerController->GetInputAction(TEXT("IA_UIMenuInput"));
+	const UInputAction* UIMenuInputAction = PlayerController->GetInputAction(TEXT("IA_UIMenuInput"));
 
-	EnhancedInputComponent->BindAction(Action, ETriggerEvent::Triggered, this, &UUIInputManager::SwitchWidget);
+	EnhancedInputComponent->BindAction(UIMenuInputAction, ETriggerEvent::Triggered, this, &UUIInputManager::SwitchMenuWidget);
 }
 
-void UUIInputManager::SwitchWidget()
+void UUIInputManager::SwitchMenuWidget(const FInputActionValue& _Value)
 {
-	UTitleMainWidget* Widget = Cast<UTitleMainWidget>(UFallGlobal::GetMainWidget(GetWorld()));
-	Widget->SwitchWidget(EUIType::TitleEntrance);
+	FVector2D Value = _Value.Get<FVector2D>();
+
+	UTitleMainWidget* Widget = UFallGlobal::GetMainWidget(GetWorld());
+
+	if (nullptr == Widget)
+	{
+#ifdef WITH_EDITOR
+		UE_LOG(FALL_DEV_LOG, Fatal, TEXT("%S(%u)> if (nullptr == PlayMainUserWidget)"), __FUNCTION__, __LINE__);
+#endif
+		return;
+	}
+
+	EUIType CurUIType = Widget->GetCurUIType();
+
+	if (Value.Y == 0)
+	{
+		if (Value.X > 0)
+		{
+			switch (CurUIType)
+			{
+			case EUIType::TitleHome:
+				Widget->SwitchWidget(EUIType::TitleCustom);
+				return;
+				break;
+			default:
+				break;
+			}
+		}
+		else if (Value.X < 0)
+		{
+			switch (CurUIType)
+			{
+			case EUIType::TitleCustom:
+				Widget->SwitchWidget(EUIType::TitleHome);
+				return;
+				break;
+			default:
+				break;
+			}
+		}
+	}
+	else if (Value.X == 0)
+	{
+		if (Value.Y > 0)
+		{
+			switch (CurUIType)
+			{
+			case EUIType::TitleHome:
+				Widget->SwitchWidget(EUIType::TitleEntrance);
+				return;
+				break;
+			case EUIType::TitleCustom:
+				return;
+				break;
+			case EUIType::TitleEntrance:
+				return;
+				break;
+			case EUIType::CustomInven:
+				return;
+				break;
+			case EUIType::TitleIPPort:
+				// ServerConnect
+				return;
+				break;
+			case EUIType::TitleName:
+				// SetNickName
+				Widget->SwitchWidget(EUIType::TitleHome);
+				return;
+				break;
+			default:
+				break;
+			}
+		}
+		else if (Value.Y < 0)
+		{
+			switch (CurUIType)
+			{
+			case EUIType::TitleCustom:
+				Widget->SwitchWidget(EUIType::TitleHome);
+				return;
+				break;
+			case EUIType::TitleEntrance:
+				Widget->SwitchWidget(EUIType::TitleHome);
+				return;
+				break;
+			case EUIType::CustomInven:
+				//Widget->SwitchWidget(EUIType::TitleHome);
+				Widget->SwitchWidget(EUIType::TitleCustom);
+				return;
+				break;
+			case EUIType::TitleIPPort:
+				Widget->SwitchWidget(EUIType::TitleEntrance);
+				return;
+				break;
+			default:
+				break;
+			}
+		}
+	}
 }
 
 

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "InputActionValue.h"
 #include "UIInputManager.generated.h"
 
 
@@ -18,7 +19,7 @@ public:
 
 	void SetupPlayerInputComponent(UInputComponent* _PlayerInputComponent);
 
-	void SwitchWidget();
+	void SwitchMenuWidget(const FInputActionValue& _Value);
 
 protected:
 	// Called when the game starts
