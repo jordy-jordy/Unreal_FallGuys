@@ -38,14 +38,19 @@ APlayCharacter::APlayCharacter()
 
 	CoustumeTOPStaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TOPMesh"));
 	CoustumeBOTStaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BOTMesh"));
-	CoustumeTOPStaticMesh->SetupAttachment(RootComponent);
-	CoustumeBOTStaticMesh->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
 void APlayCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// 스켈레탈 메시 소켓에 어태치
+	if (CoustumeTOPStaticMesh && CoustumeBOTStaticMesh)
+	{
+		CoustumeTOPStaticMesh->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("CustomSocket"));
+		CoustumeBOTStaticMesh->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("CustomSocket"));
+	}
 
 	UBaseGameInstance* GameIns = Cast<UBaseGameInstance>(GetGameInstance());
 
