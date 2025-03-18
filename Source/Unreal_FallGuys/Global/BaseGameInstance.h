@@ -74,11 +74,11 @@ public:
 
 	// 저장된 코스튬의 스테틱 메시 반환
 	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
-	UStaticMesh* InsGetCostumeMesh(APawn* _Pawn, const FString& _MeshName = TEXT(""));
+	UStaticMesh* InsGetCostumeMesh(APawn* _Pawn, const FString& _MeshName = TEXT("Default"));
 
 	// 리소스의 스테틱 메시 반환
 	UFUNCTION(BlueprintCallable, Category = "RESOURCE")
-	UStaticMesh* InsGetResourceMesh(APawn* _Pawn, const FString& _MeshName = TEXT("Default"));
+	UStaticMesh* InsGetResourceMesh(APawn* _Pawn, const FString& _MeshName);
 
 	// 저장된 닉네임 반환
 	UFUNCTION(BlueprintCallable, Category = "PLAYER NICKNAME")
@@ -153,11 +153,11 @@ private:
 
 	// 코스튬 상의
 	UPROPERTY(VisibleAnywhere, Category = "PLAYER COSTUME")
-	FString CostumeTop = TEXT("");
+	FString CostumeTop = TEXT("Default");
 
 	// 코스튬 하의
 	UPROPERTY(VisibleAnywhere, Category = "PLAYER COSTUME")
-	FString CostumeBot = TEXT("");
+	FString CostumeBot = TEXT("Default");
 
 	// 닉네임
 	UPROPERTY(VisibleAnywhere, Category = "PLAYER NICKNAME")
