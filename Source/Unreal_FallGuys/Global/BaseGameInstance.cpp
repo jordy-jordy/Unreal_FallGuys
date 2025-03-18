@@ -286,11 +286,11 @@ USkeletalMesh* UBaseGameInstance::InsGetCostumeColorMesh(APawn* _Pawn, const FSt
 	{
 		if (_MeshName.IsEmpty())
 		{
-			UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsGetCostumeMesh :: Empty Costume color Data or Mesh"));
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsGetCostumeMesh :: Empty Costume Color Mesh Data or Mesh"));
 		}
 		else
 		{
-			UE_LOG(FALL_DEV_LOG, Error, TEXT("InsGetCostumeMesh :: Invalid Costume  color Data or Mesh"));
+			UE_LOG(FALL_DEV_LOG, Error, TEXT("InsGetCostumeMesh :: Invalid Costume  Color Mesh Data or Mesh"));
 		}
 	}
 
@@ -309,11 +309,11 @@ UStaticMesh* UBaseGameInstance::InsGetCostumeMesh(APawn* _Pawn, const FString& _
 	{
 		if (_MeshName.IsEmpty())
 		{
-			UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsGetCostumeMesh :: Empty Costume Data or Mesh"));
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsGetCostumeMesh :: Empty Costume Mesh Data or Mesh"));
 		}
 		else
 		{
-			UE_LOG(FALL_DEV_LOG, Error, TEXT("InsGetCostumeMesh :: Invalid Costume Data or Mesh"));
+			UE_LOG(FALL_DEV_LOG, Error, TEXT("InsGetCostumeMesh :: Invalid Costume Mesh Data or Mesh"));
 		}
 	}
 
@@ -321,7 +321,7 @@ UStaticMesh* UBaseGameInstance::InsGetCostumeMesh(APawn* _Pawn, const FString& _
 }
 
 // 리소스의 스테틱 메시 반환
-UStaticMesh* UBaseGameInstance::InsGetResourceMesh(APawn* _Pawn, const FString& _MeshName/* = TEXT("Default")*/)
+UStaticMesh* UBaseGameInstance::InsGetResourceMesh(APawn* _Pawn, const FString& _MeshName)
 {
 	const FResourceDataRow* ResourceData = UGlobalDataTable::GetResourceData(_Pawn->GetWorld(), _MeshName);
 	if (ResourceData && ResourceData->Mesh)
