@@ -10,8 +10,6 @@ ARotatePlatform::ARotatePlatform()
 	PrimaryActorTick.bCanEverTick = true;
 
 	OparateMesh();
-	SetPlatform_R();
-	SetStick_C();
 }
 
 // Called when the game starts or when spawned
@@ -34,7 +32,6 @@ void ARotatePlatform::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	MovementComponent->Spin(DeltaTime, PlatformAxis);
-	//MovementComponent->Spin(DeltaTime, PlatformBody);
 	MovementComponent->Spin(-DeltaTime, StickBody);
 }
 

@@ -32,22 +32,6 @@ void UMovementActorComponent::TickComponent(float DeltaTime, ELevelTick TickType
 	// ...
 }
 
-void UMovementActorComponent::Spin(float DeltaTime, UStaticMeshComponent* Target)
-{
-	if (IsSpinLeft)
-	{
-		Target->AddRelativeRotation(SpinSpeed * DeltaTime);
-	}
-	else
-	{
-		Target->AddRelativeRotation(SpinSpeed * -DeltaTime);
-	}
-}
-
-void UMovementActorComponent::SpinCycle(float DeltaTime, UStaticMeshComponent* Target, EMoveAxis Axis)
-{
-}
-
 void UMovementActorComponent::MoveCycle(float DeltaTime, UStaticMeshComponent* Target, EMoveAxis Axis)
 {
 	float LeftValue = 0.0f;
@@ -89,6 +73,63 @@ void UMovementActorComponent::MoveCycle(float DeltaTime, UStaticMeshComponent* T
 		else
 		{
 			IsMoveCycleLeft = true;
+		}
+	}
+}
+
+void UMovementActorComponent::Spin(float DeltaTime, UStaticMeshComponent* Target)
+{
+	if (IsSpinLeft)
+	{
+		Target->AddRelativeRotation(SpinSpeed * DeltaTime);
+	}
+	else
+	{
+		Target->AddRelativeRotation(SpinSpeed * -DeltaTime);
+	}
+}
+
+void UMovementActorComponent::SpinCycle(float DeltaTime, UStaticMeshComponent* Target, EMoveAxis Axis)
+{
+	float LeftValue = 0.0f;
+	float RightValue = 0.0f;
+
+	switch (Axis)
+	{
+	case EMoveAxis::ROLL:
+		LeftValue = Target->GetRelativeRotation().Roll;
+		RightValue = LimitAngle.Roll;
+		break;
+	case EMoveAxis::PITCH:
+		LeftValue = Target->GetRelativeRotation().Pitch;
+		RightValue = LimitAngle.Pitch;
+		break;
+	case EMoveAxis::YAW:
+		LeftValue = Target->GetRelativeRotation().Yaw;
+		RightValue = LimitAngle.Yaw;
+		break;
+	}
+
+	if (IsSpinCycleLeft)
+	{
+		if (LeftValue >= -RightValue)
+		{
+			Target->AddRelativeRotation(SpinCycleSpeed * -DeltaTime);
+		}
+		else
+		{
+			IsSpinCycleLeft = false;
+		}
+	}
+	else
+	{
+		if (LeftValue <= RightValue)
+		{
+			Target->AddRelativeRotation(SpinCycleSpeed * DeltaTime);
+		}
+		else
+		{
+			IsSpinCycleLeft = true;
 		}
 	}
 }
