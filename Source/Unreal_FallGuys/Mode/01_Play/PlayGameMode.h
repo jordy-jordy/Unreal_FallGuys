@@ -51,7 +51,7 @@ protected:
 
 	// 플레이어 수 변경 시 클라이언트에서 실행될 함수
 	UFUNCTION()
-void OnRep_ConnectedPlayers(); 
+	void OnRep_ConnectedPlayers(); 
 
 private:
 

@@ -153,11 +153,11 @@ private:
 
 	// 코스튬 상의
 	UPROPERTY(VisibleAnywhere, Category = "PLAYER COSTUME")
-	FString CostumeTop = TEXT("Default");
+	FString CostumeTop = TEXT("Default_Top");
 
 	// 코스튬 하의
 	UPROPERTY(VisibleAnywhere, Category = "PLAYER COSTUME")
-	FString CostumeBot = TEXT("Default");
+	FString CostumeBot = TEXT("Default_Bot");
 
 	// 닉네임
 	UPROPERTY(VisibleAnywhere, Category = "PLAYER NICKNAME")

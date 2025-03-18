@@ -103,9 +103,6 @@ protected:
 
 
 private:
-	UPROPERTY(VisibleAnywhere, Category = "Components")
-	UStaticMeshComponent* CharacterStaticMesh;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* LookAction = nullptr;
 
@@ -145,6 +142,12 @@ public:
 	void C2S_Costume_Implementation(const FString& _Color, const FString& _TopName = TEXT(""), const FString& _BotName = TEXT(""));
 
 private: 
+	UPROPERTY(VisibleAnywhere, Category = "COSTUME")
+	UStaticMeshComponent* CoustumeTOPStaticMesh;
+
+	UPROPERTY(VisibleAnywhere, Category = "COSTUME")
+	UStaticMeshComponent* CoustumeBOTStaticMesh;
+
 	UPROPERTY(VisibleAnywhere, Replicated, BlueprintReadOnly, Category = "COSTUME", meta = (AllowPrivateAccess = "true"))
 	FString CostumeColor = TEXT("");
 
@@ -168,8 +171,4 @@ public:
 	UFUNCTION(BlueprintCallable, Reliable, NetMulticast)
 	void S2M_IsDie(bool _val);
 	void S2M_IsDie_Implementation(bool _val);
-
-
-	
-
 };

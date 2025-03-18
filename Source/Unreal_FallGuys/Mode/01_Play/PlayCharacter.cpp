@@ -9,10 +9,10 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
+#include "Net/UnrealNetwork.h"
 #include <Unreal_FallGuys.h>
 #include <Global/FallGlobal.h>
 #include <Global/BaseGameInstance.h>
-#include "Net/UnrealNetwork.h"
 
 
 // Sets default values
@@ -36,29 +36,10 @@ APlayCharacter::APlayCharacter()
 	CameraComponent->SetupAttachment(SpringArmComponent, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	CameraComponent->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
-	CharacterStaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
-	CharacterStaticMesh->SetupAttachment(RootComponent);
-}
-
-void APlayCharacter::C2S_Costume_Implementation(const FString& _Color, const FString& _TopName, const FString& _BotName)
-{
-	CostumeColor = _Color;
-	CostumeTopName = _TopName;
-	CostumeBotName = _BotName;
-	GetMesh()->SetSkeletalMesh(UFallGlobal::GetCostumeColorMesh(this, _Color));
-	CharacterStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, _TopName));
-	CharacterStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, _BotName));
-	S2M_Costume(CostumeColor, CostumeTopName, CostumeBotName);
-}
-
-void APlayCharacter::S2M_Costume_Implementation(const FString& _Color, const FString& _TopName, const FString& _BotName)
-{
-	CostumeColor = _Color;
-	CostumeTopName = _TopName;
-	CostumeBotName = _BotName;
-	GetMesh()->SetSkeletalMesh(UFallGlobal::GetCostumeColorMesh(this, _Color));
-	CharacterStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, _TopName));
-	CharacterStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, _BotName));
+	CoustumeTOPStaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TOPMesh"));
+	CoustumeBOTStaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BOTMesh"));
+	CoustumeTOPStaticMesh->SetupAttachment(RootComponent);
+	CoustumeBOTStaticMesh->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -74,16 +55,16 @@ void APlayCharacter::BeginPlay()
 		CostumeTopName = UFallGlobal::GetCostumeTop(this);
 		CostumeBotName = UFallGlobal::GetCostumeBot(this);
 		GetMesh()->SetSkeletalMesh(UFallGlobal::GetCostumeColorMesh(this, CostumeColor));
-		CharacterStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, CostumeTopName));
-		CharacterStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, CostumeBotName));
+		CoustumeTOPStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, CostumeTopName));
+		CoustumeBOTStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, CostumeBotName));
 		
 		C2S_Costume(CostumeColor, CostumeTopName, CostumeBotName);
 	}
 	else
 	{
 		GetMesh()->SetSkeletalMesh(UFallGlobal::GetCostumeColorMesh(this, CostumeColor));
-		CharacterStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, CostumeTopName));
-		CharacterStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, CostumeBotName));
+		CoustumeTOPStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, CostumeTopName));
+		CoustumeBOTStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, CostumeBotName));
 	}
 
 	if (UGameplayStatics::GetPlayerController(GetWorld(), 0) == GetController())
@@ -164,7 +145,6 @@ void APlayCharacter::TestMove(const FVector2D& _Value)
 	AddMovementInput(Right, _Value.Y);
 }
 
-
 void APlayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -187,6 +167,28 @@ void APlayCharacter::S2M_IsDie_Implementation(bool _val)
 	IsDie = _val;
 }
 
+// 이현정 : 캐릭터 코스튬 설정 - 클라 > 서버
+void APlayCharacter::C2S_Costume_Implementation(const FString& _Color, const FString& _TopName, const FString& _BotName)
+{
+	CostumeColor = _Color;
+	CostumeTopName = _TopName;
+	CostumeBotName = _BotName;
+	GetMesh()->SetSkeletalMesh(UFallGlobal::GetCostumeColorMesh(this, _Color));
+	CoustumeTOPStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, _TopName));
+	CoustumeBOTStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, _BotName));
+	S2M_Costume(CostumeColor, CostumeTopName, CostumeBotName);
+}
+
+// 이현정 : 캐릭터 코스튬 설정 - 서버 > 멀티캐스트
+void APlayCharacter::S2M_Costume_Implementation(const FString& _Color, const FString& _TopName, const FString& _BotName)
+{
+	CostumeColor = _Color;
+	CostumeTopName = _TopName;
+	CostumeBotName = _BotName;
+	GetMesh()->SetSkeletalMesh(UFallGlobal::GetCostumeColorMesh(this, _Color));
+	CoustumeTOPStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, _TopName));
+	CoustumeBOTStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, _BotName));
+}
 
 
 
