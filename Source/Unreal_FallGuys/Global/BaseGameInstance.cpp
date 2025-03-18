@@ -159,24 +159,24 @@ void UBaseGameInstance::CServerConnect(UWorld* _World, FString _IP, FString _Por
 	Addr->SetPort(PortNum);
 
 	// 로컬 서버(127.0.0.1)인 경우 연결 확인을 건너뜀
-	if (_IP != "127.0.0.1")
-	{
-		FSocket* TestSocket = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateSocket(NAME_Stream, TEXT("TestSocket"), false);
-		if (!TestSocket || !TestSocket->Connect(*Addr))
-		{
-			UE_LOG(FALL_DEV_LOG, Error, TEXT("서버 연결 실패: %s:%d"), *_IP, PortNum);
-			if (TestSocket)
-			{
-				TestSocket->Close();
-				ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->DestroySocket(TestSocket);
-			}
-			return;
-		}
+	//if (_IP != "127.0.0.1")
+	//{
+	//	FSocket* TestSocket = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateSocket(NAME_Stream, TEXT("TestSocket"), false);
+	//	if (!TestSocket || !TestSocket->Connect(*Addr))
+	//	{
+	//		UE_LOG(FALL_DEV_LOG, Error, TEXT("서버 연결 실패: %s:%d"), *_IP, PortNum);
+	//		if (TestSocket)
+	//		{
+	//			TestSocket->Close();
+	//			ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->DestroySocket(TestSocket);
+	//		}
+	//		return;
+	//	}
 
-		// 소켓 해제
-		TestSocket->Close();
-		ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->DestroySocket(TestSocket);
-	}
+	//	// 소켓 해제
+	//	TestSocket->Close();
+	//	ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->DestroySocket(TestSocket);
+	//}
 
 	if (!_World)
 	{

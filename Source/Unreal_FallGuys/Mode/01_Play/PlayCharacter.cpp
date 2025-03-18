@@ -48,8 +48,8 @@ void APlayCharacter::BeginPlay()
 	// 스켈레탈 메시 소켓에 어태치
 	if (CoustumeTOPStaticMesh && CoustumeBOTStaticMesh)
 	{
-		CoustumeTOPStaticMesh->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("CustomSocket"));
-		CoustumeBOTStaticMesh->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("CustomSocket"));
+		CoustumeTOPStaticMesh->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("CustomSocket"));
+		CoustumeBOTStaticMesh->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("CustomSocket"));
 	}
 
 	UBaseGameInstance* GameIns = Cast<UBaseGameInstance>(GetGameInstance());
