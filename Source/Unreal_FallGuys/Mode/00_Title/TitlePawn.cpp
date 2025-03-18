@@ -5,6 +5,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include <Global/BaseGameInstance.h>
+#include <Mode/00_Title/UI/UIInputManager.h>
 #include "Global/Data/GlobalDataTable.h"
 
 
@@ -24,6 +25,7 @@ ATitlePawn::ATitlePawn()
 
 	LowComp->SetupAttachment(RootComponent);
 
+	UIInputManager = CreateDefaultSubobject<UUIInputManager>(TEXT("UIInputManager"));
 }
 
 // Called when the game starts or when spawned
@@ -60,6 +62,8 @@ void ATitlePawn::SetupPlayerInputComponent(UInputComponent* _PlayerInputComponen
 				AddControllerPitchInput(LookAxisVector.Y);
 			}
 		});
+
+	UIInputManager->SetupPlayerInputComponent(_PlayerInputComponent);
 }
 
 void ATitlePawn::PawnRotation(UStaticMeshComponent* _Target, const FVector2D& _Value)

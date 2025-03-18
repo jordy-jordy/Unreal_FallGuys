@@ -22,6 +22,8 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void SetupInputComponentEvent();
 
+	const UInputAction* GetInputAction(FStringView _Name);
+
 protected:
 	void BeginPlay() override;
 	void SetupInputComponent();
@@ -29,4 +31,7 @@ protected:
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	UInputMappingContext* MappingContext = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
+	TMap<FString, const UInputAction*> MappingActions;
 };
