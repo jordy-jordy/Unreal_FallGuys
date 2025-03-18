@@ -37,7 +37,7 @@ void UCustomColorButtonWidget::ChangePawnColor(ECostumeColor color)
 	
 	if (CostumeColorData && CostumeColorData->CostumeMesh)
 	{
-		GetGameInstance<UBaseGameInstance>()->InsChangeCostume(GetOwningPlayerPawn(), CustomName);
+		GetGameInstance<UBaseGameInstance>()->InsChangeCostumeColor(GetOwningPlayerPawn(), CustomName);
 
 	}
 }
