@@ -34,3 +34,13 @@ void ATitlePlayerController::AddMappingContext(UInputMappingContext* _MappingCon
 	InputSystem->ClearAllMappings();
 	InputSystem->AddMappingContext(_MappingContext, 0);
 }
+
+const UInputAction* ATitlePlayerController::GetInputAction(FStringView _Name)
+{
+	if (false == MappingActions.Contains(_Name.GetData()))
+	{
+		return nullptr;
+	}
+
+	return MappingActions[_Name.GetData()];
+}

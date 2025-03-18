@@ -54,5 +54,6 @@ public:
 	UFUNCTION()
 	void DeAttachCustomStaticMesh(ECostumeType Type, FString& _ImgName);
 
-
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI", meta = (AllowPrivateAccess = "true"))
+	class UUIInputManager* UIInputManager;
 };

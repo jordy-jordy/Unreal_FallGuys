@@ -2,65 +2,58 @@
 
 
 #include "Mode/00_Title/UI/UIInputManager.h"
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
+#include "Kismet/GameplayStatics.h"
+#include "Global/FallGlobal.h"
+#include "Mode/00_Title/TitlePlayerController.h"
 #include "Mode/00_Title/UI/TitleMainWidget.h"
 
 
-void UUIInputManager::UIInput(const FVector2D _Value)
+// Sets default values for this component's properties
+UUIInputManager::UUIInputManager()
 {
-	//bool Value = InputCheck(_Value);
+	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
+	// off to improve performance if you don't need them.
+	PrimaryComponentTick.bCanEverTick = true;
 
-	//if (true == Value)
-	//{
-	//	SwitchWidgetHomeEnt(_Value);
-	//}
-	//else
-	//{
-	//	SwitchWidgetMenu(_Value);
-	//}
-
-	int a = 0;
+	// ...
 }
 
-bool UUIInputManager::SwitchWidgetMenu(const FVector2D _Value)
+
+// Called when the game starts
+void UUIInputManager::BeginPlay()
 {
-#ifdef WITH_EDITOR
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("%S(%u)> %s"), __FUNCTION__, __LINE__, *_Value.ToString()));
-#endif
+	Super::BeginPlay();
 
-	EUIType CurType = GetMainWidget()->GetCurUIType();
-
-	if (_Value.X > 0 && _Value.Y == 0 && CurType == EUIType::TitleHome)
-	{
-		GetMainWidget()->SwitchWidget(EUIType::TitleCustom);
-		return true;
-	}
-	else if (_Value.X < 0 && _Value.Y == 0 && CurType == EUIType::TitleCustom)
-	{
-		GetMainWidget()->SwitchWidget(EUIType::TitleHome);
-		return false;
-	}
-
-	return false;
+	// ...
+	
 }
 
-bool UUIInputManager::SwitchWidgetHomeEnt(const FVector2D _Value)
+
+// Called every frame
+void UUIInputManager::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-#ifdef WITH_EDITOR
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("%S(%u)> %s"), __FUNCTION__, __LINE__, *_Value.ToString()));
-#endif
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	EUIType CurType = GetMainWidget()->GetCurUIType();
-
-	if (_Value.X == 0 && _Value.Y < 0 && CurType == EUIType::TitleEntrance)
-	{
-		GetMainWidget()->SwitchWidget(EUIType::TitleHome);
-		return true;
-	}
-	else if (_Value.X == 0 && _Value.Y > 0 && CurType == EUIType::TitleHome)
-	{
-		GetMainWidget()->SwitchWidget(EUIType::TitleEntrance);
-		return false;
-	}
-
-	return false;
+	// ...
 }
+
+void UUIInputManager::SetupPlayerInputComponent(UInputComponent* _PlayerInputComponent)
+{
+	UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(_PlayerInputComponent);
+
+	ATitlePlayerController* PlayerController = Cast<ATitlePlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));;
+
+	const UInputAction* Action = PlayerController->GetInputAction(TEXT("IA_UIMenuInput"));
+
+	EnhancedInputComponent->BindAction(Action, ETriggerEvent::Triggered, this, &UUIInputManager::SwitchWidget);
+}
+
+void UUIInputManager::SwitchWidget()
+{
+	UTitleMainWidget* Widget = Cast<UTitleMainWidget>(UFallGlobal::GetMainWidget(GetWorld()));
+	Widget->SwitchWidget(EUIType::TitleEntrance);
+}
+
+

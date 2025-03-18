@@ -3,11 +3,13 @@
 
 #include "Global/FallGlobal.h"
 #include "AssetRegistry/AssetRegistryModule.h"
+#include "Kismet/GameplayStatics.h"
 
 #include <Engine/DataTable.h>
 #include <Unreal_FallGuys.h>
 #include <Global/BaseGameInstance.h>
 #include <Global/Data/PlayLevelDataTable.h>
+#include <Mode/00_Title/TitleHUD.h>
 
 
 void UFallGlobal::AssetPackagePath(UClass* _Class, const FString& _AssetName, FString& _Path)
@@ -216,4 +218,25 @@ FString UFallGlobal::GetLevelName(APawn* _Pawn)
 {
 	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
 	return GameIns->InsGetLevelName();
+}
+
+UTitleMainWidget* UFallGlobal::GetMainWidget(UWorld* _World)
+{
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(_World, 0);
+
+	if (nullptr == PlayerController)
+	{
+		UE_LOG(FALL_DEV_LOG, Fatal, TEXT("%S(%u)> if (nullptr == PlayerController)"), __FUNCTION__, __LINE__);
+		return nullptr;
+	}
+
+	ATitleHUD* TitleHUD = Cast<ATitleHUD>(PlayerController->GetHUD());
+
+	if (nullptr == TitleHUD)
+	{
+		UE_LOG(FALL_DEV_LOG, Fatal, TEXT("%S(%u)> if (nullptr == PlayerController)"), __FUNCTION__, __LINE__);
+		return nullptr;
+	}
+
+	return TitleHUD->GetMainWidget();
 }
