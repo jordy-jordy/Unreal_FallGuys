@@ -39,14 +39,10 @@ void ARotateSquare::OperateMesh()
 	RotateAxis = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RotateAxis"));
 	RotateAxis->SetupAttachment(RootScene);
 	RotateAxis->SetRelativeLocation({ 0, 0, 0 });
-	RotateAxis->SetCollisionProfileName(TEXT("CollisionProfile_LevelOBJ"));
-	RotateAxis->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
 	RotateSquare = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RotateSquare"));
 	RotateSquare->SetupAttachment(RotateAxis);
 	RotateSquare->SetRelativeLocation({ 0, 0, 460 });
-	RotateSquare->SetCollisionProfileName(TEXT("CollisionProfile_LevelOBJ"));
-	RotateSquare->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
 	SetMesh();
 }

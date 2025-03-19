@@ -55,7 +55,6 @@ private:
 	UFUNCTION()
 	void OparateMesh();
 
-
 	UFUNCTION()
 	void SetMesh();
 };

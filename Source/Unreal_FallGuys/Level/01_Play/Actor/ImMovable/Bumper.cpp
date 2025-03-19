@@ -53,8 +53,6 @@ void ABumper::OparateMesh()
 	BumperBody = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BumperBody"));
 	BumperBody->SetupAttachment(RootScene);
 	BumperBody->SetRelativeLocation({ 0, 0, 0 });
-	BumperBody->SetCollisionProfileName(TEXT("CollisionProfile_LevelOBJ"));
-	BumperBody->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 }
 
 void ABumper::SetPillarMesh_P()

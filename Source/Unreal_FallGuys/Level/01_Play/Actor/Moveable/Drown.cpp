@@ -20,7 +20,7 @@ void ADrown::BeginPlay()
 
 	SetDrownMesh();
 	SetDrownRotation();
-	MovementComponent->IsSpinLeft = IsLeft;
+
 	MovementComponent->SpinSpeed = FRotator({ 0.0f, 180.0f, 0.0f });
 }
 
@@ -44,32 +44,22 @@ void ADrown::SetDrownLocation()
 	DrownBody = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DrownBody"));
 	DrownBody->SetupAttachment(RootScene);
 	DrownBody->SetRelativeLocation({ 0, 0, 0 });
-	DrownBody->SetCollisionProfileName(TEXT("CollisionProfile_LevelOBJ"));
-	DrownBody->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
 	DrownPropeller_Left = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DrownPropeller_Left"));
 	DrownPropeller_Left->SetupAttachment(DrownBody);
 	DrownPropeller_Left->SetRelativeLocation({ -135, -1, 100 });
-	DrownPropeller_Left->SetCollisionProfileName(TEXT("CollisionProfile_LevelOBJ"));
-	DrownPropeller_Left->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
 	DrownPropeller_Right = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DrownPropeller_Right"));
 	DrownPropeller_Right->SetupAttachment(DrownBody);
 	DrownPropeller_Right->SetRelativeLocation({ 135, -1, 100 });
-	DrownPropeller_Right->SetCollisionProfileName(TEXT("CollisionProfile_LevelOBJ"));
-	DrownPropeller_Right->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
 	DrownLight = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DrownLight"));
 	DrownLight->SetupAttachment(DrownBody);
 	DrownLight->SetRelativeLocation({ 0, 0, 0 });
-	DrownLight->SetCollisionProfileName(TEXT("CollisionProfile_LevelOBJ"));
-	DrownLight->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
 	DrownLightArrow = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DrownLightArrow"));
 	DrownLightArrow->SetupAttachment(DrownLight);
 	DrownLightArrow->SetRelativeLocation({ 0, 0, 0 });
-	DrownLightArrow->SetCollisionProfileName(TEXT("CollisionProfile_LevelOBJ"));
-	DrownLightArrow->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 }
 
 void ADrown::SetDrownRotation()

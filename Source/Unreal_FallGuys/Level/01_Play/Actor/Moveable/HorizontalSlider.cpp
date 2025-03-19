@@ -41,14 +41,10 @@ void AHorizontalSlider::OparateMesh()
 	SliderLine = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SliderLine"));
 	SliderLine->SetupAttachment(RootScene);
 	SliderLine->SetRelativeRotation({ 0, 90, 0 });
-	SliderLine->SetCollisionProfileName(TEXT("CollisionProfile_LevelOBJ"));
-	SliderLine->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
 	Slider = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Slider"));
 	Slider->SetupAttachment(SliderLine);
 	Slider->SetRelativeLocation({ 0, 0, 70 });
-	Slider->SetCollisionProfileName(TEXT("CollisionProfile_LevelOBJ"));
-	Slider->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
 	UStaticMesh* LineMesh = LoadObject<UStaticMesh>(nullptr, *Line);
 	if (LineMesh)

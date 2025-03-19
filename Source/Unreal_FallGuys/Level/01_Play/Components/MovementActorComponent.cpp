@@ -23,13 +23,22 @@ void UMovementActorComponent::BeginPlay()
 	
 }
 
-
 // Called every frame
 void UMovementActorComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+}
+
+void UMovementActorComponent::Move_Scene(float DeltaTime, USceneComponent* Target)
+{
+	Target->AddRelativeLocation(MoveSpeed * DeltaTime);
+}
+
+void UMovementActorComponent::Move(float DeltaTime, UStaticMeshComponent* Target)
+{
+	Target->AddRelativeLocation(MoveSpeed * DeltaTime);
 }
 
 void UMovementActorComponent::MoveCycle(float DeltaTime, UStaticMeshComponent* Target, EMoveAxis Axis)
@@ -79,14 +88,7 @@ void UMovementActorComponent::MoveCycle(float DeltaTime, UStaticMeshComponent* T
 
 void UMovementActorComponent::Spin(float DeltaTime, UStaticMeshComponent* Target)
 {
-	if (IsSpinLeft)
-	{
-		Target->AddRelativeRotation(SpinSpeed * DeltaTime);
-	}
-	else
-	{
-		Target->AddRelativeRotation(SpinSpeed * -DeltaTime);
-	}
+	Target->AddRelativeRotation(SpinSpeed * DeltaTime);
 }
 
 void UMovementActorComponent::SpinCycle(float DeltaTime, UStaticMeshComponent* Target, EMoveAxis Axis)
