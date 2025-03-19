@@ -40,6 +40,8 @@ APlayCharacter::APlayCharacter()
 	CoustumeBOTStaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BOTMesh"));
 	CoustumeTOPStaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	CoustumeBOTStaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	CoustumeTOPStaticMesh->SetGenerateOverlapEvents(false);
+	CoustumeBOTStaticMesh->SetGenerateOverlapEvents(false);
 }
 
 // Called when the game starts or when spawned
