@@ -2,65 +2,154 @@
 
 
 #include "Mode/00_Title/UI/UIInputManager.h"
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
+#include "Kismet/GameplayStatics.h"
+#include "Global/FallGlobal.h"
+#include "Unreal_FallGuys.h"
+#include "Mode/00_Title/TitlePlayerController.h"
 #include "Mode/00_Title/UI/TitleMainWidget.h"
 
 
-void UUIInputManager::UIInput(const FVector2D _Value)
+// Sets default values for this component's properties
+UUIInputManager::UUIInputManager()
 {
-	//bool Value = InputCheck(_Value);
+	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
+	// off to improve performance if you don't need them.
+	PrimaryComponentTick.bCanEverTick = true;
 
-	//if (true == Value)
-	//{
-	//	SwitchWidgetHomeEnt(_Value);
-	//}
-	//else
-	//{
-	//	SwitchWidgetMenu(_Value);
-	//}
-
-	int a = 0;
+	// ...
 }
 
-bool UUIInputManager::SwitchWidgetMenu(const FVector2D _Value)
+// Called when the game starts
+void UUIInputManager::BeginPlay()
 {
+	Super::BeginPlay();
+
+	// ...
+	
+}
+
+// Called every frame
+void UUIInputManager::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	// ...
+}
+
+void UUIInputManager::SetupPlayerInputComponent(UInputComponent* _PlayerInputComponent)
+{
+	UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(_PlayerInputComponent);
+
+	ATitlePlayerController* PlayerController = Cast<ATitlePlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));;
+
+	const UInputAction* UIMenuInputAction = PlayerController->GetInputAction(TEXT("IA_UIMenuInput"));
+
+	EnhancedInputComponent->BindAction(UIMenuInputAction, ETriggerEvent::Triggered, this, &UUIInputManager::SwitchMenuWidget);
+}
+
+void UUIInputManager::SwitchMenuWidget(const FInputActionValue& _Value)
+{
+	FVector2D Value = _Value.Get<FVector2D>();
+
+	UTitleMainWidget* Widget = UFallGlobal::GetMainWidget(GetWorld());
+
+	if (nullptr == Widget)
+	{
 #ifdef WITH_EDITOR
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("%S(%u)> %s"), __FUNCTION__, __LINE__, *_Value.ToString()));
+		UE_LOG(FALL_DEV_LOG, Fatal, TEXT("%S(%u)> if (nullptr == PlayMainUserWidget)"), __FUNCTION__, __LINE__);
 #endif
-
-	EUIType CurType = GetMainWidget()->GetCurUIType();
-
-	if (_Value.X > 0 && _Value.Y == 0 && CurType == EUIType::TitleHome)
-	{
-		GetMainWidget()->SwitchWidget(EUIType::TitleCustom);
-		return true;
-	}
-	else if (_Value.X < 0 && _Value.Y == 0 && CurType == EUIType::TitleCustom)
-	{
-		GetMainWidget()->SwitchWidget(EUIType::TitleHome);
-		return false;
+		return;
 	}
 
-	return false;
+	EUIType CurUIType = Widget->GetCurUIType();
+
+	if (Value.Y == 0)
+	{
+		if (Value.X > 0)
+		{
+			switch (CurUIType)
+			{
+			case EUIType::TitleHome:
+				Widget->SwitchWidget(EUIType::TitleCustom);
+				return;
+				break;
+			default:
+				break;
+			}
+		}
+		else if (Value.X < 0)
+		{
+			switch (CurUIType)
+			{
+			case EUIType::TitleCustom:
+				Widget->SwitchWidget(EUIType::TitleHome);
+				return;
+				break;
+			default:
+				break;
+			}
+		}
+	}
+	else if (Value.X == 0)
+	{
+		if (Value.Y > 0)
+		{
+			switch (CurUIType)
+			{
+			case EUIType::TitleHome:
+				Widget->SwitchWidget(EUIType::TitleEntrance);
+				return;
+				break;
+			case EUIType::TitleCustom:
+				return;
+				break;
+			case EUIType::TitleEntrance:
+				return;
+				break;
+			case EUIType::CustomInven:
+				return;
+				break;
+			case EUIType::TitleIPPort:
+				// ServerConnect
+				return;
+				break;
+			case EUIType::TitleName:
+				// SetNickName
+				Widget->SwitchWidget(EUIType::TitleHome);
+				return;
+				break;
+			default:
+				break;
+			}
+		}
+		else if (Value.Y < 0)
+		{
+			switch (CurUIType)
+			{
+			case EUIType::TitleCustom:
+				Widget->SwitchWidget(EUIType::TitleHome);
+				return;
+				break;
+			case EUIType::TitleEntrance:
+				Widget->SwitchWidget(EUIType::TitleHome);
+				return;
+				break;
+			case EUIType::CustomInven:
+				//Widget->SwitchWidget(EUIType::TitleHome);
+				Widget->SwitchWidget(EUIType::TitleCustom);
+				return;
+				break;
+			case EUIType::TitleIPPort:
+				Widget->SwitchWidget(EUIType::TitleEntrance);
+				return;
+				break;
+			default:
+				break;
+			}
+		}
+	}
 }
 
-bool UUIInputManager::SwitchWidgetHomeEnt(const FVector2D _Value)
-{
-#ifdef WITH_EDITOR
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("%S(%u)> %s"), __FUNCTION__, __LINE__, *_Value.ToString()));
-#endif
 
-	EUIType CurType = GetMainWidget()->GetCurUIType();
-
-	if (_Value.X == 0 && _Value.Y < 0 && CurType == EUIType::TitleEntrance)
-	{
-		GetMainWidget()->SwitchWidget(EUIType::TitleHome);
-		return true;
-	}
-	else if (_Value.X == 0 && _Value.Y > 0 && CurType == EUIType::TitleHome)
-	{
-		GetMainWidget()->SwitchWidget(EUIType::TitleEntrance);
-		return false;
-	}
-
-	return false;
-}

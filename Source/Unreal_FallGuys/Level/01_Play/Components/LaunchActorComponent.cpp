@@ -2,6 +2,7 @@
 
 
 #include "Level/01_Play/Components/LaunchActorComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/Character.h"
 
 // Sets default values for this component's properties
@@ -32,15 +33,24 @@ void ULaunchActorComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 	// ...
 }
 
-void ULaunchActorComponent::Launch(AActor* TartgetActor)
+void ULaunchActorComponent::Launch(AActor* TargetActor)
 {
-	if (ACharacter* Character = Cast<ACharacter>(TartgetActor))
+	if (ACharacter* Character = Cast<ACharacter>(TargetActor))
 	{
 		FVector SelfLocation = GetOwner()->GetActorLocation();
-		FVector TargetLocation = TartgetActor->GetActorLocation();
+		FVector TargetLocation = TargetActor->GetActorLocation();
 		FVector LaunchDirection = (TargetLocation - SelfLocation).GetSafeNormal();
 		FVector LaunchVelocity = LaunchDirection * LaunchForce;
 		LaunchVelocity.Z = JumpForce;
 		Character->LaunchCharacter(LaunchVelocity, false, false);
+	}
+}
+
+void ULaunchActorComponent::Launch_Vec(AActor* TargetActor)
+{
+	if (ACharacter* Character = Cast<ACharacter>(TargetActor))
+	{
+		FVector Dir = UKismetMathLibrary::GetUpVector(GetOwner()->GetActorRotation());
+		Character->LaunchCharacter(Dir * JumpForce, false, false); 
 	}
 }

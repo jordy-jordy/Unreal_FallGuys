@@ -30,7 +30,27 @@ void ATitlePlayerController::AddMappingContext(UInputMappingContext* _MappingCon
 
 	UEnhancedInputLocalPlayerSubsystem* InputSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
 
-	UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent);
+	//UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent);
+
+	TArray<FEnhancedActionKeyMapping> Map = _MappingContext->GetMappings();
+
+	for (FEnhancedActionKeyMapping& Action : Map)
+	{
+		FString Name = Action.Action->GetName();
+
+		MappingActions.Add(Name, Action.Action);
+	}
+
 	InputSystem->ClearAllMappings();
 	InputSystem->AddMappingContext(_MappingContext, 0);
+}
+
+const UInputAction* ATitlePlayerController::GetInputAction(FStringView _Name)
+{
+	if (false == MappingActions.Contains(_Name.GetData()))
+	{
+		return nullptr;
+	}
+
+	return MappingActions[_Name.GetData()];
 }

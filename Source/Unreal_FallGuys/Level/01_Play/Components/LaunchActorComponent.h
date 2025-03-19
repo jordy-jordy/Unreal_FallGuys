@@ -26,11 +26,14 @@ public:
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Launch", meta = (AllowPrivateAccess = "true"))
-	float LaunchForce = 680.0f;
+	float LaunchForce = 0.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Launch", meta = (AllowPrivateAccess = "true"))
 	float JumpForce = 0.0f;
 
 	UFUNCTION()
-	void Launch(AActor* TartgetActor);
+	void Launch(AActor* TargetActor);
+
+	UFUNCTION()
+	void Launch_Vec(AActor* TargetActor);
 };

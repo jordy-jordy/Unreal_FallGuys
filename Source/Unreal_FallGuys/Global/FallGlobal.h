@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "Mode/00_Title/UI/TitleMainWidget.h"
 #include "FallGlobal.generated.h"
 
 /**
@@ -85,4 +86,7 @@ public:
 	// 랜덤 레벨 함수에서 얻은 이름 반환
 	UFUNCTION(BlueprintCallable)
 	static FString GetLevelName(APawn* _Pawn);
+
+	UFUNCTION(BlueprintCallable)
+	static UTitleMainWidget* GetMainWidget(UWorld* _World);
 };

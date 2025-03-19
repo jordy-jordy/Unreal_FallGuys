@@ -3,25 +3,31 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Mode/00_Title/UI/TitleUserWidget.h"
+#include "Components/ActorComponent.h"
+#include "InputActionValue.h"
 #include "UIInputManager.generated.h"
 
-/**
- * 
- */
-UCLASS()
-class UNREAL_FALLGUYS_API UUIInputManager : public UTitleUserWidget
+
+UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+class UNREAL_FALLGUYS_API UUIInputManager : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:
-	UFUNCTION(BlueprintCallable)
-	void UIInput(const FVector2D _Value) override;
+public:	
+	// Sets default values for this component's properties
+	UUIInputManager();
 
-	UFUNCTION(BlueprintCallable)
-	bool SwitchWidgetMenu(const FVector2D _Value);
+	void SetupPlayerInputComponent(UInputComponent* _PlayerInputComponent);
 
-	UFUNCTION(BlueprintCallable)
-	bool SwitchWidgetHomeEnt(const FVector2D _Value);
-	
+	void SwitchMenuWidget(const FInputActionValue& _Value);
+
+protected:
+	// Called when the game starts
+	virtual void BeginPlay() override;
+
+public:	
+	// Called every frame
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+		
 };

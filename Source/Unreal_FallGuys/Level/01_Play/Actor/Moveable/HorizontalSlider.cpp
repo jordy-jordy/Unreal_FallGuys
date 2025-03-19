@@ -37,8 +37,10 @@ void AHorizontalSlider::OparateMesh()
 	RootScene = CreateDefaultSubobject<USceneComponent>(TEXT("RootScene"));
 	RootComponent = RootScene;
 
+
 	SliderLine = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SliderLine"));
 	SliderLine->SetupAttachment(RootScene);
+	SliderLine->SetRelativeRotation({ 0, 90, 0 });
 	SliderLine->SetCollisionProfileName(TEXT("CollisionProfile_LevelOBJ"));
 	SliderLine->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
@@ -65,8 +67,6 @@ void AHorizontalSlider::OparateMesh()
 void AHorizontalSlider::SetComponent()
 {
 	// SetMesh
-	RootScene->SetRelativeRotation({ 0, 90, 0 });
-
 	if (MovementComponent->IsMoveCycleLeft)
 	{
 		Slider->SetRelativeLocation({ 280, 0, 70 });

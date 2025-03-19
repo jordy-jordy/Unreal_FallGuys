@@ -9,7 +9,7 @@
 UTitleMainWidget::UTitleMainWidget(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-
+	SetMainWidget(this);
 }
 
 void UTitleMainWidget::MainWidgetInit()
