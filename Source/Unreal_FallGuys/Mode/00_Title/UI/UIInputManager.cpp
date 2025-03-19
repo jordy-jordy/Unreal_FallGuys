@@ -58,7 +58,7 @@ void UUIInputManager::SwitchMenuWidget(const FInputActionValue& _Value)
 	if (nullptr == Widget)
 	{
 #ifdef WITH_EDITOR
-		UE_LOG(FALL_DEV_LOG, Fatal, TEXT("%S(%u)> if (nullptr == PlayMainUserWidget)"), __FUNCTION__, __LINE__);
+		UE_LOG(FALL_DEV_LOG, Fatal, TEXT("%S(%u)> if (nullptr == Widget)"), __FUNCTION__, __LINE__);
 #endif
 		return;
 	}
