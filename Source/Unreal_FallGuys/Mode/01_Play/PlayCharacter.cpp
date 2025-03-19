@@ -38,6 +38,8 @@ APlayCharacter::APlayCharacter()
 
 	CoustumeTOPStaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TOPMesh"));
 	CoustumeBOTStaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BOTMesh"));
+	CoustumeTOPStaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	CoustumeBOTStaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 // Called when the game starts or when spawned
