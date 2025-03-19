@@ -37,11 +37,16 @@ APlayCharacter::APlayCharacter()
 	CameraComponent->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
 	CoustumeTOPStaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TOPMesh"));
-	CoustumeBOTStaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BOTMesh"));
+	CoustumeTOPStaticMesh->SetCollisionProfileName(TEXT("NoCollision"));
 	CoustumeTOPStaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	CoustumeBOTStaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	CoustumeTOPStaticMesh->SetGenerateOverlapEvents(false);
+	CoustumeTOPStaticMesh->CanCharacterStepUpOn = ECanBeCharacterBase::ECB_No;
+	
+	CoustumeBOTStaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BOTMesh"));
+	CoustumeBOTStaticMesh->SetCollisionProfileName(TEXT("NoCollision"));
+	CoustumeBOTStaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	CoustumeBOTStaticMesh->SetGenerateOverlapEvents(false);
+	CoustumeBOTStaticMesh->CanCharacterStepUpOn = ECanBeCharacterBase::ECB_No;
 }
 
 // Called when the game starts or when spawned
