@@ -39,7 +39,7 @@ public:
 	static FString PlayLevelName;
 
 	// 게임 시작을 위한 최소 플레이어 수
-	static const int MinPlayerCount = 2;
+	static const int MinPlayerCount = 5;
 
 	// 게임 시작이 가능한지 체크
 	static bool CanStart;
