@@ -85,12 +85,14 @@ public:
 
 	// 랜덤 레벨 함수에서 얻은 이름 반환
 	UFUNCTION(BlueprintCallable)
-	static FString GetLevelName(APawn* _Pawn);
-
-	UFUNCTION(BlueprintCallable)
-	static UTitleMainWidget* GetMainWidget(UWorld* _World);
+	static FString GetLevelName();
 
 	// PlayGameMode의 현재 접속한 플레이어 수 반환
 	UFUNCTION(BlueprintCallable)
 	static int GetConnectedPlayers();
+
+// 이재영 : 메인위젯을 얻는 함수
+public:
+	UFUNCTION(BlueprintCallable)
+	static UTitleMainWidget* GetMainWidget(UWorld* _World);
 };

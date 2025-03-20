@@ -215,31 +215,17 @@ FString UFallGlobal::GetRandomLevel(APawn* _Pawn)
 }
 
 // 랜덤 레벨 함수에서 얻은 이름 반환
-FString UFallGlobal::GetLevelName(APawn* _Pawn)
+FString UFallGlobal::GetLevelName()
 {
-	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
+	UWorld* World = GWorld;
+	if (!World)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("GetConnectedPlayers: World is nullptr"));
+		return TEXT("GetLevelName False");
+	}
+
+	UBaseGameInstance* GameIns = Cast<UBaseGameInstance>(World->GetGameInstance());
 	return GameIns->InsGetLevelName();
-}
-
-UTitleMainWidget* UFallGlobal::GetMainWidget(UWorld* _World)
-{
-	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(_World, 0);
-
-	if (nullptr == PlayerController)
-	{
-		UE_LOG(FALL_DEV_LOG, Fatal, TEXT("%S(%u)> if (nullptr == PlayerController)"), __FUNCTION__, __LINE__);
-		return nullptr;
-	}
-
-	ATitleHUD* TitleHUD = Cast<ATitleHUD>(PlayerController->GetHUD());
-
-	if (nullptr == TitleHUD)
-	{
-		UE_LOG(FALL_DEV_LOG, Fatal, TEXT("%S(%u)> if (nullptr == PlayerController)"), __FUNCTION__, __LINE__);
-		return nullptr;
-	}
-
-	return TitleHUD->GetMainWidget();
 }
 
 // PlayGameMode의 현재 접속한 플레이어 수 반환
@@ -260,4 +246,26 @@ int UFallGlobal::GetConnectedPlayers()
 	}
 
 	return GameMode->ModeGetConnectedPlayers();
+}
+
+// 이재영 : 메인위젯을 얻는 함수
+UTitleMainWidget* UFallGlobal::GetMainWidget(UWorld* _World)
+{
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(_World, 0);
+
+	if (nullptr == PlayerController)
+	{
+		UE_LOG(FALL_DEV_LOG, Fatal, TEXT("%S(%u)> if (nullptr == PlayerController)"), __FUNCTION__, __LINE__);
+		return nullptr;
+	}
+
+	ATitleHUD* TitleHUD = Cast<ATitleHUD>(PlayerController->GetHUD());
+
+	if (nullptr == TitleHUD)
+	{
+		UE_LOG(FALL_DEV_LOG, Fatal, TEXT("%S(%u)> if (nullptr == PlayerController)"), __FUNCTION__, __LINE__);
+		return nullptr;
+	}
+
+	return TitleHUD->GetMainWidget();
 }
