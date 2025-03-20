@@ -7,6 +7,7 @@
 #include <Global/BaseGameInstance.h>
 #include <Mode/00_Title/UI/UIInputManager.h>
 #include "Global/Data/GlobalDataTable.h"
+#include <Global/FallGlobal.h>
 
 
 // Sets default values
@@ -33,6 +34,8 @@ void ATitlePawn::BeginPlay()
 {
 	Super::BeginPlay();
 
+	UFallGlobal::ChangeCostumeTop(this, "");
+	UFallGlobal::ChangeCostumeBot(this, "");
 }
 
 // Called every frame
@@ -96,11 +99,13 @@ void ATitlePawn::AttachCustomStaticMesh(ECostumeType Type, FString& _ImgName)
 			break;
 		case ECostumeType::TOP:
 			UpComp->SetStaticMesh(CostumeData->CostumeMesh);
-			CurUpStaticMesh = CostumeData->CostumeMesh;
+			UFallGlobal::ChangeCostumeTop(this,_ImgName);
+
 			break;
 		case ECostumeType::BOTTOM:
 			LowComp->SetStaticMesh(CostumeData->CostumeMesh);
-			CurLowStaticMesh = CostumeData->CostumeMesh;
+			UFallGlobal::ChangeCostumeBot(this, _ImgName);
+	
 			break;
 		case ECostumeType::MAX:
 			break;
