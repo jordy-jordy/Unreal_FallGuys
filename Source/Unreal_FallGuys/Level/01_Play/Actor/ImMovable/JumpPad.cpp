@@ -34,7 +34,6 @@ void AJumpPad::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherAc
 {
 	if (LaunchComponent && OtherActor && OtherActor != this)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Blue, TEXT("Hit"));
 		LaunchComponent->Launch_Vec(OtherActor);
 	}
 }

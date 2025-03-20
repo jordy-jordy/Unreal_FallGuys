@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Components/BoxComponent.h"
 #include "Level/01_Play/Components/MovementActorComponent.h"
+#include "Level/01_Play/Components/TimeEventActorComponent.h"
 #include "RotatePad.generated.h"
 
 UCLASS()
@@ -27,6 +27,9 @@ public:
 
 public:
 	// ActorComponent
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "TimeEvent")
+	UTimeEventActorComponent* TimeEventComponent;
+
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Movement")
 	UMovementActorComponent* MovementComponent;
 
@@ -41,11 +44,40 @@ public:
 	UStaticMeshComponent* Pad;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "RotatePad")
-	UBoxComponent* Cover;
+	UStaticMeshComponent* Cover;
+
+	// Variables
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RotatePad")
+	float DelayTime = 0.0f;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "RotatePad")
+	bool IsMove = false;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "RotatePad")
+	bool IsUp = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "RotatePad")
+	float Limit = 0.0f;
 
 private:
 	// MeshAddress
 	FString PadCover = TEXT("/Engine/BasicShapes/Cube.Cube");
 	FString PadAxis = TEXT("/Game/Platformer_2/Meshes/SM_obstacle_8_001.SM_obstacle_8_001");
 	FString PadBody = TEXT("/Game/Platformer_2/Meshes/SM_obstacle_8_002.SM_obstacle_8_002");
+
+	// Functions
+	UFUNCTION()
+	void OperateMesh();
+
+	UFUNCTION()
+	void SetMesh();
+
+	UFUNCTION()
+	void MoveUp(float DeltaTime);
+
+	UFUNCTION()
+	void MoveDown(float DeltaTime);
+
+	UFUNCTION()
+	void Moving(float DeltaTime);
 };
