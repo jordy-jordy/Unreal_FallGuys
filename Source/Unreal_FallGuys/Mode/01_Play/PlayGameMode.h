@@ -48,6 +48,10 @@ public:
 	void StartCountdownTimer();
 	void StartCountdownTimer_Implementation();
 
+	// 현재 접속한 플레이어 수 반환
+	UFUNCTION(BlueprintCallable, Category = "PLAY GAME")
+	int ModeGetConnectedPlayers() const { return ConnectedPlayers; }
+
 protected:
 	virtual void Tick(float DeltaSeconds) override;
 	void BeginPlay() override;

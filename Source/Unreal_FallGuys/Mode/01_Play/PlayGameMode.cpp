@@ -200,6 +200,7 @@ void APlayGameMode::StartGame_Implementation()
 	StartCountdownTimer();
 }
 
+// 카운트 다운 핸들 시작
 void APlayGameMode::StartCountdownTimer_Implementation()
 {
 	if (!HasAuthority() || !GetWorld()) return;
@@ -211,6 +212,7 @@ void APlayGameMode::StartCountdownTimer_Implementation()
 	GetWorldTimerManager().SetTimer(DelayTimer, this, &APlayGameMode::StartCountdown, 3.0f, false);
 }
 
+// 카운트다운 시작 (3초 대기 후 실행)
 void APlayGameMode::StartCountdown()
 {
 	if (!HasAuthority() || !GetWorld()) return;
@@ -233,6 +235,7 @@ void APlayGameMode::StartCountdown()
 	GetWorldTimerManager().SetTimer(CountdownTimerHandle, this, &APlayGameMode::UpdateCountdown, 1.0f, true);
 }
 
+// 카운트다운 진행 (매초 실행)
 void APlayGameMode::UpdateCountdown()
 {
 	if (!HasAuthority()) return;

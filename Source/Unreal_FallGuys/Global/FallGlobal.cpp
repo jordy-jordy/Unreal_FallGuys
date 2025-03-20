@@ -4,12 +4,13 @@
 #include "Global/FallGlobal.h"
 #include "AssetRegistry/AssetRegistryModule.h"
 #include "Kismet/GameplayStatics.h"
+#include "Engine/DataTable.h"
 
-#include <Engine/DataTable.h>
 #include <Unreal_FallGuys.h>
 #include <Global/BaseGameInstance.h>
 #include <Global/Data/PlayLevelDataTable.h>
 #include <Mode/00_Title/TitleHUD.h>
+#include <Mode/01_Play/PlayGameMode.h>
 
 
 void UFallGlobal::AssetPackagePath(UClass* _Class, const FString& _AssetName, FString& _Path)
@@ -239,4 +240,24 @@ UTitleMainWidget* UFallGlobal::GetMainWidget(UWorld* _World)
 	}
 
 	return TitleHUD->GetMainWidget();
+}
+
+// PlayGameMode의 현재 접속한 플레이어 수 반환
+int UFallGlobal::GetConnectedPlayers()
+{
+	UWorld* World = GWorld; 
+	if (!World)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("GetConnectedPlayers: World is nullptr"));
+		return 0;
+	}
+
+	APlayGameMode* GameMode = Cast<APlayGameMode>(World->GetAuthGameMode());
+	if (!GameMode)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("GetConnectedPlayers: PlayGameMode is nullptr"));
+		return 0;
+	}
+
+	return GameMode->ModeGetConnectedPlayers();
 }

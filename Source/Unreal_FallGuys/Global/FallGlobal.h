@@ -89,4 +89,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	static UTitleMainWidget* GetMainWidget(UWorld* _World);
+
+	// PlayGameMode의 현재 접속한 플레이어 수 반환
+	UFUNCTION(BlueprintCallable)
+	static int GetConnectedPlayers();
 };
