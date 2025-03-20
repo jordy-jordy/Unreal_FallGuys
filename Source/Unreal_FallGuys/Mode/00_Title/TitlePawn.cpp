@@ -34,8 +34,8 @@ void ATitlePawn::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UFallGlobal::ChangeCostumeTop(this, "");
-	UFallGlobal::ChangeCostumeBot(this, "");
+	UFallGlobal::ChangeCostumeTop(this,UpComp, "");
+	UFallGlobal::ChangeCostumeBot(this,LowComp, "");
 }
 
 // Called every frame
@@ -99,12 +99,12 @@ void ATitlePawn::AttachCustomStaticMesh(ECostumeType Type, FString& _ImgName)
 			break;
 		case ECostumeType::TOP:
 			UpComp->SetStaticMesh(CostumeData->CostumeMesh);
-			UFallGlobal::ChangeCostumeTop(this,_ImgName);
+			UFallGlobal::ChangeCostumeTop(this, UpComp,_ImgName);
 
 			break;
 		case ECostumeType::BOTTOM:
 			LowComp->SetStaticMesh(CostumeData->CostumeMesh);
-			UFallGlobal::ChangeCostumeBot(this, _ImgName);
+			UFallGlobal::ChangeCostumeBot(this, LowComp, _ImgName);
 	
 			break;
 		case ECostumeType::MAX:
@@ -130,11 +130,14 @@ void ATitlePawn::DeAttachCustomStaticMesh(ECostumeType Type, FString& _ImgName)
 			break;
 		case ECostumeType::TOP:
 			UpComp->SetStaticMesh(nullptr);
-			CurUpStaticMesh = nullptr;
+			UFallGlobal::ChangeCostumeTop(this, UpComp, "");
+			//CurUpStaticMesh = nullptr;
 			break;
 		case ECostumeType::BOTTOM:
 			LowComp->SetStaticMesh(nullptr);
-			CurLowStaticMesh = nullptr;
+			UFallGlobal::ChangeCostumeBot(this, LowComp, "");
+
+			//CurLowStaticMesh = nullptr;
 			break;
 		case ECostumeType::MAX:
 			break;

@@ -104,17 +104,17 @@ void UFallGlobal::ChangeCostumeColor(APawn* _Pawn, const FString& _CostumeColor)
 }
 
 // Pawn의 코스튬 상의 변경
-void UFallGlobal::ChangeCostumeTop(APawn* _Pawn, const FString& _CostumeTop)
+void UFallGlobal::ChangeCostumeTop(APawn* _Pawn, UStaticMeshComponent* _UpComp, const FString& _CostumeTop)
 {
 	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
-	GameIns->InsChangeCostumeTop(_Pawn, _CostumeTop);
+	GameIns->InsChangeCostumeTop(_Pawn, _UpComp, _CostumeTop);
 }
 
 // Pawn의 코스튬 하의 변경
-void UFallGlobal::ChangeCostumeBot(APawn* _Pawn, const FString& _CostumeBot)
+void UFallGlobal::ChangeCostumeBot(APawn* _Pawn, UStaticMeshComponent* _LowComp, const FString& _CostumeBot)
 {
 	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
-	GameIns->InsChangeCostumeBot(_Pawn, _CostumeBot);
+	GameIns->InsChangeCostumeBot(_Pawn, _LowComp, _CostumeBot);
 }
 
 // 저장된 코스튬 컬러의 스켈레탈 메시 반환
