@@ -13,6 +13,9 @@ FName UFallConst::Collision::CollisionProfile_CheckPoint = TEXT("CheckPointColl"
 // 플레이 레벨 수동 지정
 FString UFallConst::PlayLevelName = TEXT("Race2Map");
 
+// 게임 시작을 위한 최소 플레이어 수
+int UFallConst::MinPlayerCount = 2;
+
 // 글로벌 데이터 테이블 경로
 FString UFallConst::GlobalDataTablePath = TEXT("/Script/Engine.DataTable'/Game/BP/Global/Data/DT_GlobalDataTable.DT_GlobalDataTable'");
 

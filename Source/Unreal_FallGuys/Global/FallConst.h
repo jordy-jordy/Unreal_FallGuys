@@ -39,7 +39,7 @@ public:
 	static FString PlayLevelName;
 
 	// 게임 시작을 위한 최소 플레이어 수
-	static const int MinPlayerCount = 2;
+	static int MinPlayerCount;
 
 	// 기본 로컬 아이피
 	static FString DefaultIP;
