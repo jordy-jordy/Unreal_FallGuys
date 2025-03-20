@@ -32,10 +32,13 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 public:
-	// Variables
-	// 'Add_' And 'Limit_' Variables Must be Positive Number
+	// Variables	
+	// Move
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Move", meta = (AllowPrivateAccess = "true"))
+	FVector MoveSpeed;
+
 	// MoveCycle
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MoveCycle", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MoveCycle", meta = (AllowPrivateAccess = "true"))
 	bool IsMoveCycleLeft = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MoveCycle", meta = (AllowPrivateAccess = "true"))
@@ -46,13 +49,10 @@ public:
 
 	// Spin
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spin", meta = (AllowPrivateAccess = "true"))
-	bool IsSpinLeft = false;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spin", meta = (AllowPrivateAccess = "true"))
 	FRotator SpinSpeed;
 
 	// SpinCycle
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpinCycle", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SpinCycle", meta = (AllowPrivateAccess = "true"))
 	bool IsSpinCycleLeft = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpinCycle", meta = (AllowPrivateAccess = "true"))
@@ -62,6 +62,12 @@ public:
 	FRotator LimitAngle;
 
 	// Functions
+	UFUNCTION()
+	void Move_Scene(float DeltaTime, USceneComponent* Target);
+
+	UFUNCTION()
+	void Move(float DeltaTime, UStaticMeshComponent* Target);
+
 	UFUNCTION()
 	void MoveCycle(float DeltaTime, UStaticMeshComponent* Target, EMoveAxis Axis);
 

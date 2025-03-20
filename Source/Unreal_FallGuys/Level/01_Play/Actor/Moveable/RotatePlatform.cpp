@@ -63,20 +63,14 @@ void ARotatePlatform::OparateMesh()
 	PlatformAxis = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RotateAxis"));
 	PlatformAxis->SetupAttachment(RootScene);
 	PlatformAxis->SetRelativeLocation({ 0, 0, 0 });
-	PlatformAxis->SetCollisionProfileName(TEXT("CollisionProfile_LevelOBJ"));
-	PlatformAxis->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
 	PlatformBody = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RotatePlatform"));
 	PlatformBody->SetupAttachment(PlatformAxis);
 	PlatformBody->SetRelativeLocation({ 0, 0, 0 });
-	PlatformBody->SetCollisionProfileName(TEXT("CollisionProfile_LevelOBJ"));
-	PlatformBody->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
 	StickBody = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RotateStick"));
 	StickBody->SetupAttachment(RootScene);
 	StickBody->SetRelativeLocation({ 0, 0, 0 });
-	StickBody->SetCollisionProfileName(TEXT("CollisionProfile_LevelOBJ"));
-	StickBody->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 }
 
 #pragma region MyRegion

@@ -42,21 +42,15 @@ void ARotateRoller::OperateMesh()
 	RollerAxis = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RollerAxis"));
 	RollerAxis->SetupAttachment(RootScene);
 	RollerAxis->SetRelativeLocation({ 0, 0, 0 });
-	RollerAxis->SetCollisionProfileName(TEXT("CollisionProfile_LevelOBJ"));
-	RollerAxis->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
 	RollerBody = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RollerBody"));
 	RollerBody->SetupAttachment(RollerAxis);
 	RollerBody->SetRelativeLocation({ 0, 0, -385 });
-	RollerBody->SetCollisionProfileName(TEXT("CollisionProfile_LevelOBJ"));
-	RollerBody->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
 	CapsuleCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("RollerCollision"));
 	CapsuleCollision->SetupAttachment(RollerBody);
 	CapsuleCollision->SetCapsuleSize(75.0f, 316.4f);
 	CapsuleCollision->SetRelativeRotation(FRotator(90, 0, 0));
-	CapsuleCollision->SetCollisionProfileName(TEXT("CollisionProfile_LevelOBJ"));
-	CapsuleCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
 	SetMesh();
 }

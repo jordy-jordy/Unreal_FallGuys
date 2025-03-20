@@ -34,6 +34,7 @@ void AJumpPad::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherAc
 {
 	if (LaunchComponent && OtherActor && OtherActor != this)
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Blue, TEXT("Hit"));
 		LaunchComponent->Launch_Vec(OtherActor);
 	}
 }
@@ -50,20 +51,14 @@ void AJumpPad::OparateMesh()
 	Case = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("JumpPadCase"));
 	Case->SetupAttachment(RootScene);
 	Case->SetRelativeLocation({ 0, 0, 0 });
-	Case->SetCollisionProfileName(TEXT("CollisionProfile_LevelOBJ"));
-	Case->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
 	Pad = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("JumpPad"));
 	Pad->SetupAttachment(Case);
 	Pad->SetRelativeLocation({ 0, 0, 67 });
-	Pad->SetCollisionProfileName(TEXT("CollisionProfile_LevelOBJ"));
-	Pad->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
 	Light = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("JumpPadLight"));
 	Light->SetupAttachment(Case);
 	Light->SetRelativeLocation({ 0, 0, 0 });
-	Light->SetCollisionProfileName(TEXT("CollisionProfile_LevelOBJ"));
-	Light->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
 	LaunchComponent->JumpForce = 1500.0f;
 

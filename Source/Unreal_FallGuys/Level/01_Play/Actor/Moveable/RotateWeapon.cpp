@@ -43,21 +43,17 @@ void ARotateWeapon::OperateMesh()
 	Axis = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RotateAxis"));
 	Axis->SetupAttachment(RootScene);
 	Axis->SetRelativeLocation({ 0, 0, 0 });
-	Axis->SetCollisionProfileName(TEXT("CollisionProfile_LevelOBJ"));
-	Axis->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
 	Weapon = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RotateWeapon"));
 	Weapon->SetupAttachment(Axis);
 	Weapon->SetRelativeLocation({ 0, 0, 0 });
-	Weapon->SetCollisionProfileName(TEXT("CollisionProfile_LevelOBJ"));
-	Weapon->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
 	CapsuleCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapsuleCollision"));
-	CapsuleCollision->SetCapsuleSize(72.5f, 125.84f);
+	CapsuleCollision->SetCapsuleSize(80.0f, 125.0f);
 	CapsuleCollision->SetupAttachment(Weapon);
 	CapsuleCollision->SetRelativeLocation({0.0f, 0.0f, -395.0f});
 	CapsuleCollision->SetRelativeRotation({0.0f, 0.0f, 90.0f});
-	CapsuleCollision->SetCollisionProfileName(TEXT("CollisionProfile_LevelOBJ"));
+	CapsuleCollision->SetCollisionProfileName(TEXT("OverlapAll"));
 	CapsuleCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 }
 
