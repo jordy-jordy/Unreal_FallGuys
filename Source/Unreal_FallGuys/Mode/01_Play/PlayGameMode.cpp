@@ -209,7 +209,7 @@ void APlayGameMode::StartCountdownTimer_Implementation()
 
 	// 3초 후 카운트다운 시작
 	FTimerHandle DelayTimer;
-	GetWorldTimerManager().SetTimer(DelayTimer, this, &APlayGameMode::StartCountdown, 0.0f, false);
+	GetWorldTimerManager().SetTimer(DelayTimer, this, &APlayGameMode::StartCountdown, 0.5f, false);
 }
 
 // 카운트다운 시작 (3초 대기 후 실행)
