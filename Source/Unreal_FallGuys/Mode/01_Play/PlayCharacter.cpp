@@ -131,19 +131,31 @@ void APlayCharacter::SetupPlayerInputComponent(UInputComponent* _PlayerInputComp
 
 void APlayCharacter::PlayerWMove()
 {
-	AddMovementInput(GetControllerForward());
+	if (CanMove)
+	{
+		AddMovementInput(GetControllerForward());
+	}
 }
 void APlayCharacter::PlayerSMove()
 {
-	AddMovementInput(-GetControllerForward());
+	if (CanMove)
+	{
+		AddMovementInput(-GetControllerForward());
+	}
 }
 void APlayCharacter::PlayerDMove()
 {
-	AddMovementInput(GetControllerRight());
+	if (CanMove)
+	{
+		AddMovementInput(GetControllerRight());
+	}
 }
 void APlayCharacter::PlayerAMove()
 {
-	AddMovementInput(-GetControllerRight());
+	if (CanMove)
+	{
+		AddMovementInput(-GetControllerRight());
+	}
 }
 
 void APlayCharacter::TestMove(const FVector2D& _Value)
@@ -167,6 +179,7 @@ void APlayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(APlayCharacter, CostumeTopName);
 	DOREPLIFETIME(APlayCharacter, CostumeBotName);
 	DOREPLIFETIME(APlayCharacter, IsDie);
+	DOREPLIFETIME(APlayCharacter, CanMove);
 }
 
 void APlayCharacter::C2S_IsDie_Implementation(bool _val)
@@ -204,7 +217,15 @@ void APlayCharacter::S2M_Costume_Implementation(const FString& _Color, const FSt
 	CoustumeBOTStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, _BotName));
 }
 
+// 이현정 : 캐릭터 Moving 활성화
+void APlayCharacter::S2M_SetCanMoveTrue_Implementation()
+{
+	CanMove = true;
+}
 
-
-
+// 이현정 : 캐릭터 Moving 비활성화
+void APlayCharacter::S2M_SetCanMoveFalse_Implementation()
+{
+	CanMove = false;
+}
 

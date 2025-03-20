@@ -2,19 +2,20 @@
 
 
 #include "Mode/01_Play/PlayGameMode.h"
-#include "Net/UnrealNetwork.h"
 #include "Kismet/GameplayStatics.h" 
+#include "Net/UnrealNetwork.h"
+#include "EngineUtils.h"
 
 #include <Unreal_FallGuys.h>
 #include <Global/FallConst.h>
 #include <Global/BaseGameInstance.h>
 #include <Mode/01_Play/PlayGameState.h>
 #include <Mode/01_Play/PlayPlayerState.h>
+#include <Mode/01_Play/PlayCharacter.h>
 
 
 APlayGameMode::APlayGameMode()
 {
-	ConnectedPlayers = 0;
 }
 
 void APlayGameMode::BeginPlay()
@@ -68,6 +69,7 @@ void APlayGameMode::Tick(float DeltaSeconds)
 
 		ServerTravelToNextMap(NextLevel);
 	}
+
 }
 
 // 접속시 실행되는 함수
@@ -185,22 +187,80 @@ bool APlayGameMode::IsMinPlayersReached()
 	return ConnectedPlayers >= UFallConst::MinPlayerCount;
 }
 
+// 캐릭터 이동 가능하게 세팅
+void APlayGameMode::SetCharacterMovePossible_Implementation(APlayCharacter* _Player)
+{
+	_Player->S2M_SetCanMoveTrue();
+}
+
 // 게임 시작
 void APlayGameMode::StartGame_Implementation()
 {
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("게임이 시작되었습니다."));
-	UFallConst::CanStart = true;
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("게임을 시작합니다."));
+	StartCountdownTimer();
 }
 
-void APlayGameMode::OnRep_ConnectedPlayers()
+void APlayGameMode::StartCountdownTimer_Implementation()
 {
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("클라이언트: ConnectedPlayers 동기화 = %d"), ConnectedPlayers);
+	if (!HasAuthority() || !GetWorld()) return;
+
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("카운트다운 시작, 3초 대기"));
+
+	// 3초 후 카운트다운 시작
+	FTimerHandle DelayTimer;
+	GetWorldTimerManager().SetTimer(DelayTimer, this, &APlayGameMode::StartCountdown, 3.0f, false);
+}
+
+void APlayGameMode::StartCountdown()
+{
+	if (!HasAuthority() || !GetWorld()) return;
+
+	APlayGameState* FallState = GetGameState<APlayGameState>();
+	if (!FallState)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("StartCountdown: GameState가 존재하지 않습니다!"));
+		return;
+	}
+
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("카운트다운 진행 시작. 초기 값: %.0f"), FallState->CountDownTime);
+
+	if (FallState->CountDownTime <= 0)
+	{
+		FallState->CountDownTime = 10.0f;
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("카운트다운 값이 0이거나 음수라 기본값(10초)으로 설정"));
+	}
+
+	GetWorldTimerManager().SetTimer(CountdownTimerHandle, this, &APlayGameMode::UpdateCountdown, 1.0f, true);
+}
+
+void APlayGameMode::UpdateCountdown()
+{
+	if (!HasAuthority()) return;
+
+	APlayGameState* FallState = GetGameState<APlayGameState>();
+	if (!FallState) return;
+
+	FallState->CountDownTime -= 1.0f;
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("카운트다운: %.0f"), FallState->CountDownTime);
+
+	if (FallState->CountDownTime <= 0.0f)
+	{
+		GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("카운트다운 종료, 캐릭터 이동 가능"));
+
+		for (TActorIterator<APlayCharacter> It(GetWorld()); It; ++It)
+		{
+			APlayCharacter* PlayerCharacter = *It;
+			if (PlayerCharacter)
+			{
+				SetCharacterMovePossible(PlayerCharacter);
+			}
+		}
+	}
 }
 
 // 동기화 변수
 void APlayGameMode::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(APlayGameMode, ConnectedPlayers);
 }
-

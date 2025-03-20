@@ -36,4 +36,5 @@ void APlayGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(APlayGameState, PlayerInfoArray);
+	DOREPLIFETIME(APlayGameState, CountDownTime);
 }

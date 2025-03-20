@@ -157,6 +157,20 @@ private:
 	UPROPERTY(VisibleAnywhere, Replicated, BlueprintReadOnly, Category = "COSTUME", meta = (AllowPrivateAccess = "true"))
 	FString CostumeBotName = TEXT("");
 
+// 이현정 : 움직임 관련 함수 및 변수
+public:
+	UFUNCTION(BlueprintCallable, Reliable, NetMulticast)
+	void S2M_SetCanMoveTrue();
+	void S2M_SetCanMoveTrue_Implementation();
+
+	UFUNCTION(BlueprintCallable, Reliable, NetMulticast)
+	void S2M_SetCanMoveFalse();
+	void S2M_SetCanMoveFalse_Implementation();
+
+private:
+	UPROPERTY(VisibleAnywhere, Replicated, BlueprintReadOnly, Category = "GAME START", meta = (AllowPrivateAccess = "true"))
+	bool CanMove = false;
+
 //LMH
 public:
 	UPROPERTY(VisibleAnywhere, Replicated, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))

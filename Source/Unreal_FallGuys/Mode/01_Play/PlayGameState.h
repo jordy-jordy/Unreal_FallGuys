@@ -51,5 +51,11 @@ public:
     void SyncPlayerInfoFromPlayerState();
     void SyncPlayerInfoFromPlayerState_Implementation();
 
+    // 카운트다운 시간 (서버에서 클라이언트로 동기화됨)
+    UPROPERTY(Replicated, BlueprintReadWrite, Category = "GAME PLAY")
+    float CountDownTime = 10.0f;
+
     void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+private:
 };

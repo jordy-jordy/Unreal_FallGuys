@@ -38,20 +38,35 @@ public:
 	void SyncPlayerInfo();
 	void SyncPlayerInfo_Implementation();
 
+	// 캐릭터 이동 가능하게 세팅
+	UFUNCTION(BlueprintCallable, Reliable, NetMulticast, Category = "PLAY GAME")
+	void SetCharacterMovePossible(class APlayCharacter* _Player);
+	void SetCharacterMovePossible_Implementation(class APlayCharacter* _Player);
+
+	// 카운트 다운 핸들 시작
+	UFUNCTION(BlueprintCallable, Reliable, Server)
+	void StartCountdownTimer();
+	void StartCountdownTimer_Implementation();
+
 protected:
 	virtual void Tick(float DeltaSeconds) override;
 	void BeginPlay() override;
 
+	// 접속한 플레이어의 수
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PLAY GAME")
+	int ConnectedPlayers = 0;
+	
+	// 카운트 다운 핸들
+	FTimerHandle CountdownTimerHandle;
+
+	// 카운트다운 시작 (3초 대기 후 실행)
+	void StartCountdown();
+
+	// 카운트다운 진행 (매초 실행)
+	void UpdateCountdown();
+
 	// 동기화 변수
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
-	// 접속한 플레이어의 수
-	UPROPERTY(ReplicatedUsing = OnRep_ConnectedPlayers)
-	int ConnectedPlayers;
-
-	// 플레이어 수 변경 시 클라이언트에서 실행될 함수
-	UFUNCTION()
-	void OnRep_ConnectedPlayers(); 
 
 private:
 
