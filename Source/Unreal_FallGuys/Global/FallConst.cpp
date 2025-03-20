@@ -16,13 +16,13 @@ FString UFallConst::PlayLevelName = TEXT("Race2Map");
 // 글로벌 데이터 테이블 경로
 FString UFallConst::GlobalDataTablePath = TEXT("/Script/Engine.DataTable'/Game/BP/Global/Data/DT_GlobalDataTable.DT_GlobalDataTable'");
 
-// 게임 시작이 가능한지 체크
-bool UFallConst::CanStart = false;
-
 // 기본 로컬 아이피
 FString UFallConst::DefaultIP = TEXT("127.0.0.1");
 
 // 기본 로컬 포트
 FString UFallConst::DefaultPort = TEXT("30000");
+
+// 카운트 다운 시간
+float UFallConst::FallCountDownTime = 5.0f;
 
 FName UFallConst::UI::MainPanelName = TEXT("TitleMain");

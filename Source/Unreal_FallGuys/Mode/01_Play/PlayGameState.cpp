@@ -6,9 +6,12 @@
 #include <Net/UnrealNetwork.h>
 #include <Unreal_FallGuys.h>
 
+#include <Global/FallConst.h>
+
 
 APlayGameState::APlayGameState()
 {
+	CountDownTime = UFallConst::FallCountDownTime;
 }
 
 void APlayGameState::SyncPlayerInfoFromPlayerState_Implementation()
@@ -36,4 +39,5 @@ void APlayGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(APlayGameState, PlayerInfoArray);
+	DOREPLIFETIME(APlayGameState, CountDownTime);
 }

@@ -39,16 +39,16 @@ public:
 	static FString PlayLevelName;
 
 	// 게임 시작을 위한 최소 플레이어 수
-	static const int MinPlayerCount = 5;
-
-	// 게임 시작이 가능한지 체크
-	static bool CanStart;
+	static const int MinPlayerCount = 2;
 
 	// 기본 로컬 아이피
 	static FString DefaultIP;
 
 	// 기본 로컬 포트
 	static FString DefaultPort;
+
+	// 카운트 다운 시간
+	static float FallCountDownTime;
 
 private:
 
