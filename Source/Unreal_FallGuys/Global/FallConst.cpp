@@ -14,7 +14,7 @@ FName UFallConst::Collision::CollisionProfile_CheckPoint = TEXT("CheckPointColl"
 FString UFallConst::PlayLevelName = TEXT("Race2Map");
 
 // 게임 시작을 위한 최소 플레이어 수
-int UFallConst::MinPlayerCount = 2;
+int UFallConst::MinPlayerCount = 1;
 
 // 글로벌 데이터 테이블 경로
 FString UFallConst::GlobalDataTablePath = TEXT("/Script/Engine.DataTable'/Game/BP/Global/Data/DT_GlobalDataTable.DT_GlobalDataTable'");
@@ -26,6 +26,6 @@ FString UFallConst::DefaultIP = TEXT("127.0.0.1");
 FString UFallConst::DefaultPort = TEXT("30000");
 
 // 카운트 다운 시간
-float UFallConst::FallCountDownTime = 5.0f;
+float UFallConst::FallCountDownTime = 0.5f;
 
 FName UFallConst::UI::MainPanelName = TEXT("TitleMain");
