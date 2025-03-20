@@ -131,31 +131,23 @@ void APlayCharacter::SetupPlayerInputComponent(UInputComponent* _PlayerInputComp
 
 void APlayCharacter::PlayerWMove()
 {
-	if (CanMove)
-	{
-		AddMovementInput(GetControllerForward());
-	}
+	if (!CanMove) { return; }
+	AddMovementInput(GetControllerForward());
 }
 void APlayCharacter::PlayerSMove()
 {
-	if (CanMove)
-	{
-		AddMovementInput(-GetControllerForward());
-	}
+	if (!CanMove) { return; }
+	AddMovementInput(-GetControllerForward());
 }
 void APlayCharacter::PlayerDMove()
 {
-	if (CanMove)
-	{
-		AddMovementInput(GetControllerRight());
-	}
+	if (!CanMove) { return; }
+	AddMovementInput(GetControllerRight());
 }
 void APlayCharacter::PlayerAMove()
 {
-	if (CanMove)
-	{
-		AddMovementInput(-GetControllerRight());
-	}
+	if (!CanMove) { return; }
+	AddMovementInput(-GetControllerRight());
 }
 
 void APlayCharacter::TestMove(const FVector2D& _Value)

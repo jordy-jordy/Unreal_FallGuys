@@ -22,4 +22,7 @@ FString UFallConst::DefaultIP = TEXT("127.0.0.1");
 // 기본 로컬 포트
 FString UFallConst::DefaultPort = TEXT("30000");
 
+// 카운트 다운 시간
+float UFallConst::FallCountDownTime = 5.0f;
+
 FName UFallConst::UI::MainPanelName = TEXT("TitleMain");
