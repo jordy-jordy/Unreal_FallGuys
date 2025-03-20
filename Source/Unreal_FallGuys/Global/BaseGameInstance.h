@@ -62,11 +62,11 @@ public:
 
 	// Pawn의 코스튬 상의 변경
 	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
-	void InsChangeCostumeTop(APawn* _Pawn, const FString& _CostumeTop);
+	void InsChangeCostumeTop(APawn* _Pawn, UStaticMeshComponent* _UpComp, const FString& _CostumeTop);
 
 	// Pawn의 코스튬 하의 변경
 	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
-	void InsChangeCostumeBot(APawn* _Pawn, const FString& _CostumeBot);
+	void InsChangeCostumeBot(APawn* _Pawn, UStaticMeshComponent* _LowComp, const FString& _CostumeBot);
 
 	// 저장된 코스튬 컬러의 스켈레탈 메시 반환
 	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")

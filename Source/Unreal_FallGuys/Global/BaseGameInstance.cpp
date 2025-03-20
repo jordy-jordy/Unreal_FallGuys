@@ -207,16 +207,16 @@ void UBaseGameInstance::InsChangeCostumeColor(APawn* _Pawn, const FString& _Cost
 }
 
 // Pawn의 코스튬 상의 변경
-void UBaseGameInstance::InsChangeCostumeTop(APawn* _Pawn, const FString& _CostumeTop)
+void UBaseGameInstance::InsChangeCostumeTop(APawn* _Pawn, UStaticMeshComponent* _UpComp, const FString& _CostumeTop)
 {
 	UWorld* World = _Pawn->GetWorld();
 	const FCostumeDataRow* CostumeTopData = UGlobalDataTable::GetCostumeData(World, _CostumeTop);
 	if (CostumeTopData && CostumeTopData->CostumeMesh)
 	{
 		// _Pawn의 스테틱 메시 가져오기
-		if (UStaticMeshComponent* MeshComp = _Pawn->FindComponentByClass<UStaticMeshComponent>())
+		if (_UpComp = _Pawn->FindComponentByClass<UStaticMeshComponent>())
 		{
-			MeshComp->SetStaticMesh(CostumeTopData->CostumeMesh);
+			_UpComp->SetStaticMesh(CostumeTopData->CostumeMesh);
 		}
 	}
 	else
@@ -228,16 +228,16 @@ void UBaseGameInstance::InsChangeCostumeTop(APawn* _Pawn, const FString& _Costum
 }
 
 // Pawn의 코스튬 하의 변경
-void UBaseGameInstance::InsChangeCostumeBot(APawn* _Pawn, const FString& _CostumeBot)
+void UBaseGameInstance::InsChangeCostumeBot(APawn* _Pawn, UStaticMeshComponent* _LowComp, const FString& _CostumeBot)
 {
 	UWorld* World = _Pawn->GetWorld();
 	const FCostumeDataRow* CostumeBotData = UGlobalDataTable::GetCostumeData(World, _CostumeBot);
 	if (CostumeBotData && CostumeBotData->CostumeMesh)
 	{
 		// _Pawn의 스테틱 메시 가져오기
-		if (UStaticMeshComponent* MeshComp = _Pawn->FindComponentByClass<UStaticMeshComponent>())
+		if (_LowComp = _Pawn->FindComponentByClass<UStaticMeshComponent>())
 		{
-			MeshComp->SetStaticMesh(CostumeBotData->CostumeMesh);
+			_LowComp->SetStaticMesh(CostumeBotData->CostumeMesh);
 		}
 	}
 	else
