@@ -121,8 +121,13 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 			RestoredInfo.Status = EPlayerStatus::DEFAULT;  // Status 초기화
 			PlayerState->PlayerInfo = RestoredInfo;
 
+			// 태그 복구
+			NewPlayer->Tags.Add(*RestoredInfo.Tag);
+			// 안전하게 태그 값 가져오기
+			FString TagString = (NewPlayer->Tags.Num() > 0) ? NewPlayer->Tags[0].ToString() : TEXT("태그 없음");
+
 			UE_LOG(FALL_DEV_LOG, Log, TEXT("PostLogin :: 플레이어 정보 로드 완료 - UniqueID = %s, Tag = %s"),
-				*RestoredInfo.UniqueID, *RestoredInfo.Tag);
+				*RestoredInfo.UniqueID, *TagString);
 		}
 	}
 	else
@@ -132,9 +137,14 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 		// 새로운 Player 등록 및 세팅
 		FString UniqueTag = FString::Printf(TEXT("Player%d"), FallState->PlayerInfoArray.Num());
 		PlayerState->SetPlayerInfo(UniqueTag, EPlayerStatus::DEFAULT);
+		
+		// 태그 부여
+		NewPlayer->Tags.Add(*UniqueTag);
+		// 안전하게 태그 값 가져오기
+		FString TagString = (NewPlayer->Tags.Num() > 0) ? NewPlayer->Tags[0].ToString() : TEXT("태그 없음");
 
 		UE_LOG(FALL_DEV_LOG, Log, TEXT("PostLogin :: 신규 플레이어 정보 세팅 - UniqueID = %s, Tag = %s"),
-			*PlayerState->PlayerInfo.UniqueID, *UniqueTag);
+			*PlayerState->PlayerInfo.UniqueID, *TagString);
 	}
 
 	// 접속 여부 bool값 true로 변경
