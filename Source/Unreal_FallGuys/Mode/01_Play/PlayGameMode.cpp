@@ -161,7 +161,7 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 		ConnectedPlayers++;
 	}
 
-    if (IsMinPlayersReached())
+    if (GameInstance->IsMovedLevel || IsMinPlayersReached())
     {
         UE_LOG(FALL_DEV_LOG, Warning, TEXT("최소 인원 충족, 게임 시작 가능"));
         StartGame();
