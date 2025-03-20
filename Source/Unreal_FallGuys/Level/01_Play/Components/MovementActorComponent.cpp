@@ -91,6 +91,37 @@ void UMovementActorComponent::Spin(float DeltaTime, UStaticMeshComponent* Target
 	Target->AddRelativeRotation(SpinSpeed * DeltaTime);
 }
 
+void UMovementActorComponent::SpinOnce(float DeltaTime, UStaticMeshComponent* Target, EMoveAxis Axis)
+{
+	float LeftValue = 0.0f;
+	float RightValue = 0.0f;
+
+	switch (Axis)
+	{
+	case EMoveAxis::ROLL:
+		LeftValue = Target->GetRelativeRotation().Roll;
+		RightValue = StopAngle.Roll;
+		break;
+	case EMoveAxis::PITCH:
+		LeftValue = Target->GetRelativeRotation().Pitch;
+		RightValue = StopAngle.Pitch;
+		break;
+	case EMoveAxis::YAW:
+		LeftValue = Target->GetRelativeRotation().Yaw;
+		RightValue = StopAngle.Yaw;
+		break;
+	}
+
+	if (RightValue > 0 && LeftValue - RightValue >= 0)
+	{
+		Target->AddRelativeRotation(SpinOnceSpeed * DeltaTime);
+	}
+	else if (RightValue < 0 && LeftValue - RightValue <= 0)
+	{
+		Target->AddRelativeRotation(SpinOnceSpeed * DeltaTime);
+	}
+}
+
 void UMovementActorComponent::SpinCycle(float DeltaTime, UStaticMeshComponent* Target, EMoveAxis Axis)
 {
 	float LeftValue = 0.0f;

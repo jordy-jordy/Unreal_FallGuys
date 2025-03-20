@@ -56,9 +56,6 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "RotatePad")
 	bool IsUp = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "RotatePad")
-	float Limit = 0.0f;
-
 private:
 	// MeshAddress
 	FString PadCover = TEXT("/Engine/BasicShapes/Cube.Cube");

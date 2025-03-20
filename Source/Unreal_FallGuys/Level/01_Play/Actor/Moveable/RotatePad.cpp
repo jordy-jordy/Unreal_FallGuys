@@ -77,13 +77,21 @@ void ARotatePad::SetMesh()
 
 void ARotatePad::MoveUp(float DeltaTime)
 {
-	// Limit에 도달하기 전까지 Spin
-	// 도달하면 MoveDown
+	if (IsUp)
+	{
+		MovementComponent->SpinOnce(DeltaTime, Axis, EMoveAxis::PITCH);
+	}
+	else
+	{
+		IsUp = false;
+		MovementComponent->StopAngle = FRotator(0, 0, 0);
+		MoveDown(DeltaTime);
+	}
 }
 
 void ARotatePad::MoveDown(float DeltaTime)
 {
-
+	MovementComponent->SpinOnce(DeltaTime, Axis, EMoveAxis::PITCH);
 }
 
 void ARotatePad::Moving(float DeltaTime)
@@ -94,6 +102,7 @@ void ARotatePad::Moving(float DeltaTime)
 			{
 				IsMove = true;
 				IsUp = true;
+				MovementComponent->StopAngle = FRotator( 0, -85, 0 );
 				MoveUp(DeltaTime);
 			});
 	}

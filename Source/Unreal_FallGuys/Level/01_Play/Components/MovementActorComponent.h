@@ -51,6 +51,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spin", meta = (AllowPrivateAccess = "true"))
 	FRotator SpinSpeed;
 
+	// SpinOnce
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpinOnce", meta = (AllowPrivateAccess = "true"))
+	FRotator SpinOnceSpeed;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "SpinOnce", meta = (AllowPrivateAccess = "true"))
+	FRotator StopAngle;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "SpinOnce", meta = (AllowPrivateAccess = "true"))
+	bool IsDone = false;
+
 	// SpinCycle
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SpinCycle", meta = (AllowPrivateAccess = "true"))
 	bool IsSpinCycleLeft = false;
@@ -73,6 +83,9 @@ public:
 
 	UFUNCTION()
 	void Spin(float DeltaTime, UStaticMeshComponent* Target);
+
+	UFUNCTION()
+	void SpinOnce(float DeltaTime, UStaticMeshComponent* Target, EMoveAxis Axis);
 
 	UFUNCTION()
 	void SpinCycle(float DeltaTime, UStaticMeshComponent* Target, EMoveAxis Axis);
