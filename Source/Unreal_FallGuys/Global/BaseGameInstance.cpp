@@ -211,17 +211,21 @@ void UBaseGameInstance::InsChangeCostumeTop(APawn* _Pawn, UStaticMeshComponent* 
 {
 	UWorld* World = _Pawn->GetWorld();
 	const FCostumeDataRow* CostumeTopData = UGlobalDataTable::GetCostumeData(World, _CostumeTop);
+
 	if (CostumeTopData && CostumeTopData->CostumeMesh)
 	{
-		// _Pawn의 스테틱 메시 가져오기
-		if (_UpComp = _Pawn->FindComponentByClass<UStaticMeshComponent>())
+		if (_UpComp)
 		{
 			_UpComp->SetStaticMesh(CostumeTopData->CostumeMesh);
+		}
+		else
+		{
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsChangeCostumeTop :: _UpComp is nullptr"));
 		}
 	}
 	else
 	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsChangeCostume :: Invalid Costume Top Data or Mesh"));
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsChangeCostumeTop :: Invalid Costume Top Data or Mesh"));
 	}
 
 	InsSaveCostumeTop(_CostumeTop);
@@ -234,10 +238,13 @@ void UBaseGameInstance::InsChangeCostumeBot(APawn* _Pawn, UStaticMeshComponent* 
 	const FCostumeDataRow* CostumeBotData = UGlobalDataTable::GetCostumeData(World, _CostumeBot);
 	if (CostumeBotData && CostumeBotData->CostumeMesh)
 	{
-		// _Pawn의 스테틱 메시 가져오기
-		if (_LowComp = _Pawn->FindComponentByClass<UStaticMeshComponent>())
+		if (_LowComp)
 		{
 			_LowComp->SetStaticMesh(CostumeBotData->CostumeMesh);
+		}
+		else
+		{
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsChangeCostumeBot :: _LowComp is nullptr"));
 		}
 	}
 	else
