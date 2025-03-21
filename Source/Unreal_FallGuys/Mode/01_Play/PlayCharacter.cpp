@@ -18,7 +18,7 @@
 // Sets default values
 APlayCharacter::APlayCharacter()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	bUseControllerRotationPitch = false;
@@ -36,17 +36,17 @@ APlayCharacter::APlayCharacter()
 	CameraComponent->SetupAttachment(SpringArmComponent, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	CameraComponent->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
-	CoustumeTOPStaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TOPMesh"));
-	CoustumeTOPStaticMesh->SetCollisionProfileName(TEXT("NoCollision"));
-	CoustumeTOPStaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	CoustumeTOPStaticMesh->SetGenerateOverlapEvents(false);
-	CoustumeTOPStaticMesh->CanCharacterStepUpOn = ECanBeCharacterBase::ECB_No;
-	
-	CoustumeBOTStaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BOTMesh"));
-	CoustumeBOTStaticMesh->SetCollisionProfileName(TEXT("NoCollision"));
-	CoustumeBOTStaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	CoustumeBOTStaticMesh->SetGenerateOverlapEvents(false);
-	CoustumeBOTStaticMesh->CanCharacterStepUpOn = ECanBeCharacterBase::ECB_No;
+	CostumeTOPStaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TOPMesh"));
+	CostumeTOPStaticMesh->SetCollisionProfileName(TEXT("NoCollision"));
+	CostumeTOPStaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	CostumeTOPStaticMesh->SetGenerateOverlapEvents(false);
+	CostumeTOPStaticMesh->CanCharacterStepUpOn = ECanBeCharacterBase::ECB_No;
+
+	CostumeBOTStaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BOTMesh"));
+	CostumeBOTStaticMesh->SetCollisionProfileName(TEXT("NoCollision"));
+	CostumeBOTStaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	CostumeBOTStaticMesh->SetGenerateOverlapEvents(false);
+	CostumeBOTStaticMesh->CanCharacterStepUpOn = ECanBeCharacterBase::ECB_No;
 }
 
 // Called when the game starts or when spawned
@@ -55,32 +55,54 @@ void APlayCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	// 스켈레탈 메시 소켓에 어태치
-	if (CoustumeTOPStaticMesh && CoustumeBOTStaticMesh)
+	if (CostumeTOPStaticMesh && CostumeBOTStaticMesh)
 	{
-		CoustumeTOPStaticMesh->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("HeadSocket"));
-		CoustumeBOTStaticMesh->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("CustomSocket"));
+		CostumeTOPStaticMesh->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("HeadSocket"));
+		CostumeBOTStaticMesh->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("CustomSocket"));
 	}
-
-	UBaseGameInstance* GameIns = Cast<UBaseGameInstance>(GetGameInstance());
 
 	if (UGameplayStatics::GetPlayerController(GetWorld(), 0) == GetController())
 	{
 		CostumeColor = UFallGlobal::GetCostumeColor(this);
 		CostumeTopName = UFallGlobal::GetCostumeTop(this);
 		CostumeBotName = UFallGlobal::GetCostumeBot(this);
-		GetMesh()->SetSkeletalMesh(UFallGlobal::GetCostumeColorMesh(this, CostumeColor));
-		CoustumeTOPStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, CostumeTopName));
-		CoustumeBOTStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, CostumeBotName));
-		
+
+		if (CostumeColor != TEXT(""))
+		{
+			GetMesh()->SetSkeletalMesh(UFallGlobal::GetCostumeColorMesh(this, CostumeColor));
+		}
+
+		if (CostumeTopName != TEXT(""))
+		{
+			CostumeTOPStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, CostumeTopName));
+		}
+
+		if (CostumeBotName != TEXT(""))
+		{
+			CostumeBOTStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, CostumeBotName));
+		}
+
 		C2S_Costume(CostumeColor, CostumeTopName, CostumeBotName);
 	}
 	else
 	{
-		GetMesh()->SetSkeletalMesh(UFallGlobal::GetCostumeColorMesh(this, CostumeColor));
-		CoustumeTOPStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, CostumeTopName));
-		CoustumeBOTStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, CostumeBotName));
+		if (CostumeColor != TEXT(""))
+		{
+			GetMesh()->SetSkeletalMesh(UFallGlobal::GetCostumeColorMesh(this, CostumeColor));
+		}
+
+		if (CostumeTopName != TEXT(""))
+		{
+			CostumeTOPStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, CostumeTopName));
+		}
+
+		if (CostumeBotName != TEXT(""))
+		{
+			CostumeBOTStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, CostumeBotName));
+		}
 	}
 
+	UBaseGameInstance* GameIns = Cast<UBaseGameInstance>(GetGameInstance());
 	if (UGameplayStatics::GetPlayerController(GetWorld(), 0) == GetController())
 	{
 		IsDie = GameIns->GetIsDie();
@@ -192,9 +214,22 @@ void APlayCharacter::C2S_Costume_Implementation(const FString& _Color, const FSt
 	CostumeColor = _Color;
 	CostumeTopName = _TopName;
 	CostumeBotName = _BotName;
-	GetMesh()->SetSkeletalMesh(UFallGlobal::GetCostumeColorMesh(this, _Color));
-	CoustumeTOPStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, _TopName));
-	CoustumeBOTStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, _BotName));
+
+	if (CostumeColor != TEXT(""))
+	{
+		GetMesh()->SetSkeletalMesh(UFallGlobal::GetCostumeColorMesh(this, CostumeColor));
+	}
+
+	if (CostumeTopName != TEXT(""))
+	{
+		CostumeTOPStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, CostumeTopName));
+	}
+
+	if (CostumeBotName != TEXT(""))
+	{
+		CostumeBOTStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, CostumeBotName));
+	}
+
 	S2M_Costume(CostumeColor, CostumeTopName, CostumeBotName);
 }
 
@@ -204,9 +239,21 @@ void APlayCharacter::S2M_Costume_Implementation(const FString& _Color, const FSt
 	CostumeColor = _Color;
 	CostumeTopName = _TopName;
 	CostumeBotName = _BotName;
-	GetMesh()->SetSkeletalMesh(UFallGlobal::GetCostumeColorMesh(this, _Color));
-	CoustumeTOPStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, _TopName));
-	CoustumeBOTStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, _BotName));
+
+	if (CostumeColor != TEXT(""))
+	{
+		GetMesh()->SetSkeletalMesh(UFallGlobal::GetCostumeColorMesh(this, CostumeColor));
+	}
+
+	if (CostumeTopName != TEXT(""))
+	{
+		CostumeTOPStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, CostumeTopName));
+	}
+
+	if (CostumeBotName != TEXT(""))
+	{
+		CostumeBOTStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, CostumeBotName));
+	}
 }
 
 // 이현정 : 캐릭터 Moving 활성화

@@ -209,6 +209,22 @@ void UBaseGameInstance::InsChangeCostumeColor(APawn* _Pawn, const FString& _Cost
 // Pawn의 코스튬 상의 변경
 void UBaseGameInstance::InsChangeCostumeTop(APawn* _Pawn, UStaticMeshComponent* _UpComp, const FString& _CostumeTop)
 {
+	if (_CostumeTop == TEXT("Default") || _CostumeTop == TEXT(""))
+	{
+		if (_UpComp)
+		{
+			_UpComp->SetStaticMesh(nullptr);
+			UE_LOG(FALL_DEV_LOG, Log, TEXT("InsChangeCostumeTop :: Default 감지, 메시 제거"));
+		}
+		else
+		{
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsChangeCostumeTop :: _UpComp is nullptr"));
+		}
+
+		InsSaveCostumeTop(_CostumeTop);
+		return;
+	}
+
 	UWorld* World = _Pawn->GetWorld();
 	const FCostumeDataRow* CostumeTopData = UGlobalDataTable::GetCostumeData(World, _CostumeTop);
 
@@ -234,6 +250,22 @@ void UBaseGameInstance::InsChangeCostumeTop(APawn* _Pawn, UStaticMeshComponent* 
 // Pawn의 코스튬 하의 변경
 void UBaseGameInstance::InsChangeCostumeBot(APawn* _Pawn, UStaticMeshComponent* _LowComp, const FString& _CostumeBot)
 {
+	if (_CostumeBot == TEXT("Default") || _CostumeBot == TEXT(""))
+	{
+		if (_LowComp)
+		{
+			_LowComp->SetStaticMesh(nullptr);
+			UE_LOG(FALL_DEV_LOG, Log, TEXT("InsChangeCostumeBot :: Default 감지, 메시 제거"));
+		}
+		else
+		{
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsChangeCostumeBot :: _LowComp is nullptr"));
+		}
+
+		InsSaveCostumeBot(_CostumeBot);
+		return;
+	}
+
 	UWorld* World = _Pawn->GetWorld();
 	const FCostumeDataRow* CostumeBotData = UGlobalDataTable::GetCostumeData(World, _CostumeBot);
 	if (CostumeBotData && CostumeBotData->CostumeMesh)
@@ -249,7 +281,7 @@ void UBaseGameInstance::InsChangeCostumeBot(APawn* _Pawn, UStaticMeshComponent* 
 	}
 	else
 	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsChangeCostume :: Invalid Costume Bot Data or Mesh"));
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsChangeCostumeBot :: Invalid Costume Bot Data or Mesh"));
 	}
 
 	InsSaveCostumeBot(_CostumeBot);

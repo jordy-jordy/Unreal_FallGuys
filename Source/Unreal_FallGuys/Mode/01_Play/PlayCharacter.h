@@ -143,10 +143,10 @@ public:
 
 private: 
 	UPROPERTY(VisibleAnywhere, Category = "COSTUME")
-	UStaticMeshComponent* CoustumeTOPStaticMesh;
+	UStaticMeshComponent* CostumeTOPStaticMesh;
 
 	UPROPERTY(VisibleAnywhere, Category = "COSTUME")
-	UStaticMeshComponent* CoustumeBOTStaticMesh;
+	UStaticMeshComponent* CostumeBOTStaticMesh;
 
 	UPROPERTY(VisibleAnywhere, Replicated, BlueprintReadOnly, Category = "COSTUME", meta = (AllowPrivateAccess = "true"))
 	FString CostumeColor = TEXT("");
