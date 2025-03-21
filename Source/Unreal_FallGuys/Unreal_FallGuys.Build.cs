@@ -8,7 +8,12 @@ public class Unreal_FallGuys : ModuleRules
     {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        PublicIncludePaths.Add(ModuleDirectory);
+        PublicIncludePaths.AddRange(
+            new string[] {
+        ModuleDirectory,  // 기존 모듈 디렉터리 포함
+        System.IO.Path.Combine(ModuleDirectory, "Global") // Global 폴더 추가
+            }
+        );
 
         PublicDependencyModuleNames.AddRange(new string[] {
         "Core",

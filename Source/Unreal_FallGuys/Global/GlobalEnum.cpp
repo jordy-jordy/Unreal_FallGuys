@@ -3,3 +3,8 @@
 
 #include "Global/GlobalEnum.h"
 
+
+void ForceIncludeEnums()
+{
+    ECostumeColor DummyValue = ECostumeColor::NONE;
+}

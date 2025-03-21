@@ -7,7 +7,6 @@
 #include "GlobalEnum.generated.h"
 
 
-// 코스튬 색상
 UENUM(BlueprintType)
 enum class ECostumeColor : uint8
 {
@@ -18,7 +17,6 @@ enum class ECostumeColor : uint8
 	MAX UMETA(DisplayName = "Max")
 };
 
-// 코스튬 상하의
 UENUM(BlueprintType)
 enum class ECostumeType : uint8
 {
@@ -28,7 +26,6 @@ enum class ECostumeType : uint8
 	MAX UMETA(DisplayName = "Max")
 };
 
-// 플레이어 상태
 UENUM(BlueprintType)
 enum class EPlayerStatus : uint8
 {
