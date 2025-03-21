@@ -18,6 +18,10 @@ enum class EPlayerAnimation : uint8
 	DiveLoop UMETA(DisplayName = "DiveLoop"),
 	DiveLand UMETA(DisplayName = "DiveLand"),
 	DiveGetUp UMETA(DisplayName = "DiveGetUp"),
+	GrabIdle UMETA(DisplayName = "GrabIdle"),
+	GrabRun UMETA(DisplayName = "GrabRun"),
+	CarryIdle UMETA(DisplayName = "CarryIdle"),
+	CarryRun UMETA(DisplayName = "CarryRun"),
 	MAX UMETA(DisplayName = "MAX"),
 };
 

@@ -17,9 +17,6 @@ public:
 	APlayCharacter();
 
 	UFUNCTION(BlueprintCallable)
-	void TestMove(const FVector2D& _Value);
-
-	UFUNCTION(BlueprintCallable)
 	void PlayerWMove();
 
 	UFUNCTION(BlueprintCallable)

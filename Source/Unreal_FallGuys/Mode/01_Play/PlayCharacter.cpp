@@ -172,19 +172,6 @@ void APlayCharacter::PlayerAMove()
 	AddMovementInput(-GetControllerRight());
 }
 
-void APlayCharacter::TestMove(const FVector2D& _Value)
-{
-	const FRotator Rotaion = Controller->GetControlRotation();
-
-	const FRotator YawRoation = FRotator(0.0f, Rotaion.Yaw, 0.0f);
-
-	const FVector Forward = FRotationMatrix(YawRoation).GetUnitAxis(EAxis::X);
-	const FVector Right = FRotationMatrix(YawRoation).GetUnitAxis(EAxis::Y);
-
-	AddMovementInput(Forward, _Value.X);
-	AddMovementInput(Right, _Value.Y);
-}
-
 void APlayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
