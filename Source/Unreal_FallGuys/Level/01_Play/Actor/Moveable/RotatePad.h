@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Level/01_Play/Components/MovementActorComponent.h"
 #include "Level/01_Play/Components/TimeEventActorComponent.h"
 #include "RotatePad.generated.h"
 
@@ -30,9 +29,6 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "TimeEvent")
 	UTimeEventActorComponent* TimeEventComponent;
 
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Movement")
-	UMovementActorComponent* MovementComponent;
-
 	// MeshComponent
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "RotatePad")
 	USceneComponent* RootScene;
@@ -47,14 +43,23 @@ public:
 	UStaticMeshComponent* Cover;
 
 	// Variables
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "RotatePad")
+	bool IsMove = false;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "RotatePad")
+	bool IsUp = false;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RotatePad")
 	float DelayTime = 0.0f;
 
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "RotatePad")
-	bool IsMove = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RotatePad");
+	float RotateSpeed;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RotatePad");
+	float ReCoverSpeed;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "RotatePad")
-	bool IsUp = false;
+	float LimitAngle = -65.0f;
 
 private:
 	// MeshAddress
@@ -70,11 +75,8 @@ private:
 	void SetMesh();
 
 	UFUNCTION()
-	void MoveUp(float DeltaTime);
+	void MoveUp(float _Delta, float _Acc);
 
 	UFUNCTION()
-	void MoveDown(float DeltaTime);
-
-	UFUNCTION()
-	void Moving(float DeltaTime);
+	void MoveDown(float _Delta, float _Acc);
 };

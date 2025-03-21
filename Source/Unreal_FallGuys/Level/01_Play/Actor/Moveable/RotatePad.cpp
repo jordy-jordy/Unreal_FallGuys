@@ -17,19 +17,21 @@ void ARotatePad::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	TimeEventComponent->AddUpdateEvent(1.0f, [this](float _Delta, float _Acc)
+		{
+			MoveUp(_Delta, _Acc);
+		});
 }
 
 // Called every frame
 void ARotatePad::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void ARotatePad::OperateMesh()
 {
 	// ActorComponent
-	MovementComponent = CreateDefaultSubobject<UMovementActorComponent>(FName("MovementComponent"));
 	TimeEventComponent = CreateDefaultSubobject<UTimeEventActorComponent>(FName("TimeEvnetComponent"));
 
 	// Mesh And Location
@@ -75,35 +77,45 @@ void ARotatePad::SetMesh()
 	}
 }
 
-void ARotatePad::MoveUp(float DeltaTime)
+void ARotatePad::MoveUp(float _Delta, float _Acc)
 {
-	if (IsUp)
-	{
-		MovementComponent->SpinOnce(DeltaTime, Axis, EMoveAxis::PITCH);
-	}
-	else
-	{
-		IsUp = false;
-		MovementComponent->StopAngle = FRotator(0, 0, 0);
-		MoveDown(DeltaTime);
-	}
-}
+	float Vel = FMath::Lerp(0, LimitAngle, _Acc);
 
-void ARotatePad::MoveDown(float DeltaTime)
-{
-	MovementComponent->SpinOnce(DeltaTime, Axis, EMoveAxis::PITCH);
-}
-
-void ARotatePad::Moving(float DeltaTime)
-{
-	if (!IsMove)
+	if (1.0f <= _Acc)
 	{
-		TimeEventComponent->AddEndEvent(DelayTime, [this, DeltaTime]()
+		_Acc = 1.0f;
+	}
+
+	Axis->SetRelativeRotation(FQuat::MakeFromEuler({ Vel, 0.0f, 0.0f }));
+
+	if (1.0f <= _Acc)
+	{
+		TimeEventComponent->AddUpdateEvent(1.0f, [this](float _Delta, float _Acc)
 			{
-				IsMove = true;
-				IsUp = true;
-				MovementComponent->StopAngle = FRotator( 0, -85, 0 );
-				MoveUp(DeltaTime);
+				MoveDown(_Delta, _Acc);
+			});
+	}
+}
+
+void ARotatePad::MoveDown(float _Delta, float _Acc)
+{
+	float Vel = FMath::Lerp(LimitAngle, 0, _Acc);
+
+	if (1.0f <= _Acc)
+	{
+		_Acc = 1.0f;
+	}
+
+	Axis->SetRelativeRotation(FQuat::MakeFromEuler({ Vel, 0.0f, 0.0f }));
+
+	if (1.0f <= _Acc)
+	{
+		TimeEventComponent->AddEndEvent(1.0f, [this]()
+			{
+				TimeEventComponent->AddUpdateEvent(1.0f, [this](float _Delta, float _Acc)
+					{
+						MoveUp(_Delta, _Acc);
+					});
 			});
 	}
 }
