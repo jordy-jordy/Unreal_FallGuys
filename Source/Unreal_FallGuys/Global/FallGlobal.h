@@ -91,6 +91,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static int GetConnectedPlayers();
 
+	// 코스튬의
+	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
+	static TArray<FString> GetCostumeColorNames(UObject* _WorldContext);
+
 // 이재영 : 메인위젯을 얻는 함수
 public:
 	UFUNCTION(BlueprintCallable)

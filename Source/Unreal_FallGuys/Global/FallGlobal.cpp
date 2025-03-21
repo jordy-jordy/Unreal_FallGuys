@@ -9,6 +9,7 @@
 #include <Unreal_FallGuys.h>
 #include <Global/BaseGameInstance.h>
 #include <Global/Data/PlayLevelDataTable.h>
+#include <Global/Data/CostumeColorDataTable.h>
 #include <Mode/00_Title/TitleHUD.h>
 #include <Mode/01_Play/PlayGameMode.h>
 
@@ -247,6 +248,34 @@ int UFallGlobal::GetConnectedPlayers()
 
 	return GameMode->ModeGetConnectedPlayers();
 }
+
+TArray<FString> UFallGlobal::GetCostumeColorNames(UObject* _WorldContext)
+{
+	TArray<FString> ColorNames;
+
+	UBaseGameInstance* GameIns = Cast<UBaseGameInstance>(_WorldContext->GetWorld()->GetGameInstance());
+	if (nullptr == GameIns || nullptr == GameIns->CostumeColorDataTable)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("GetCostumeColorNames: GameInstance나 CostumeColorDataTable이 null"));
+		return ColorNames;
+	}
+
+	// 데이터 테이블의 모든 행 가져오기
+	static const FString ContextString(TEXT("GetCostumeColorNames"));
+	TArray<FCostumeColorDataRow*> AllRows;
+	GameIns->CostumeColorDataTable->GetAllRows<FCostumeColorDataRow>(ContextString, AllRows);
+
+	for (const FCostumeColorDataRow* Row : AllRows)
+	{
+		if (Row)
+		{
+			ColorNames.Add(Row->Name); // Name은 FString이어야 해
+		}
+	}
+
+	return ColorNames;
+}
+
 
 // 이재영 : 메인위젯을 얻는 함수
 UTitleMainWidget* UFallGlobal::GetMainWidget(UWorld* _World)

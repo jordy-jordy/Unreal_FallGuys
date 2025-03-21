@@ -19,7 +19,11 @@ struct FCostumeColorDataRow : public FTableRowBase
 	~FCostumeColorDataRow() {}
 
 public:
-	// 코스튬 컬러
+	// 코스튬 컬러 이름
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "COSTUME COLOR")
+	FString Name = TEXT("");
+
+	// 코스튬 컬러 이넘
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "COSTUME COLOR")
 	ECostumeColor Color = ECostumeColor::NONE;
 
