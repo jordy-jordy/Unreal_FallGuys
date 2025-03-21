@@ -26,6 +26,13 @@ void ARotatePlatform::BeginPlay()
 	SetRotateMesh();
 }
 
+void ARotatePlatform::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
+
+	SetRotateMesh();
+}
+
 // Called every frame
 void ARotatePlatform::Tick(float DeltaTime)
 {
@@ -45,11 +52,6 @@ void ARotatePlatform::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* 
 
 void ARotatePlatform::OparateMesh()
 {
-	if (PlatformType == EPlatformType::NONE && StickType == EStickType::NONE)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("EmptyType is Not Rendering!"));
-	}
-
 	// ActorComponent
 	MovementComponent = CreateDefaultSubobject<UMovementActorComponent>(FName("MovementComponent"));
 	LaunchComponent = CreateDefaultSubobject<ULaunchActorComponent>(FName("LaunchComponent"));

@@ -23,6 +23,13 @@ void ARotateWeapon::BeginPlay()
 	MovementComponent->LimitAngle = FRotator({ 0, 0, 60 });
 }
 
+void ARotateWeapon::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
+
+	SetWeaponMesh();
+}
+
 // Called every frame
 void ARotateWeapon::Tick(float DeltaTime)
 {

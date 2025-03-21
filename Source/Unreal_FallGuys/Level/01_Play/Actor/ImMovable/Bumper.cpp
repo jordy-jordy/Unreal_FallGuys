@@ -26,6 +26,13 @@ void ABumper::BeginPlay()
 	}
 }
 
+void ABumper::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
+
+	SetBumperMesh();
+}
+
 // Called every frame
 void ABumper::Tick(float DeltaTime)
 {

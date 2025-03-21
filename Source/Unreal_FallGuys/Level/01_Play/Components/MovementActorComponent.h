@@ -9,6 +9,7 @@
 UENUM(BlueprintType)
 enum class EMoveAxis : uint8
 {
+	NONE,
 	ROLL,
 	PITCH,
 	YAW
