@@ -3,9 +3,10 @@
 
 #include "Mode/00_Title/UI/CustomColorButtonWidget.h"
 #include "Components/Button.h" // or the appropriate header where FButtonStyle is defined
-
+#include <Global/GlobalEnum.h>
 #include "Global/BaseGameInstance.h"
 #include <Global/Data/GlobalDataTable.h>
+#include <Global/FallGlobal.h>
 
 //void UCustomColorButtonWidget::Tick(FGeometry MyGeometry, float InDeltaTime)
 //{
@@ -25,21 +26,40 @@ void UCustomColorButtonWidget::NativeConstruct()
 
 FString UCustomColorButtonWidget::GetCustomValueAsString(ECostumeColor _Color)
 {
-	FString Data = UEnum::GetValueAsString(TEXT("Unreal_FallGuys.GlobalEnum.ECostumeColor"), _Color);
-	return Data;
-}
-
-void UCustomColorButtonWidget::ChangePawnColor(ECostumeColor color)
-{
-	CustomName = GetCustomValueAsString(color);
-	const FCostumeColorDataRow* CostumeColorData = UGlobalDataTable::GetCostumeColorData(GetWorld(), CustomName);
-
-	
-	if (CostumeColorData && CostumeColorData->CostumeMesh)
+	FString ColorName = "";
+	switch (_Color)
 	{
-		GetGameInstance<UBaseGameInstance>()->InsChangeCostumeColor(GetOwningPlayerPawn(), CustomName);
+	case ECostumeColor::NONE:
+		break;
+	case ECostumeColor::PINK:
+		ColorName = "PINK";
+		break;
+	case ECostumeColor::YELLOW:
+		ColorName = "YELLOW";
+
+		break;
+	case ECostumeColor::BLUE:
+		ColorName = "BLUE";
+		break;
+	default:
+		break;
 
 	}
+
+	return ColorName;
+	//FString Data = UEnum::GetValueAsString(TEXT("/Script/Unreal_FallGuys.GlobalEnum.ECostumeColor"), _Color);
+
+	
+	//return Data;
+
+	
+}
+
+void UCustomColorButtonWidget::ChangePawnColor()
+{
+	CustomName = GetCustomValueAsString(Color);
+
+	UFallGlobal::ChangeCostumeColor(GetOwningPlayerPawn(), CustomName);
 }
 
 void UCustomColorButtonWidget::SetButtonColor()

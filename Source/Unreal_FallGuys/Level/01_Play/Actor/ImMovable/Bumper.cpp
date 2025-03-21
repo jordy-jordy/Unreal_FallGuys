@@ -26,6 +26,13 @@ void ABumper::BeginPlay()
 	}
 }
 
+void ABumper::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
+
+	SetBumperMesh();
+}
+
 // Called every frame
 void ABumper::Tick(float DeltaTime)
 {
@@ -42,7 +49,6 @@ void ABumper::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherAct
 }
 
 void ABumper::OparateMesh()
-{
 	// ActorComponent
 	LaunchComponent = CreateDefaultSubobject<ULaunchActorComponent>(FName("LaunchComponent"));
 

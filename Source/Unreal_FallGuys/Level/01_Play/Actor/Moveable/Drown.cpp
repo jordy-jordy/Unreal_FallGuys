@@ -24,6 +24,13 @@ void ADrown::BeginPlay()
 	MovementComponent->SpinSpeed = FRotator({ 0.0f, 180.0f, 0.0f });
 }
 
+void ADrown::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
+
+	SetDrownMesh();
+}
+
 // Called every frame
 void ADrown::Tick(float DeltaTime)
 {

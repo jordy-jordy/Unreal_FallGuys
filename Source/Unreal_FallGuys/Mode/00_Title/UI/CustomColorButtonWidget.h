@@ -20,6 +20,16 @@
  //	TEST01,
  //	TEST02,
  //};
+// ÄÚ½ºÆ¬ »ö»ó
+//UENUM(BlueprintType)
+//enum class ECostumeColor : uint8
+//{
+//	NONE UMETA(DisplayName = "³í"),
+//	PINK UMETA(DisplayName = "ÇÎÅ©"),
+//	YELLOW UMETA(DisplayName = "¿»·Î¿ì"),
+//	BLUE UMETA(DisplayName = "ºí·ç"),
+//	MAX UMETA(DisplayName = "¸Æ½º")
+//};
 
 UCLASS()
 class UNREAL_FALLGUYS_API UCustomColorButtonWidget : public UCustomButtonWidget
@@ -38,7 +48,7 @@ public:
 	
 
 	UFUNCTION(BlueprintCallable)
-	void ChangePawnColor(ECostumeColor color);
+	void ChangePawnColor();
 
 	UFUNCTION(BlueprintCallable)
 	void SetButtonColor();
@@ -51,7 +61,7 @@ private:
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
-	FString CustomName = "";
+	FString CustomName = TEXT("");
 
 	UMaterial* Mat = nullptr;
 
