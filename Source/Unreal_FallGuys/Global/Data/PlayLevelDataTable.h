@@ -26,7 +26,7 @@ public:
 
 	// 전환 화면용 레벨 이미지
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LEVEL DATA")
-	UTexture* LevelIMG;
+	UTexture* LevelIMG = nullptr;
 };
 
 /**

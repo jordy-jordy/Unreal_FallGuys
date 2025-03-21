@@ -50,6 +50,12 @@ public:
 	// 카운트 다운 시간
 	static float FallCountDownTime;
 
+	// 카운트 다운을 사용할 것인지 결정하는 변수
+	static bool UseCountDown;
+
+	// 접속 제한 기능을 사용할 것인지 결정하는 변수
+	static bool UseMinPlayer;
+
 private:
 
 };

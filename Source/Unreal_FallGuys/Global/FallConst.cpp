@@ -26,6 +26,12 @@ FString UFallConst::DefaultIP = TEXT("127.0.0.1");
 FString UFallConst::DefaultPort = TEXT("30000");
 
 // 카운트 다운 시간
-float UFallConst::FallCountDownTime = 0.5f;
+float UFallConst::FallCountDownTime = 3.0f;
+
+// 카운트 다운을 사용할 것인지 결정하는 변수
+bool UFallConst::UseCountDown = false;
+
+// 접속 제한 기능을 사용할 것인지 결정하는 변수
+bool UFallConst::UseMinPlayer = false;
 
 FName UFallConst::UI::MainPanelName = TEXT("TitleMain");

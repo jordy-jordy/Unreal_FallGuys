@@ -80,14 +80,18 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 	// 서버장이 아닐시 리턴
     if (!HasAuthority()) return;
 
-	// 현재 접속한 플레이어 수가 최소 인원 이상이면 접속 거부
-	if (ConnectedPlayers >= UFallConst::MinPlayerCount)
+	// 접속 제한을 사용하는 경우 인원 체크 및 접속 거부 실행
+	if (true == UFallConst::UseMinPlayer)
 	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("접속 거부: 현재 플레이어 수(%d)가 제한(%d) 이상입니다."), ConnectedPlayers, UFallConst::MinPlayerCount);
+		// 현재 접속한 플레이어 수가 최소 인원 이상이면 접속 거부
+		if (ConnectedPlayers >= UFallConst::MinPlayerCount)
+		{
+			UE_LOG(FALL_DEV_LOG, Error, TEXT("접속 거부: 현재 플레이어 수(%d)가 제한(%d) 이상입니다."), ConnectedPlayers, UFallConst::MinPlayerCount);
 
-		// 클라이언트를 강제 종료
-		NewPlayer->ClientTravel(TEXT("/Game/Maps/TitleLevel"), TRAVEL_Absolute);
-		return;
+			// 클라이언트를 강제 종료
+			NewPlayer->ClientTravel(TEXT("/Game/Maps/TitleLevel"), TRAVEL_Absolute);
+			return;
+		}
 	}
 
 	// PlayerState가 없을시 리턴
@@ -161,11 +165,28 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 		ConnectedPlayers++;
 	}
 
-    if (GameInstance->IsMovedLevel || IsMinPlayersReached())
-    {
-        UE_LOG(FALL_DEV_LOG, Warning, TEXT("최소 인원 충족, 게임 시작 가능"));
-        StartGame();
-    }
+	// 카운트 다운을 사용하지 않는 경우
+	if (false == UFallConst::UseCountDown)
+	{
+		FTimerHandle DelayHandle;
+		GetWorld()->GetTimerManager().SetTimer(DelayHandle, [this]()
+			{
+				for (TActorIterator<APlayCharacter> It(GetWorld()); It; ++It)
+				{
+					APlayCharacter* PlayerCharacter = *It;
+					if (PlayerCharacter)
+					{
+						SetCharacterMovePossible(PlayerCharacter);
+					}
+				}
+			}, 0.2f, false); // 0.2초 뒤에 한 번 실행
+	}
+
+	if (false != UFallConst::UseCountDown && (GameInstance->IsMovedLevel || IsMinPlayersReached()))
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("최소 인원 충족, 게임 시작 가능"));
+		StartGame();
+	}
 }
 
 // 플레이어 인포 동기화
@@ -197,6 +218,7 @@ void APlayGameMode::SetCharacterMovePossible_Implementation(APlayCharacter* _Pla
 void APlayGameMode::StartGame_Implementation()
 {
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("게임을 시작합니다."));
+
 	StartCountdownTimer();
 }
 
