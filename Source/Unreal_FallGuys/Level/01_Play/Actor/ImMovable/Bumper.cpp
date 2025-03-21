@@ -49,7 +49,6 @@ void ABumper::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherAct
 }
 
 void ABumper::OparateMesh()
-{
 	// ActorComponent
 	LaunchComponent = CreateDefaultSubobject<ULaunchActorComponent>(FName("LaunchComponent"));
 
