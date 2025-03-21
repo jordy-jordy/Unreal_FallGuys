@@ -20,6 +20,16 @@
  //	TEST01,
  //	TEST02,
  //};
+// 코스튬 색상
+//UENUM(BlueprintType)
+//enum class ECostumeColor : uint8
+//{
+//	NONE UMETA(DisplayName = "논"),
+//	PINK UMETA(DisplayName = "핑크"),
+//	YELLOW UMETA(DisplayName = "옐로우"),
+//	BLUE UMETA(DisplayName = "블루"),
+//	MAX UMETA(DisplayName = "맥스")
+//};
 
 UCLASS()
 class UNREAL_FALLGUYS_API UCustomColorButtonWidget : public UCustomButtonWidget

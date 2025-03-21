@@ -3,7 +3,7 @@
 
 #include "Mode/00_Title/UI/CustomColorButtonWidget.h"
 #include "Components/Button.h" // or the appropriate header where FButtonStyle is defined
-
+#include <Global/GlobalEnum.h>
 #include "Global/BaseGameInstance.h"
 #include <Global/Data/GlobalDataTable.h>
 
@@ -25,7 +25,9 @@ void UCustomColorButtonWidget::NativeConstruct()
 
 FString UCustomColorButtonWidget::GetCustomValueAsString(ECostumeColor _Color)
 {
-	FString Data = UEnum::GetValueAsString(TEXT("Unreal_FallGuys.GlobalEnum.ECostumeColor"), _Color);
+	FString Data = UEnum::GetValueAsString(TEXT("/Script/CoreUObject.Class'/Script/Unreal_FallGuys.GlobalEnum.ECostumeColor'"), _Color);
+
+	
 	return Data;
 
 	/*UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("Unreal_FallGuys.GlobalEnum.ECostumeColor"), true);
