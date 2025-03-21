@@ -48,7 +48,7 @@ public:
 	
 
 	UFUNCTION(BlueprintCallable)
-	void ChangePawnColor(ECostumeColor _color);
+	void ChangePawnColor();
 
 	UFUNCTION(BlueprintCallable)
 	void SetButtonColor();
@@ -61,7 +61,7 @@ private:
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
-	FString CustomName = "";
+	FString CustomName = TEXT("");
 
 	UMaterial* Mat = nullptr;
 
