@@ -25,7 +25,7 @@ void UCustomColorButtonWidget::NativeConstruct()
 
 FString UCustomColorButtonWidget::GetCustomValueAsString(ECostumeColor _Color)
 {
-	FString Data = UEnum::GetValueAsString(TEXT("/Script/Unreal_FallGuys.GlobalEnum.ECostumeColor"), _Color);
+	FString Data = UEnum::GetValueAsString(TEXT("Unreal_FallGuys.GlobalEnum.ECostumeColor"), _Color);
 	return Data;
 }
 
