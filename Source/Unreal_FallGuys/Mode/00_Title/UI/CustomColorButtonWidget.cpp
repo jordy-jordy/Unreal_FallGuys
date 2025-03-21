@@ -27,11 +27,19 @@ FString UCustomColorButtonWidget::GetCustomValueAsString(ECostumeColor _Color)
 {
 	FString Data = UEnum::GetValueAsString(TEXT("Unreal_FallGuys.GlobalEnum.ECostumeColor"), _Color);
 	return Data;
+
+	/*UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("Unreal_FallGuys.GlobalEnum.ECostumeColor"), true);
+	if (!EnumPtr)
+	{
+		return FString("Invalid Enum");
+	}
+	FString Data = EnumPtr->GetValueAsString((int32)_Color);
+	return Data;*/
 }
 
-void UCustomColorButtonWidget::ChangePawnColor(ECostumeColor color)
+void UCustomColorButtonWidget::ChangePawnColor(ECostumeColor _color)
 {
-	CustomName = GetCustomValueAsString(color);
+	CustomName = GetCustomValueAsString(_color);
 	const FCostumeColorDataRow* CostumeColorData = UGlobalDataTable::GetCostumeColorData(GetWorld(), CustomName);
 
 	

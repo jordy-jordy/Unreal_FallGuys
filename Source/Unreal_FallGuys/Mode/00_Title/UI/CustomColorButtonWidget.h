@@ -38,7 +38,7 @@ public:
 	
 
 	UFUNCTION(BlueprintCallable)
-	void ChangePawnColor(ECostumeColor color);
+	void ChangePawnColor(ECostumeColor _color);
 
 	UFUNCTION(BlueprintCallable)
 	void SetButtonColor();
