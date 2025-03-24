@@ -16,11 +16,6 @@ ARotatePad::ARotatePad()
 void ARotatePad::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	TimeEventComponent->AddUpdateEvent(1.0f, [this](float _Delta, float _Acc)
-		{
-			MoveUp(_Delta, _Acc);
-		});
 }
 
 // Called every frame
@@ -31,9 +26,6 @@ void ARotatePad::Tick(float DeltaTime)
 
 void ARotatePad::OperateMesh()
 {
-	// ActorComponent
-	TimeEventComponent = CreateDefaultSubobject<UTimeEventActorComponent>(FName("TimeEvnetComponent"));
-
 	// Mesh And Location
 	RootScene = CreateDefaultSubobject<USceneComponent>(TEXT("RootScene"));
 	RootComponent = RootScene;
@@ -77,45 +69,12 @@ void ARotatePad::SetMesh()
 	}
 }
 
-void ARotatePad::MoveUp(float _Delta, float _Acc)
+bool ARotatePad::CheckMoveUp()
 {
-	float Vel = FMath::Lerp(0, LimitAngle, _Acc);
-
-	if (1.0f <= _Acc)
-	{
-		_Acc = 1.0f;
-	}
-
-	Axis->SetRelativeRotation(FQuat::MakeFromEuler({ Vel, 0.0f, 0.0f }));
-
-	if (1.0f <= _Acc)
-	{
-		TimeEventComponent->AddUpdateEvent(1.0f, [this](float _Delta, float _Acc)
-			{
-				MoveDown(_Delta, _Acc);
-			});
-	}
+	return (Axis->GetRelativeRotation().Roll > LimitAngle);
 }
 
-void ARotatePad::MoveDown(float _Delta, float _Acc)
+bool ARotatePad::CheckMoveDown()
 {
-	float Vel = FMath::Lerp(LimitAngle, 0, _Acc);
-
-	if (1.0f <= _Acc)
-	{
-		_Acc = 1.0f;
-	}
-
-	Axis->SetRelativeRotation(FQuat::MakeFromEuler({ Vel, 0.0f, 0.0f }));
-
-	if (1.0f <= _Acc)
-	{
-		TimeEventComponent->AddEndEvent(1.0f, [this]()
-			{
-				TimeEventComponent->AddUpdateEvent(1.0f, [this](float _Delta, float _Acc)
-					{
-						MoveUp(_Delta, _Acc);
-					});
-			});
-	}
+	return (Axis->GetRelativeRotation().Roll < 0.0f);
 }

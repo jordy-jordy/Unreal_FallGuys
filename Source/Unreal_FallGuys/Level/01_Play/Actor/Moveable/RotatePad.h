@@ -4,8 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Level/01_Play/Components/TimeEventActorComponent.h"
 #include "RotatePad.generated.h"
+
+UENUM(BlueprintType)
+enum class ERotateState : uint8
+{
+	DELAY,
+	MOVEUP,
+	MOVEDOWN
+};
 
 UCLASS()
 class UNREAL_FALLGUYS_API ARotatePad : public AActor
@@ -25,10 +32,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
-	// ActorComponent
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "TimeEvent")
-	UTimeEventActorComponent* TimeEventComponent;
-
 	// MeshComponent
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "RotatePad")
 	USceneComponent* RootScene;
@@ -43,11 +46,8 @@ public:
 	UStaticMeshComponent* Cover;
 
 	// Variables
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "RotatePad")
-	bool IsMove = false;
-
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "RotatePad")
-	bool IsUp = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RotatePad")
+	ERotateState RotateState = ERotateState::DELAY;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RotatePad")
 	float DelayTime = 0.0f;
@@ -74,9 +74,9 @@ private:
 	UFUNCTION()
 	void SetMesh();
 
-	UFUNCTION()
-	void MoveUp(float _Delta, float _Acc);
+	UFUNCTION(BlueprintCallable)
+	bool CheckMoveUp();
 
-	UFUNCTION()
-	void MoveDown(float _Delta, float _Acc);
+	UFUNCTION(BlueprintCallable)
+	bool CheckMoveDown();
 };
