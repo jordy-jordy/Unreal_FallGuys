@@ -170,6 +170,8 @@ private:
 	// 맵리스트
 	TArray<FString> MapList;
 	TSet<int> PlayedMapList;
+	// 에셋명 → Row 이름 매핑
+	TMap<FString, FString> LevelNameMap;
 
 	// 서버 연결 상태 변수
 	bool bIsConnected = false;

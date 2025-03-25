@@ -158,13 +158,13 @@ void UFallGlobal::ChangeNickname(APawn* _Pawn, const FString& _NewNickname)
 // 플레이 가능한 레벨 반환
 TArray<FString> UFallGlobal::GetAvailableLevels()
 {
-	TArray<FString> LevelNames;
+	TArray<FString> LevelAssetNames;
 
 	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GWorld->GetGameInstance());
 	if (!GameInstance)
 	{
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("GetAvailableLevels: GameInstance is null!"));
-		return LevelNames;
+		return LevelAssetNames;
 	}
 
 	// PlayLevelDataTable 가져오기
@@ -172,11 +172,11 @@ TArray<FString> UFallGlobal::GetAvailableLevels()
 	if (!LevelDataTable)
 	{
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("GetAvailableLevels: PlayLevelDataTable is null!"));
-		return LevelNames;
+		return LevelAssetNames;
 	}
 
 	// 데이터 테이블의 모든 행 가져오기
-	static const FString ContextString(TEXT("Name"));
+	static const FString ContextString(TEXT("GetAvailableLevels :: "));
 	TArray<FPlayLevelDataRow*> LevelRows;
 	LevelDataTable->GetAllRows<FPlayLevelDataRow>(ContextString, LevelRows);
 
@@ -201,12 +201,60 @@ TArray<FString> UFallGlobal::GetAvailableLevels()
 
 		if (Row && Row->Level.IsValid())
 		{
-			FString LevelName = Row->Level.GetAssetName();
-			LevelNames.Add(LevelName);
+			FString LevelAssetName = Row->Level.GetAssetName();
+			LevelAssetNames.Add(LevelAssetName);
 		}
 	}
 
-	return LevelNames;
+	return LevelAssetNames;
+}
+
+// 플레이 가능한 레벨 및 이름 반환
+TArray<FLevelDisplayInfo> UFallGlobal::GetAvailableLevelInfos()
+{
+	TArray<FLevelDisplayInfo> LevelInfos;
+
+	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GWorld->GetGameInstance());
+	if (!GameInstance)
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("GetAvailableLevelInfos: GameInstance is null!"));
+		return LevelInfos;
+	}
+
+	UDataTable* LevelDataTable = GameInstance->GetPlayLevelDataTable();
+	if (!LevelDataTable)
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("GetAvailableLevelInfos: PlayLevelDataTable is null!"));
+		return LevelInfos;
+	}
+
+	static const FString ContextString(TEXT("GetAvailableLevelInfos"));
+	TArray<FPlayLevelDataRow*> LevelRows;
+	LevelDataTable->GetAllRows<FPlayLevelDataRow>(ContextString, LevelRows);
+
+	for (const FPlayLevelDataRow* Row : LevelRows)
+	{
+		if (Row == nullptr)
+			continue;
+
+		// 강제로 로드
+		UWorld* LoadedLevel = Row->Level.LoadSynchronous();
+		if (!LoadedLevel)
+		{
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("Level Load Failed: %s"), *Row->Level.ToString());
+			continue;
+		}
+
+		FLevelDisplayInfo Info;
+		Info.Name = Row->Name;
+		Info.AssetName = Row->Level.GetAssetName();
+
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("Level Info Added - Name: %s, Asset: %s"), *Info.Name, *Info.AssetName);
+
+		LevelInfos.Add(Info);
+	}
+
+	return LevelInfos;
 }
 
 // 랜덤 스테이지 반환
@@ -276,7 +324,6 @@ TArray<FString> UFallGlobal::GetCostumeColorNames(UObject* _WorldContext)
 
 	return ColorNames;
 }
-
 
 // 이재영 : 메인위젯을 얻는 함수
 UTitleMainWidget* UFallGlobal::GetMainWidget(UWorld* _World)

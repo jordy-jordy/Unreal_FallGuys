@@ -368,9 +368,15 @@ void UBaseGameInstance::InsChangeNickname(const FString& _NewNickname)
 // Random PlayLevel의 이름 반환
 FString UBaseGameInstance::InsGetRandomLevel()
 {
-	if (MapList.Num() == 0)
+	if (MapList.Num() == 0 || LevelNameMap.Num() == 0)
 	{
-		MapList = UFallGlobal::GetAvailableLevels(); // 중복 추가 방지
+		TArray<FLevelDisplayInfo> LevelInfos = UFallGlobal::GetAvailableLevelInfos();
+
+		for (const FLevelDisplayInfo& Info : LevelInfos)
+		{
+			MapList.Add(Info.AssetName);               // 기존 MapList에는 AssetName 저장
+			LevelNameMap.Add(Info.AssetName, Info.Name); // AssetName → Name 매핑
+		}
 	}
 
 	if (MapList.Num() == 0)
@@ -385,11 +391,11 @@ FString UBaseGameInstance::InsGetRandomLevel()
 	} while (PlayedMapList.Contains(RandomIndex));
 
 	PlayedMapList.Add(RandomIndex);
-	
-	// 랜덤으로 얻은 레벨 이름을 게임 인스턴스에 저장
-	CurLevelName = MapList[RandomIndex];
 
-	return CurLevelName;
+	const FString& SelectedAssetName = MapList[RandomIndex];
+	CurLevelName = LevelNameMap.Contains(SelectedAssetName) ? LevelNameMap[SelectedAssetName] : TEXT("Unknown");
+
+	return SelectedAssetName;
 }
 
 // 플레이 레벨 데이터 테이블을 얻는 함수

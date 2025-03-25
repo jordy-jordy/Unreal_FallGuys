@@ -7,6 +7,19 @@
 #include "Mode/00_Title/UI/TitleMainWidget.h"
 #include "FallGlobal.generated.h"
 
+
+USTRUCT(BlueprintType)
+struct FLevelDisplayInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Name;  // Row의 Name
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString AssetName;  // 레벨의 AssetName
+};
+
 /**
  *
  */
@@ -79,6 +92,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static TArray<FString> GetAvailableLevels();
 	
+	// 플레이 가능한 레벨 및 이름 반환
+	UFUNCTION(BlueprintCallable)
+	static TArray<FLevelDisplayInfo> GetAvailableLevelInfos();
+
 	// 랜덤 스테이지 반환
 	UFUNCTION(BlueprintCallable)
 	static FString GetRandomLevel(APawn* _Pawn);
