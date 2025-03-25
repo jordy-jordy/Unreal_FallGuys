@@ -56,6 +56,11 @@ public:
 	void AddConnectedPlayers();
 	void AddConnectedPlayers_Implementation();
 
+	// 접속자 수 동기화
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastUpdateConnectedPlayers(int _NewCount);
+	void MulticastUpdateConnectedPlayers_Implementation(int _NewCount);
+
 	// 현재 접속한 플레이어 수 반환
 	UFUNCTION(BlueprintCallable, Category = "PLAYERS")
 	int GetConnectedPlayers() const { return ConnectedPlayers; }
@@ -76,11 +81,14 @@ public:
 		return LevelName;
 	}
 
+	UFUNCTION()
+	void OnRep_ConnectedPlayers();
+
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 private:
 	// 접속한 플레이어의 수
-	UPROPERTY(Replicated)
+	UPROPERTY(ReplicatedUsing = OnRep_ConnectedPlayers)
 	int ConnectedPlayers = 0;
 
 	// 랜덤 레벨 네임

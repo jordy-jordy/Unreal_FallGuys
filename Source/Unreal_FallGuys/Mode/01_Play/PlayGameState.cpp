@@ -38,13 +38,42 @@ void APlayGameState::SyncPlayerInfoFromPlayerState_Implementation()
 // 접속자 수 증가
 void APlayGameState::AddConnectedPlayers_Implementation()
 {
-	++ConnectedPlayers;
+	ConnectedPlayers++;
+
+	// 모든 클라이언트에게 현재 접속자 수를 알려줌
+	MulticastUpdateConnectedPlayers(ConnectedPlayers);
+}
+
+// 접속자 수 동기화
+void APlayGameState::MulticastUpdateConnectedPlayers_Implementation(int _NewCount)
+{
+	ConnectedPlayers = _NewCount;
+
+	// 디버그 출력
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("MulticastUpdateConnectedPlayers: %d"), ConnectedPlayers);
+
+	if (GEngine)
+	{
+		FString Message = FString::Printf(TEXT("접속자 수 갱신: %d"), ConnectedPlayers);
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, Message);
+	}
 }
 
 // 게임 인스턴스에서 세팅된 레벨 이름
 void APlayGameState::SavePlayLevelName_Implementation(const FString& _LevelName)
 {
 	LevelName = _LevelName;
+}
+
+void APlayGameState::OnRep_ConnectedPlayers()
+{
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("클라이언트에서 접속자 수 동기화됨: %d"), ConnectedPlayers);
+
+	if (GEngine)
+	{
+		FString Message = FString::Printf(TEXT("클라이언트 동기화된 접속자 수: %d"), ConnectedPlayers);
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, Message);
+	}
 }
 
 void APlayGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
