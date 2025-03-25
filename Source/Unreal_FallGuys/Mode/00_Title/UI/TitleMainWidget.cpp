@@ -9,12 +9,12 @@
 UTitleMainWidget::UTitleMainWidget(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	SetMainWidget(this);
+	//SetMainWidget(this);
 }
 
 void UTitleMainWidget::MainWidgetInit()
 {
-	UWidget* PanelWidget = GetWidgetFromName(UFallConst::UI::MainPanelName);
+	UWidget* PanelWidget = GetWidgetFromName(UFallConst::UI::TitleMainPanelName);
 	CanvasPanel = Cast<UCanvasPanel>(PanelWidget);
 
 	if (nullptr == CanvasPanel)
@@ -67,37 +67,37 @@ void UTitleMainWidget::SetWidgetUIType(FString _CurWidgetName)
 {
 	if (_CurWidgetName.Contains(FString("TitleHome")))
 	{
-		UIType = EUIType::TitleHome;
+		UIType = ETitleUIType::TitleHome;
 	}
 	else if (_CurWidgetName.Contains(FString("Customize")))
 	{
-		UIType = EUIType::TitleCustom;
+		UIType = ETitleUIType::TitleCustom;
 	}
 	else if (_CurWidgetName.Contains(FString("TitleEntrance")))
 	{
-		UIType = EUIType::TitleEntrance;
+		UIType = ETitleUIType::TitleEntrance;
 	}
 	else if (_CurWidgetName.Contains(FString("Btn")))
 	{
-		UIType = EUIType::CustomInven;
+		UIType = ETitleUIType::CustomInven;
 	}
 	else if (_CurWidgetName.Contains(FString("IPPort")))
 	{
-		UIType = EUIType::TitleIPPort;
+		UIType = ETitleUIType::TitleIPPort;
 	}
 	else if (_CurWidgetName.Contains(FString("TitleName")))
 	{
-		UIType = EUIType::TitleName;
+		UIType = ETitleUIType::TitleName;
 	}
 	else if (_CurWidgetName.Contains(FString("TitleMenu")))
 	{
-		UIType = EUIType::TitleMenu;
+		UIType = ETitleUIType::TitleMenu;
 	}
 }
 
-void UTitleMainWidget::SwitchWidget(EUIType _UIType)
+void UTitleMainWidget::SwitchWidget(ETitleUIType _UIType)
 {
-	TMultiMap<EUIType, UTitleUserWidget*> AllWidget = GetAllWidgets();
+	TMultiMap<ETitleUIType, UTitleUserWidget*> AllWidget = GetAllWidgets();
 	if (true == AllWidget.IsEmpty())
 	{
 		return;
@@ -118,31 +118,31 @@ void UTitleMainWidget::SwitchWidget(EUIType _UIType)
 		return;
 	}
 	
-	UTitleUserWidget* MenuWidget = FindWidget(EUIType::TitleMenu);
+	UTitleUserWidget* MenuWidget = FindWidget(ETitleUIType::TitleMenu);
 
 	// CurUIType À§Á¬ => _UIType À§Á¬
 	switch (CurUIType)
 	{
-	case EUIType::TitleHome:
+	case ETitleUIType::TitleHome:
 	{
-		switch (EUIType(_UIType))
+		switch (ETitleUIType(_UIType))
 		{
-		case EUIType::TitleCustom:
+		case ETitleUIType::TitleCustom:
 		{
 			CurUserWidget->SetVisibility(ESlateVisibility::Hidden);
 			ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 			MenuWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 
-			for (TPair<EUIType, UTitleUserWidget*> Pair : Widgets)
+			for (TPair<ETitleUIType, UTitleUserWidget*> Pair : Widgets)
 			{
-				if (Pair.Key == EUIType::CustomInven)
+				if (Pair.Key == ETitleUIType::CustomInven)
 				{
 					Pair.Value->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 				}
 			}
 			break;
 		}
-		case EUIType::TitleEntrance:
+		case ETitleUIType::TitleEntrance:
 		{
 			CurUserWidget->SetVisibility(ESlateVisibility::Hidden);
 			ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
@@ -154,30 +154,30 @@ void UTitleMainWidget::SwitchWidget(EUIType _UIType)
 		}
 		break;
 	}
-	case EUIType::TitleCustom:
+	case ETitleUIType::TitleCustom:
 	{
-		switch (EUIType(_UIType))
+		switch (ETitleUIType(_UIType))
 		{
-		case EUIType::TitleHome:
+		case ETitleUIType::TitleHome:
 		{
 			CurUserWidget->SetVisibility(ESlateVisibility::Hidden);
 			ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 			MenuWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			for (TPair<EUIType, UTitleUserWidget*> Pair : Widgets)
+			for (TPair<ETitleUIType, UTitleUserWidget*> Pair : Widgets)
 			{
-				if (Pair.Key == EUIType::CustomInven)
+				if (Pair.Key == ETitleUIType::CustomInven)
 				{
 					Pair.Value->SetVisibility(ESlateVisibility::Hidden);
 				}
 			}
 			break;
 		}
-		case EUIType::CustomInven:
+		case ETitleUIType::CustomInven:
 		{
 			CurUserWidget->SetVisibility(ESlateVisibility::Hidden);
-			for (TPair<EUIType, UTitleUserWidget*> Pair : Widgets)
+			for (TPair<ETitleUIType, UTitleUserWidget*> Pair : Widgets)
 			{
-				if (Pair.Key == EUIType::CustomInven)
+				if (Pair.Key == ETitleUIType::CustomInven)
 				{
 					Pair.Value->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 				}
@@ -190,18 +190,18 @@ void UTitleMainWidget::SwitchWidget(EUIType _UIType)
 		}
 		break;
 	}
-	case EUIType::TitleEntrance:
+	case ETitleUIType::TitleEntrance:
 	{
-		switch (EUIType(_UIType))
+		switch (ETitleUIType(_UIType))
 		{
-		case EUIType::TitleHome:
+		case ETitleUIType::TitleHome:
 		{
 			CurUserWidget->SetVisibility(ESlateVisibility::Hidden);
 			ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 			MenuWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 			break;
 		}
-		case EUIType::TitleIPPort:
+		case ETitleUIType::TitleIPPort:
 		{
 			CurUserWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 			ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
@@ -213,15 +213,15 @@ void UTitleMainWidget::SwitchWidget(EUIType _UIType)
 		}
 		break;
 	}
-	case EUIType::CustomInven:
+	case ETitleUIType::CustomInven:
 	{
-		switch (EUIType(_UIType))
+		switch (ETitleUIType(_UIType))
 		{
-		case EUIType::TitleCustom:
+		case ETitleUIType::TitleCustom:
 		{
-			for (TPair<EUIType, UTitleUserWidget*> Pair : Widgets)
+			for (TPair<ETitleUIType, UTitleUserWidget*> Pair : Widgets)
 			{
-				if (Pair.Key == EUIType::CustomInven)
+				if (Pair.Key == ETitleUIType::CustomInven)
 				{
 					Pair.Value->SetVisibility(ESlateVisibility::Hidden);
 				}
@@ -235,11 +235,11 @@ void UTitleMainWidget::SwitchWidget(EUIType _UIType)
 		}
 		break;
 	}
-	case EUIType::TitleIPPort:
+	case ETitleUIType::TitleIPPort:
 	{
-		switch (EUIType(_UIType))
+		switch (ETitleUIType(_UIType))
 		{
-		case EUIType::TitleEntrance:
+		case ETitleUIType::TitleEntrance:
 		{
 			CurUserWidget->SetVisibility(ESlateVisibility::Hidden);
 			ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
@@ -251,11 +251,11 @@ void UTitleMainWidget::SwitchWidget(EUIType _UIType)
 		}
 		break;
 	}
-	case EUIType::TitleName:
+	case ETitleUIType::TitleName:
 	{
-		switch (EUIType(_UIType))
+		switch (ETitleUIType(_UIType))
 		{
-		case EUIType::TitleHome:
+		case ETitleUIType::TitleHome:
 		{
 			CurUserWidget->SetVisibility(ESlateVisibility::Hidden);
 			ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
@@ -276,9 +276,9 @@ void UTitleMainWidget::SwitchWidget(EUIType _UIType)
 	CurUIType = _UIType;
 }
 
-void UTitleMainWidget::WidgetHidden(EUIType _Type)
+void UTitleMainWidget::WidgetHidden(ETitleUIType _Type)
 {
-	for (TPair<EUIType, UTitleUserWidget*> Pair : Widgets)
+	for (TPair<ETitleUIType, UTitleUserWidget*> Pair : Widgets)
 	{
 		if (Pair.Key == _Type)
 		{
@@ -289,7 +289,7 @@ void UTitleMainWidget::WidgetHidden(EUIType _Type)
 
 void UTitleMainWidget::AllWidgetHidden()
 {
-	for (TPair<EUIType, UTitleUserWidget*> AllWidgets : Widgets)
+	for (TPair<ETitleUIType, UTitleUserWidget*> AllWidgets : Widgets)
 	{
 		AllWidgets.Value->SetVisibility(ESlateVisibility::Hidden);
 	}
@@ -297,17 +297,17 @@ void UTitleMainWidget::AllWidgetHidden()
 
 void UTitleMainWidget::AllWidgetSelfHitTestInvisible()
 {
-	for (TPair<EUIType, UTitleUserWidget*> AllWidgets : Widgets)
+	for (TPair<ETitleUIType, UTitleUserWidget*> AllWidgets : Widgets)
 	{
 		AllWidgets.Value->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	}
 }
 
-UTitleUserWidget* UTitleMainWidget::FindWidget(EUIType _Type, int _Index/* = 0*/)
+UTitleUserWidget* UTitleMainWidget::FindWidget(ETitleUIType _Type, int _Index/* = 0*/)
 {
-	if (EUIType::CustomInven != _Type)
+	if (ETitleUIType::CustomInven != _Type)
 	{
-		for (TPair<EUIType, UTitleUserWidget*> Pair : Widgets)
+		for (TPair<ETitleUIType, UTitleUserWidget*> Pair : Widgets)
 		{
 			if (Pair.Key == _Type)
 			{
@@ -317,7 +317,7 @@ UTitleUserWidget* UTitleMainWidget::FindWidget(EUIType _Type, int _Index/* = 0*/
 	}
 
 	TArray<UTitleUserWidget*> CustomInvens;
-	Widgets.MultiFind(EUIType::CustomInven, CustomInvens);
+	Widgets.MultiFind(ETitleUIType::CustomInven, CustomInvens);
 	return CustomInvens[_Index];
 }
 

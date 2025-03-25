@@ -63,7 +63,7 @@ void UUIInputManager::SwitchMenuWidget(const FInputActionValue& _Value)
 		return;
 	}
 
-	EUIType CurUIType = Widget->GetCurUIType();
+	ETitleUIType CurUIType = Widget->GetCurUIType();
 
 	if (Value.Y == 0)
 	{
@@ -71,8 +71,8 @@ void UUIInputManager::SwitchMenuWidget(const FInputActionValue& _Value)
 		{
 			switch (CurUIType)
 			{
-			case EUIType::TitleHome:
-				Widget->SwitchWidget(EUIType::TitleCustom);
+			case ETitleUIType::TitleHome:
+				Widget->SwitchWidget(ETitleUIType::TitleCustom);
 				return;
 				break;
 			default:
@@ -83,8 +83,8 @@ void UUIInputManager::SwitchMenuWidget(const FInputActionValue& _Value)
 		{
 			switch (CurUIType)
 			{
-			case EUIType::TitleCustom:
-				Widget->SwitchWidget(EUIType::TitleHome);
+			case ETitleUIType::TitleCustom:
+				Widget->SwitchWidget(ETitleUIType::TitleHome);
 				return;
 				break;
 			default:
@@ -98,26 +98,26 @@ void UUIInputManager::SwitchMenuWidget(const FInputActionValue& _Value)
 		{
 			switch (CurUIType)
 			{
-			case EUIType::TitleHome:
-				Widget->SwitchWidget(EUIType::TitleEntrance);
+			case ETitleUIType::TitleHome:
+				Widget->SwitchWidget(ETitleUIType::TitleEntrance);
 				return;
 				break;
-			case EUIType::TitleCustom:
+			case ETitleUIType::TitleCustom:
 				return;
 				break;
-			case EUIType::TitleEntrance:
+			case ETitleUIType::TitleEntrance:
 				return;
 				break;
-			case EUIType::CustomInven:
+			case ETitleUIType::CustomInven:
 				return;
 				break;
-			case EUIType::TitleIPPort:
+			case ETitleUIType::TitleIPPort:
 				// ServerConnect
 				return;
 				break;
-			case EUIType::TitleName:
+			case ETitleUIType::TitleName:
 				// SetNickName
-				Widget->SwitchWidget(EUIType::TitleHome);
+				Widget->SwitchWidget(ETitleUIType::TitleHome);
 				return;
 				break;
 			default:
@@ -128,21 +128,21 @@ void UUIInputManager::SwitchMenuWidget(const FInputActionValue& _Value)
 		{
 			switch (CurUIType)
 			{
-			case EUIType::TitleCustom:
-				Widget->SwitchWidget(EUIType::TitleHome);
+			case ETitleUIType::TitleCustom:
+				Widget->SwitchWidget(ETitleUIType::TitleHome);
 				return;
 				break;
-			case EUIType::TitleEntrance:
-				Widget->SwitchWidget(EUIType::TitleHome);
+			case ETitleUIType::TitleEntrance:
+				Widget->SwitchWidget(ETitleUIType::TitleHome);
 				return;
 				break;
-			case EUIType::CustomInven:
+			case ETitleUIType::CustomInven:
 				//Widget->SwitchWidget(EUIType::TitleHome);
-				Widget->SwitchWidget(EUIType::TitleCustom);
+				Widget->SwitchWidget(ETitleUIType::TitleCustom);
 				return;
 				break;
-			case EUIType::TitleIPPort:
-				Widget->SwitchWidget(EUIType::TitleEntrance);
+			case ETitleUIType::TitleIPPort:
+				Widget->SwitchWidget(ETitleUIType::TitleEntrance);
 				return;
 				break;
 			default:

@@ -34,4 +34,5 @@ bool UFallConst::UseCountDown = false;
 // 접속 제한 기능을 사용할 것인지 결정하는 변수
 bool UFallConst::UseMinPlayer = false;
 
-FName UFallConst::UI::MainPanelName = TEXT("TitleMain");
+FName UFallConst::UI::TitleMainPanelName = TEXT("TitleMain");
+FName UFallConst::UI::PlayMainPanelName = TEXT("PlayMain");

@@ -37,7 +37,7 @@ enum class EPlayerStatus : uint8
 };
 
 UENUM(BlueprintType)
-enum class EUIType : uint8
+enum class ETitleUIType : uint8
 {
 	TitleHome UMETA(DisplayName = "TitleHome"),
 	TitleCustom UMETA(DisplayName = "TitleCustom"),
@@ -46,6 +46,20 @@ enum class EUIType : uint8
 	TitleIPPort UMETA(DisplayName = "TitleIPPort"),
 	TitleName UMETA(DisplayName = "TitleName"),
 	TitleMenu UMETA(DisplayName = "TitleMenu"),
+	MAX UMETA(DisplayName = "MAX"),
+};
+
+UENUM(BlueprintType)
+enum class EPlayUIType : uint8
+{
+	PlayStandby UMETA(DisplayName = "PlayStandby"),
+	PlayInGame UMETA(DisplayName = "PlayInGame"),
+	PlayLevelTag UMETA(DisplayName = "PlayLevelTag"),
+	PlayStartCount UMETA(DisplayName = "PlayStartCount"),
+	PlayReturnHome UMETA(DisplayName = "PlayReturnHome"),
+	PlayResult UMETA(DisplayName = "PlayResult"),
+	PlaySpectatorResult UMETA(DisplayName = "PlaySpectatorResult"),
+	PlayGameOver UMETA(DisplayName = "PlayGameOver"),
 	MAX UMETA(DisplayName = "MAX"),
 };
 

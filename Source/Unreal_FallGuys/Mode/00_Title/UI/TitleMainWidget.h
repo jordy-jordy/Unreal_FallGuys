@@ -29,9 +29,9 @@ public:
 	void SetWidgetUIType(FString _CurWidgetName);
 
 	UFUNCTION(BlueprintCallable)
-	void SwitchWidget(EUIType _UIType);
+	void SwitchWidget(ETitleUIType _UIType);
 
-	TMultiMap<EUIType, UTitleUserWidget*> GetAllWidgets()
+	TMultiMap<ETitleUIType, UTitleUserWidget*> GetAllWidgets()
 	{
 		return Widgets;
 	}
@@ -52,23 +52,23 @@ public:
 		CurWidget = _CurWidget;
 	}
 
-	EUIType& GetCurUIType()
+	ETitleUIType& GetCurUIType()
 	{
 		return CurUIType;
 	}
 
 	UFUNCTION(BlueprintCallable)
-	void WidgetHidden(EUIType _Type);
+	void WidgetHidden(ETitleUIType _Type);
 
 	UFUNCTION(BlueprintCallable)
-	UTitleUserWidget* FindWidget(EUIType _Type, int _Index = 0);
+	UTitleUserWidget* FindWidget(ETitleUIType _Type, int _Index = 0);
 
 protected:
 
 private:
 	UCanvasPanel* CanvasPanel;
-	EUIType UIType;
-	EUIType CurUIType;
+	ETitleUIType UIType;
+	ETitleUIType CurUIType;
 	UTitleUserWidget* CurWidget;
-	TMultiMap<EUIType, UTitleUserWidget*> Widgets;
+	TMultiMap<ETitleUIType, UTitleUserWidget*> Widgets;
 };

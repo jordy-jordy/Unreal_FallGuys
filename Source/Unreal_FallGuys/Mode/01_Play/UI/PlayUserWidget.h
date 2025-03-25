@@ -17,28 +17,20 @@ class UNREAL_FALLGUYS_API UPlayUserWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
-	void SetUserWidget(class UPlayUserWidget* _UserWidget)
+	void SetMainWidget(class UPlayMainWidget* _MainWidget)
 	{
-		UserWidget = _UserWidget;
+		MainWidget = _MainWidget;
 	}
 
 	UFUNCTION(BlueprintCallable)
-	void WidgetInit(FName _PanelName);
-
-	UFUNCTION(BlueprintCallable)
-	void CreateChildWidget(TSubclassOf<UUserWidget> _Widget, bool _IsVisible);
+	UPlayMainWidget* GetMainWidget()
+	{
+		return MainWidget;
+	}
 
 protected:
-	class UPlayUserWidget* CurUserWidget;
-	EUIType CurUIType;
 
 private:
 	UPROPERTY(Category = "UI", EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	class UPlayUserWidget* UserWidget;
-
-	UCanvasPanel* CanvasPanel;
-
-	EUIType UIType;
-
-	TMultiMap<EUIType, UPlayUserWidget*> Widgets;
+	class UPlayMainWidget* MainWidget;
 };

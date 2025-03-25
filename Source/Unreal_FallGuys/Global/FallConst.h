@@ -31,7 +31,8 @@ public:
 	class UI
 	{
 	public:
-		static FName MainPanelName;
+		static FName TitleMainPanelName;
+		static FName PlayMainPanelName;
 	};
 
 public:
