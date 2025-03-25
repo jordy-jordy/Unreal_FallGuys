@@ -80,20 +80,6 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 	// 서버장이 아닐시 리턴
     if (!HasAuthority()) return;
 
-	// 접속 제한을 사용하는 경우 인원 체크 및 접속 거부 실행
-	if (true == UFallConst::UseMinPlayer)
-	{
-		// 현재 접속한 플레이어 수가 최소 인원 이상이면 접속 거부
-		if (ConnectedPlayers >= UFallConst::MinPlayerCount)
-		{
-			UE_LOG(FALL_DEV_LOG, Error, TEXT("접속 거부: 현재 플레이어 수(%d)가 제한(%d) 이상입니다."), ConnectedPlayers, UFallConst::MinPlayerCount);
-
-			// 클라이언트를 강제 종료
-			NewPlayer->ClientTravel(TEXT("/Game/Maps/TitleLevel"), TRAVEL_Absolute);
-			return;
-		}
-	}
-
 	// PlayerState가 없을시 리턴
     APlayPlayerState* PlayerState = Cast<APlayPlayerState>(NewPlayer->PlayerState);
     if (!PlayerState)
@@ -109,6 +95,21 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
         UE_LOG(FALL_DEV_LOG, Error, TEXT("GameState가 nullptr 입니다."));
         return;
     }
+
+	// 접속 제한을 사용하는 경우 인원 체크 및 접속 거부 실행
+	if (true == UFallConst::UseMinPlayer)
+	{
+		int ConnectingPlayer = FallState->GetConnectedPlayers();
+		// 현재 접속한 플레이어 수가 최소 인원 이상이면 접속 거부
+		if (ConnectingPlayer >= UFallConst::MinPlayerCount)
+		{
+			UE_LOG(FALL_DEV_LOG, Error, TEXT("접속 거부: 현재 플레이어 수(%d)가 제한(%d) 이상입니다."), ConnectingPlayer, UFallConst::MinPlayerCount);
+
+			// 클라이언트를 강제 종료
+			NewPlayer->ClientTravel(TEXT("/Game/Maps/TitleLevel"), TRAVEL_Absolute);
+			return;
+		}
+	}
 
 	// 기존 Player 정보 백업
 	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
@@ -162,8 +163,13 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 	if (!GameInstance->IsMovedLevel)
 	{
 		// 접속중인 Player 수 증가
-		ConnectedPlayers++;
+		FallState->AddConnectedPlayers();
+		int ConnectingPlayer = FallState->GetConnectedPlayers();
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("접속자 수 : %d"), ConnectingPlayer);
 	}
+
+	// 게임 인스턴스에 저장된 레벨 이름을 게임 스테이트에 저장
+	FallState->SavePlayLevelName(GameInstance->InsGetCurLevelName());
 
 	// 카운트 다운을 사용하지 않는 경우
 	if (false == UFallConst::UseCountDown)
@@ -205,7 +211,8 @@ void APlayGameMode::SyncPlayerInfo_Implementation()
 // 최소 인원 체크
 bool APlayGameMode::IsMinPlayersReached()
 {
-	return ConnectedPlayers >= UFallConst::MinPlayerCount;
+	APlayGameState* FallState = GetGameState<APlayGameState>();
+	return FallState->GetConnectedPlayers() >= UFallConst::MinPlayerCount;
 }
 
 // 캐릭터 이동 가능하게 세팅

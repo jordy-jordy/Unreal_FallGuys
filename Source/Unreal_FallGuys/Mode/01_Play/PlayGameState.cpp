@@ -35,9 +35,23 @@ void APlayGameState::SyncPlayerInfoFromPlayerState_Implementation()
 	}
 }
 
+// 접속자 수 증가
+void APlayGameState::AddConnectedPlayers_Implementation()
+{
+	++ConnectedPlayers;
+}
+
+// 게임 인스턴스에서 세팅된 레벨 이름
+void APlayGameState::SavePlayLevelName_Implementation(const FString& _LevelName)
+{
+	LevelName = _LevelName;
+}
+
 void APlayGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(APlayGameState, PlayerInfoArray);
 	DOREPLIFETIME(APlayGameState, CountDownTime);
+	DOREPLIFETIME(APlayGameState, ConnectedPlayers);
+	DOREPLIFETIME(APlayGameState, LevelName);
 }
