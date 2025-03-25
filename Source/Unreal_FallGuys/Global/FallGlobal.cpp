@@ -216,7 +216,7 @@ FString UFallGlobal::GetRandomLevel(APawn* _Pawn)
 	return GameIns->InsGetRandomLevel();
 }
 
-// 랜덤 레벨 함수에서 얻은 이름 반환
+// PlayGameState : 랜덤 레벨 함수에서 얻은 이름 반환
 FString UFallGlobal::GetLevelName()
 {
 	UWorld* World = GWorld;
@@ -230,7 +230,7 @@ FString UFallGlobal::GetLevelName()
 	return FallState->GetLevelName();
 }
 
-// PlayGameState의 현재 접속한 플레이어 수 반환
+// PlayGameState : 현재 접속한 플레이어 수 반환
 int UFallGlobal::GetConnectedPlayers()
 {
 	UWorld* World = GWorld; 
