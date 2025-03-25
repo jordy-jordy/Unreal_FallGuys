@@ -95,6 +95,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
 	FString InsGetRandomLevel();
 
+	// 저장된 레벨의 이름 반환
+	UFUNCTION(BlueprintCallable, Category = "LEVEL")
+	FString InsGetCurLevelName() const
+	{
+		return CurLevelName;
+	}
+
 	// 레벨 이동했는지 체크하는 변수
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PLAYER DATA")
 	bool IsMovedLevel = false;
@@ -106,13 +113,6 @@ public:
 	// 백업된 플레이어 정보 가져오기 함수
 	UFUNCTION(BlueprintCallable, Category = "PLAYER DATA")
 	bool InsGetBackedUpPlayerInfo(const FString& _UniqueID, FPlayerInfo& _OutPlayerInfo) const;
-
-	// 랜덤 레벨 함수에서 얻은 이름 반환
-	UFUNCTION(BlueprintCallable, Category = "LEVEL")
-	FString InsGetLevelName()
-	{
-		return LevelName;
-	}
 
 	// 서버 연결 상태를 TRUE로 전환
 	UFUNCTION(BlueprintCallable, Category = "SERVER")
@@ -163,9 +163,9 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "PLAYER NICKNAME")
 	FString Nickname = TEXT("TEST_JORDY");
 
-	// 랜덤 레벨 네임
+	// 레벨 이름
 	UPROPERTY(VisibleAnywhere, Category = "LEVEL")
-	FString LevelName = TEXT("");
+	FString CurLevelName = TEXT("");
 
 	// 맵리스트
 	TArray<FString> MapList;
@@ -174,9 +174,17 @@ private:
 	// 서버 연결 상태 변수
 	bool bIsConnected = false;
 
-	// 디버그용
+	// 디버그용 : 플레이어 태그 확인
 	UFUNCTION(BlueprintCallable, Category = "DEBUG")
 	void InsPrintPlayerInfo();
+
+	// 디버그용 : 접속자 수 확인
+	UFUNCTION(BlueprintCallable, Category = "DEBUG")
+	void InsPrintConnectedPlayers();
+
+	// 디버그용 : 레벨 이름 확인
+	UFUNCTION(BlueprintCallable, Category = "DEBUG")
+	void InsPrintLevelName();
 
 //LMH
 public:

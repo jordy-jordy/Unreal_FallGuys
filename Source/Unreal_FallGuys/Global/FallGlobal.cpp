@@ -12,6 +12,7 @@
 #include <Global/Data/CostumeColorDataTable.h>
 #include <Mode/00_Title/TitleHUD.h>
 #include <Mode/01_Play/PlayGameMode.h>
+#include <Mode/01_Play/PlayGameState.h>
 
 
 void UFallGlobal::AssetPackagePath(UClass* _Class, const FString& _AssetName, FString& _Path)
@@ -225,11 +226,11 @@ FString UFallGlobal::GetLevelName()
 		return TEXT("GetLevelName False");
 	}
 
-	UBaseGameInstance* GameIns = Cast<UBaseGameInstance>(World->GetGameInstance());
-	return GameIns->InsGetLevelName();
+	APlayGameState* FallState = Cast<APlayGameState>(World->GetGameState());
+	return FallState->GetLevelName();
 }
 
-// PlayGameMode의 현재 접속한 플레이어 수 반환
+// PlayGameState의 현재 접속한 플레이어 수 반환
 int UFallGlobal::GetConnectedPlayers()
 {
 	UWorld* World = GWorld; 
@@ -239,14 +240,14 @@ int UFallGlobal::GetConnectedPlayers()
 		return 0;
 	}
 
-	APlayGameMode* GameMode = Cast<APlayGameMode>(World->GetAuthGameMode());
-	if (!GameMode)
+	APlayGameState* PlayState = Cast<APlayGameState>(World->GetGameState());
+	if (!PlayState)
 	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("GetConnectedPlayers: PlayGameMode is nullptr"));
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("GetConnectedPlayers: PlayGameState is nullptr"));
 		return 0;
 	}
 
-	return GameMode->ModeGetConnectedPlayers();
+	return PlayState->GetConnectedPlayers();
 }
 
 TArray<FString> UFallGlobal::GetCostumeColorNames(UObject* _WorldContext)

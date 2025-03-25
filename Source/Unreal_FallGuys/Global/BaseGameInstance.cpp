@@ -302,10 +302,11 @@ USkeletalMesh* UBaseGameInstance::InsGetCostumeColorMesh(APawn* _Pawn, const FSt
 		{
 			UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsGetCostumeMesh :: Empty Costume Color Mesh Data or Mesh"));
 		}
-		else
-		{
-			UE_LOG(FALL_DEV_LOG, Error, TEXT("InsGetCostumeMesh :: Invalid Costume  Color Mesh Data or Mesh"));
-		}
+		// 에러 임시 비활성화
+		//else
+		//{
+		//	UE_LOG(FALL_DEV_LOG, Error, TEXT("InsGetCostumeMesh :: Invalid Costume Color Mesh Data or Mesh"));
+		//}
 	}
 
 	return nullptr;
@@ -325,10 +326,11 @@ UStaticMesh* UBaseGameInstance::InsGetCostumeMesh(APawn* _Pawn, const FString& _
 		{
 			UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsGetCostumeMesh :: Empty Costume Mesh Data or Mesh"));
 		}
-		else
-		{
-			UE_LOG(FALL_DEV_LOG, Error, TEXT("InsGetCostumeMesh :: Invalid Costume Mesh Data or Mesh"));
-		}
+		// 에러 임시 비활성화
+		//else
+		//{
+		//	UE_LOG(FALL_DEV_LOG, Error, TEXT("InsGetCostumeMesh :: Invalid Costume Mesh Data or Mesh"));
+		//}
 	}
 
 	return nullptr;
@@ -383,10 +385,11 @@ FString UBaseGameInstance::InsGetRandomLevel()
 	} while (PlayedMapList.Contains(RandomIndex));
 
 	PlayedMapList.Add(RandomIndex);
+	
+	// 랜덤으로 얻은 레벨 이름을 게임 인스턴스에 저장
+	CurLevelName = MapList[RandomIndex];
 
-	LevelName = MapList[RandomIndex];
-
-	return LevelName;
+	return CurLevelName;
 }
 
 // 플레이 레벨 데이터 테이블을 얻는 함수
@@ -424,7 +427,7 @@ bool UBaseGameInstance::InsGetBackedUpPlayerInfo(const FString& _UniqueID, FPlay
 	return false;
 }
 
-// 디버그용
+// 디버그용 : 플레이어 태그 확인
 void UBaseGameInstance::InsPrintPlayerInfo()
 {
 	APlayGameState* PlayGameState = GetWorld()->GetGameState<APlayGameState>();
@@ -483,6 +486,60 @@ void UBaseGameInstance::InsPrintPlayerInfo()
 	if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan, ScreenMessage);
+	}
+}
+
+// 디버그용 : 접속자 수 확인
+void UBaseGameInstance::InsPrintConnectedPlayers()
+{
+	APlayGameState* PlayGameState = GetWorld()->GetGameState<APlayGameState>();
+	if (!PlayGameState)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("InsPrintConnectedPlayers: GameState가 nullptr 입니다."));
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Error: GameState가 nullptr 입니다."));
+		}
+		return;
+	}
+
+	int32 ConnectedCount = PlayGameState->GetConnectedPlayers();
+
+	// 콘솔 로그 출력
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("현재 접속자 수: %d"), ConnectedCount);
+
+	// 화면 출력
+	if (GEngine)
+	{
+		FString ScreenMsg = FString::Printf(TEXT("현재 접속자 수: %d"), ConnectedCount);
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, ScreenMsg);
+	}
+}
+
+// 디버그용 : 레벨 이름 확인
+void UBaseGameInstance::InsPrintLevelName()
+{
+	APlayGameState* PlayGameState = GetWorld()->GetGameState<APlayGameState>();
+	if (!PlayGameState)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("InsPrintLevelName: GameState가 nullptr 입니다."));
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Error: GameState가 nullptr 입니다."));
+		}
+		return;
+	}
+
+	FString LevelName = PlayGameState->GetLevelName();
+
+	// 콘솔 출력
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("현재 PlayGameState의 LevelName: %s"), *LevelName);
+
+	// 화면 출력
+	if (GEngine)
+	{
+		FString ScreenMessage = FString::Printf(TEXT("현재 레벨 이름: %s"), *LevelName);
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, ScreenMessage);
 	}
 }
 
