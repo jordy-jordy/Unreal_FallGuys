@@ -121,6 +121,18 @@ public:
 		bIsConnected = true;
 	}
 
+	// 디버그용 : 플레이어 태그 확인
+	UFUNCTION(BlueprintCallable, Category = "DEBUG")
+	void InsPrintPlayerInfo();
+
+	// 디버그용 : 접속자 수 확인
+	UFUNCTION(BlueprintCallable, Category = "DEBUG")
+	void InsPrintConnectedPlayers();
+
+	// 디버그용 : 레벨 이름 확인
+	UFUNCTION(BlueprintCallable, Category = "DEBUG")
+	void InsPrintLevelName();
+
 protected:
 	// 플레이 레벨 데이터 테이블을 얻는 함수
 	UFUNCTION(BlueprintCallable, Category = "DATA")
@@ -175,18 +187,6 @@ private:
 
 	// 서버 연결 상태 변수
 	bool bIsConnected = false;
-
-	// 디버그용 : 플레이어 태그 확인
-	UFUNCTION(BlueprintCallable, Category = "DEBUG")
-	void InsPrintPlayerInfo();
-
-	// 디버그용 : 접속자 수 확인
-	UFUNCTION(BlueprintCallable, Category = "DEBUG")
-	void InsPrintConnectedPlayers();
-
-	// 디버그용 : 레벨 이름 확인
-	UFUNCTION(BlueprintCallable, Category = "DEBUG")
-	void InsPrintLevelName();
 
 //LMH
 public:
