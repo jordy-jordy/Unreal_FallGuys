@@ -70,7 +70,6 @@ void APlayGameMode::Tick(float DeltaSeconds)
 
 		ServerTravelToNextMap(NextLevel);
 	}
-
 }
 
 // 접속시 실행되는 함수

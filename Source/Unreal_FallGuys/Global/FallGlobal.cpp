@@ -304,6 +304,20 @@ FString UFallGlobal::GetLevelName()
 	return FallState->GetLevelName();
 }
 
+// PlayGameState : 랜덤 레벨 함수에서 얻은 에셋 이름 반환
+FString UFallGlobal::GetLevelAssetName()
+{
+	UWorld* World = GWorld;
+	if (!World)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("GetConnectedPlayers: World is nullptr"));
+		return TEXT("GetLevelName False");
+	}
+
+	APlayGameState* FallState = Cast<APlayGameState>(World->GetGameState());
+	return FallState->GetLevelAssetName();
+}
+
 // PlayGameState : 현재 접속한 플레이어 수 반환
 int UFallGlobal::GetConnectedPlayers()
 {

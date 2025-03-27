@@ -128,6 +128,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static FString GetLevelName();
 
+	// PlayGameState : 랜덤 레벨 함수에서 얻은 에셋 이름 반환
+	UFUNCTION(BlueprintCallable)
+	static FString GetLevelAssetName();
+
 	// PlayGameState : 현재 접속한 플레이어 수 반환
 	UFUNCTION(BlueprintCallable)
 	static int GetConnectedPlayers();
