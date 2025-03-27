@@ -119,9 +119,11 @@ public:
 	static FString GetRandomLevel(APawn* _Pawn);
 
 	// 레벨 가이드 반환
+	UFUNCTION(BlueprintCallable)
 	static FString GetPlayGuideFromAssetName(const FString& _AssetName);
 
 	// 레벨 이미지 반환
+	UFUNCTION(BlueprintCallable)
 	static UTexture2D* GetLevelImageFromAssetName(const FString& _AssetName);
 
 	// PlayGameState : 랜덤 레벨 함수에서 얻은 이름 반환
