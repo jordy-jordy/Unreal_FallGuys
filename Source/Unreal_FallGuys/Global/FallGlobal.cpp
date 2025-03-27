@@ -325,6 +325,27 @@ TArray<FString> UFallGlobal::GetCostumeColorNames(UObject* _WorldContext)
 	return ColorNames;
 }
 
+// PlayGameState :  Count Down Time 반환
+float UFallGlobal::GetCountDownTime()
+{
+	UWorld* World = GWorld;
+	if (!World)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("GetCountDownTime: World is nullptr"));
+		return 0;
+	}
+
+	APlayGameState* PlayState = Cast<APlayGameState>(World->GetGameState());
+	if (!PlayState)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("GetCountDownTime: PlayGameState is nullptr"));
+		return 0;
+	}
+
+	return PlayState->CountDownTime;
+}
+
+
 // 이재영 : 메인위젯을 얻는 함수
 UTitleMainWidget* UFallGlobal::GetMainWidget(UWorld* _World)
 {

@@ -108,9 +108,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static int GetConnectedPlayers();
 
-	// 코스튬의
+	// 코스튬 관련 편의 기능 (현재 개발중)
 	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
 	static TArray<FString> GetCostumeColorNames(UObject* _WorldContext);
+
+	// PlayGameState :  Count Down Time 반환
+	UFUNCTION(BlueprintCallable)
+	static float GetCountDownTime();
+
 
 // 이재영 : 메인위젯을 얻는 함수
 public:
