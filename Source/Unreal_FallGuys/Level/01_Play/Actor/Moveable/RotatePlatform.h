@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Components/CapsuleComponent.h"
 #include "Level/01_Play/Components/MovementActorComponent.h"
 #include "Level/01_Play/Components/LaunchActorComponent.h"
 #include "RotatePlatform.generated.h"
@@ -65,6 +66,15 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "RotatePlatform")
 	UStaticMeshComponent* PlatformBody;
 
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "RotatePlatform")
+	UCapsuleComponent* StraightCollision;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "RotatePlatform")
+	UCapsuleComponent* CrossCollision_X;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "RotatePlatform")
+	UCapsuleComponent* CrossCollision_Y;
+
 	// StickMesh
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "RotateStick")
 	UStaticMeshComponent* StickBody;
@@ -100,7 +110,7 @@ private:
 
 	// Functions
 	UFUNCTION()
-	void OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+	void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	UFUNCTION()
 	void OparateMesh();
