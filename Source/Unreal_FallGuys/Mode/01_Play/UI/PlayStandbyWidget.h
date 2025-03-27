@@ -13,5 +13,12 @@ UCLASS()
 class UNREAL_FALLGUYS_API UPlayStandbyWidget : public UPlayUserWidget
 {
 	GENERATED_BODY()
+
+public:
+	UFUNCTION(BlueprintCallable)
+	FString GetCurLevelGuide();
 	
+private:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
+	FString GuideText = TEXT("");
 };

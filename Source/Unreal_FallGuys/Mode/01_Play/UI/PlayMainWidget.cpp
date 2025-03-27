@@ -290,19 +290,13 @@ void UPlayMainWidget::AllWidgetSelfHitTestInvisible()
 
 UPlayUserWidget* UPlayMainWidget::FindWidget(EPlayUIType _Type, int _Index/* = 0*/)
 {
-	//if (EPlayUIType::CustomInven != _Type)
-	//{
-	//	for (TPair<EPlayUIType, UPlayUserWidget*> Pair : Widgets)
-	//	{
-	//		if (Pair.Key == _Type)
-	//		{
-	//			return Pair.Value;
-	//		}
-	//	}
-	//}
+	for (TPair<EPlayUIType, UPlayUserWidget*> Pair : Widgets)
+	{
+		if (Pair.Key == _Type)
+		{
+			return Pair.Value;
+		}
+	}
 
-	//TArray<UPlayUserWidget*> CustomInvens;
-	//Widgets.MultiFind(EPlayUIType::CustomInven, CustomInvens);
-	//return CustomInvens[_Index];
 	return nullptr;
 }
