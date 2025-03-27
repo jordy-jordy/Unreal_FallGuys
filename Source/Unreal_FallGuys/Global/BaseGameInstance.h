@@ -125,7 +125,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "DEBUG")
 	void InsPrintPlayerInfo();
 
-	// 디버그용 : 접속자 수 확인
+	// 디버그용 : 접속자 수, 카운트 다운 bool 값 확인
 	UFUNCTION(BlueprintCallable, Category = "DEBUG")
 	void InsPrintConnectedPlayers();
 

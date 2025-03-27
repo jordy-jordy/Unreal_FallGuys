@@ -495,7 +495,7 @@ void UBaseGameInstance::InsPrintPlayerInfo()
 	}
 }
 
-// 디버그용 : 접속자 수 확인
+// 디버그용 : 접속자 수, 카운트 다운 bool 값 확인
 void UBaseGameInstance::InsPrintConnectedPlayers()
 {
 	APlayGameState* PlayGameState = GetWorld()->GetGameState<APlayGameState>();
@@ -510,15 +510,20 @@ void UBaseGameInstance::InsPrintConnectedPlayers()
 	}
 
 	int32 ConnectedCount = PlayGameState->GetConnectedPlayers();
+	bool IsOverCount = PlayGameState->IsCountDownOver;
 
 	// 콘솔 로그 출력
-	UE_LOG(FALL_DEV_LOG, Log, TEXT("현재 접속자 수: %d"), ConnectedCount);
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("현재 접속자 수 : %d"), ConnectedCount);
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("카운트 다운 끝났니? : %s"), IsOverCount ? TEXT("true") : TEXT("false"));
 
 	// 화면 출력
 	if (GEngine)
 	{
-		FString ScreenMsg = FString::Printf(TEXT("현재 접속자 수: %d"), ConnectedCount);
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, ScreenMsg);
+		FString ScreenMsgPlayer = FString::Printf(TEXT("현재 접속자 수 : %d"), ConnectedCount);
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, ScreenMsgPlayer);
+
+		FString ScreenMsgCountOver = FString::Printf(TEXT("카운트 다운 끝났니? : %s"), IsOverCount ? TEXT("true") : TEXT("false"));
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, ScreenMsgCountOver);
 	}
 }
 
