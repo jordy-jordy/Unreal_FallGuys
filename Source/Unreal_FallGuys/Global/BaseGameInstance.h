@@ -60,6 +60,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
 	void InsChangeCostumeColor(APawn* _Pawn, const FString& _CostumeColor);
 
+	// 코스튬(상, 하의) 공통 함수
+	void InsApplyStaticMesh(UStaticMeshComponent* _Comp, UStaticMesh* _Mesh, const FString& _LogContext);
+
 	// Pawn의 코스튬 상의 변경
 	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
 	void InsChangeCostumeTop(APawn* _Pawn, UStaticMeshComponent* _UpComp, const FString& _CostumeTop);
@@ -101,6 +104,14 @@ public:
 	{
 		return CurLevelName;
 	}
+
+	// 레벨 가이드 반환
+	UFUNCTION(BlueprintCallable, Category = "LEVEL")
+	FString InsGetPlayGuideFromAssetName(const FString& _AssetName);
+
+	// 레벨 이미지 반환
+	UFUNCTION(BlueprintCallable, Category = "LEVEL")
+	UTexture2D* InsGetLevelImageFromAssetName(const FString& _AssetName);
 
 	// 레벨 이동했는지 체크하는 변수
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PLAYER DATA")

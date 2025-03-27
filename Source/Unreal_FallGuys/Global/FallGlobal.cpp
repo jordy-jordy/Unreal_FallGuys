@@ -264,6 +264,32 @@ FString UFallGlobal::GetRandomLevel(APawn* _Pawn)
 	return GameIns->InsGetRandomLevel();
 }
 
+// 레벨 가이드 반환
+FString UFallGlobal::GetPlayGuideFromAssetName(const FString& _AssetName)
+{
+	UWorld* World = GWorld;
+	if (!World)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("GetPlayGuideFromAssetName: World is nullptr"));
+	}
+
+	UBaseGameInstance* GameIns = World->GetGameInstance<UBaseGameInstance>();
+	return GameIns->InsGetPlayGuideFromAssetName(_AssetName);
+}
+
+// 레벨 이미지 반환
+UTexture2D* UFallGlobal::GetLevelImageFromAssetName(const FString& _AssetName)
+{
+	UWorld* World = GWorld;
+	if (!World)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("GetLevelImage: World is nullptr"));
+	}
+
+	UBaseGameInstance* GameIns = World->GetGameInstance<UBaseGameInstance>();
+	return GameIns->InsGetLevelImageFromAssetName(_AssetName);
+}
+
 // PlayGameState : 랜덤 레벨 함수에서 얻은 이름 반환
 FString UFallGlobal::GetLevelName()
 {

@@ -35,6 +35,24 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static TArray<FAssetData> AssetsPath(UClass* _Class);
 
+	// 템플릿 함수: FString 필드 기준으로 Row 검색
+	template<typename T>
+	static const T* FindRowByFStringField(UDataTable* _Table, const FString& _CompareValue, const FString& _Context, TFunctionRef<FString(const T*)> _FieldGetter)
+	{
+		if (!_Table) return nullptr;
+
+		TArray<FName> RowNames = _Table->GetRowNames();
+		for (const FName& RowName : RowNames)
+		{
+			const T* Row = _Table->FindRow<T>(RowName, _Context);
+			if (Row && _FieldGetter(Row) == _CompareValue)
+			{
+				return Row;
+			}
+		}
+		return nullptr;
+	}
+
 	UFUNCTION(BlueprintCallable)
 	static void ServerStart(UObject* _Object, FString _Port);
 
@@ -99,6 +117,12 @@ public:
 	// 랜덤 스테이지 반환
 	UFUNCTION(BlueprintCallable)
 	static FString GetRandomLevel(APawn* _Pawn);
+
+	// 레벨 가이드 반환
+	static FString GetPlayGuideFromAssetName(const FString& _AssetName);
+
+	// 레벨 이미지 반환
+	static UTexture2D* GetLevelImageFromAssetName(const FString& _AssetName);
 
 	// PlayGameState : 랜덤 레벨 함수에서 얻은 이름 반환
 	UFUNCTION(BlueprintCallable)

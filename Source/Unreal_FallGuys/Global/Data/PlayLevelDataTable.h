@@ -26,7 +26,11 @@ public:
 
 	// 전환 화면용 레벨 이미지
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LEVEL DATA")
-	UTexture* LevelIMG = nullptr;
+	UTexture2D* LevelIMG = nullptr;
+
+	// 플레이 방법
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LEVEL DATA")
+	FString PlayGuide;
 };
 
 /**
