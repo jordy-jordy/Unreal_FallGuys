@@ -41,6 +41,7 @@ class UNREAL_FALLGUYS_API APlayGameState : public AGameState
 
 public:
 	APlayGameState();
+	virtual void BeginPlay() override;
 
 	// 전체 플레이어 정보 목록 (GameState에서 관리)
 	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category = "PLAYER LIST")
@@ -78,12 +79,32 @@ public:
 	void SavePlayLevelName(const FString& _LevelName);
 	void SavePlayLevelName_Implementation(const FString& _LevelName);
 
+	// 게임 인스턴스에서 세팅된 레벨 에셋 이름
+	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
+	void SavePlayLevelAssetName(const FString& _LevelName);
+	void SavePlayLevelAssetName_Implementation(const FString& _LevelAssetName);
+
 	// 랜덤 레벨 함수에서 얻은 이름 반환
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
 	FString GetLevelName() const
 	{
 		return LevelName;
 	}
+
+	// 랜덤 레벨 함수에서 얻은 에셋 이름 반환
+	UFUNCTION(BlueprintCallable, Category = "LEVEL")
+	FString GetLevelAssetName() const
+	{
+		return LevelAssetName;
+	}
+
+	// Stage 제한 시간 유무 - 외부에서 값 가져옴
+	UPROPERTY(Replicated)
+	bool UseStageLimitTime;
+
+	// Stage 제한 시간 - 외부에서 값 가져옴
+	UPROPERTY(Replicated)
+	float StageLimitTime;
 
 	UFUNCTION()
 	void OnRep_ConnectedPlayers();
@@ -98,5 +119,15 @@ private:
 	// 랜덤 레벨 네임
 	UPROPERTY(Replicated)
 	FString LevelName = TEXT("");
+
+	// 랜덤 레벨 에셋 네임
+	UPROPERTY(Replicated)
+	FString LevelAssetName = TEXT("");
+
+	// Stage 제한 시간 유무 결정 함수
+	bool SetUseStageLimitTime() const;
+
+	// Stage 제한 시간 결정 함수
+	float SetStageLimitTime() const;
 
 };

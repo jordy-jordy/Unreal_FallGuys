@@ -22,9 +22,10 @@ void APlayGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (HasAuthority()) // 서버에서만 실행
+	if (HasAuthority())
 	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("서버: PlayGameMode가 시작되었습니다."));
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode BeginPlay START ======= "));
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode BeginPlay END ======= "));
 	}
 }
 
@@ -80,6 +81,8 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 	// 서버장이 아닐시 리턴
     if (!HasAuthority()) return;
 
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode PostLogin START ======= "));
+
 	// PlayerState가 없을시 리턴
     APlayPlayerState* PlayerState = Cast<APlayPlayerState>(NewPlayer->PlayerState);
     if (!PlayerState)
@@ -97,7 +100,7 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
     }
 
 	// 접속 제한을 사용하는 경우 인원 체크 및 접속 거부 실행
-	if (true == UFallConst::UseMinPlayer)
+	if (true == UFallConst::UsePlayerLimit)
 	{
 		int ConnectingPlayer = FallState->GetConnectedPlayers();
 		// 현재 접속한 플레이어 수가 최소 인원 이상이면 접속 거부
@@ -165,37 +168,17 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 		// 접속중인 Player 수 증가
 		FallState->AddConnectedPlayers();
 		int ConnectingPlayer = FallState->GetConnectedPlayers();
-		UE_LOG(FALL_DEV_LOG, Log, TEXT("접속자 수 : %d"), ConnectingPlayer);
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("PostLogin :: 접속자 수 : %d"), ConnectingPlayer);
 	}
 
 	// 게임 인스턴스에 저장된 레벨 이름을 게임 스테이트에 저장
 	FallState->SavePlayLevelName(GameInstance->InsGetCurLevelName());
+	// 게임 인스턴스에 저장된 레벨 에셋 이름을 게임 스테이트에 저장
+	FallState->SavePlayLevelAssetName(GameInstance->InsGetCurLevelAssetName());
 
-	// 카운트 다운을 사용하지 않는 경우
-	if (false == UFallConst::UseCountDown)
-	{
-		FTimerHandle DelayHandle;
-		GetWorld()->GetTimerManager().SetTimer(DelayHandle, [this]()
-			{
-				for (TActorIterator<APlayCharacter> It(GetWorld()); It; ++It)
-				{
-					APlayCharacter* PlayerCharacter = *It;
-					if (PlayerCharacter)
-					{
-						SetCharacterMovePossible(PlayerCharacter);
-					}
-				}
-			}, 0.2f, false); // 0.2초 뒤에 한 번 실행
-
-		// 카운트 다운 bool 값 변경
-		FallState->IsCountDownOver = true;
-	}
-
-	if (true == UFallConst::UseCountDown && (GameInstance->IsMovedLevel || IsMinPlayersReached()))
-	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("최소 인원 충족, 게임 시작 가능"));
-		StartGame();
-	}
+	// 게임 시작 조건 핸들
+	HandleStartConditions();
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode PostLogin END ======= "));
 }
 
 // 플레이어 인포 동기화
@@ -224,6 +207,39 @@ void APlayGameMode::SetCharacterMovePossible_Implementation(APlayCharacter* _Pla
 	_Player->S2M_SetCanMoveTrue();
 }
 
+// 게임 시작 조건 처리
+void APlayGameMode::HandleStartConditions()
+{
+	APlayGameState* FallState = GetGameState<APlayGameState>();
+	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
+
+	if (!FallState || !GameInstance)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("HandleStartConditions: GameState 또는 GameInstance가 nullptr입니다."));
+		return;
+	}
+
+	// 카운트 다운을 사용하지 않는 경우 → 바로 이동 가능
+	if (!UFallConst::UseCountDown)
+	{
+		for (TActorIterator<APlayCharacter> It(GetWorld()); It; ++It)
+		{
+			APlayCharacter* PlayerCharacter = *It;
+			if (PlayerCharacter)
+			{
+				SetCharacterMovePossible(PlayerCharacter);
+			}
+		}
+		FallState->IsCountDownOver = true;
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("카운트 다운 사용 안함 - 바로 이동 가능"));
+	}
+	else if (GameInstance->IsMovedLevel || IsMinPlayersReached())
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("게임 시작을 위한 최소 인원이 모였습니다. 게임이 시작됩니다."));
+		StartGame();
+	}
+}
+
 // 게임 시작
 void APlayGameMode::StartGame_Implementation()
 {
@@ -232,12 +248,12 @@ void APlayGameMode::StartGame_Implementation()
 	StartCountdownTimer();
 }
 
-// 카운트 다운 핸들 시작
+// 게임 시작 전 카운트다운 핸들 활성화
 void APlayGameMode::StartCountdownTimer_Implementation()
 {
 	if (!HasAuthority() || !GetWorld()) return;
 
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("카운트다운 시작, 3초 대기"));
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("카운트다운 시작, 0.5초 대기"));
 
 	// 3초 후 카운트다운 시작
 	FTimerHandle DelayTimer;
@@ -295,6 +311,50 @@ void APlayGameMode::UpdateCountdown()
 		// 카운트 다운 끝났음을 알림
 		FallState->IsCountDownOver = true;
 	}
+}
+
+// 스테이지 제한 시간 타이머 활성화
+void APlayGameMode::StartStageLimitTimer_Implementation()
+{
+	if (!HasAuthority()) return;
+
+	APlayGameState* FallState = GetGameState<APlayGameState>();
+	if (!FallState) return;
+
+	if (FallState->UseStageLimitTime == false)
+	{
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("스테이지 제한 시간을 사용하지 않으므로 타이머 시작 안함"));
+		return;
+	}
+
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("스테이지 제한 시간 타이머 시작: %.2f초"), FallState->StageLimitTime);
+
+	GetWorldTimerManager().SetTimer(StageLimitTimerHandle, this, &APlayGameMode::OnStageLimitTimeOver, FallState->StageLimitTime, false);
+}
+
+// 스테이지 제한 시간 오버 처리
+void APlayGameMode::OnStageLimitTimeOver()
+{
+	if (!HasAuthority()) return;
+
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("제한 시간 초과! 스테이지를 종료합니다."));
+
+	// 예시: 남은 플레이어 FAIL 처리
+	APlayGameState* FallState = GetGameState<APlayGameState>();
+	if (!FallState) return;
+
+	for (APlayerState* PS : FallState->PlayerArray)
+	{
+		APlayPlayerState* PState = Cast<APlayPlayerState>(PS);
+		if (PState && PState->PlayerInfo.Status == EPlayerStatus::DEFAULT)
+		{
+			PState->PlayerInfo.Status = EPlayerStatus::FAIL;
+			UE_LOG(FALL_DEV_LOG, Log, TEXT("Player FAIL 처리됨: %s"), *PState->PlayerInfo.Tag);
+		}
+	}
+
+	// 다음 맵 이동
+	ServerTravelToNextMap(NextLevel);
 }
 
 // 동기화 변수

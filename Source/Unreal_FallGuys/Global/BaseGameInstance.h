@@ -105,6 +105,13 @@ public:
 		return CurLevelName;
 	}
 
+	// 저장된 레벨의 에셋 이름 반환
+	UFUNCTION(BlueprintCallable, Category = "LEVEL")
+	FString InsGetCurLevelAssetName() const
+	{
+		return CurLevelAssetName;
+	}
+
 	// 레벨 가이드 반환
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
 	FString InsGetPlayGuideFromAssetName(const FString& _AssetName);
@@ -189,6 +196,10 @@ private:
 	// 레벨 이름
 	UPROPERTY(VisibleAnywhere, Category = "LEVEL")
 	FString CurLevelName = TEXT("");
+
+	// 레벨 에셋 이름
+	UPROPERTY(VisibleAnywhere, Category = "LEVEL")
+	FString CurLevelAssetName = TEXT("");
 
 	// 맵리스트
 	TArray<FString> MapList;

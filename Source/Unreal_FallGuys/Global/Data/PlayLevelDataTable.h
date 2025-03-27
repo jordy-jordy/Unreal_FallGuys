@@ -16,13 +16,21 @@ struct FPlayLevelDataRow : public FTableRowBase
 	~FPlayLevelDataRow() {}
 
 public:
+	// 레벨
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LEVEL DATA")
+	TSoftObjectPtr<UWorld> Level;
+
 	// 레벨 이름
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LEVEL DATA")
 	FString Name;
 
-	// 레벨
+	// 제한 시간 유무
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LEVEL DATA")
-	TSoftObjectPtr<UWorld> Level;
+	bool UseLimitTime = false;
+
+	// Stage 플레이 제한 시간 - 패키징때 쓰는 값
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LEVEL DATA")
+	float StageLimitTime = 60.0f;
 
 	// 전환 화면용 레벨 이미지
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LEVEL DATA")

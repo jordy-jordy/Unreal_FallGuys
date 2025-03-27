@@ -43,25 +43,38 @@ public:
 	void SetCharacterMovePossible(class APlayCharacter* _Player);
 	void SetCharacterMovePossible_Implementation(class APlayCharacter* _Player);
 
-	// 카운트 다운 핸들 시작
+	// 게임 시작 전 카운트다운 핸들 활성화
 	UFUNCTION(BlueprintCallable, Reliable, Server)
 	void StartCountdownTimer();
 	void StartCountdownTimer_Implementation();
 
+	// 스테이지 제한 시간 타이머 활성화
+	UFUNCTION(BlueprintCallable, Reliable, Server)
+	void StartStageLimitTimer();
+	void StartStageLimitTimer_Implementation();
+
+	// 스테이지 제한 시간 오버 처리
+	void OnStageLimitTimeOver();
 
 protected:
 	virtual void Tick(float DeltaSeconds) override;
 	void BeginPlay() override;
-
 	
-	// 카운트 다운 핸들
+	// 게임 시작 전 카운트 다운 핸들
 	FTimerHandle CountdownTimerHandle;
+
+	// 스테이지 제한 시간 핸들
+	FTimerHandle StageLimitTimerHandle;
 
 	// 카운트다운 시작 (3초 대기 후 실행)
 	void StartCountdown();
 
 	// 카운트다운 진행 (매초 실행)
 	void UpdateCountdown();
+
+	// 게임 시작 조건 처리
+	UFUNCTION()
+	void HandleStartConditions();
 
 	// 동기화 변수
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;

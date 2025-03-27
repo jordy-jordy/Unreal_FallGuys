@@ -376,6 +376,7 @@ FString UBaseGameInstance::InsGetRandomLevel()
 
 	const FString& SelectedAssetName = MapList[RandomIndex];
 	CurLevelName = LevelNameMap.Contains(SelectedAssetName) ? LevelNameMap[SelectedAssetName] : TEXT("Unknown");
+	CurLevelAssetName = SelectedAssetName;
 
 	return SelectedAssetName;
 }

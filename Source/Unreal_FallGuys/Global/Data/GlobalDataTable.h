@@ -52,5 +52,6 @@ public:
 	static const FCostumeDataRow* GetCostumeData(UWorld* _World, const FString& _Name);
 	static const FCostumeColorDataRow* GetCostumeColorData(UWorld* _World, const FString& _Name);
 	static const FPlayLevelDataRow* GetPlayLevelData(UWorld* _World, const FString& _Name);
+	static const FPlayLevelDataRow* FindPlayLevelDataByAssetName(UWorld* _World, const FString& _AssetName);
 	static const FResourceDataRow* GetResourceData(UWorld* _World, const FString& _Name);
 };

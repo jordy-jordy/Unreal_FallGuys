@@ -14,7 +14,7 @@ FName UFallConst::Collision::CollisionProfile_CheckPoint = TEXT("CheckPointColl"
 FString UFallConst::PlayLevelName = TEXT("Race2Map");
 
 // 게임 시작을 위한 최소 플레이어 수
-int UFallConst::MinPlayerCount = 1;
+int UFallConst::MinPlayerCount = 2;
 
 // 글로벌 데이터 테이블 경로
 FString UFallConst::GlobalDataTablePath = TEXT("/Script/Engine.DataTable'/Game/BP/Global/Data/DT_GlobalDataTable.DT_GlobalDataTable'");
@@ -32,7 +32,10 @@ float UFallConst::FallCountDownTime = 5.0f;
 bool UFallConst::UseCountDown = false;
 
 // 접속 제한 기능을 사용할 것인지 결정하는 변수
-bool UFallConst::UseMinPlayer = false;
+bool UFallConst::UsePlayerLimit = false;
+
+// Stage 플레이 제한 시간 - 개발 중일때만 씀
+float UFallConst::FallStageLimitTime = 30.0f;
 
 FName UFallConst::UI::TitleMainPanelName = TEXT("TitleMain");
 FName UFallConst::UI::PlayMainPanelName = TEXT("PlayMain");

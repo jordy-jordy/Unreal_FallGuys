@@ -58,7 +58,10 @@ public:
 	static bool UseCountDown;
 
 	// 접속 제한 기능을 사용할 것인지 결정하는 변수
-	static bool UseMinPlayer;
+	static bool UsePlayerLimit;
+
+	// Stage 플레이 제한 시간 - 개발 중일때만 씀
+	static float FallStageLimitTime;
 
 	// 디폴트 컬러
 	static const ECostumeColor DefaultColor = ECostumeColor::NONE;
