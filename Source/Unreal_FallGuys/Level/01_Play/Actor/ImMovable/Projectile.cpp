@@ -62,7 +62,7 @@ void AProjectile::OperateMesh()
 	Projectile = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Projectile"));
 	Projectile->SetupAttachment(RootScene);
 	Projectile->SetRelativeLocation({ 0, 0, 0 });
-	Projectile->SetRelativeScale3D({ 1.2f, 1.2f, 1.2f });
+	Projectile->SetRelativeScale3D({ 2.0f, 2.0f, 2.0f });
 
 	SetMesh();
 }

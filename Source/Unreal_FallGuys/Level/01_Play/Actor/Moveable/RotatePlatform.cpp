@@ -19,7 +19,9 @@ void ARotatePlatform::BeginPlay()
 
 	if (StickType != EStickType::NONE && StickBody)
 	{
-		StickBody->OnComponentHit.AddDynamic(this, &ARotatePlatform::OnComponentHit);
+		StraightCollision->OnComponentBeginOverlap.AddDynamic(this, &ARotatePlatform::OnBeginOverlap);
+		CrossCollision_X->OnComponentBeginOverlap.AddDynamic(this, &ARotatePlatform::OnBeginOverlap);
+		CrossCollision_Y->OnComponentBeginOverlap.AddDynamic(this, &ARotatePlatform::OnBeginOverlap);
 		LaunchComponent->SetActive(true);
 	}
 
@@ -42,7 +44,7 @@ void ARotatePlatform::Tick(float DeltaTime)
 	MovementComponent->Spin(-DeltaTime, StickBody);
 }
 
-void ARotatePlatform::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+void ARotatePlatform::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (LaunchComponent && OtherActor && OtherActor != this)
 	{
@@ -73,6 +75,27 @@ void ARotatePlatform::OparateMesh()
 	StickBody = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RotateStick"));
 	StickBody->SetupAttachment(RootScene);
 	StickBody->SetRelativeLocation({ 0, 0, 0 });
+
+	StraightCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("StraightCollision"));
+	StraightCollision->SetupAttachment(StickBody);
+	StraightCollision->SetCapsuleSize(22.0f, 525.5f);
+	StraightCollision->SetRelativeLocation({3, 0, 60});
+	StraightCollision->SetRelativeRotation(FRotator(0, 0, -90));
+	StraightCollision->SetActive(false);
+
+	CrossCollision_X = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CrossCollision1"));
+	CrossCollision_X->SetupAttachment(StickBody);
+	CrossCollision_X->SetCapsuleSize(43.45f, 705.0f);
+	CrossCollision_X->SetRelativeLocation({ 0, -2, 167 });
+	CrossCollision_X->SetRelativeRotation(FRotator(0, 90, -90));
+	CrossCollision_X->SetActive(false);
+
+	CrossCollision_Y = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CrossCollision2"));
+	CrossCollision_Y->SetupAttachment(StickBody);
+	CrossCollision_Y->SetCapsuleSize(43.45f, 705.0f);
+	CrossCollision_Y->SetRelativeLocation({ 0, -2, 167 });
+	CrossCollision_Y->SetRelativeRotation(FRotator(0, 0, -90));
+	CrossCollision_Y->SetActive(false);
 }
 
 #pragma region MyRegion
@@ -169,6 +192,8 @@ void ARotatePlatform::SetStick_S()
 		StickBody->SetStaticMesh(StickMesh);
 	}
 
+	StraightCollision->SetActive(true);
+
 	// Set Location And Scale
 	switch (PlatformType)
 	{
@@ -191,6 +216,9 @@ void ARotatePlatform::SetStick_C()
 	{
 		StickBody->SetStaticMesh(StickMesh);
 	}
+
+	CrossCollision_X->SetActive(true);
+	CrossCollision_Y->SetActive(true);
 
 	// Set Location And Scale
 	switch (PlatformType)
