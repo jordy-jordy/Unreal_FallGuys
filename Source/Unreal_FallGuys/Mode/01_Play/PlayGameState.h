@@ -57,7 +57,7 @@ public:
 	void AddConnectedPlayers_Implementation();
 
 	// 접속자 수 동기화
-	UFUNCTION(NetMulticast, Reliable)
+	UFUNCTION(Reliable, NetMulticast, Category = "PLAYERS")
 	void MulticastUpdateConnectedPlayers(int _NewCount);
 	void MulticastUpdateConnectedPlayers_Implementation(int _NewCount);
 
@@ -68,6 +68,10 @@ public:
 	// 카운트다운 시간 (서버에서 클라이언트로 동기화됨)
 	UPROPERTY(Replicated)
 	float CountDownTime;
+
+	// 카운트다운이 끝났는지 확인하는 변수
+	UPROPERTY(Replicated)
+	bool IsCountDownOver = false;
 
 	// 게임 인스턴스에서 세팅된 레벨 이름
 	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")

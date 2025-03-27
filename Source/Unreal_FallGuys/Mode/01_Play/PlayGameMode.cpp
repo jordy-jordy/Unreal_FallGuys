@@ -186,6 +186,9 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 					}
 				}
 			}, 0.2f, false); // 0.2초 뒤에 한 번 실행
+
+		// 카운트 다운 bool 값 변경
+		FallState->IsCountDownOver = true;
 	}
 
 	if (false != UFallConst::UseCountDown && (GameInstance->IsMovedLevel || IsMinPlayersReached()))
@@ -288,6 +291,9 @@ void APlayGameMode::UpdateCountdown()
 				SetCharacterMovePossible(PlayerCharacter);
 			}
 		}
+
+		// 카운트 다운 끝났음을 알림
+		FallState->IsCountDownOver = true;
 	}
 }
 

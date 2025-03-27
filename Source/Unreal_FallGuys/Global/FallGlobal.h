@@ -108,13 +108,17 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static int GetConnectedPlayers();
 
+	// PlayGameState : Count Down Time 반환 - 실시간으로 줄어드는 시간
+	UFUNCTION(BlueprintCallable)
+	static float GetCountDownTime();
+
+	// PlayGameState : Is Count Down Over 반환 - 카운트 다운 끝났어?
+	UFUNCTION(BlueprintCallable)
+	static bool GetIsCountDownOver();
+
 	// 코스튬 관련 편의 기능 (현재 개발중)
 	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
 	static TArray<FString> GetCostumeColorNames(UObject* _WorldContext);
-
-	// PlayGameState :  Count Down Time 반환
-	UFUNCTION(BlueprintCallable)
-	static float GetCountDownTime();
 
 
 // 이재영 : 메인위젯을 얻는 함수

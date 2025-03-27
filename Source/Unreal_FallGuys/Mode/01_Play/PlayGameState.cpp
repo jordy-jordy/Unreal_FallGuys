@@ -83,4 +83,5 @@ void APlayGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(APlayGameState, CountDownTime);
 	DOREPLIFETIME(APlayGameState, ConnectedPlayers);
 	DOREPLIFETIME(APlayGameState, LevelName);
+	DOREPLIFETIME(APlayGameState, IsCountDownOver);
 }
