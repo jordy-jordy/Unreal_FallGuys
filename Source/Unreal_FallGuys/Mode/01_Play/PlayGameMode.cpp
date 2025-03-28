@@ -221,16 +221,22 @@ void APlayGameMode::HandleStartConditions()
 	// 카운트 다운을 사용하지 않는 경우 → 바로 이동 가능
 	if (!UFallConst::UseCountDown)
 	{
-		for (TActorIterator<APlayCharacter> It(GetWorld()); It; ++It)
-		{
-			APlayCharacter* PlayerCharacter = *It;
-			if (PlayerCharacter)
+		FTimerHandle DelayHandle;
+		GetWorld()->GetTimerManager().SetTimer(DelayHandle, [this]()
 			{
-				SetCharacterMovePossible(PlayerCharacter);
-			}
-		}
-		FallState->IsCountDownOver = true;
+				for (TActorIterator<APlayCharacter> It(GetWorld()); It; ++It)
+				{
+					APlayCharacter* PlayerCharacter = *It;
+					if (PlayerCharacter)
+					{
+						SetCharacterMovePossible(PlayerCharacter);
+					}
+				}
+			}, 0.2f, false); // 0.2초 뒤에 한 번 실행
+
+		// 카운트 다운 bool 값 변경
 		UE_LOG(FALL_DEV_LOG, Log, TEXT("카운트 다운 사용 안함 - 바로 이동 가능"));
+		FallState->IsCountDownOver = true;
 	}
 	else if (GameInstance->IsMovedLevel || IsMinPlayersReached())
 	{
