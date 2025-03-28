@@ -112,10 +112,14 @@ float APlayGameState::SetStageLimitTime() const
 
 void APlayGameState::SpawnEggManager()
 {
-	
-	Spawnner = GetWorld()->SpawnActor<AEggSpawnManager>(SpawnManagerFactory,FVector(0,0,400.0f),FRotator(0,0,0));
+	if (HasAuthority())
+	{
+		Spawnner = GetWorld()->SpawnActor<AEggSpawnManager>(SpawnManagerFactory, FVector(0, 0, 400.0f), FRotator(0, 0, 0));
+		if (Spawnner == nullptr) return;
 
-	if (Spawnner == nullptr) return;
+
+	}
+
 
 	
 }

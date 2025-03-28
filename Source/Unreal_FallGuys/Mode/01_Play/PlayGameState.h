@@ -138,8 +138,8 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Manager")
 	TSubclassOf<class AEggSpawnManager> SpawnManagerFactory;
 	
-	UPROPERTY()
-	class AActor* Spawnner;
+	UPROPERTY(BlueprintReadWrite, Category = "Manager")
+	class AEggSpawnManager* Spawnner;
 
 
 };

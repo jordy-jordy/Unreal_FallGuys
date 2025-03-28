@@ -29,5 +29,21 @@ void AEggSpawnManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	TeamEggCount = CheckEggTeam();
+}
+
+TArray<int> AEggSpawnManager::CheckEggTeam()
+{
+
+	TArray<int> TeamEggCoopy;
+	TeamEggCoopy.SetNum(4);
+	for (AEgg* egg : Eggs)
+	{
+		if (egg->Team == -1) continue;
+		TeamEggCoopy[egg->Team] += 1;
+		
+	}
+	return TeamEggCoopy;
+	
 }
 

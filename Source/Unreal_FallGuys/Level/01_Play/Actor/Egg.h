@@ -26,9 +26,9 @@ public:
 
 
 
-private:
+public:
 	
 	UPROPERTY(EditAnywhere,Replicated, BlueprintReadWrite,Category = "Team", meta = (AllowPrivateAccess = "true"))
-	int Team = 0;
+	int Team = -1;
 
 };

@@ -30,17 +30,25 @@ public:
 	}
 
 	UFUNCTION()
-	void CheckEggTeam()
-	{
-
-	}
+	TArray<int> CheckEggTeam();
 
 	UPROPERTY(EditAnywhere, Category = "Egg|Factory")
 	TSubclassOf<class AActor> EggFactory;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Egg")
 	TArray<class AEgg*> Eggs;
 
 	UPROPERTY(EditAnywhere, Category = "Egg")
 	int EggCount = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Egg")
+	TArray<int> TeamEggCount;
+
+	UFUNCTION(BlueprintCallable)
+	TArray<int> GetTeamEggCount()
+	{
+		return TeamEggCount;
+
+	}
+	
 };
