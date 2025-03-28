@@ -23,7 +23,7 @@ class UNREAL_FALLGUYS_API UCustomButtonWidget : public UUserWidget
 protected:
 
 	void SetButtonStyle(UTexture2D* ImgTexture);
-	void SetButtonStyle(UMaterial* ImgMat);
+	void SetButtonStyle(UMaterialInterface* ImgMat);
 	UFUNCTION()
 	void AttachCustomStaticMesh();
 	UFUNCTION()

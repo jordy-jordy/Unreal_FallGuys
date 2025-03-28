@@ -6,5 +6,5 @@
 
 void ForceIncludeEnums()
 {
-    ECostumeColor DummyValue = ECostumeColor::NONE;
+    ECostumeColor DummyValue = ECostumeColor::DEFAULT;
 }

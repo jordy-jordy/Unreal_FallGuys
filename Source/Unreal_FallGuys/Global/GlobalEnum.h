@@ -10,10 +10,11 @@
 UENUM(BlueprintType)
 enum class ECostumeColor : uint8
 {
-	NONE UMETA(DisplayName = "None"),
+	DEFAULT UMETA(DisplayName = "Default"),
 	PINK UMETA(DisplayName = "Pink"),
 	YELLOW UMETA(DisplayName = "Yellow"),
 	BLUE UMETA(DisplayName = "Blue"),
+	RED UMETA(DisplayName = "Red"),
 	MAX UMETA(DisplayName = "Max")
 };
 

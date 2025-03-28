@@ -64,7 +64,7 @@ public:
 	static float FallStageLimitTime;
 
 	// 디폴트 컬러
-	static const ECostumeColor DefaultColor = ECostumeColor::NONE;
+	static const ECostumeColor DefaultColor = ECostumeColor::DEFAULT;
 
 
 private:

@@ -6,6 +6,7 @@
 #include <Global/GlobalEnum.h>
 #include "Global/BaseGameInstance.h"
 #include <Global/Data/GlobalDataTable.h>
+#include "Materials/MaterialInterface.h"
 #include <Global/FallGlobal.h>
 
 //void UCustomColorButtonWidget::Tick(FGeometry MyGeometry, float InDeltaTime)
@@ -27,9 +28,12 @@ void UCustomColorButtonWidget::NativeConstruct()
 FString UCustomColorButtonWidget::GetCustomValueAsString(ECostumeColor _Color)
 {
 	FString ColorName = "";
+
+
 	switch (_Color)
 	{
-	case ECostumeColor::NONE:
+	case ECostumeColor::DEFAULT:
+		ColorName = "DEFAULT";
 		break;
 	case ECostumeColor::PINK:
 		ColorName = "PINK";
@@ -40,6 +44,9 @@ FString UCustomColorButtonWidget::GetCustomValueAsString(ECostumeColor _Color)
 		break;
 	case ECostumeColor::BLUE:
 		ColorName = "BLUE";
+		break;
+	case ECostumeColor::RED:
+		ColorName = "RED";
 		break;
 	default:
 		break;
@@ -64,27 +71,11 @@ void UCustomColorButtonWidget::ChangePawnColor()
 
 void UCustomColorButtonWidget::SetButtonColor()
 {
-	//LoadTexture
+	CustomName = GetCustomValueAsString(Color);
+	UMaterialInterface* CustomMaterial= UFallGlobal::GetCostumeColorUIMaterial(GetOwningPlayerPawn(), CustomName);
 
-	// String 혹은 Enum Color 를 주면 -> 해당 이미지 리소스 경로 주는 함수
-	switch (Color)
-	{
-	case ECostumeColor::NONE:
-		break;
-	case ECostumeColor::PINK:
-		//SetButtonStyle(Mat,"/Game/BP/HUD/Custom/Mat/M_PinkColor.M_PinkColor");
-		break;
-	case ECostumeColor::YELLOW:
+	SetButtonStyle(CustomMaterial);
 
-		//SetButtonStyle(Mat,"/Game/BP/HUD/Custom/Mat/M_YellowColor.M_YellowColor");
-		break;
-	case ECostumeColor::BLUE:
-		//SetButtonStyle(Mat,"/Game/BP/HUD/Custom/Mat/M_BlueColor.M_BlueColor");
-		break;
-	default:
-		break;
-
-	}
 }
 
 void UCustomColorButtonWidget::GetResourceFromName()

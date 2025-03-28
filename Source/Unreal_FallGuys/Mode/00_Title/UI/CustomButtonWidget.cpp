@@ -4,7 +4,7 @@
 #include "Mode/00_Title/UI/CustomButtonWidget.h"
 #include "Mode/00_Title/TitlePawn.h"
 
-void UCustomButtonWidget::SetButtonStyle(UMaterial* Mat)
+void UCustomButtonWidget::SetButtonStyle(UMaterialInterface* Mat)
 {
 	//FText Path = FText::FromString(_Path);
 

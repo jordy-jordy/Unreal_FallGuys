@@ -25,7 +25,7 @@ public:
 
 	// 코스튬 컬러 이넘
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "COSTUME COLOR")
-	ECostumeColor Color = ECostumeColor::NONE;
+	ECostumeColor Color = ECostumeColor::DEFAULT;
 
 	// 코스튬 스켈레탈 메시
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "COSTUME COLOR")
