@@ -8,6 +8,7 @@
 #include <Global/FallConst.h>
 #include <Global/Data/GlobalDataTable.h>
 #include <Global/BaseGameInstance.h>
+#include "Level/01_Play/Actor/EggSpawnManager.h"
 
 
 APlayGameState::APlayGameState()
@@ -107,6 +108,16 @@ float APlayGameState::SetStageLimitTime() const
 	// 개발 중일 경우 또는 실패했을 때는 Const 값 사용
 	UE_LOG(FALL_DEV_LOG, Log, TEXT("개발 빌드 - Const에서 제한 시간 사용: %.2f초"), UFallConst::FallStageLimitTime);
 	return UFallConst::FallStageLimitTime;
+}
+
+void APlayGameState::SpawnEggManager()
+{
+	
+	Spawnner = GetWorld()->SpawnActor<AEggSpawnManager>(SpawnManagerFactory,FVector(0,0,400.0f),FRotator(0,0,0));
+
+	if (Spawnner == nullptr) return;
+
+	
 }
 
 // 게임 인스턴스에서 세팅된 레벨 이름

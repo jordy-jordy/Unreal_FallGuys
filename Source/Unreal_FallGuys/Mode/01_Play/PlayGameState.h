@@ -130,4 +130,16 @@ private:
 	// Stage 제한 시간 결정 함수
 	float SetStageLimitTime() const;
 
+//LMHH
+public:
+	UFUNCTION(BlueprintCallable)
+	void SpawnEggManager();
+
+	UPROPERTY(EditAnywhere, Category = "Manager")
+	TSubclassOf<class AEggSpawnManager> SpawnManagerFactory;
+	
+	UPROPERTY()
+	class AActor* Spawnner;
+
+
 };
