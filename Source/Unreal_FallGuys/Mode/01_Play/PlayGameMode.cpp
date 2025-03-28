@@ -81,7 +81,6 @@ void APlayGameMode::SyncPlayerInfo_Implementation()
 		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: GameState가 nullptr 입니다."));
 		return;
 	}
-
 	FallState->SyncPlayerInfoFromPlayerState();
 }
 
@@ -89,9 +88,8 @@ void APlayGameMode::SyncPlayerInfo_Implementation()
 void APlayGameMode::CheckNumberOfPlayer(APlayGameState* _PlayState)
 {
 	UBaseGameInstance* GameIns = GetGameInstance<UBaseGameInstance>();
-	if (_PlayState->GetConnectedPlayers() >= UFallConst::MinPlayerCount || true == GameIns->IsMovedLevel)
+	if (_PlayState->GetConnectedPlayers() >= UFallConst::MinPlayerCount)
 	{
-		// 인원이 모두 찼거나, 스테이지 1 이후거나
 		pNumberOfPlayer = true;
 	}
 	else
@@ -272,12 +270,15 @@ void APlayGameMode::StartCountdownTimer_Implementation()
 // 카운트다운 시작 (대기 후 실행)
 void APlayGameMode::StartCountdown()
 {
-	APlayGameState* PlayState = GetGameState<APlayGameState>();
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 카운트다운 진행 시작. 초기 값: %.0f"), PlayState->CountDownTime);
+	APlayGameState* FallState = GetGameState<APlayGameState>();
+	float Time = FallState->GetCountDownTime();
+	if (!FallState) return;
 
-	if (PlayState->CountDownTime <= 0)
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 카운트다운 진행 시작. 초기 값: %.0f"), Time);
+
+	if (Time <= 0)
 	{
-		PlayState->CountDownTime = 10.0f;
+		FallState->SetCountDownTime(10.0f);
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 카운트다운 값이 0이거나 음수라 기본값(10초)으로 설정"));
 	}
 
@@ -290,17 +291,18 @@ void APlayGameMode::UpdateCountdown()
 	APlayGameState* FallState = GetGameState<APlayGameState>();
 	if (!FallState) return;
 
-	FallState->CountDownTime -= 1.0f;
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 카운트다운 : %.0f"), FallState->CountDownTime);
+	FallState->MinusCountDownTime(1.0f);
+	float Time = FallState->GetCountDownTime();
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 카운트다운 : %.0f"), Time);
 
-	if (FallState->CountDownTime <= 0.0f)
+	if (FallState->GetCountDownTime() <= 0.0f)
 	{
 		GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 카운트다운 종료"));
 
 		// 카운트 다운 끝났음을 알림
 		pCountDownEnd = true;
-		FallState->IsCountDownOver = true;
+		FallState->SetIsCountDownOverTrue();
 		StartGame();
 	}
 }
@@ -313,15 +315,16 @@ void APlayGameMode::StartStageLimitTimer_Implementation()
 	APlayGameState* FallState = GetGameState<APlayGameState>();
 	if (!FallState) return;
 
-	if (FallState->UseStageLimitTime == false)
+	if (FallState->GetUseStageLimitTime() == false)
 	{
 		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: 스테이지 제한 시간을 사용하지 않으므로 타이머 시작 안함"));
 		return;
 	}
 
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 스테이지 제한 시간 타이머 시작: %.2f초"), FallState->StageLimitTime);
+	float Time = FallState->GetStageLimitTime();
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 스테이지 제한 시간 타이머 시작: %.2f초"), Time);
 
-	GetWorldTimerManager().SetTimer(StageLimitTimerHandle, this, &APlayGameMode::OnStageLimitTimeOver, FallState->StageLimitTime, false);
+	GetWorldTimerManager().SetTimer(StageLimitTimerHandle, this, &APlayGameMode::OnStageLimitTimeOver, Time, false);
 }
 
 // 스테이지 제한 시간 오버 처리
@@ -341,10 +344,25 @@ void APlayGameMode::OnStageLimitTimeOver()
 		if (PState && PState->PlayerInfo.Status == EPlayerStatus::DEFAULT)
 		{
 			PState->PlayerInfo.Status = EPlayerStatus::FAIL;
-			UE_LOG(FALL_DEV_LOG, Log, TEXT("Player FAIL 처리됨: %s"), *PState->PlayerInfo.Tag);
+			UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: Player FAIL 처리됨: %s"), *PState->PlayerInfo.Tag);
 		}
 	}
-
 	// 다음 맵 이동
 	ServerTravelToNextMap(UFallGlobal::GetRandomLevelWithOutPawn());
+}
+
+// 목표 골인 인원 수 제어
+void APlayGameMode::ControllFinishPlayer()
+{
+	if (2 >= UFallConst::MinPlayerCount) // 최소 인원이 2명 이하인 경우
+	{
+	}
+	else if (3 <= UFallConst::MinPlayerCount && UFallConst::MinPlayerCount <= 5) // 최소 인원이 3 ~ 5명인 경우
+	{
+
+	}
+	else // 최소 인원이 6명 이상인 경우
+	{
+
+	}
 }

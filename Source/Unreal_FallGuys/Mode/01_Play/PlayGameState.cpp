@@ -42,7 +42,7 @@ void APlayGameState::SyncPlayerInfoFromPlayerState_Implementation()
 	for (const auto& Elem : TempMap)
 	{
 		PlayerInfoArray.Add(FPlayerInfoEntry(Elem.Key, Elem.Value));
-		UE_LOG(FALL_DEV_LOG, Log, TEXT("GameState : 플레이어 정보 동기화 - UniqueId: %s, Tag: %s"),
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameState :: 플레이어 정보 동기화 - UniqueId: %s, Tag: %s"),
 			*Elem.Key, *Elem.Value.Tag);
 	}
 }
@@ -62,11 +62,11 @@ void APlayGameState::MulticastUpdateConnectedPlayers_Implementation(int _NewCoun
 	ConnectedPlayers = _NewCount;
 
 	// 디버그 출력
-	UE_LOG(FALL_DEV_LOG, Log, TEXT("MulticastUpdateConnectedPlayers: %d"), ConnectedPlayers);
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameState :: MulticastUpdateConnectedPlayers : %d"), ConnectedPlayers);
 
 	if (GEngine)
 	{
-		FString Message = FString::Printf(TEXT("접속자 수 갱신: %d"), ConnectedPlayers);
+		FString Message = FString::Printf(TEXT("PlayGameState :: 접속자 수 갱신 : %d"), ConnectedPlayers);
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, Message);
 	}
 }
@@ -82,7 +82,7 @@ bool APlayGameState::SetUseStageLimitTime() const
 	}
 	else
 	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("레벨 데이터를 찾을 수 없음. 레벨 이름 : %s"), *LevelAssetName);
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: 레벨 데이터를 찾을 수 없음. 레벨 이름 : %s"), *LevelAssetName);
 	}
 
 	return false;
@@ -106,7 +106,7 @@ float APlayGameState::SetStageLimitTime() const
 #endif
 
 	// 개발 중일 경우 또는 실패했을 때는 Const 값 사용
-	UE_LOG(FALL_DEV_LOG, Log, TEXT("개발 빌드 - Const에서 제한 시간 사용: %.2f초"), UFallConst::FallStageLimitTime);
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameState :: 개발 빌드 - Const에서 제한 시간 사용 : %.2f초"), UFallConst::FallStageLimitTime);
 	return UFallConst::FallStageLimitTime;
 }
 
@@ -138,11 +138,11 @@ void APlayGameState::SavePlayLevelAssetName_Implementation(const FString& _Level
 
 void APlayGameState::OnRep_ConnectedPlayers()
 {
-	UE_LOG(FALL_DEV_LOG, Log, TEXT("클라이언트에서 접속자 수 동기화됨: %d"), ConnectedPlayers);
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameState :: 클라이언트에서 접속자 수 동기화됨 : %d"), ConnectedPlayers);
 
 	if (GEngine)
 	{
-		FString Message = FString::Printf(TEXT("클라이언트 동기화된 접속자 수: %d"), ConnectedPlayers);
+		FString Message = FString::Printf(TEXT("PlayGameState :: 클라이언트 동기화된 접속자 수 : %d"), ConnectedPlayers);
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, Message);
 	}
 }

@@ -589,7 +589,7 @@ void UBaseGameInstance::InsPrintConnectedPlayers()
 	}
 
 	int32 ConnectedCount = PlayGameState->GetConnectedPlayers();
-	bool IsOverCount = PlayGameState->IsCountDownOver;
+	bool IsOverCount = PlayGameState->GetIsCountDownOver();
 
 	// 콘솔 로그 출력
 	UE_LOG(FALL_DEV_LOG, Log, TEXT("현재 접속자 수 : %d"), ConnectedCount);

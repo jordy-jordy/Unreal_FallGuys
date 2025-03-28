@@ -72,6 +72,9 @@ protected:
 	// 스테이지 제한 시간 오버 처리
 	void OnStageLimitTimeOver();
 
+	// 목표 골인 인원 수 제어
+	void ControllFinishPlayer();
+
 private:
 	// 접속 제한
 	bool InvalidConnect = false;
@@ -86,7 +89,7 @@ private:
 private:
 	// 골인 목표 인원 수
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Server", meta = (AllowPrivateAccess = "true"))
-	int FinishPlayer = 2;
+	int FinishPlayer = 99;
 
 	// 골인한 플레이어 수
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Server", meta = (AllowPrivateAccess = "true"))

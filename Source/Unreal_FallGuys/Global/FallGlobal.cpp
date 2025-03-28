@@ -377,7 +377,7 @@ float UFallGlobal::GetCountDownTime()
 		return 0;
 	}
 
-	return PlayState->CountDownTime;
+	return PlayState->GetCountDownTime();
 }
 
 // PlayGameState : Is Count Down Over 반환 - 카운트 다운 끝났어?
@@ -397,7 +397,7 @@ bool UFallGlobal::GetIsCountDownOver()
 		return 0;
 	}
 
-	return PlayState->IsCountDownOver;
+	return PlayState->GetIsCountDownOver();
 }
 
 TArray<FString> UFallGlobal::GetCostumeColorNames(UObject* _WorldContext)
