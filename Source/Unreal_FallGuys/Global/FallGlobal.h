@@ -98,6 +98,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static UStaticMesh* GetCostumeMesh(APawn* _Pawn, const FString& _MeshName);
 
+	// 리소스의 스테틱 메시 머티리얼 반환
+	UFUNCTION(BlueprintCallable)
+	static UMaterialInterface* GetResourceMeshMaterial(const FString& _ColorName);
+
 	// 리소스의 스테틱 메시 반환
 	UFUNCTION(BlueprintCallable)
 	static UStaticMesh* GetResourceMesh(const FString& _MeshName);
@@ -121,6 +125,10 @@ public:
 	// 랜덤 스테이지 반환
 	UFUNCTION(BlueprintCallable)
 	static FString GetRandomLevel(APawn* _Pawn);
+
+	// 랜덤 스테이지 반환 : Pawn없이
+	UFUNCTION(BlueprintCallable)
+	static FString GetRandomLevelWithOutPawn();
 
 	// 레벨 가이드 반환
 	UFUNCTION(BlueprintCallable)

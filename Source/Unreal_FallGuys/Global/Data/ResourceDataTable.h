@@ -27,6 +27,10 @@ public:
 	// 리소스 스테틱 메시
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RESOURCE")
 	UStaticMesh* Mesh = nullptr;
+
+	// 리소스 스테틱 메시 머티리얼
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RESOURCE")
+	UMaterialInterface* Material = nullptr;
 };
 
 /**

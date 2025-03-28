@@ -83,6 +83,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
 	UStaticMesh* InsGetCostumeMesh(APawn* _Pawn, const FString& _MeshName = TEXT("Default"));
 
+	// 리소스의 스테틱 메시 머티리얼 반환
+	UFUNCTION(BlueprintCallable, Category = "RESOURCE")
+	UMaterialInterface* InsGetResourceMeshMaterial(const FString& _ColorName);
+
 	// 리소스의 스테틱 메시 반환
 	UFUNCTION(BlueprintCallable, Category = "RESOURCE")
 	UStaticMesh* InsGetResourceMesh(UWorld* _World, const FString& _MeshName);

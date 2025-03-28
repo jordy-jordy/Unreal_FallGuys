@@ -141,6 +141,13 @@ UStaticMesh* UFallGlobal::GetCostumeMesh(APawn* _Pawn, const FString& _MeshName)
 	return GameIns->InsGetCostumeMesh(_Pawn, _MeshName);
 }
 
+// 리소스의 스테틱 메시 머티리얼 반환
+UMaterialInterface* UFallGlobal::GetResourceMeshMaterial(const FString& _ColorName)
+{
+	UBaseGameInstance* GameIns = GWorld->GetGameInstance<UBaseGameInstance>();
+	return GameIns->InsGetResourceMeshMaterial(_ColorName);
+}
+
 // 리소스의 스테틱 메시 반환
 UStaticMesh* UFallGlobal::GetResourceMesh(const FString& _MeshName)
 {
@@ -269,6 +276,13 @@ TArray<FLevelDisplayInfo> UFallGlobal::GetAvailableLevelInfos()
 FString UFallGlobal::GetRandomLevel(APawn* _Pawn)
 {
 	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
+	return GameIns->InsGetRandomLevel();
+}
+
+// 랜덤 스테이지 반환 : Pawn없이
+FString UFallGlobal::GetRandomLevelWithOutPawn()
+{
+	UBaseGameInstance* GameIns = GWorld->GetGameInstance<UBaseGameInstance>();
 	return GameIns->InsGetRandomLevel();
 }
 
