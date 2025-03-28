@@ -22,28 +22,22 @@ void UPlayStartCountWidget::SetWidgetImage(const TCHAR* _ImagePath)
 	CountImage->SetDesiredSizeOverride(ImageSize);
 }
 
-void UPlayStartCountWidget::CountDownWidget(float _CountTime)
+void UPlayStartCountWidget::CountDownWidget()
 {
-	FString ImagePath = TEXT("");
+	// FString ImagePath = TEXT("");
 
-	if (_CountTime == 1.0f)
-	{
-		ImagePath = TEXT("/Script/Engine.Texture2D'/Game/Resources/UI/01_Play/Textures/Start/T_Count1.T_Count1'");
-	}
-	if (_CountTime == 2.0f)
-	{
-		ImagePath = TEXT("/Script/Engine.Texture2D'/Game/Resources/UI/01_Play/Textures/Start/T_Count2.T_Count2'");
-	}
-	if (_CountTime == 3.0f)
-	{
-		ImagePath = TEXT("/Script/Engine.Texture2D'/Game/Resources/UI/01_Play/Textures/Start/T_Count3.T_Count3'");
-	}
-	if (_CountTime == 0.0f)
-	{
-		ImagePath = TEXT("/Script/Engine.Texture2D'/Game/Resources/UI/01_Play/Textures/Start/T_GO.T_GO'");
-	}
 
-	SetWidgetImage(*ImagePath);
-	PlayAnimation(CountAnim);
+	//UPlayUserWidget* CountWidget = GetMainWidget()->FindWidget(EPlayUIType::PlayStartCount);
+
+	//// UTexture2D* Image = LoadObject<UTexture2D>(nullptr, _ImagePath);
+
+	//CountImage = Cast<UImage>(CountWidget->GetWidgetFromName(TEXT("CountImage")));
+
+	//FVector2D ImageSize = CountImage->GetBrush().ImageSize;
+
+	//CountImage->SetBrushFromTexture(ArrTexture[static_cast<int>(_CountTime)]);
+	//CountImage->SetDesiredSizeOverride(ImageSize);
+
+	//PlayAnimation(CountAnim);
 }
 

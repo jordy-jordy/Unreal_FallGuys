@@ -19,12 +19,15 @@ public:
 	void SetWidgetImage(const TCHAR* _ImagePath);
 
 	UFUNCTION(BlueprintCallable)
-	void CountDownWidget(float _CountTime);
+	void CountDownWidget();
 	
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
 	class UImage* CountImage = nullptr;
 
-	UPROPERTY(EditAnywhere, Transient, meta = (BindWidgetAnim), Category = "UI")
-	UWidgetAnimation* CountAnim;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
+	 TArray<class UTexture2D*> ArrTexture;
+
+	//UPROPERTY(EditAnywhere, Transient, meta = (BindWidgetAnim), Category = "UI")
+	//UWidgetAnimation* CountAnim;
 };
