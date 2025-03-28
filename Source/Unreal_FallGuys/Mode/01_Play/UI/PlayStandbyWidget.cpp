@@ -2,7 +2,8 @@
 
 
 #include "Mode/01_Play/UI/PlayStandbyWidget.h"
-#include "Global/FallGlobal.h"
+#include "Unreal_FallGuys/Unreal_FallGuys.h"
+#include "Unreal_FallGuys.h"
 #include "Global/Data/GlobalDataTable.h"
 #include "Global/BaseGameInstance.h"
 
@@ -11,15 +12,13 @@ FString UPlayStandbyWidget::GetCurLevelGuide()
 {
 	UBaseGameInstance* Inst = GetWorld()->GetGameInstance<UBaseGameInstance>();
 
-	//if ("" == GuideText)
-	//{
-	//	return "";
-	//}
-
-	//const FPlayLevelDataRow* PlayLevelData = UGlobalDataTable::GetPlayLevelData(GetWorld(), GuideText);
+	if (nullptr == Inst)
+	{
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("nullptr == Inst"));
+		return "";
+	}
 
 	FString PlayGuide = Inst->InsGetRandomLevel();
-	//FString CurGuideText = UFallGlobal::GetPlayGuideFromAssetName(PlayGuide);
 
 	return PlayGuide;
 }
