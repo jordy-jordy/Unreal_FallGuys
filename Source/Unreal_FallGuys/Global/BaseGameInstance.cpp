@@ -294,6 +294,25 @@ USkeletalMesh* UBaseGameInstance::InsGetCostumeColorMesh(APawn* _Pawn, const FSt
 	return nullptr;
 }
 
+// 코스튬 컬러 UI용 머티리얼 반환 함수
+UMaterialInterface* UBaseGameInstance::InsGetCostumeColorUIMaterial(const FString& _ColorName)
+{
+	if (!CostumeColorDataTable)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("InsGetCostumeColorUIMaterial :: CostumeColorDataTable이 nullptr입니다."));
+		return nullptr;
+	}
+
+	const FCostumeColorDataRow* Row = UGlobalDataTable::GetCostumeColorData(GetWorld(), _ColorName);
+	if (Row && Row->ColorUIMaterial)
+	{
+		return Row->ColorUIMaterial;
+	}
+
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsGetCostumeColorUIMaterial :: 해당 이름(%s)의 데이터 또는 머티리얼이 없음"), *_ColorName);
+	return nullptr;
+}
+
 // 저장된 코스튬의 스테틱 메시 반환
 UStaticMesh* UBaseGameInstance::InsGetCostumeMesh(APawn* _Pawn, const FString& _MeshName)
 {

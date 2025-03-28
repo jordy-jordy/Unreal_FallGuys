@@ -127,6 +127,13 @@ USkeletalMesh* UFallGlobal::GetCostumeColorMesh(APawn* _Pawn, const FString& _Me
 	return GameIns->InsGetCostumeColorMesh(_Pawn, _MeshName);
 }
 
+// 코스튬 컬러 UI용 머티리얼 반환
+UMaterialInterface* UFallGlobal::GetCostumeColorUIMaterial(APawn* _Pawn, const FString& _ColorName)
+{
+	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
+	return GameIns->InsGetCostumeColorUIMaterial(_ColorName);
+}
+
 // 저장된 코스튬의 스테틱 메시 반환
 UStaticMesh* UFallGlobal::GetCostumeMesh(APawn* _Pawn, const FString& _MeshName)
 {

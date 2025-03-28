@@ -30,6 +30,10 @@ public:
 	// 코스튬 스켈레탈 메시
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "COSTUME COLOR")
 	USkeletalMesh* CostumeMesh = nullptr;
+
+	// 코스튬 컬러 머티리얼
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "COSTUME COLOR")
+	UMaterialInterface* ColorUIMaterial = nullptr;
 };
 
 /**

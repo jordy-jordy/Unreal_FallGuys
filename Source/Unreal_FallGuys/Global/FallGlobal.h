@@ -90,6 +90,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static USkeletalMesh* GetCostumeColorMesh(APawn* _Pawn, const FString& _MeshName);
 
+	// 코스튬 컬러 UI용 머티리얼 반환
+	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
+	static UMaterialInterface* GetCostumeColorUIMaterial(APawn* _Pawn, const FString& _ColorName);
+
 	// 저장된 코스튬의 스테틱 메시 반환
 	UFUNCTION(BlueprintCallable)
 	static UStaticMesh* GetCostumeMesh(APawn* _Pawn, const FString& _MeshName);

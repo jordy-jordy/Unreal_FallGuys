@@ -75,6 +75,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
 	USkeletalMesh* InsGetCostumeColorMesh(APawn* _Pawn, const FString& _MeshName = TEXT("Default"));
 
+	// 코스튬 컬러 UI용 머티리얼 반환 함수
+	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
+	UMaterialInterface* InsGetCostumeColorUIMaterial(const FString& _ColorName);
+
 	// 저장된 코스튬의 스테틱 메시 반환
 	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
 	UStaticMesh* InsGetCostumeMesh(APawn* _Pawn, const FString& _MeshName = TEXT("Default"));
