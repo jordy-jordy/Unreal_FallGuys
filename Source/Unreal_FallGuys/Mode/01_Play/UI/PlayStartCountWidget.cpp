@@ -4,6 +4,7 @@
 #include "Mode/01_Play/UI/PlayStartCountWidget.h"
 #include "Engine/Texture2D.h"
 #include "Components/Image.h"
+#include "Mode/01_Play/PlayGameState.h"
 #include "Mode/01_Play/UI/PlayMainWidget.h"
 
 

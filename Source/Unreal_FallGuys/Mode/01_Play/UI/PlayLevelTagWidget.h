@@ -14,4 +14,17 @@ class UNREAL_FALLGUYS_API UPlayLevelTagWidget : public UPlayUserWidget
 {
 	GENERATED_BODY()
 	
+public:
+	UFUNCTION(BlueprintCallable)
+	void StartPlayAnim();
+
+private:
+	UPROPERTY(EditAnywhere, Transient, meta = (BindWidgetAnim), Category = "UI")
+	UWidgetAnimation* LevelNamePartPanelAnim;
+
+	UPROPERTY(EditAnywhere, Transient, meta = (BindWidgetAnim), Category = "UI")
+	UWidgetAnimation* TagWhitePartAnim;
+
+	UPROPERTY(EditAnywhere, Transient, meta = (BindWidgetAnim), Category = "UI")
+	UWidgetAnimation* LevelExpPartPanelAnim;
 };
