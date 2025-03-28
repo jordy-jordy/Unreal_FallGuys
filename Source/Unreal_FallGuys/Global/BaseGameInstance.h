@@ -85,7 +85,7 @@ public:
 
 	// 리소스의 스테틱 메시 반환
 	UFUNCTION(BlueprintCallable, Category = "RESOURCE")
-	UStaticMesh* InsGetResourceMesh(APawn* _Pawn, const FString& _MeshName);
+	UStaticMesh* InsGetResourceMesh(UWorld* _World, const FString& _MeshName);
 
 	// 저장된 닉네임 반환
 	UFUNCTION(BlueprintCallable, Category = "PLAYER NICKNAME")

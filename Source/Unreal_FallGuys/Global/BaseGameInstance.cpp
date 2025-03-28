@@ -338,9 +338,9 @@ UStaticMesh* UBaseGameInstance::InsGetCostumeMesh(APawn* _Pawn, const FString& _
 }
 
 // 리소스의 스테틱 메시 반환
-UStaticMesh* UBaseGameInstance::InsGetResourceMesh(APawn* _Pawn, const FString& _MeshName)
+UStaticMesh* UBaseGameInstance::InsGetResourceMesh(UWorld* _World, const FString& _MeshName)
 {
-	const FResourceDataRow* ResourceData = UGlobalDataTable::GetResourceData(_Pawn->GetWorld(), _MeshName);
+	const FResourceDataRow* ResourceData = UGlobalDataTable::GetResourceData(_World, _MeshName);
 	if (ResourceData && ResourceData->Mesh)
 	{
 		return ResourceData->Mesh;

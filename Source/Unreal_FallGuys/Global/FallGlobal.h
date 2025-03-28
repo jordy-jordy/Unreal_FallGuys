@@ -100,7 +100,7 @@ public:
 
 	// 리소스의 스테틱 메시 반환
 	UFUNCTION(BlueprintCallable)
-	static UStaticMesh* GetResourceMesh(APawn* _Pawn, const FString& _MeshName);
+	static UStaticMesh* GetResourceMesh(const FString& _MeshName);
 
 	// 닉네임 반환
 	UFUNCTION(BlueprintCallable)

@@ -142,10 +142,11 @@ UStaticMesh* UFallGlobal::GetCostumeMesh(APawn* _Pawn, const FString& _MeshName)
 }
 
 // 리소스의 스테틱 메시 반환
-UStaticMesh* UFallGlobal::GetResourceMesh(APawn* _Pawn, const FString& _MeshName)
+UStaticMesh* UFallGlobal::GetResourceMesh(const FString& _MeshName)
 {
-	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
-	return GameIns->InsGetResourceMesh(_Pawn, _MeshName);
+	UWorld* World = GWorld;
+	UBaseGameInstance* GameIns = Cast<UBaseGameInstance>(World->GetGameInstance());
+	return GameIns->InsGetResourceMesh(World, _MeshName);
 }
 
 // 닉네임 반환
