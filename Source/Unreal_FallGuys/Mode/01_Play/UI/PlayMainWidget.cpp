@@ -116,146 +116,30 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 		return;
 	}
 	
-	//UPlayUserWidget* MenuWidget = FindWidget(EPlayUIType::TitleMenu);
-
 	// CurUIType À§Á¬ => _UIType À§Á¬
-	switch (CurUIType)
-	{
-	case EPlayUIType::PlayStandby:
-	{
-		switch (EPlayUIType(_UIType))
-		{
-		case EPlayUIType::PlayInGame:
-			CurUserWidget->SetVisibility(ESlateVisibility::Hidden);
-			ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			break;
-		case EPlayUIType::PlayLevelTag:
-			break;
-		default:
-			break;
-		}
-		default:
-			break;
-		}
-		break;
-	}
-	/*case EPlayUIType::TitleCustom:
-	{
-		switch (EPlayUIType(_UIType))
-		{
-		case EPlayUIType::TitleHome:
-		{
-			CurUserWidget->SetVisibility(ESlateVisibility::Hidden);
-			ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			MenuWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			for (TPair<EPlayUIType, UPlayUserWidget*> Pair : Widgets)
-			{
-				if (Pair.Key == EPlayUIType::CustomInven)
-				{
-					Pair.Value->SetVisibility(ESlateVisibility::Hidden);
-				}
-			}
-			break;
-		}
-		case EPlayUIType::CustomInven:
-		{
-			CurUserWidget->SetVisibility(ESlateVisibility::Hidden);
-			for (TPair<EPlayUIType, UPlayUserWidget*> Pair : Widgets)
-			{
-				if (Pair.Key == EPlayUIType::CustomInven)
-				{
-					Pair.Value->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-				}
-			}
-			MenuWidget->SetVisibility(ESlateVisibility::Hidden);
-			break;
-		}
-		default:
-			break;
-		}
-		break;
-	}
-	case EPlayUIType::TitleEntrance:
-	{
-		switch (EPlayUIType(_UIType))
-		{
-		case EPlayUIType::TitleHome:
-		{
-			CurUserWidget->SetVisibility(ESlateVisibility::Hidden);
-			ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			MenuWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			break;
-		}
-		case EPlayUIType::TitleIPPort:
-		{
-			CurUserWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			MenuWidget->SetVisibility(ESlateVisibility::Hidden);
-			break;
-		}
-		default:
-			break;
-		}
-		break;
-	}
-	case EPlayUIType::CustomInven:
-	{
-		switch (EPlayUIType(_UIType))
-		{
-		case EUIEPlayUITypeType::TitleCustom:
-		{
-			for (TPair<EPlayUIType, UPlayUserWidget*> Pair : Widgets)
-			{
-				if (Pair.Key == EPlayUIType::CustomInven)
-				{
-					Pair.Value->SetVisibility(ESlateVisibility::Hidden);
-				}
-			}
-			ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			MenuWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			break;
-		}
-		default:
-			break;
-		}
-		break;
-	}
-	case EPlayUIType::TitleIPPort:
-	{
-		switch (EPlayUIType(_UIType))
-		{
-		case EPlayUIType::TitleEntrance:
-		{
-			CurUserWidget->SetVisibility(ESlateVisibility::Hidden);
-			ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			MenuWidget->SetVisibility(ESlateVisibility::Hidden);
-			break;
-		}
-		default:
-			break;
-		}
-		break;
-	}
-	case EPlayUIType::TitleName:
-	{
-		switch (EPlayUIType(_UIType))
-		{
-		case EPlayUIType::TitleHome:
-		{
-			CurUserWidget->SetVisibility(ESlateVisibility::Hidden);
-			ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			MenuWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			break;
-		}
-		default:
-			break;
-		}
-		break;
-	}*/
-	//default:
+	//switch (CurUIType)
+	//{
+	//case EPlayUIType::PlayStandby:
+	//{
+	//	switch (EPlayUIType(_UIType))
+	//	{
+	//	case EPlayUIType::PlayInGame:
+	//		CurUserWidget->SetVisibility(ESlateVisibility::Hidden);
+	//		ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	//		break;
+	//	case EPlayUIType::PlayLevelTag:
+	//		break;
+	//	default:
+	//		break;
+	//	}
+	//	default:
+	//		break;
+	//	}
 	//	break;
 	//}
 
+	CurUserWidget->SetVisibility(ESlateVisibility::Hidden);
+	ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	SetCurWidget(ChangeWidget);
 	CurWidget;
 	CurUIType = _UIType;
