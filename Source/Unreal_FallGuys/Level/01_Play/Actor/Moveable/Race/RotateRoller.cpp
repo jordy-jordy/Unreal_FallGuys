@@ -16,6 +16,8 @@ ARotateRoller::ARotateRoller()
 void ARotateRoller::BeginPlay()
 {
 	Super::BeginPlay();
+
+	SetMesh();
 	
 	MovementComponent->SpinCycleSpeed = FRotator({ 0, 0, 70 });
 	MovementComponent->LimitAngle = FRotator({ 0, 0, 70 });
@@ -51,21 +53,11 @@ void ARotateRoller::OperateMesh()
 	CapsuleCollision->SetupAttachment(RollerBody);
 	CapsuleCollision->SetCapsuleSize(75.0f, 316.4f);
 	CapsuleCollision->SetRelativeRotation(FRotator(90, 0, 0));
-
-	SetMesh();
 }
 
 void ARotateRoller::SetMesh()
 {
-	UStaticMesh* AxisMesh = LoadObject<UStaticMesh>(nullptr, *Axis);
-	if (AxisMesh)
-	{
-		RollerAxis->SetStaticMesh(AxisMesh);
-	}
+	RollerAxis->SetStaticMesh(UFallGlobal::GetResourceMesh("RotateRollor_Axis"));
 
-	UStaticMesh* BodyMesh = LoadObject<UStaticMesh>(nullptr, *Body);
-	if (BodyMesh)
-	{
-		RollerBody->SetStaticMesh(BodyMesh);
-	}
+	RollerBody->SetStaticMesh(UFallGlobal::GetResourceMesh("RotateRollor_Body"));
 }

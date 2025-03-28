@@ -17,6 +17,8 @@ void AChainBomb::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	SetMesh();
+
 	MovementComponent->SpinCycleSpeed = FRotator({ 120, 0, 0 });
 	MovementComponent->LimitAngle = FRotator({ 70, 0, 0 });
 }
@@ -55,28 +57,13 @@ void AChainBomb::OperateMesh()
 	BombCollision->SetSphereRadius(75.8f);
 	BombCollision->SetupAttachment(Bomb);
 	BombCollision->SetRelativeLocation({ 0, 0, -68 });
-
-	SetMesh();
 }
 
 void AChainBomb::SetMesh()
 {
-	UStaticMesh* AxisMesh = LoadObject<UStaticMesh>(nullptr, *ChainAxis);
-	if (AxisMesh)
-	{
-		Axis->SetStaticMesh(AxisMesh);
-	}
+	Axis->SetStaticMesh(UFallGlobal::GetResourceMesh("ChainBomb_Axis"));
 
-	UStaticMesh* ChainMesh = LoadObject<UStaticMesh>(nullptr, *Chain);
-	if (ChainMesh)
-	{
-		StartChain->SetStaticMesh(ChainMesh);
-	}
+	StartChain->SetStaticMesh(UFallGlobal::GetResourceMesh("ChainBomb_Chain"));
 
-	UStaticMesh* BoamMesh = LoadObject<UStaticMesh>(nullptr, *ChainBomb);
-	if (BoamMesh)
-	{
-		Bomb->SetStaticMesh(BoamMesh);
-	}
+	Bomb->SetStaticMesh(UFallGlobal::GetResourceMesh("ChainBomb_Bomb"));
 }
-

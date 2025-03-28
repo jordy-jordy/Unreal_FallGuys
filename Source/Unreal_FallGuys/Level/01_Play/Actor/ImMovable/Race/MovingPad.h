@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "Components/BoxComponent.h"
 #include "Level/01_Play/Components/MovementActorComponent.h"
+#include "Global/Data/ResourceDataTable.h"
+#include "FallGlobal.h"
 #include "MovingPad.generated.h"
 
 UCLASS()
@@ -51,10 +53,6 @@ public:
 	bool IsMove = false;
 
 private:
-	// MeshAddress
-	FString PadCover = TEXT("/Engine/BasicShapes/Cube.Cube");
-	FString PadBody = TEXT("/Game/Platformer_2/Meshes/SM_obstacle_9_001.SM_obstacle_9_001");
-
 	// Functions
 	UFUNCTION()
 	void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

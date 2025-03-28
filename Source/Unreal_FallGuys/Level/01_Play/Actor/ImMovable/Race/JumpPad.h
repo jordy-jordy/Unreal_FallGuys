@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Level/01_Play/Components/LaunchActorComponent.h"
+#include "Global/Data/ResourceDataTable.h"
+#include "FallGlobal.h"
 #include "JumpPad.generated.h"
 
 UCLASS()
@@ -43,11 +45,6 @@ public:
 	UStaticMeshComponent* Light;
 
 private:
-	// MeshAddress
-	FString PadCase = TEXT("/Game/Platformer_2/Meshes/SM_trampoline_2_001.SM_trampoline_2_001");
-	FString JumpPad = TEXT("/Game/Platformer_2/Meshes/SM_trampoline_2_002.SM_trampoline_2_002");
-	FString PadLight = TEXT("/Game/Platformer_2/Meshes/SM_trampoline_plasma_002.SM_trampoline_plasma_002");
-
 	// Functions
 	UFUNCTION()
 	void OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);

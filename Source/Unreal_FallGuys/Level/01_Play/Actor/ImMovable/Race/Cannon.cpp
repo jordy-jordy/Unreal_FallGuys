@@ -16,6 +16,8 @@ ACannon::ACannon()
 void ACannon::BeginPlay()
 {
 	Super::BeginPlay();
+
+	SetMesh();
 }
 
 // Called every frame
@@ -61,16 +63,10 @@ void ACannon::OperateMesh()
 	CannonMuzzleCollision->SetRelativeLocation({ 0, 301, 0 });
 	CannonMuzzleCollision->SetRelativeRotation(FRotator( 0, 0, -90 ));
 	CannonMuzzleCollision->SetCapsuleSize(232.462f, 285.0f);
-
-	SetMesh();
 }
 
 void ACannon::SetMesh()
 {
-	UStaticMesh* BodyMesh = LoadObject<UStaticMesh>(nullptr, *CannonBody);
-	if (BodyMesh)
-	{
-		Cannon->SetStaticMesh(BodyMesh);
-	}
+	Cannon->SetStaticMesh(UFallGlobal::GetResourceMesh("Cannon"));
 }
 

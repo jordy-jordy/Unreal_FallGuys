@@ -28,13 +28,6 @@ void ARotatePlatform::BeginPlay()
 	SetRotateMesh();
 }
 
-void ARotatePlatform::OnConstruction(const FTransform& Transform)
-{
-	Super::OnConstruction(Transform);
-
-	SetRotateMesh();
-}
-
 // Called every frame
 void ARotatePlatform::Tick(float DeltaTime)
 {
@@ -101,62 +94,30 @@ void ARotatePlatform::OparateMesh()
 #pragma region MyRegion
 void ARotatePlatform::SetPlatform_Y()
 {
-	UStaticMesh* AxisMesh = LoadObject<UStaticMesh>(nullptr, *PlatformAxis_Y);
-	if (AxisMesh)
-	{
-		PlatformAxis->SetStaticMesh(AxisMesh);
-	}
+	PlatformAxis->SetStaticMesh(UFallGlobal::GetResourceMesh("RotatePlatform_Yellow_Axis"));
 
-	UStaticMesh* BodyMesh = LoadObject<UStaticMesh>(nullptr, *PlatformBody_Y);
-	if (BodyMesh)
-	{
-		PlatformBody->SetStaticMesh(BodyMesh);
-	}
+	PlatformBody->SetStaticMesh(UFallGlobal::GetResourceMesh("RotatePlatform_Yellow_Body"));
 }
 
 void ARotatePlatform::SetPlatform_P()
 {
-	UStaticMesh* AxisMesh = LoadObject<UStaticMesh>(nullptr, *PlatformAxis_P);
-	if (AxisMesh)
-	{
-		PlatformAxis->SetStaticMesh(AxisMesh);
-	}
+	PlatformAxis->SetStaticMesh(UFallGlobal::GetResourceMesh("RotatePlatform_Purple_Axis"));
 
-	UStaticMesh* BodyMesh = LoadObject<UStaticMesh>(nullptr, *PlatformBody_P);
-	if (BodyMesh)
-	{
-		PlatformBody->SetStaticMesh(BodyMesh);
-	}
+	PlatformBody->SetStaticMesh(UFallGlobal::GetResourceMesh("RotatePlatform_Purple_Body"));
 }
 
 void ARotatePlatform::SetPlatform_R()
 {
-	UStaticMesh* AxisMesh = LoadObject<UStaticMesh>(nullptr, *PlatformAxis_R);
-	if (AxisMesh)
-	{
-		PlatformAxis->SetStaticMesh(AxisMesh);
-	}
+	PlatformAxis->SetStaticMesh(UFallGlobal::GetResourceMesh("RotatePlatform_Red_Axis"));
 
-	UStaticMesh* BodyMesh = LoadObject<UStaticMesh>(nullptr, *PlatformBody_R);
-	if (BodyMesh)
-	{
-		PlatformBody->SetStaticMesh(BodyMesh);
-	}
+	PlatformBody->SetStaticMesh(UFallGlobal::GetResourceMesh("RotatePlatform_Red_Body"));
 }
 
 void ARotatePlatform::SetPlatform_F()
 {
-	UStaticMesh* AxisMesh = LoadObject<UStaticMesh>(nullptr, *PlatformAxis_F);
-	if (AxisMesh)
-	{
-		PlatformAxis->SetStaticMesh(AxisMesh);
-	}
+	PlatformAxis->SetStaticMesh(UFallGlobal::GetResourceMesh("RotatePlatform_Fan_Axis"));
 
-	UStaticMesh* BodyMesh = LoadObject<UStaticMesh>(nullptr, *PlatformBody_F);
-	if (BodyMesh)
-	{
-		PlatformBody->SetStaticMesh(BodyMesh);
-	}
+	PlatformBody->SetStaticMesh(UFallGlobal::GetResourceMesh("RotatePlatform_Fan_Body"));
 }
 
 void ARotatePlatform::SetPlatform()
@@ -186,11 +147,7 @@ void ARotatePlatform::SetPlatform()
 #pragma region SetStick
 void ARotatePlatform::SetStick_S()
 {
-	UStaticMesh* StickMesh = LoadObject<UStaticMesh>(nullptr, *StraightStick);
-	if (StickMesh)
-	{
-		StickBody->SetStaticMesh(StickMesh);
-	}
+	StickBody->SetStaticMesh(UFallGlobal::GetResourceMesh("RotateStick_Straight"));
 
 	StraightCollision->SetActive(true);
 
@@ -211,11 +168,7 @@ void ARotatePlatform::SetStick_S()
 
 void ARotatePlatform::SetStick_C()
 {
-	UStaticMesh* StickMesh = LoadObject<UStaticMesh>(nullptr, *CrossStick);
-	if (StickMesh)
-	{
-		StickBody->SetStaticMesh(StickMesh);
-	}
+	StickBody->SetStaticMesh(UFallGlobal::GetResourceMesh("RotateStick_Cross"));
 
 	CrossCollision_X->SetActive(true);
 	CrossCollision_Y->SetActive(true);

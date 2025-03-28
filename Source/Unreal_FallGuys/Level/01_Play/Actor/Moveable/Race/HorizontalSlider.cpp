@@ -17,6 +17,7 @@ void AHorizontalSlider::BeginPlay()
 {
 	Super::BeginPlay();
 
+	SetMesh();
 	SetComponent();
 }
 
@@ -45,20 +46,15 @@ void AHorizontalSlider::OparateMesh()
 	Slider = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Slider"));
 	Slider->SetupAttachment(SliderLine);
 	Slider->SetRelativeLocation({ 0, 0, 70 });
-
-	UStaticMesh* LineMesh = LoadObject<UStaticMesh>(nullptr, *Line);
-	if (LineMesh)
-	{
-		SliderLine->SetStaticMesh(LineMesh);
-	}
-
-	UStaticMesh* SliderMesh = LoadObject<UStaticMesh>(nullptr, *Body);
-	if (SliderMesh)
-	{
-		Slider->SetStaticMesh(SliderMesh);
-	}
 }
 
+
+void AHorizontalSlider::SetMesh()
+{
+	SliderLine->SetStaticMesh(UFallGlobal::GetResourceMesh("Slider_Line"));
+
+	Slider->SetStaticMesh(UFallGlobal::GetResourceMesh("Slider_Body"));
+}
 
 void AHorizontalSlider::SetComponent()
 {

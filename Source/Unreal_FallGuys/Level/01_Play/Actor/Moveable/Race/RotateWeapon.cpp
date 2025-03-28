@@ -10,7 +10,6 @@ ARotateWeapon::ARotateWeapon()
 	PrimaryActorTick.bCanEverTick = true;
 
 	OperateMesh();
-	SetWeaponMesh_H();
 }
 
 // Called when the game starts or when spawned
@@ -21,13 +20,6 @@ void ARotateWeapon::BeginPlay()
 	SetWeaponMesh();
 
 	MovementComponent->LimitAngle = FRotator({ 0, 0, 60 });
-}
-
-void ARotateWeapon::OnConstruction(const FTransform& Transform)
-{
-	Super::OnConstruction(Transform);
-
-	SetWeaponMesh();
 }
 
 // Called every frame
@@ -66,32 +58,16 @@ void ARotateWeapon::OperateMesh()
 
 void ARotateWeapon::SetWeaponMesh_H()
 {
-	UStaticMesh* AxisMesh = LoadObject<UStaticMesh>(nullptr, *RotateAxis_H);
-	if (AxisMesh)
-	{
-		Axis->SetStaticMesh(AxisMesh);
-	}
+	Axis->SetStaticMesh(UFallGlobal::GetResourceMesh("RotateWeapon_Hammer_Axis"));
 
-	UStaticMesh* WeaponMesh = LoadObject<UStaticMesh>(nullptr, *RotateWeapon_H);
-	if (WeaponMesh)
-	{
-		Weapon->SetStaticMesh(WeaponMesh);
-	}
+	Weapon->SetStaticMesh(UFallGlobal::GetResourceMesh("RotateWeapon_Hammer_Weapon"));
 }
 
 void ARotateWeapon::SetWeaponMesh_A()
 {
-	UStaticMesh* AxisMesh = LoadObject<UStaticMesh>(nullptr, *RotateAxis_A);
-	if (AxisMesh)
-	{
-		Axis->SetStaticMesh(AxisMesh);
-	}
+	Axis->SetStaticMesh(UFallGlobal::GetResourceMesh("RotateWeapon_Axe_Axis"));
 
-	UStaticMesh* WeaponMesh = LoadObject<UStaticMesh>(nullptr, *RotateWeapon_A);
-	if (WeaponMesh)
-	{
-		Weapon->SetStaticMesh(WeaponMesh);
-	}
+	Weapon->SetStaticMesh(UFallGlobal::GetResourceMesh("RotateWeapon_Axe_Weapon"));
 }
 
 void ARotateWeapon::SetWeaponMesh()

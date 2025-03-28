@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "Components/SphereComponent.h"
 #include "Level/01_Play/Components/LaunchActorComponent.h"
+#include "Global/Data/ResourceDataTable.h"
+#include "FallGlobal.h"
 #include "Projectile.generated.h"
 
 UCLASS()
@@ -42,9 +44,6 @@ public:
 	float LiveTime = 0.0f;
 
 private:
-	// MeshAddress
-	FString Ball = TEXT("/Game/Platformer_2/Meshes/SM_ball_001.SM_ball_001");
-
 	// Functions
 	UFUNCTION()
 	void OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);

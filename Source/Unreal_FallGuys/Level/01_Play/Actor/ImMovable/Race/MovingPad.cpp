@@ -17,6 +17,8 @@ void AMovingPad::BeginPlay()
 {
 	Super::BeginPlay();
 
+	SetMesh();
+
 	if (BoxCollision)
 	{
 		BoxCollision->OnComponentBeginOverlap.AddDynamic(this, &AMovingPad::OnBeginOverlap);
@@ -76,21 +78,11 @@ void AMovingPad::OperateMesh()
 	BoxCollision->SetupAttachment(Pad);
 	BoxCollision->SetRelativeLocation({ 0, 0, 20 });
 	BoxCollision->SetBoxExtent(FVector{192.3f, 396.6f, 10.0f});
-	
-	SetMesh();
 }
 
 void AMovingPad::SetMesh()
 {
-	UStaticMesh* BodyMesh = LoadObject<UStaticMesh>(nullptr, *PadBody);
-	if (BodyMesh)
-	{
-		Pad->SetStaticMesh(BodyMesh);
-	}
+	Pad->SetStaticMesh(UFallGlobal::GetResourceMesh("MovingPad"));
 
-	UStaticMesh* CoverMesh = LoadObject<UStaticMesh>(nullptr, *PadCover);
-	if (CoverMesh)
-	{
-		Cover->SetStaticMesh(CoverMesh);
-	}
+	Cover->SetStaticMesh(UFallGlobal::GetResourceMesh("Cube"));
 }

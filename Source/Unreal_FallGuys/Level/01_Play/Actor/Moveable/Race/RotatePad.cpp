@@ -16,6 +16,8 @@ ARotatePad::ARotatePad()
 void ARotatePad::BeginPlay()
 {
 	Super::BeginPlay();
+
+	SetMesh();
 }
 
 // Called every frame
@@ -44,29 +46,15 @@ void ARotatePad::OperateMesh()
 	Cover->SetRelativeLocation({0, 208, 7});
 	Cover->SetRelativeScale3D({3.8f, 3.92f, 0.1f});
 	Cover->SetVisibility(false);
-	
-	SetMesh();
 }
 
 void ARotatePad::SetMesh()
 {
-	UStaticMesh* AxisMesh = LoadObject<UStaticMesh>(nullptr, *PadAxis);
-	if (AxisMesh)
-	{
-		Axis->SetStaticMesh(AxisMesh);
-	}
+	Axis->SetStaticMesh(UFallGlobal::GetResourceMesh("RotatePad_Axis"));
 
-	UStaticMesh* BodyMesh = LoadObject<UStaticMesh>(nullptr, *PadBody);
-	if (BodyMesh)
-	{
-		Pad->SetStaticMesh(BodyMesh);
-	}
+	Pad->SetStaticMesh(UFallGlobal::GetResourceMesh("RotatePad_Pad"));
 
-	UStaticMesh* CoverMesh = LoadObject<UStaticMesh>(nullptr, *PadCover);
-	if (CoverMesh)
-	{
-		Cover->SetStaticMesh(CoverMesh);
-	}
+	Cover->SetStaticMesh(UFallGlobal::GetResourceMesh("Cube"));
 }
 
 bool ARotatePad::CheckMoveUp()

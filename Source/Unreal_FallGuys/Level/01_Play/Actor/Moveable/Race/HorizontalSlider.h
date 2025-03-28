@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Level/01_Play/Components/MovementActorComponent.h"
+#include "Global/Data/ResourceDataTable.h"
+#include "FallGlobal.h"
 #include "HorizontalSlider.generated.h"
 
 UCLASS()
@@ -40,14 +42,12 @@ public:
 	UStaticMeshComponent* Slider;
 
 private:
-	// MeshAddress
-	FString Line = TEXT("/Game/Platformer_2/Meshes/SM_obstacle_7_001.SM_obstacle_7_001");
-	FString Body = TEXT("/Game/Platformer_2/Meshes/SM_obstacle_7_002.SM_obstacle_7_002");
-
 	// Functions
 	UFUNCTION()
 	void OparateMesh();
 
+	UFUNCTION()
+	void SetMesh();
 	UFUNCTION()
 	void SetComponent();
 };

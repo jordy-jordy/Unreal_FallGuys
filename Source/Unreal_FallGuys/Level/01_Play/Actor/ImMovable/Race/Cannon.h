@@ -9,6 +9,8 @@
 #include "Level/01_Play/Components/TimeEventActorComponent.h"
 #include "Projectile.h"
 #include "Engine/World.h"
+#include "Global/Data/ResourceDataTable.h"
+#include "FallGlobal.h"
 #include "Cannon.generated.h"
 
 UCLASS()
@@ -60,9 +62,6 @@ public:
 	float RespawnTime = 0.0f;
 
 private:
-	// MeshAddress
-	FString CannonBody = TEXT("/Game/Resources/Level/Race/Cannon/SM_Cannon.SM_Cannon");
-
 	// Functions
 	UFUNCTION()
 	void OperateMesh();

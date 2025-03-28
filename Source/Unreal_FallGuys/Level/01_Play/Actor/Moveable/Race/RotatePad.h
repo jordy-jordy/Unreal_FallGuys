@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Global/Data/ResourceDataTable.h"
+#include "FallGlobal.h"
 #include "RotatePad.generated.h"
 
 UENUM(BlueprintType)
@@ -62,11 +64,6 @@ public:
 	float LimitAngle = -65.0f;
 
 private:
-	// MeshAddress
-	FString PadCover = TEXT("/Engine/BasicShapes/Cube.Cube");
-	FString PadAxis = TEXT("/Game/Platformer_2/Meshes/SM_obstacle_8_001.SM_obstacle_8_001");
-	FString PadBody = TEXT("/Game/Platformer_2/Meshes/SM_obstacle_8_002.SM_obstacle_8_002");
-
 	// Functions
 	UFUNCTION()
 	void OperateMesh();

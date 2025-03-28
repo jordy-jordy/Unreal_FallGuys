@@ -17,6 +17,8 @@ void AJumpPad::BeginPlay()
 {
 	Super::BeginPlay();
 
+	SetMesh();
+
 	if (Pad)
 	{
 		Pad->OnComponentHit.AddDynamic(this, &AJumpPad::OnComponentHit);
@@ -60,28 +62,14 @@ void AJumpPad::OparateMesh()
 	Light->SetRelativeLocation({ 0, 0, 0 });
 
 	LaunchComponent->JumpForce = 1500.0f;
-
-	SetMesh();
 }
 
 void AJumpPad::SetMesh()
 {
-	UStaticMesh* CaseMesh = LoadObject<UStaticMesh>(nullptr, *PadCase);
-	if (CaseMesh)
-	{
-		Case->SetStaticMesh(CaseMesh);
-	}
+	Case->SetStaticMesh(UFallGlobal::GetResourceMesh("JumpPad_Case"));
 
-	UStaticMesh* PadMesh = LoadObject<UStaticMesh>(nullptr, *JumpPad);
-	if (PadMesh)
-	{
-		Pad->SetStaticMesh(PadMesh);
-	}
+	Pad->SetStaticMesh(UFallGlobal::GetResourceMesh("JumpPad_Pad"));
 
-	UStaticMesh* LightMesh = LoadObject<UStaticMesh>(nullptr, *PadLight);
-	if (LightMesh)
-	{
-		Light->SetStaticMesh(LightMesh);
-	}
+	Light->SetStaticMesh(UFallGlobal::GetResourceMesh("JumpPad_Light"));
 }
 

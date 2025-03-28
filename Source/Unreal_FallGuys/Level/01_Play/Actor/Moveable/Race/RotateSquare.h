@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Level/01_Play/Components/MovementActorComponent.h"
+#include "Global/Data/ResourceDataTable.h"
+#include "FallGlobal.h"
 #include "RotateSquare.generated.h"
 
 UCLASS()
@@ -39,10 +41,6 @@ public:
 	UStaticMeshComponent* RotateSquare;
 
 private:
-	// MeshAddress
-	FString Axis = TEXT("/Game/Platformer_2/Meshes/SM_obstacle_25_001.SM_obstacle_25_001");
-	FString Square = TEXT("/Game/Platformer_2/Meshes/SM_obstacle_25_002.SM_obstacle_25_002");
-
 	// Functions
 	UFUNCTION()
 	void OperateMesh();

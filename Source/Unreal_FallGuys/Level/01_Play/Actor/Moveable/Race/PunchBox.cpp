@@ -17,6 +17,7 @@ void APunchBox::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	SetMesh();
 }
 
 // Called every frame
@@ -71,53 +72,23 @@ void APunchBox::OperateMesh()
 	Platform->SetupAttachment(PunchBox);
 	Platform->SetRelativeLocation({0.0f, -45.0f, -943.3f});
 	Platform->SetRelativeScale3D({ 0.43f, 0.43f, 1.0f });
-
-	SetMesh();
 }
 
 void APunchBox::SetMesh()
 {
-	UStaticMesh* BoxMesh = LoadObject<UStaticMesh>(nullptr, *Box);
-	if (BoxMesh)
-	{
-		PunchBox->SetStaticMesh(BoxMesh);
-	}
+	PunchBox->SetStaticMesh(UFallGlobal::GetResourceMesh("PunchBox_Box"));
 
-	UStaticMesh* PunchMesh = LoadObject<UStaticMesh>(nullptr, *PunchBody);
-	if (PunchMesh)
-	{
-		Punch->SetStaticMesh(PunchMesh);
-	}
+	Punch->SetStaticMesh(UFallGlobal::GetResourceMesh("PunchBox_Punch"));
 
-	UStaticMesh* SpringMesh = LoadObject<UStaticMesh>(nullptr, *PunchSpring);
-	if (SpringMesh)
-	{
-		Spring->SetStaticMesh(SpringMesh);
-	}
+	Spring->SetStaticMesh(UFallGlobal::GetResourceMesh("PunchBox_Spring"));
 
-	UStaticMesh* PillarMMesh = LoadObject<UStaticMesh>(nullptr, *Pillar_M);
-	if (PillarMMesh)
-	{
-		PillarBody->SetStaticMesh(PillarMMesh);
-	}
+	PillarBody->SetStaticMesh(UFallGlobal::GetResourceMesh("PunchBox_PillarM"));
 
-	UStaticMesh* PillarTMesh = LoadObject<UStaticMesh>(nullptr, *Pillar_TB);
-	if (PillarTMesh)
-	{
-		PillarTop->SetStaticMesh(PillarTMesh);
-	}
+	PillarTop->SetStaticMesh(UFallGlobal::GetResourceMesh("PunchBox_PillarTB"));
 
-	UStaticMesh* PillarBMesh = LoadObject<UStaticMesh>(nullptr, *Pillar_TB);
-	if (PillarBMesh)
-	{
-		PillarBottom->SetStaticMesh(PillarBMesh);
-	}
-
-	UStaticMesh* PlatformMesh = LoadObject<UStaticMesh>(nullptr, *Plat);
-	if (PlatformMesh)
-	{
-		Platform->SetStaticMesh(PlatformMesh);
-	}
+	PillarBottom->SetStaticMesh(UFallGlobal::GetResourceMesh("PunchBox_PillarTB"));
+	
+	Platform->SetStaticMesh(UFallGlobal::GetResourceMesh("PunchBox_Platform"));
 }
 
 bool APunchBox::CheckFire()

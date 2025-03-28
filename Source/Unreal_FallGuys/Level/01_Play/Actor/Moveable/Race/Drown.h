@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Level/01_Play/Components/MovementActorComponent.h"
+#include "Global/Data/ResourceDataTable.h"
+#include "FallGlobal.h"
 #include "Drown.generated.h"
 
 UENUM(BlueprintType)
@@ -27,8 +29,6 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-	virtual void OnConstruction(const FTransform& Transform);
 
 public:	
 	// Called every frame
@@ -66,28 +66,6 @@ public:
 	bool IsLeft;
 
 private:
-	// MeshAddress
-	// Blue
-	FString DrownBody_B = TEXT("/Game/Platformer_2/Meshes/SM_indicator_001.SM_indicator_001");
-	FString LeftPropeller_B = TEXT("/Game/Platformer_2/Meshes/SM_indicator_propeller_2_001.SM_indicator_propeller_2_001");
-	FString RightPropeller_B = TEXT("/Game/Platformer_2/Meshes/SM_indicator_propeller_1_001.SM_indicator_propeller_1_001");
-	FString DrownLight_B = TEXT("/Game/Platformer_2/Meshes/SM_indicator_light_001.SM_indicator_light_001");
-	FString LightArrow_B = TEXT("/Game/Platformer_2/Meshes/SM_indicator_arrow_001.SM_indicator_arrow_001");
-
-	// Red
-	FString DrownBody_R = TEXT("/Game/Platformer_2/Meshes/SM_drone_002.SM_drone_002");
-	FString LeftPropeller_R = TEXT("/Game/Platformer_2/Meshes/SM_drone_propeller_2_002.SM_drone_propeller_2_002");
-	FString RightPropeller_R = TEXT("/Game/Platformer_2/Meshes/SM_drone_propeller_1_002.SM_drone_propeller_1_002");
-	FString DrownLight_R = TEXT("/Game/Platformer_2/Meshes/SM_indicator_light_002.SM_indicator_light_002");
-	FString LightArrow_R = TEXT("/Game/Platformer_2/Meshes/SM_indicator_arrow_002.SM_indicator_arrow_002");
-
-	// Mint
-	FString DrownBody_M = TEXT("/Game/Platformer_2/Meshes/SM_indicator_003.SM_indicator_003");
-	FString LeftPropeller_M = TEXT("/Game/Platformer_2/Meshes/SM_indicator_propeller_2_003.SM_indicator_propeller_2_003");
-	FString RightPropeller_M = TEXT("/Game/Platformer_2/Meshes/SM_indicator_propeller_1_003.SM_indicator_propeller_1_003");
-	FString DrownLight_M = TEXT("/Game/Platformer_2/Meshes/SM_indicator_light_003.SM_indicator_light_003");
-	FString LightArrow_M = TEXT("/Game/Platformer_2/Meshes/SM_indicator_arrow_003.SM_indicator_arrow_003");
-
 	// Functions
 	UFUNCTION()
 	void SetDrownLocation();

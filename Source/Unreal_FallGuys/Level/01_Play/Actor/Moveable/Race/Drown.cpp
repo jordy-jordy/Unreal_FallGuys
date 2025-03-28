@@ -10,7 +10,6 @@ ADrown::ADrown()
 	PrimaryActorTick.bCanEverTick = true;
 
 	SetDrownLocation();
-	SetDrownMesh_B();
 }
 
 // Called when the game starts or when spawned
@@ -22,13 +21,6 @@ void ADrown::BeginPlay()
 	SetDrownRotation();
 
 	MovementComponent->SpinSpeed = FRotator({ 0.0f, 180.0f, 0.0f });
-}
-
-void ADrown::OnConstruction(const FTransform& Transform)
-{
-	Super::OnConstruction(Transform);
-
-	SetDrownMesh();
 }
 
 // Called every frame
@@ -96,101 +88,41 @@ void ADrown::SetDrownRotation()
 
 void ADrown::SetDrownMesh_B()
 {
-	UStaticMesh* BodyMesh = LoadObject<UStaticMesh>(nullptr, *DrownBody_B);
-	if (BodyMesh)
-	{
-		DrownBody->SetStaticMesh(BodyMesh);
-	}
+	DrownBody->SetStaticMesh(UFallGlobal::GetResourceMesh("Drawn_Blue_Body"));
 
-	UStaticMesh* LeftPropellerMesh = LoadObject<UStaticMesh>(nullptr, *LeftPropeller_B);
-	if (LeftPropellerMesh)
-	{
-		DrownPropeller_Left->SetStaticMesh(LeftPropellerMesh);
-	}
+	DrownPropeller_Left->SetStaticMesh(UFallGlobal::GetResourceMesh("Drawn_Blue_Propeller_L"));
 	
-	UStaticMesh* RightPropellerMesh = LoadObject<UStaticMesh>(nullptr, *RightPropeller_B);
-	if (RightPropellerMesh)
-	{
-		DrownPropeller_Right->SetStaticMesh(RightPropellerMesh);
-	}
+	DrownPropeller_Right->SetStaticMesh(UFallGlobal::GetResourceMesh("Drawn_Blue_Propeller_R"));
 
-	UStaticMesh* LightMesh = LoadObject<UStaticMesh>(nullptr, *DrownLight_B);
-	if (LightMesh)
-	{
-		DrownLight->SetStaticMesh(LightMesh);
-	}
+	DrownLight->SetStaticMesh(UFallGlobal::GetResourceMesh("Drawn_Blue_Light"));
 
-	UStaticMesh* ArrowMesh = LoadObject<UStaticMesh>(nullptr, *LightArrow_B);
-	if (ArrowMesh)
-	{
-		DrownLightArrow->SetStaticMesh(ArrowMesh);
-	}
+	DrownLightArrow->SetStaticMesh(UFallGlobal::GetResourceMesh("Drawn_Blue_Arrow"));
 }
 
 void ADrown::SetDrownMesh_R()
 {
-	UStaticMesh* BodyMesh = LoadObject<UStaticMesh>(nullptr, *DrownBody_R);
-	if (BodyMesh)
-	{
-		DrownBody->SetStaticMesh(BodyMesh);
-	}
+	DrownBody->SetStaticMesh(UFallGlobal::GetResourceMesh("Drawn_Red_Body"));
 
-	UStaticMesh* LeftPropellerMesh = LoadObject<UStaticMesh>(nullptr, *LeftPropeller_R);
-	if (LeftPropellerMesh)
-	{
-		DrownPropeller_Left->SetStaticMesh(LeftPropellerMesh);
-	}
+	DrownPropeller_Left->SetStaticMesh(UFallGlobal::GetResourceMesh("Drawn_Red_Propeller_L"));
 
-	UStaticMesh* RightPropellerMesh = LoadObject<UStaticMesh>(nullptr, *RightPropeller_R);
-	if (RightPropellerMesh)
-	{
-		DrownPropeller_Right->SetStaticMesh(RightPropellerMesh);
-	}
+	DrownPropeller_Right->SetStaticMesh(UFallGlobal::GetResourceMesh("Drawn_Red_Propeller_R"));
 
-	UStaticMesh* LightMesh = LoadObject<UStaticMesh>(nullptr, *DrownLight_R);
-	if (LightMesh)
-	{
-		DrownLight->SetStaticMesh(LightMesh);
-	}
+	DrownLight->SetStaticMesh(UFallGlobal::GetResourceMesh("Drawn_Red_Light"));
 
-	UStaticMesh* ArrowMesh = LoadObject<UStaticMesh>(nullptr, *LightArrow_R);
-	if (ArrowMesh)
-	{
-		DrownLightArrow->SetStaticMesh(ArrowMesh);
-	}
+	DrownLightArrow->SetStaticMesh(UFallGlobal::GetResourceMesh("Drawn_Red_Arrow"));
 }
 
 void ADrown::SetDrownMesh_M()
 {
-	UStaticMesh* BodyMesh = LoadObject<UStaticMesh>(nullptr, *DrownBody_M);
-	if (BodyMesh)
-	{
-		DrownBody->SetStaticMesh(BodyMesh);
-	}
+	DrownBody->SetStaticMesh(UFallGlobal::GetResourceMesh("Drawn_Mint_Body"));
 
-	UStaticMesh* LeftPropellerMesh = LoadObject<UStaticMesh>(nullptr, *LeftPropeller_M);
-	if (LeftPropellerMesh)
-	{
-		DrownPropeller_Left->SetStaticMesh(LeftPropellerMesh);
-	}
+	DrownPropeller_Left->SetStaticMesh(UFallGlobal::GetResourceMesh("Drawn_Mint_Propeller_L"));
 
-	UStaticMesh* RightPropellerMesh = LoadObject<UStaticMesh>(nullptr, *RightPropeller_M);
-	if (RightPropellerMesh)
-	{
-		DrownPropeller_Right->SetStaticMesh(RightPropellerMesh);
-	}
+	DrownPropeller_Right->SetStaticMesh(UFallGlobal::GetResourceMesh("Drawn_Mint_Propeller_R"));
 
-	UStaticMesh* LightMesh = LoadObject<UStaticMesh>(nullptr, *DrownLight_M);
-	if (LightMesh)
-	{
-		DrownLight->SetStaticMesh(LightMesh);
-	}
+	DrownLight->SetStaticMesh(UFallGlobal::GetResourceMesh("Drawn_Mint_Light"));
 
-	UStaticMesh* ArrowMesh = LoadObject<UStaticMesh>(nullptr, *LightArrow_M);
-	if (ArrowMesh)
-	{
-		DrownLightArrow->SetStaticMesh(ArrowMesh);
-	}
+	DrownLightArrow->SetStaticMesh(UFallGlobal::GetResourceMesh("Drawn_Mint_Arrow"));
 }
 
 void ADrown::SetDrownMesh()

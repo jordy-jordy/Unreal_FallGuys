@@ -17,6 +17,8 @@ void AProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 
+	SetMesh();
+
 	LaunchComponent->LaunchForce = 800.0f;
 	LaunchComponent->JumpForce = 240.0f;
 	
@@ -63,15 +65,9 @@ void AProjectile::OperateMesh()
 	Projectile->SetupAttachment(RootScene);
 	Projectile->SetRelativeLocation({ 0, 0, 0 });
 	Projectile->SetRelativeScale3D({ 2.0f, 2.0f, 2.0f });
-
-	SetMesh();
 }
 
 void AProjectile::SetMesh()
 {
-	UStaticMesh* BallMesh = LoadObject<UStaticMesh>(nullptr, *Ball);
-	if (BallMesh)
-	{
-		Projectile->SetStaticMesh(BallMesh);
-	}
+	Projectile->SetStaticMesh(UFallGlobal::GetResourceMesh("Projectile"));
 }

@@ -17,6 +17,7 @@ void ARotateSquare::BeginPlay()
 {
 	Super::BeginPlay();
 
+	SetMesh();
 }
 
 // Called every frame
@@ -43,22 +44,12 @@ void ARotateSquare::OperateMesh()
 	RotateSquare = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RotateSquare"));
 	RotateSquare->SetupAttachment(RotateAxis);
 	RotateSquare->SetRelativeLocation({ 0, 0, 460 });
-
-	SetMesh();
 }
 
 void ARotateSquare::SetMesh()
 {
-	UStaticMesh* AxisMesh = LoadObject<UStaticMesh>(nullptr, *Axis);
-	if (AxisMesh)
-	{
-		RotateAxis->SetStaticMesh(AxisMesh);
-	}
+	RotateAxis->SetStaticMesh(UFallGlobal::GetResourceMesh("RotateSquare_Axis"));
 
-	UStaticMesh* SqureMesh = LoadObject<UStaticMesh>(nullptr, *Square);
-	if (SqureMesh)
-	{
-		RotateSquare->SetStaticMesh(SqureMesh);
-	}
+	RotateSquare->SetStaticMesh(UFallGlobal::GetResourceMesh("RotateSquare_Body"));
 }
 

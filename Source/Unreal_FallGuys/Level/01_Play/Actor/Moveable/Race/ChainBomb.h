@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "Components/SphereComponent.h"
 #include "Level/01_Play/Components/MovementActorComponent.h"
+#include "Global/Data/ResourceDataTable.h"
+#include "FallGlobal.h"
 #include "ChainBomb.generated.h"
 
 UCLASS()
@@ -50,11 +52,6 @@ public:
 	float PhyTime = 0.0f;
 
 private:
-	// MeshAddress
-	FString ChainAxis = TEXT("/Game/Platformer_2/Meshes/SM_obstacle_5_001.SM_obstacle_5_001");
-	FString Chain = TEXT("/Game/Platformer_2/Meshes/SM_obstacle_5_002.SM_obstacle_5_002");
-	FString ChainBomb = TEXT("/Game/Platformer_2/Meshes/SM_obstacle_5_011.SM_obstacle_5_011");
-
 	UFUNCTION()
 	void OperateMesh();
 

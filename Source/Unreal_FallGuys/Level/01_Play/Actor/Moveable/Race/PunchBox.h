@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Components/CapsuleComponent.h"
+#include "Global/Data/ResourceDataTable.h"
+#include "FallGlobal.h"
 #include "PunchBox.generated.h"
 
 UENUM(BlueprintType)
@@ -81,14 +83,6 @@ public:
 	float PhyTime = 0.0f;
 
 private:
-	// MeshAddress
-	FString Box = TEXT("/Game/Platformer_2/Meshes/SM_obstacle_22_001.SM_obstacle_22_001");
-	FString PunchSpring = TEXT("/Game/Platformer_2/Meshes/SM_obstacle_22_002.SM_obstacle_22_002");
-	FString PunchBody = TEXT("/Game/Platformer_2/Meshes/SM_obstacle_22_003.SM_obstacle_22_003");
-	FString Pillar_TB = TEXT("/Game/Platformer_2/Meshes/SM_water_platform_partition_001.SM_water_platform_partition_001");
-	FString Pillar_M = TEXT("/Game/Platformer_2/Meshes/SM_water_platform_tube_001.SM_water_platform_tube_001");
-	FString Plat = TEXT("/Game/Platformer_2/Meshes/SM_water_platform_001.SM_water_platform_001");
-
 	// Functions
 	UFUNCTION()
 	void OperateMesh();

@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "Components/CapsuleComponent.h"
 #include "Level/01_Play/Components/MovementActorComponent.h"
+#include "Global/Data/ResourceDataTable.h"
+#include "FallGlobal.h"
 #include "RotateWeapon.generated.h"
 
 UENUM(BlueprintType)
@@ -27,8 +29,6 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-	virtual void OnConstruction(const FTransform& Transform);
 
 public:	
 	// Called every frame
@@ -59,13 +59,6 @@ public:
 	float PhyTime = 0.0f;
 
 private:
-	// MeshAddress
-	FString RotateAxis_H = TEXT("/Game/Platformer_2/Meshes/SM_obstacle_4_001.SM_obstacle_4_001");
-	FString RotateWeapon_H = TEXT("/Game/Platformer_2/Meshes/SM_obstacle_4_002.SM_obstacle_4_002");
-
-	FString RotateAxis_A = TEXT("/Game/Platformer_2/Meshes/SM_obstacle_3_001.SM_obstacle_3_001");
-	FString RotateWeapon_A = TEXT("/Game/Platformer_2/Meshes/SM_obstacle_3_002.SM_obstacle_3_002");
-
 	// Functions
 	UFUNCTION()
 	void OperateMesh();

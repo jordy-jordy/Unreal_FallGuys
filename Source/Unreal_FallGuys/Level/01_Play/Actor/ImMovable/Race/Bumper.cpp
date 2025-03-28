@@ -10,7 +10,6 @@ ABumper::ABumper()
 	PrimaryActorTick.bCanEverTick = true;
 
 	OparateMesh();
-	SetPillarMesh_P();
 }
 
 // Called when the game starts or when spawned
@@ -24,13 +23,6 @@ void ABumper::BeginPlay()
 	{
 		BumperBody->OnComponentHit.AddDynamic(this, &ABumper::OnComponentHit);
 	}
-}
-
-void ABumper::OnConstruction(const FTransform& Transform)
-{
-	Super::OnConstruction(Transform);
-
-	SetBumperMesh();
 }
 
 // Called every frame
@@ -62,57 +54,21 @@ void ABumper::OparateMesh()
 	BumperBody->SetRelativeLocation({ 0, 0, 0 });
 }
 
-void ABumper::SetPillarMesh_P()
-{
-	UStaticMesh* BodyMesh = LoadObject<UStaticMesh>(nullptr, *PinkPillar);
-	if (BodyMesh)
-	{
-		BumperBody->SetStaticMesh(BodyMesh);
-	}
-}
-
-void ABumper::SetPillarMesh_S()
-{
-	UStaticMesh* BodyMesh = LoadObject<UStaticMesh>(nullptr, *ScarletPillar);
-	if (BodyMesh)
-	{
-		BumperBody->SetStaticMesh(BodyMesh);
-	}
-}
-
-void ABumper::SetBumperMesh_Tri()
-{
-	UStaticMesh* BodyMesh = LoadObject<UStaticMesh>(nullptr, *TriBumper);
-	if (BodyMesh)
-	{
-		BumperBody->SetStaticMesh(BodyMesh);
-	}
-}
-
-void ABumper::SetBumperMesh_Sq()
-{
-	UStaticMesh* BodyMesh = LoadObject<UStaticMesh>(nullptr, *SqBumper);
-	if (BodyMesh)
-	{
-		BumperBody->SetStaticMesh(BodyMesh);
-	}
-}
-
 void ABumper::SetBumperMesh()
 {
 	switch (BumperType)
 	{
 	case EBumperType::PINKPILLAR:
-		SetPillarMesh_P();
+		BumperBody->SetStaticMesh(UFallGlobal::GetResourceMesh("Bumper_Pink"));
 		break;
 	case EBumperType::SCARLETPILLAR:
-		SetPillarMesh_S();
+		BumperBody->SetStaticMesh(UFallGlobal::GetResourceMesh("Bumper_Scarlar"));
 		break;
 	case EBumperType::TRIBUMPER:
-		SetBumperMesh_Tri();
+		BumperBody->SetStaticMesh(UFallGlobal::GetResourceMesh("Bumper_Tri"));
 		break;
 	case EBumperType::SQBUMPER:
-		SetBumperMesh_Sq();
+		BumperBody->SetStaticMesh(UFallGlobal::GetResourceMesh("Bumper_Sq"));
 		break;
 	}
 }

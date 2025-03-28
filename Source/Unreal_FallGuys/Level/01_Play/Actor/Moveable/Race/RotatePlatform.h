@@ -7,6 +7,8 @@
 #include "Components/CapsuleComponent.h"
 #include "Level/01_Play/Components/MovementActorComponent.h"
 #include "Level/01_Play/Components/LaunchActorComponent.h"
+#include "Global/Data/ResourceDataTable.h"
+#include "FallGlobal.h"
 #include "RotatePlatform.generated.h"
 
 
@@ -41,8 +43,6 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-	virtual void OnConstruction(const FTransform& Transform);
 
 public:	
 	// Called every frame
@@ -87,27 +87,6 @@ public:
 	EStickType StickType = EStickType::NONE;
 
 private:
-	// MeshAddress
-	// Platform_Y
-	FString PlatformAxis_Y = TEXT("/Game/Platformer_2/Meshes/SM_obstacle_14_001.SM_obstacle_14_001");
-	FString PlatformBody_Y = TEXT("/Game/Platformer_2/Meshes/SM_obstacle_14_002.SM_obstacle_14_002");
-
-	// Platform_P
-	FString PlatformAxis_P = TEXT("/Game/Platformer_2/Meshes/SM_obstacle_15_001.SM_obstacle_15_001");
-	FString PlatformBody_P = TEXT("/Game/Platformer_2/Meshes/SM_obstacle_15_002.SM_obstacle_15_002");
-
-	// Platform_R
-	FString PlatformAxis_R = TEXT("/Game/Platformer_2/Meshes/SM_obstacle_26_001.SM_obstacle_26_001");
-	FString PlatformBody_R = TEXT("/Game/Platformer_2/Meshes/SM_obstacle_26_002.SM_obstacle_26_002");
-
-	// Platform_F
-	FString PlatformAxis_F = TEXT("/Game/Platformer_2/Meshes/SM_obstacle_16_001.SM_obstacle_16_001");
-	FString PlatformBody_F = TEXT("/Game/Platformer_2/Meshes/SM_obstacle_16_002.SM_obstacle_16_002");
-
-	// Stick
-	FString StraightStick = TEXT("/Game/Platformer_2/Meshes/SM_obstacle_17_001.SM_obstacle_17_001");
-	FString CrossStick = TEXT("/Game/Platformer_2/Meshes/SM_obstacle_12_001.SM_obstacle_12_001");
-
 	// Functions
 	UFUNCTION()
 	void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
