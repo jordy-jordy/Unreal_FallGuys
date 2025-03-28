@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "ShowDownPlatform.h"
 #include "ShowDownStage.generated.h"
 
 UCLASS()
@@ -23,6 +24,16 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-public:
-	TArray<AActor*>PlatformCount[6] = { };
+private:
+	TArray<AShowDownPlatform*>Platforms;
+
+	UFUNCTION()
+	void SetPlatforms();
+
+	UFUNCTION(BlueprintCallable)
+	void SetFallPlatform();
+
+	//bool IsDown = false;
+
+	//bool IsDestroy = false;
 };
