@@ -4,7 +4,6 @@
 #include "Mode/01_Play/UI/PlayStartCountWidget.h"
 #include "Engine/Texture2D.h"
 #include "Components/Image.h"
-#include "Mode/01_Play/PlayGameState.h"
 #include "Mode/01_Play/UI/PlayMainWidget.h"
 
 
@@ -25,25 +24,26 @@ void UPlayStartCountWidget::SetWidgetImage(const TCHAR* _ImagePath)
 
 void UPlayStartCountWidget::CountDownWidget(float _CountTime)
 {
+	FString ImagePath = TEXT("");
+
 	if (_CountTime == 1.0f)
 	{
-		SetWidgetImage(TEXT("/Script/Engine.Texture2D'/Game/Resources/UI/01_Play/Textures/Start/T_Count1.T_Count1'"));
-		PlayAnimation(CountAnim);
+		ImagePath = TEXT("/Script/Engine.Texture2D'/Game/Resources/UI/01_Play/Textures/Start/T_Count1.T_Count1'");
 	}
-	else if (_CountTime == 2.0f)
+	if (_CountTime == 2.0f)
 	{
-		SetWidgetImage(TEXT("/Script/Engine.Texture2D'/Game/Resources/UI/01_Play/Textures/Start/T_Count2.T_Count2'"));
-		PlayAnimation(CountAnim);
+		ImagePath = TEXT("/Script/Engine.Texture2D'/Game/Resources/UI/01_Play/Textures/Start/T_Count2.T_Count2'");
 	}
-	else if (_CountTime == 3.0f)
+	if (_CountTime == 3.0f)
 	{
-		SetWidgetImage(TEXT("/Script/Engine.Texture2D'/Game/Resources/UI/01_Play/Textures/Start/T_Count3.T_Count3'"));
-		PlayAnimation(CountAnim);
+		ImagePath = TEXT("/Script/Engine.Texture2D'/Game/Resources/UI/01_Play/Textures/Start/T_Count3.T_Count3'");
 	}
-	else if (_CountTime == 0.0f)
+	if (_CountTime == 0.0f)
 	{
-		SetWidgetImage(TEXT("/Script/Engine.Texture2D'/Game/Resources/UI/01_Play/Textures/Start/T_GO.T_GO'"));
-		PlayAnimation(CountAnim);
+		ImagePath = TEXT("/Script/Engine.Texture2D'/Game/Resources/UI/01_Play/Textures/Start/T_GO.T_GO'");
 	}
+
+	SetWidgetImage(*ImagePath);
+	PlayAnimation(CountAnim);
 }
 

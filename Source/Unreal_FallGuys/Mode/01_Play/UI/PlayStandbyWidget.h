@@ -19,6 +19,4 @@ public:
 	FString GetCurLevelGuide();
 	
 private:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
-	FString GuideText = TEXT("");
 };
