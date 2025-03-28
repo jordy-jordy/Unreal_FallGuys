@@ -53,14 +53,11 @@ public:
 	void StartStageLimitTimer();
 	void StartStageLimitTimer_Implementation();
 
-	// 스테이지 제한 시간 오버 처리
-	void OnStageLimitTimeOver();
-
 protected:
 	virtual void Tick(float DeltaSeconds) override;
 	void BeginPlay() override;
 	
-	// 게임 시작 전 카운트 다운 핸들
+	// 카운트 다운 핸들
 	FTimerHandle CountdownTimerHandle;
 
 	// 스테이지 제한 시간 핸들
@@ -72,8 +69,8 @@ protected:
 	// 카운트다운 진행 (매초 실행)
 	void UpdateCountdown();
 
-	// 동기화 변수
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	// 스테이지 제한 시간 오버 처리
+	void OnStageLimitTimeOver();
 
 private:
 	// 접속 제한

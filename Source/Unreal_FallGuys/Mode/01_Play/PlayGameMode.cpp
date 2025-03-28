@@ -7,6 +7,7 @@
 #include "EngineUtils.h"
 
 #include <Unreal_FallGuys.h>
+#include <Global/FallGlobal.h>
 #include <Global/FallConst.h>
 #include <Global/BaseGameInstance.h>
 #include <Mode/01_Play/PlayGameState.h>
@@ -49,10 +50,9 @@ void APlayGameMode::ServerTravelToNextMap(const FString& url)
 					*PlayerEntry.UniqueID, *PlayerEntry.PlayerInfo.Tag);
 			}
 		}
-
+		// 스테이지 전환 했음을 알림
 		GameInstance->IsMovedLevel = true;
 	}
-
 	GetWorld()->ServerTravel(url, false);
 }
 
@@ -69,6 +69,34 @@ void APlayGameMode::Tick(float DeltaSeconds)
 		IsEndGame = true;
 
 		ServerTravelToNextMap(NextLevel);
+	}
+}
+
+// 플레이어 인포 동기화
+void APlayGameMode::SyncPlayerInfo_Implementation()
+{
+	APlayGameState* FallState = GetGameState<APlayGameState>();
+	if (!FallState)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: GameState가 nullptr 입니다."));
+		return;
+	}
+
+	FallState->SyncPlayerInfoFromPlayerState();
+}
+
+// 인원 충족 했는지 체크
+void APlayGameMode::CheckNumberOfPlayer(APlayGameState* _PlayState)
+{
+	UBaseGameInstance* GameIns = GetGameInstance<UBaseGameInstance>();
+	if (_PlayState->GetConnectedPlayers() >= UFallConst::MinPlayerCount || true == GameIns->IsMovedLevel)
+	{
+		// 인원이 모두 찼거나, 스테이지 1 이후거나
+		pNumberOfPlayer = true;
+	}
+	else
+	{
+		pNumberOfPlayer = false;
 	}
 }
 
@@ -102,7 +130,7 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 
 	// 인원 수 체크
 	CheckNumberOfPlayer(FallState);
-	if (true == pNumberOfPlayer) // 인원이 모두 찼어
+	if (true == pNumberOfPlayer ) 
 	{
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PostLogin :: 게임 플레이를 위한 인원이 충족되었습니다."));
 
@@ -178,7 +206,7 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 	// 인원 안찼으면 여기서 끝
 	if (false == pNumberOfPlayer) { return; }
 
-	// 카운트 다운 사용할 거야? 
+	// 카운트 다운 사용할거야?
 	if (true == UFallConst::UseCountDown)
 	{
 		// 카운트 다운 핸들 활성화
@@ -190,6 +218,7 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 		pCountDownEnd = true;
 	}
 
+	// 카운트 다운도 끝났고, 인원도 찼으니 게임 시작
 	if (true == pCountDownEnd && true == pNumberOfPlayer)
 	{
 		StartGame();
@@ -198,30 +227,17 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode PostLogin END ======= "));
 }
 
-// 플레이어 인포 동기화
-void APlayGameMode::SyncPlayerInfo_Implementation()
+// 게임 시작
+void APlayGameMode::StartGame_Implementation()
 {
-	APlayGameState* FallState = GetGameState<APlayGameState>();
-	if (!FallState)
-	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("GameState가 nullptr 입니다. 일정 시간 후 다시 시도합니다."));
-		return;
-	}
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 게임이 시작되었습니다."));
 
-	FallState->SyncPlayerInfoFromPlayerState();
-}
+	// 캐릭터 움직이게 처리
+	SetCharacterMovePossible();
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 캐릭터 이동이 가능합니다."));
 
-// 인원 충족 했는지 체크
-void APlayGameMode::CheckNumberOfPlayer(APlayGameState* _PlayState)
-{
-	if (_PlayState->GetConnectedPlayers() >= UFallConst::MinPlayerCount)
-	{
-		pNumberOfPlayer = true;
-	}
-	else
-	{
-		pNumberOfPlayer = false;
-	}
+	// 스테이지 제한 시간 처리
+	StartStageLimitTimer();
 }
 
 // 캐릭터 이동 가능하게 세팅
@@ -241,16 +257,6 @@ void APlayGameMode::SetCharacterMovePossible_Implementation()
 		}, 0.2f, false); // 0.2초 뒤에 한 번 실행
 
 	pPlayerMoving = true;
-}
-
-// 게임 시작
-void APlayGameMode::StartGame_Implementation()
-{
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 게임이 시작되었습니다."));
-
-	// 캐릭터 움직이게 처리
-	SetCharacterMovePossible();
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 캐릭터 이동이 가능합니다."));
 }
 
 // 게임 시작 전 카운트다운 핸들 활성화
@@ -281,8 +287,6 @@ void APlayGameMode::StartCountdown()
 // 카운트다운 진행 (매초 실행)
 void APlayGameMode::UpdateCountdown()
 {
-	if (!HasAuthority()) return;
-
 	APlayGameState* FallState = GetGameState<APlayGameState>();
 	if (!FallState) return;
 
@@ -342,11 +346,5 @@ void APlayGameMode::OnStageLimitTimeOver()
 	}
 
 	// 다음 맵 이동
-	ServerTravelToNextMap(NextLevel);
-}
-
-// 동기화 변수
-void APlayGameMode::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	ServerTravelToNextMap(UFallGlobal::GetRandomLevelWithOutPawn());
 }

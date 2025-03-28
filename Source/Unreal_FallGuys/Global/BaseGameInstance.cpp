@@ -337,6 +337,25 @@ UStaticMesh* UBaseGameInstance::InsGetCostumeMesh(APawn* _Pawn, const FString& _
 	return nullptr;
 }
 
+// 리소스의 스테틱 메시 머티리얼 반환
+UMaterialInterface* UBaseGameInstance::InsGetResourceMeshMaterial(const FString& _ColorName)
+{
+	if (!ResourceDataTable)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("InsGetResourceMeshMaterial :: ResourceDataTable이 nullptr입니다."));
+		return nullptr;
+	}
+
+	const FResourceDataRow* Row = UGlobalDataTable::GetResourceData(GetWorld(), _ColorName);
+	if (Row && Row->Material)
+	{
+		return Row->Material;
+	}
+
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsGetResourceMeshMaterial :: 해당 이름(%s)의 데이터 또는 머티리얼이 없음"), *_ColorName);
+	return nullptr;
+}
+
 // 리소스의 스테틱 메시 반환
 UStaticMesh* UBaseGameInstance::InsGetResourceMesh(UWorld* _World, const FString& _MeshName)
 {
