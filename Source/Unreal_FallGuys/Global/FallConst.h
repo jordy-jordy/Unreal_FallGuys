@@ -51,6 +51,9 @@ public:
 	// 기본 로컬 포트
 	static FString DefaultPort;
 
+	// 카운트 다운 대기 시간
+	static float FallCountDownStandByTime;
+
 	// 카운트 다운 시간
 	static float FallCountDownTime;
 

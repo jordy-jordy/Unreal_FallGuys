@@ -77,10 +77,41 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 {
     Super::PostLogin(NewPlayer);
 
+	// 접속 제한
+	if (true == InvalidConnect)
+	{
+		// 클라이언트를 강제 종료
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("PostLogin :: 게임 인원이 가득차 접속할 수 없습니다."));
+		NewPlayer->ClientTravel(TEXT("/Game/Maps/TitleLevel"), TRAVEL_Absolute);
+		return;
+	}
+
 	// 서버장이 아닐시 리턴
     if (!HasAuthority()) return;
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode PostLogin START ======= "));
+
+    // GameState가 없을시 리턴
+    APlayGameState* FallState = GetGameState<APlayGameState>();
+    if (!FallState) { UE_LOG(FALL_DEV_LOG, Error, TEXT("PostLogin :: GameState가 nullptr 입니다.")); return; }
+
+	// 인원 카운팅
+	FallState->AddConnectedPlayers();
+	int ConnectingPlayer = FallState->GetConnectedPlayers();
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("PostLogin :: 새로운 플레이어가 접속 했습니다. 현재 접속 인원 : %d"), ConnectingPlayer);
+
+	// 인원 수 체크
+	CheckNumberOfPlayer(FallState);
+	if (true == pNumberOfPlayer) // 인원이 모두 찼어
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PostLogin :: 게임 플레이를 위한 인원이 충족되었습니다."));
+
+		if (true == UFallConst::UsePlayerLimit) // 인원이 찼고 인원 제한을 사용하는 경우 접속 제한 활성화
+		{
+			InvalidConnect = true;
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PostLogin :: 인원이 충족되었으므로 접속이 제한됩니다."));
+		}
+	}
 
 	// PlayerState가 없을시 리턴
     APlayPlayerState* PlayerState = Cast<APlayPlayerState>(NewPlayer->PlayerState);
@@ -89,29 +120,6 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
         UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayerState가 nullptr 입니다."));
         return;
     }
-
-    // GameState가 없을시 리턴
-    APlayGameState* FallState = GetGameState<APlayGameState>();
-    if (!FallState)
-    {
-        UE_LOG(FALL_DEV_LOG, Error, TEXT("GameState가 nullptr 입니다."));
-        return;
-    }
-
-	// 접속 제한을 사용하는 경우 인원 체크 및 접속 거부 실행
-	if (true == UFallConst::UsePlayerLimit)
-	{
-		int ConnectingPlayer = FallState->GetConnectedPlayers();
-		// 현재 접속한 플레이어 수가 최소 인원 이상이면 접속 거부
-		if (ConnectingPlayer >= UFallConst::MinPlayerCount)
-		{
-			UE_LOG(FALL_DEV_LOG, Error, TEXT("접속 거부: 현재 플레이어 수(%d)가 제한(%d) 이상입니다."), ConnectingPlayer, UFallConst::MinPlayerCount);
-
-			// 클라이언트를 강제 종료
-			NewPlayer->ClientTravel(TEXT("/Game/Maps/TitleLevel"), TRAVEL_Absolute);
-			return;
-		}
-	}
 
 	// 기존 Player 정보 백업
 	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
@@ -158,25 +166,35 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 
 	// 접속 여부 bool값 true로 변경
 	GameInstance->InsSetbIsConnectedTrue();
-
-    // 모든 클라이언트에게 정보 동기화
+	
+	// 모든 클라이언트에게 정보 동기화
     SyncPlayerInfo();
-
-	if (!GameInstance->IsMovedLevel)
-	{
-		// 접속중인 Player 수 증가
-		FallState->AddConnectedPlayers();
-		int ConnectingPlayer = FallState->GetConnectedPlayers();
-		UE_LOG(FALL_DEV_LOG, Log, TEXT("PostLogin :: 접속자 수 : %d"), ConnectingPlayer);
-	}
 
 	// 게임 인스턴스에 저장된 레벨 이름을 게임 스테이트에 저장
 	FallState->SavePlayLevelName(GameInstance->InsGetCurLevelName());
 	// 게임 인스턴스에 저장된 레벨 에셋 이름을 게임 스테이트에 저장
 	FallState->SavePlayLevelAssetName(GameInstance->InsGetCurLevelAssetName());
+	
+	// 인원 안찼으면 여기서 끝
+	if (false == pNumberOfPlayer) { return; }
 
-	// 게임 시작 조건 핸들
-	HandleStartConditions();
+	// 카운트 다운 사용할 거야? 
+	if (true == UFallConst::UseCountDown)
+	{
+		// 카운트 다운 핸들 활성화
+		StartCountdownTimer();
+	}
+	else
+	{
+		// 카운트 다운 바로 종료 처리
+		pCountDownEnd = true;
+	}
+
+	if (true == pCountDownEnd && true == pNumberOfPlayer)
+	{
+		StartGame();
+	}
+
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode PostLogin END ======= "));
 }
 
@@ -193,96 +211,68 @@ void APlayGameMode::SyncPlayerInfo_Implementation()
 	FallState->SyncPlayerInfoFromPlayerState();
 }
 
-// 최소 인원 체크
-bool APlayGameMode::IsMinPlayersReached()
+// 인원 충족 했는지 체크
+void APlayGameMode::CheckNumberOfPlayer(APlayGameState* _PlayState)
 {
-	APlayGameState* FallState = GetGameState<APlayGameState>();
-	return FallState->GetConnectedPlayers() >= UFallConst::MinPlayerCount;
+	if (_PlayState->GetConnectedPlayers() >= UFallConst::MinPlayerCount)
+	{
+		pNumberOfPlayer = true;
+	}
+	else
+	{
+		pNumberOfPlayer = false;
+	}
 }
 
 // 캐릭터 이동 가능하게 세팅
-void APlayGameMode::SetCharacterMovePossible_Implementation(APlayCharacter* _Player)
+void APlayGameMode::SetCharacterMovePossible_Implementation()
 {
-	_Player->S2M_SetCanMoveTrue();
-}
-
-// 게임 시작 조건 처리
-void APlayGameMode::HandleStartConditions()
-{
-	APlayGameState* FallState = GetGameState<APlayGameState>();
-	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
-
-	if (!FallState || !GameInstance)
-	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("HandleStartConditions: GameState 또는 GameInstance가 nullptr입니다."));
-		return;
-	}
-
-	// 카운트 다운을 사용하지 않는 경우 → 바로 이동 가능
-	if (!UFallConst::UseCountDown)
-	{
-		FTimerHandle DelayHandle;
-		GetWorld()->GetTimerManager().SetTimer(DelayHandle, [this]()
+	FTimerHandle DelayHandle;
+	GetWorld()->GetTimerManager().SetTimer(DelayHandle, [this]()
+		{
+			for (TActorIterator<APlayCharacter> It(GetWorld()); It; ++It)
 			{
-				for (TActorIterator<APlayCharacter> It(GetWorld()); It; ++It)
+				APlayCharacter* PlayerCharacter = *It;
+				if (PlayerCharacter)
 				{
-					APlayCharacter* PlayerCharacter = *It;
-					if (PlayerCharacter)
-					{
-						SetCharacterMovePossible(PlayerCharacter);
-					}
+					PlayerCharacter->S2M_SetCanMoveTrue();
 				}
-			}, 0.2f, false); // 0.2초 뒤에 한 번 실행
+			}
+		}, 0.2f, false); // 0.2초 뒤에 한 번 실행
 
-		// 카운트 다운 bool 값 변경
-		UE_LOG(FALL_DEV_LOG, Log, TEXT("카운트 다운 사용 안함 - 바로 이동 가능"));
-		FallState->IsCountDownOver = true;
-	}
-	else if (GameInstance->IsMovedLevel || IsMinPlayersReached())
-	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("게임 시작을 위한 최소 인원이 모였습니다. 게임이 시작됩니다."));
-		StartGame();
-	}
+	pPlayerMoving = true;
 }
 
 // 게임 시작
 void APlayGameMode::StartGame_Implementation()
 {
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("게임을 시작합니다."));
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 게임이 시작되었습니다."));
 
-	StartCountdownTimer();
+	// 캐릭터 움직이게 처리
+	SetCharacterMovePossible();
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 캐릭터 이동이 가능합니다."));
 }
 
 // 게임 시작 전 카운트다운 핸들 활성화
 void APlayGameMode::StartCountdownTimer_Implementation()
 {
-	if (!HasAuthority() || !GetWorld()) return;
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: %.0f초 대기후 카운트 다운이 시작됩니다."), UFallConst::FallCountDownStandByTime);
 
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("카운트다운 시작, 0.5초 대기"));
-
-	// 3초 후 카운트다운 시작
+	// 설정한 대기 시간이 끝난 뒤 카운트다운 시작
 	FTimerHandle DelayTimer;
-	GetWorldTimerManager().SetTimer(DelayTimer, this, &APlayGameMode::StartCountdown, 0.5f, false);
+	GetWorldTimerManager().SetTimer(DelayTimer, this, &APlayGameMode::StartCountdown, UFallConst::FallCountDownStandByTime, false);
 }
 
-// 카운트다운 시작 (3초 대기 후 실행)
+// 카운트다운 시작 (대기 후 실행)
 void APlayGameMode::StartCountdown()
 {
-	if (!HasAuthority() || !GetWorld()) return;
+	APlayGameState* PlayState = GetGameState<APlayGameState>();
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 카운트다운 진행 시작. 초기 값: %.0f"), PlayState->CountDownTime);
 
-	APlayGameState* FallState = GetGameState<APlayGameState>();
-	if (!FallState)
+	if (PlayState->CountDownTime <= 0)
 	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("StartCountdown: GameState가 존재하지 않습니다!"));
-		return;
-	}
-
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("카운트다운 진행 시작. 초기 값: %.0f"), FallState->CountDownTime);
-
-	if (FallState->CountDownTime <= 0)
-	{
-		FallState->CountDownTime = 10.0f;
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("카운트다운 값이 0이거나 음수라 기본값(10초)으로 설정"));
+		PlayState->CountDownTime = 10.0f;
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 카운트다운 값이 0이거나 음수라 기본값(10초)으로 설정"));
 	}
 
 	GetWorldTimerManager().SetTimer(CountdownTimerHandle, this, &APlayGameMode::UpdateCountdown, 1.0f, true);
@@ -297,24 +287,17 @@ void APlayGameMode::UpdateCountdown()
 	if (!FallState) return;
 
 	FallState->CountDownTime -= 1.0f;
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("카운트다운: %.0f"), FallState->CountDownTime);
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 카운트다운 : %.0f"), FallState->CountDownTime);
 
 	if (FallState->CountDownTime <= 0.0f)
 	{
 		GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("카운트다운 종료, 캐릭터 이동 가능"));
-
-		for (TActorIterator<APlayCharacter> It(GetWorld()); It; ++It)
-		{
-			APlayCharacter* PlayerCharacter = *It;
-			if (PlayerCharacter)
-			{
-				SetCharacterMovePossible(PlayerCharacter);
-			}
-		}
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 카운트다운 종료"));
 
 		// 카운트 다운 끝났음을 알림
+		pCountDownEnd = true;
 		FallState->IsCountDownOver = true;
+		StartGame();
 	}
 }
 
@@ -328,11 +311,11 @@ void APlayGameMode::StartStageLimitTimer_Implementation()
 
 	if (FallState->UseStageLimitTime == false)
 	{
-		UE_LOG(FALL_DEV_LOG, Log, TEXT("스테이지 제한 시간을 사용하지 않으므로 타이머 시작 안함"));
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: 스테이지 제한 시간을 사용하지 않으므로 타이머 시작 안함"));
 		return;
 	}
 
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("스테이지 제한 시간 타이머 시작: %.2f초"), FallState->StageLimitTime);
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 스테이지 제한 시간 타이머 시작: %.2f초"), FallState->StageLimitTime);
 
 	GetWorldTimerManager().SetTimer(StageLimitTimerHandle, this, &APlayGameMode::OnStageLimitTimeOver, FallState->StageLimitTime, false);
 }
@@ -342,7 +325,7 @@ void APlayGameMode::OnStageLimitTimeOver()
 {
 	if (!HasAuthority()) return;
 
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("제한 시간 초과! 스테이지를 종료합니다."));
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 제한 시간 초과! 스테이지를 종료합니다."));
 
 	// 예시: 남은 플레이어 FAIL 처리
 	APlayGameState* FallState = GetGameState<APlayGameState>();

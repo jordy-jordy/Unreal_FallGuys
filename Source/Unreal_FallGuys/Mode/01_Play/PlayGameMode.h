@@ -24,9 +24,9 @@ public:
 	// 플레이어 접속시 실행되는 함수
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 
-	// 최소 인원 체크
+	// 인원 충족 했는지 체크
 	UFUNCTION(BlueprintCallable, Category = "PLAY GAME")
-	bool IsMinPlayersReached();
+	void CheckNumberOfPlayer(class APlayGameState* _PlayState);
 
 	// 게임 시작
 	UFUNCTION(BlueprintCallable, Reliable, NetMulticast, Category = "PLAY GAME")
@@ -40,8 +40,8 @@ public:
 
 	// 캐릭터 이동 가능하게 세팅
 	UFUNCTION(BlueprintCallable, Reliable, NetMulticast, Category = "PLAY GAME")
-	void SetCharacterMovePossible(class APlayCharacter* _Player);
-	void SetCharacterMovePossible_Implementation(class APlayCharacter* _Player);
+	void SetCharacterMovePossible();
+	void SetCharacterMovePossible_Implementation();
 
 	// 게임 시작 전 카운트다운 핸들 활성화
 	UFUNCTION(BlueprintCallable, Reliable, Server)
@@ -72,14 +72,18 @@ protected:
 	// 카운트다운 진행 (매초 실행)
 	void UpdateCountdown();
 
-	// 게임 시작 조건 처리
-	UFUNCTION()
-	void HandleStartConditions();
-
 	// 동기화 변수
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 private:
+	// 접속 제한
+	bool InvalidConnect = false;
+	// 인원 충족
+	bool pNumberOfPlayer = false;
+	// 게임 시작 카운트다운 끝
+	bool pCountDownEnd = false;
+	// 캐릭터 이동
+	bool pPlayerMoving = false;
 
 //LMH
 private:
