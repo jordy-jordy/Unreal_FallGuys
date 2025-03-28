@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Level/01_Play/Actor/ImMovable/JumpPad.h"
+#include "Level/01_Play/Actor/ImMovable/Race/JumpPad.h"
 
 // Sets default values
 AJumpPad::AJumpPad()

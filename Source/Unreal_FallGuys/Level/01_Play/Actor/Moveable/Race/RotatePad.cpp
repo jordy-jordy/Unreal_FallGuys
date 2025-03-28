@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Level/01_Play/Actor/Moveable/RotatePad.h"
+#include "Level/01_Play/Actor/Moveable/Race/RotatePad.h"
 
 // Sets default values
 ARotatePad::ARotatePad()

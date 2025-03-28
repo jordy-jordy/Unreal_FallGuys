@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Level/01_Play/Actor/Moveable/RotatePlatform.h"
+#include "Level/01_Play/Actor/Moveable/Race/RotatePlatform.h"
 
 // Sets default values
 ARotatePlatform::ARotatePlatform()

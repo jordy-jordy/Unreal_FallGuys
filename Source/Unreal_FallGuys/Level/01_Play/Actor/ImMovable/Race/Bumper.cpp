@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Level/01_Play/Actor/ImMovable/Bumper.h"
+#include "Level/01_Play/Actor/ImMovable/Race/Bumper.h"
 
 // Sets default values
 ABumper::ABumper()
