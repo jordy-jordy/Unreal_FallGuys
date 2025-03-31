@@ -8,6 +8,7 @@
 #include <Global/FallConst.h>
 #include <Global/Data/GlobalDataTable.h>
 #include <Global/BaseGameInstance.h>
+#include <Level/01_Play/Actor/ImMovable/JumpShowDown/ShowDownStage.h>
 #include "Level/01_Play/Actor/EggSpawnManager.h"
 
 

@@ -57,6 +57,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	int32 GetFinishPlayerCount() const { return FinishPlayer; }
 
+	// 플랫폼 등록 함수
+	void AddShowDownPlatform(class AShowDownPlatform* _Platform);
+
+	// 랜덤 스테이지 활성화 함수
+	UFUNCTION()
+	class AShowDownPlatform* GetRandomPlatform();
+
 protected:
 	virtual void Tick(float DeltaSeconds) override;
 	void BeginPlay() override;
@@ -91,6 +98,10 @@ private:
 	bool pCountDownEnd = false;
 	// 캐릭터 이동
 	bool pPlayerMoving = false;
+
+	// 전체 플랫폼 리스트
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ShowDown", meta = (AllowPrivateAccess = "true"))
+	TArray<class AShowDownPlatform*> AllPlatforms;
 
 //LMH
 private:

@@ -44,6 +44,7 @@ public:
 	APlayGameState();
 	virtual void BeginPlay() override;
 
+
 // ::::::::::::::::: 플레이어 관련
 public:
 	// 전체 플레이어 정보 목록 (GameState에서 관리)
@@ -114,6 +115,7 @@ private:
 	UPROPERTY(Replicated)
 	FString LevelAssetName = TEXT("");
 
+
 // ::::::::::::::::: 카운트 다운 관련
 public: 
 	// FallCountDownTime 에서 얻은 카운트 다운 시간 반환
@@ -159,6 +161,10 @@ private:
 	// 카운트다운이 끝났는지 확인
 	UPROPERTY(Replicated)
 	bool IsCountDownOver = false;
+
+
+// ::::::::::::::::: Jump Show Down 스테이지 관련
+public:
 
 
 // ::::::::::::::::: 스테이지 제한 시간 관련
