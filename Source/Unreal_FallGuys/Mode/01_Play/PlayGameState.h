@@ -44,8 +44,7 @@ public:
 	APlayGameState();
 	virtual void BeginPlay() override;
 
-
-// ::::::::::::::::: 플레이어 관련
+#pragma region PlayGameState :: 플레이어 관련
 public:
 	// 전체 플레이어 정보 목록 (GameState에서 관리)
 	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category = "PLAYER LIST")
@@ -75,9 +74,10 @@ private:
 	UPROPERTY(ReplicatedUsing = OnRep_ConnectedPlayers)
 	int ConnectedPlayers = 0;
 
+#pragma endregion
 
-// ::::::::::::::::: 레벨 데이터 관련
-public: 
+#pragma region PlayGameState :: 레벨 데이터 관련
+public:
 	// 게임 인스턴스에서 세팅된 레벨 이름
 	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
 	void SavePlayLevelName(const FString& _LevelName);
@@ -115,9 +115,10 @@ private:
 	UPROPERTY(Replicated)
 	FString LevelAssetName = TEXT("");
 
+#pragma endregion
 
-// ::::::::::::::::: 카운트 다운 관련
-public: 
+#pragma region PlayGameState :: 키운트 다운 관련
+public:
 	// FallCountDownTime 에서 얻은 카운트 다운 시간 반환
 	UFUNCTION(BlueprintCallable, Category = "COUNT DOWN")
 	float GetCountDownTime()
@@ -162,12 +163,14 @@ private:
 	UPROPERTY(Replicated)
 	bool IsCountDownOver = false;
 
+#pragma endregion
 
-// ::::::::::::::::: Jump Show Down 스테이지 관련
+#pragma region PlayGameState :: Jump Show Down 스테이지 관련
 public:
 
+#pragma endregion
 
-// ::::::::::::::::: 스테이지 제한 시간 관련
+#pragma region PlayGameState :: 스테이지 제한 시간 관련
 public:
 	UFUNCTION(BlueprintCallable, Category = "LEVEL LIMIT TIME")
 	bool GetUseStageLimitTime()
@@ -197,13 +200,16 @@ private:
 	UPROPERTY(Replicated)
 	float StageLimitTime;
 
+#pragma endregion
 
-// ::::::::::::::::: 동기화 관련
+#pragma region PlayGameState :: 동기화 관련
 public:
 	UFUNCTION()
 	void OnRep_ConnectedPlayers();
 
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+#pragma endregion
 
 
 //LMHH

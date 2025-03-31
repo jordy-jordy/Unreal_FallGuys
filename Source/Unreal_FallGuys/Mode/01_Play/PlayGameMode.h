@@ -21,17 +21,36 @@ class UNREAL_FALLGUYS_API APlayGameMode : public AGameMode
 public:
 	APlayGameMode();
 
+#pragma region PlayGameMode :: 핵심 함수
+public: 
 	// 플레이어 접속시 실행되는 함수
 	virtual void PostLogin(APlayerController* NewPlayer) override;
-
-	// 인원 충족 했는지 체크
-	UFUNCTION(BlueprintCallable, Category = "PLAY GAME")
-	void CheckNumberOfPlayer(class APlayGameState* _PlayState);
 
 	// 게임 시작
 	UFUNCTION(BlueprintCallable, Reliable, NetMulticast, Category = "PLAY GAME")
 	void StartGame();
 	void StartGame_Implementation();
+
+protected:
+	virtual void Tick(float DeltaSeconds) override;
+	void BeginPlay() override;
+
+	// 접속 제한
+	bool InvalidConnect = false;
+	// 인원 충족
+	bool pNumberOfPlayer = false;
+	// 캐릭터 이동
+	bool pPlayerMoving = false;
+	// 게임 시작 카운트다운 끝
+	bool pCountDownEnd = false;
+
+#pragma endregion
+
+#pragma region PlayGameMode :: 플레이어 관련
+public:
+	// 인원 충족 했는지 체크
+	UFUNCTION(BlueprintCallable, Category = "PLAY GAME")
+	void CheckNumberOfPlayer(class APlayGameState* _PlayState);
 
 	// 플레이어 정보 동기화
 	UFUNCTION(BlueprintCallable, Reliable, NetMulticast, Category = "PLAY GAME")
@@ -43,6 +62,21 @@ public:
 	void SetCharacterMovePossible();
 	void SetCharacterMovePossible_Implementation();
 
+	// 목표 골인 인원 수 반환
+	UFUNCTION(BlueprintCallable)
+	int32 GetFinishPlayerCount() const { return FinishPlayer; }
+
+protected:
+	// 목표 골인 인원 수 제어
+	void ControllFinishPlayer(APlayGameState* _PlayState);
+
+	// 목표 골인 인원 수 세팅
+	void SetFinishPlayer(int32 _PlayerCount);
+
+#pragma endregion
+
+#pragma region PlayGameMode :: 타이머 관련
+public:
 	// 게임 시작 전 카운트다운 핸들 활성화
 	UFUNCTION(BlueprintCallable, Reliable, Server)
 	void StartCountdownTimer();
@@ -53,21 +87,7 @@ public:
 	void StartStageLimitTimer();
 	void StartStageLimitTimer_Implementation();
 
-	// 목표 골인 인원 수 반환
-	UFUNCTION(BlueprintCallable)
-	int32 GetFinishPlayerCount() const { return FinishPlayer; }
-
-	// 플랫폼 등록 함수
-	void AddShowDownPlatform(class AShowDownPlatform* _Platform);
-
-	// 랜덤 스테이지 활성화 함수
-	UFUNCTION()
-	class AShowDownPlatform* GetRandomPlatform();
-
 protected:
-	virtual void Tick(float DeltaSeconds) override;
-	void BeginPlay() override;
-	
 	// 카운트 다운 핸들
 	FTimerHandle CountdownTimerHandle;
 
@@ -83,28 +103,27 @@ protected:
 	// 스테이지 제한 시간 오버 처리
 	void OnStageLimitTimeOver();
 
-	// 목표 골인 인원 수 제어
-	void ControllFinishPlayer(APlayGameState* _PlayState);
+#pragma endregion
 
-	// 목표 골인 인원 수 세팅
-	void SetFinishPlayer(int32 _PlayerCount);
+#pragma region PlayGameMode :: Jump Show Down 스테이지 관련
+public:
+	// 플랫폼 등록 함수
+	void AddShowDownPlatform(class AShowDownPlatform* _Platform);
 
-private:
-	// 접속 제한
-	bool InvalidConnect = false;
-	// 인원 충족
-	bool pNumberOfPlayer = false;
-	// 게임 시작 카운트다운 끝
-	bool pCountDownEnd = false;
-	// 캐릭터 이동
-	bool pPlayerMoving = false;
+	// 랜덤 스테이지 활성화 함수
+	UFUNCTION()
+	class AShowDownPlatform* GetRandomPlatform();
 
+protected:
 	// 전체 플랫폼 리스트
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ShowDown", meta = (AllowPrivateAccess = "true"))
 	TArray<class AShowDownPlatform*> AllPlatforms;
 
+#pragma endregion
+
+
 //LMH
-private:
+protected:
 	// 골인 목표 인원 수
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Server", meta = (AllowPrivateAccess = "true"))
 	int FinishPlayer = 99;

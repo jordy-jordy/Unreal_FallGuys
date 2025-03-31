@@ -24,26 +24,49 @@ class UNREAL_FALLGUYS_API UBaseGameInstance : public UGameInstance
 public:
 	UBaseGameInstance();
 
+#pragma region BaseGameInstance :: 서버 관련
+protected:
+	UFUNCTION(BlueprintCallable, Category = "SERVER")
+	void CServerStart(UWorld* _World, FString _Port);
+
+	UFUNCTION(BlueprintCallable, Category = "SERVER")
+	void InsSelectedServerStart(UWorld* _World, FString _Port, FString _OpenLevel);
+
+	UFUNCTION(BlueprintCallable, Category = "SERVER")
+	void CServerConnect(UWorld* _World, FString _IP, FString _Port);
+
+#pragma endregion
+
+#pragma region BaseGameInstance :: 데이터 관련
+protected:
+	// 플레이 레벨 데이터 테이블을 얻는 함수
+	UFUNCTION(BlueprintCallable, Category = "DATA")
+	class UDataTable* GetPlayLevelDataTable() const;
+
+private:
+	UPROPERTY(VisibleAnywhere, Category = "DATA")
+	class UDataTable* DataTables = nullptr;
+	class UDataTable* CostumeDataTable = nullptr;
+	class UDataTable* CostumeColorDataTable = nullptr;
+	class UDataTable* PlayLevelDataTable = nullptr;
+	class UDataTable* ResourceDataTable = nullptr;
+	//class UDataTable* ActorDataTable = nullptr;
+
+#pragma endregion
+
+#pragma region BaseGameInstance :: 코스튬 관련
+public: 
 	// 저장된 코스튬의 컬러 반환
 	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
-	FString InsGetCostumeColor() const
-	{
-		return CostumeColor;
-	}
+	FString InsGetCostumeColor() const { return CostumeColor; }
 
 	// 저장된 코스튬의 상의 반환
 	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
-	FString InsGetCostumeTop() const
-	{
-		return CostumeTop;
-	}
+	FString InsGetCostumeTop() const { return CostumeTop; }
 
 	// 저장된 코스튬의 하의 반환
 	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
-	FString InsGetCostumeBot() const
-	{
-		return CostumeBot;
-	}
+	FString InsGetCostumeBot() const { return CostumeBot; }
 
 	// 코스튬 컬러 저장
 	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
@@ -84,6 +107,23 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
 	UStaticMesh* InsGetCostumeMesh(APawn* _Pawn, const FString& _MeshName = TEXT("Default"));
 
+protected:
+	// 코스튬 컬러
+	UPROPERTY(VisibleAnywhere, Category = "PLAYER COSTUME")
+	FString CostumeColor = TEXT("Default");
+
+	// 코스튬 상의
+	UPROPERTY(VisibleAnywhere, Category = "PLAYER COSTUME")
+	FString CostumeTop = TEXT("Default_Top");
+
+	// 코스튬 하의
+	UPROPERTY(VisibleAnywhere, Category = "PLAYER COSTUME")
+	FString CostumeBot = TEXT("Default_Bot");
+
+#pragma endregion
+
+#pragma region BaseGameInstance :: 리소스 관련
+public: 
 	// 리소스의 스테틱 메시 머티리얼 반환
 	UFUNCTION(BlueprintCallable, Category = "RESOURCE")
 	UMaterialInterface* InsGetResourceMeshMaterial(const FString& _ColorName);
@@ -92,34 +132,21 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "RESOURCE")
 	UStaticMesh* InsGetResourceMesh(UWorld* _World, const FString& _MeshName);
 
-	// 저장된 닉네임 반환
-	UFUNCTION(BlueprintCallable, Category = "PLAYER NICKNAME")
-	FString InsGetNickname() const
-	{
-		return Nickname;
-	}
+#pragma endregion
 
-	// 닉네임 변경
-	UFUNCTION(BlueprintCallable, Category = "PLAYER NICKNAME")
-	void InsChangeNickname(const FString& _NewNickname);
-
+#pragma region BaseGameInstance :: 레벨 관련
+public: 
 	// Random PlayLevel의 이름 반환
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
 	FString InsGetRandomLevel();
 
 	// 저장된 레벨의 이름 반환
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
-	FString InsGetCurLevelName() const
-	{
-		return CurLevelName;
-	}
+	FString InsGetCurLevelName() const { return CurLevelName; }
 
 	// 저장된 레벨의 에셋 이름 반환
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
-	FString InsGetCurLevelAssetName() const
-	{
-		return CurLevelAssetName;
-	}
+	FString InsGetCurLevelAssetName() const { return CurLevelAssetName; }
 
 	// 레벨 가이드 반환
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
@@ -139,10 +166,25 @@ public:
 	UFUNCTION(BlueprintCallable)
 	EStageType InsGetSavedStage() const { return SavedStage; }
 
-	// 레벨 이동했는지 체크하는 변수
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PLAYER DATA")
-	bool IsMovedLevel = false;
+protected:
+	// 레벨 이름
+	UPROPERTY(VisibleAnywhere, Category = "LEVEL")
+	FString CurLevelName = TEXT("");
 
+	// 레벨 에셋 이름
+	UPROPERTY(VisibleAnywhere, Category = "LEVEL")
+	FString CurLevelAssetName = TEXT("");
+
+	// 레벨 리스트
+	TArray<FString> MapList;
+	TSet<int> PlayedMapList;
+	// 에셋명 → Row 이름 매핑
+	TMap<FString, FString> LevelNameMap;
+
+#pragma endregion
+
+#pragma region BaseGameInstance :: 플레이어 데이터 관련
+public: 
 	// 플레이어 정보 백업 함수
 	UFUNCTION(BlueprintCallable, Category = "PLAYER DATA")
 	void InsBackupPlayerInfo(const FString& _UniqueID, const FPlayerInfo& _PlayerInfo);
@@ -151,13 +193,37 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "PLAYER DATA")
 	bool InsGetBackedUpPlayerInfo(const FString& _UniqueID, FPlayerInfo& _OutPlayerInfo) const;
 
-	// 서버 연결 상태를 TRUE로 전환
-	UFUNCTION(BlueprintCallable, Category = "SERVER")
-	void InsSetbIsConnectedTrue()
-	{
-		bIsConnected = true;
-	}
+	// 저장된 닉네임 반환
+	UFUNCTION(BlueprintCallable, Category = "PLAYER DATA")
+	FString InsGetNickname() const { return Nickname; }
 
+	// 닉네임 변경
+	UFUNCTION(BlueprintCallable, Category = "PLAYER DATA")
+	void InsChangeNickname(const FString& _NewNickname);
+
+	// 서버 연결 상태를 TRUE로 전환
+	UFUNCTION(BlueprintCallable, Category = "PLAYER DATA")
+	void InsSetbIsConnectedTrue() { bIsConnected = true; }
+
+	// 레벨 이동했는지 체크하는 변수
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PLAYER DATA")
+	bool IsMovedLevel = false;
+
+protected:
+	// 닉네임
+	UPROPERTY(VisibleAnywhere, Category = "PLAYER DATA")
+	FString Nickname = TEXT("TEST_JORDY");
+
+	// 플레이어 UniqueID -> FPlayerInfo 매핑 저장소
+	TMap<FString, struct FPlayerInfo> PlayerInfoBackup;
+
+	// 서버 연결 상태 변수
+	bool bIsConnected = false;
+
+#pragma endregion
+
+#pragma region BaseGameInstance :: 개발용
+public: 
 	// 디버그용 : 플레이어 태그 확인
 	UFUNCTION(BlueprintCallable, Category = "DEBUG")
 	void InsPrintPlayerInfo();
@@ -170,64 +236,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "DEBUG")
 	void InsPrintLevelName();
 
-protected:
-	// 플레이 레벨 데이터 테이블을 얻는 함수
-	UFUNCTION(BlueprintCallable, Category = "DATA")
-	class UDataTable* GetPlayLevelDataTable() const;
+#pragma endregion
 
-	// 플레이어 UniqueID -> FPlayerInfo 매핑 저장소
-	TMap<FString, struct FPlayerInfo> PlayerInfoBackup;
-
-private:
-	UFUNCTION(BlueprintCallable, Category = "SERVER")
-	void CServerStart(UWorld* _World, FString _Port);
-
-	UFUNCTION(BlueprintCallable, Category = "SERVER")
-	void InsSelectedServerStart(UWorld* _World, FString _Port, FString _OpenLevel);
-
-	UFUNCTION(BlueprintCallable, Category = "SERVER")
-	void CServerConnect(UWorld* _World, FString _IP, FString _Port);
-
-	UPROPERTY(VisibleAnywhere, Category = "DATA")
-	class UDataTable* DataTables = nullptr;
-	class UDataTable* CostumeDataTable = nullptr;
-	class UDataTable* CostumeColorDataTable = nullptr;
-	class UDataTable* PlayLevelDataTable = nullptr;
-	class UDataTable* ResourceDataTable = nullptr;
-	//class UDataTable* ActorDataTable = nullptr;
-
-	// 코스튬 컬러
-	UPROPERTY(VisibleAnywhere, Category = "PLAYER COSTUME")
-	FString CostumeColor = TEXT("Default");
-
-	// 코스튬 상의
-	UPROPERTY(VisibleAnywhere, Category = "PLAYER COSTUME")
-	FString CostumeTop = TEXT("Default_Top");
-
-	// 코스튬 하의
-	UPROPERTY(VisibleAnywhere, Category = "PLAYER COSTUME")
-	FString CostumeBot = TEXT("Default_Bot");
-
-	// 닉네임
-	UPROPERTY(VisibleAnywhere, Category = "PLAYER NICKNAME")
-	FString Nickname = TEXT("TEST_JORDY");
-
-	// 레벨 이름
-	UPROPERTY(VisibleAnywhere, Category = "LEVEL")
-	FString CurLevelName = TEXT("");
-
-	// 레벨 에셋 이름
-	UPROPERTY(VisibleAnywhere, Category = "LEVEL")
-	FString CurLevelAssetName = TEXT("");
-
-	// 맵리스트
-	TArray<FString> MapList;
-	TSet<int> PlayedMapList;
-	// 에셋명 → Row 이름 매핑
-	TMap<FString, FString> LevelNameMap;
-
-	// 서버 연결 상태 변수
-	bool bIsConnected = false;
 
 //LMH
 public:
