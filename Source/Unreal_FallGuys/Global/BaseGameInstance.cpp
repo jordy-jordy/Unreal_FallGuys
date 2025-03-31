@@ -465,7 +465,7 @@ UTexture2D* UBaseGameInstance::InsGetLevelImageFromAssetName(const FString& _Ass
 		PlayLevelDataTable,
 		_AssetName,
 		TEXT("GetLevelImageFromAssetName"),
-		[](const FPlayLevelDataRow* R) { return R->Name; }
+		[](const FPlayLevelDataRow* R) { return R->Level.GetAssetName(); }
 	);
 
 	if (Row)

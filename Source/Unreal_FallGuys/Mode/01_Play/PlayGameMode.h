@@ -26,28 +26,19 @@ public:
 	// 플레이어 접속시 실행되는 함수
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 
+protected:
+	virtual void Tick(float DeltaSeconds) override;
+	void BeginPlay() override;
+
+#pragma endregion
+
+#pragma region PlayGameMode :: 게임 시작 관련
+public:
 	// 게임 시작
 	UFUNCTION(BlueprintCallable, Reliable, NetMulticast, Category = "PLAY GAME")
 	void StartGame();
 	void StartGame_Implementation();
 
-protected:
-	virtual void Tick(float DeltaSeconds) override;
-	void BeginPlay() override;
-
-	// 접속 제한
-	bool InvalidConnect = false;
-	// 인원 충족
-	bool pNumberOfPlayer = false;
-	// 캐릭터 이동
-	bool pPlayerMoving = false;
-	// 게임 시작 카운트다운 끝
-	bool pCountDownEnd = false;
-
-#pragma endregion
-
-#pragma region PlayGameMode :: 플레이어 관련
-public:
 	// 인원 충족 했는지 체크
 	UFUNCTION(BlueprintCallable, Category = "PLAY GAME")
 	void CheckNumberOfPlayer(class APlayGameState* _PlayState);
@@ -73,17 +64,26 @@ protected:
 	// 목표 골인 인원 수 세팅
 	void SetFinishPlayer(int32 _PlayerCount);
 
+	// 접속 제한
+	bool InvalidConnect = false;
+	// 인원 충족
+	bool pNumberOfPlayer = false;
+	// 캐릭터 이동
+	bool pPlayerMoving = false;
+	// 게임 시작 카운트다운 끝
+	bool pCountDownEnd = false;
+
 #pragma endregion
 
 #pragma region PlayGameMode :: 타이머 관련
 public:
 	// 게임 시작 전 카운트다운 핸들 활성화
-	UFUNCTION(BlueprintCallable, Reliable, Server)
+	UFUNCTION(BlueprintCallable, Reliable, Server, Category = "TIMER")
 	void StartCountdownTimer();
 	void StartCountdownTimer_Implementation();
 
 	// 스테이지 제한 시간 타이머 활성화
-	UFUNCTION(BlueprintCallable, Reliable, Server)
+	UFUNCTION(BlueprintCallable, Reliable, Server, Category = "TIMER")
 	void StartStageLimitTimer();
 	void StartStageLimitTimer_Implementation();
 

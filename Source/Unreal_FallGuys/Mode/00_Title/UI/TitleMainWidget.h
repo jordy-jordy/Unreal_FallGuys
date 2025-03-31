@@ -15,7 +15,7 @@ class UNREAL_FALLGUYS_API UTitleMainWidget : public UTitleUserWidget
 	GENERATED_BODY()
 
 public:
-	UTitleMainWidget(const FObjectInitializer& ObjectInitializer);
+	void NativeConstruct();
 
 	//UFUNCTION(BlueprintCallable)
 	//void SwitchWidgetInMain(const FVector2D _Value);

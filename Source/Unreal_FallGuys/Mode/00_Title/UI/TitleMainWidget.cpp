@@ -6,10 +6,10 @@
 #include "Components/CanvasPanelSlot.h"
 
 
-UTitleMainWidget::UTitleMainWidget(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+void UTitleMainWidget::NativeConstruct()
 {
-	//SetMainWidget(this);
+	//MainWidgetInit();
+	//CreateChildWidget(UTitleNameSetWidget);
 }
 
 void UTitleMainWidget::MainWidgetInit()
