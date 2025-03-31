@@ -43,6 +43,16 @@ enum class EStageType : uint8
 	FINISHED	UMETA(DisplayName = "Finished")
 };
 
+// 이현정 : 팀 구분
+UENUM(BlueprintType)
+enum class EPlayerTeam : uint8
+{
+	Red		UMETA(DisplayName = "Red Team"),
+	Blue	UMETA(DisplayName = "Blue Team"),
+	None	UMETA(DisplayName = "None")
+};
+
+
 /**
  * 
  */

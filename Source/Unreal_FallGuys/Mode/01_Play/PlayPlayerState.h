@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerState.h"
 
 #include <Global/GlobalEnum.h>
+#include <Mode/01_Play/PlayEnum.h>
 
 #include "PlayPlayerState.generated.h"
 
@@ -27,13 +28,12 @@ struct FPlayerInfo
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
     EPlayerStatus Status;
 
-    FPlayerInfo()
-        : Tag(TEXT("NoTag")), Status(EPlayerStatus::DEFAULT) 
-    {
-    }
+    // 팀 정보
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+    EPlayerTeam Team = EPlayerTeam::None;
 
-    FPlayerInfo(const FString& InTag, EPlayerStatus InStatus, int32 InScore, const FString& InCostume)
-        : Tag(InTag), Status(InStatus)
+    FPlayerInfo()
+        : Tag(TEXT("NoTag")), Status(EPlayerStatus::DEFAULT), Team(EPlayerTeam::None)
     {
     }
 };
