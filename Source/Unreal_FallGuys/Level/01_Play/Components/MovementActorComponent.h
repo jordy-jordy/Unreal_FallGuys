@@ -86,6 +86,9 @@ public:
 	void Spin(float DeltaTime, UStaticMeshComponent* Target);
 
 	UFUNCTION()
+	void AccSpin(float DeltaTime, UStaticMeshComponent* Target, FRotator StartSpeed, FRotator AccSpeed);
+
+	UFUNCTION()
 	void SpinOnce(float DeltaTime, UStaticMeshComponent* Target, EMoveAxis Axis);
 
 	UFUNCTION()

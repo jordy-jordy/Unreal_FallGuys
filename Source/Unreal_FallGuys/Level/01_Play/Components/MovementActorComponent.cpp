@@ -91,6 +91,14 @@ void UMovementActorComponent::Spin(float DeltaTime, UStaticMeshComponent* Target
 	Target->AddRelativeRotation(SpinSpeed * DeltaTime);
 }
 
+void UMovementActorComponent::AccSpin(float DeltaTime, UStaticMeshComponent* Target, FRotator StartSpeed, FRotator AccSpeed)
+{
+	FRotator CurSpeed = StartSpeed + (AccSpeed * DeltaTime);
+
+	UE_LOG(LogTemp, Warning, TEXT("CurRotateSpeed : %f"), CurSpeed.Yaw);
+	Target->AddRelativeRotation(CurSpeed);
+}
+
 void UMovementActorComponent::SpinOnce(float DeltaTime, UStaticMeshComponent* Target, EMoveAxis Axis)
 {
 	float LeftValue = 0.0f;

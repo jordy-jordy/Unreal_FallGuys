@@ -24,14 +24,15 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Platforms")
+	TSubclassOf<AShowDownPlatform> BP_Platforms;
+
 private:
 	TArray<AShowDownPlatform*>Platforms;
 
 	UFUNCTION()
 	void SetPlatforms();
-
-	UFUNCTION(BlueprintCallable)
-	void SetFallPlatform();
 
 	//bool IsDown = false;
 
