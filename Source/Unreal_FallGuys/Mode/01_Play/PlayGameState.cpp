@@ -122,6 +122,20 @@ float APlayGameState::SetStageLimitTime() const
 	return UFallConst::FallStageLimitTime;
 }
 
+void APlayGameState::SpawnEggManager()
+{
+	if (HasAuthority())
+	{
+		Spawnner = GetWorld()->SpawnActor<AEggSpawnManager>(SpawnManagerFactory, FVector(0, 0, 400.0f), FRotator(0, 0, 0));
+		if (Spawnner == nullptr) return;
+
+
+	}
+
+
+	
+}
+
 // 게임 인스턴스에서 세팅된 레벨 이름
 void APlayGameState::SavePlayLevelName_Implementation(const FString& _LevelName)
 {
@@ -152,7 +166,9 @@ void APlayGameState::SpawnEggManager()
 	{
 		Spawnner = GetWorld()->SpawnActor<AEggSpawnManager>(SpawnManagerFactory, FVector(0, 0, 400.0f), FRotator(0, 0, 0));
 		if (Spawnner == nullptr) return;
+		Spawnner->SetOwner(this);
 	}
+
 }
 
 void APlayGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

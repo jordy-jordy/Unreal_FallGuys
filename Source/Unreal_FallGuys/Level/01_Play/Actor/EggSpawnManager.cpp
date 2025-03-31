@@ -20,6 +20,7 @@ void AEggSpawnManager::BeginPlay()
 	for (int i = 0; i < EggCount; i++)
 	{
 		Eggs.Add(GetWorld()->SpawnActor<AEgg>(EggFactory, GetActorTransform()));
+		Eggs[i]->SetOwner(this);
 	}
 	
 }
