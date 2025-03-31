@@ -13,6 +13,7 @@
 #include <Mode/01_Play/PlayGameState.h>
 #include <Mode/01_Play/PlayPlayerState.h>
 #include <Mode/01_Play/PlayCharacter.h>
+#include <Level/01_Play/Actor/ImMovable/JumpShowDown/ShowDownStage.h>
 
 
 APlayGameMode::APlayGameMode()
@@ -419,4 +420,42 @@ void APlayGameMode::ControllFinishPlayer(APlayGameState* _PlayState)
 	default:
 		break;
 	}
+}
+
+// 플랫폼 등록 함수
+void APlayGameMode::AddShowDownPlatform(AShowDownPlatform* _Platform)
+{
+	if (_Platform == nullptr)
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: ShowDownPlatform이 nullptr입니다."));
+		return;
+	}
+
+	AllPlatforms.Add(_Platform);
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: 총 ShowDownPlatform 수: %d"), AllPlatforms.Num());
+}
+
+AShowDownPlatform* APlayGameMode::GetRandomPlatform()
+{
+	if (AllPlatforms.Num() == 0)
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: GetRandomPlatform :: 플랫폼 배열이 비어있습니다."));
+		return nullptr;
+	}
+
+	for (int32 Try = 0; Try < 10; ++Try) // 10번 정도 시도
+	{
+		int32 RandIndex = FMath::RandRange(0, AllPlatforms.Num() - 1);
+		AShowDownPlatform* Candidate = AllPlatforms[RandIndex];
+
+		if (Candidate && Candidate->IsLive)
+		{
+			Candidate->IsLive = false; // 중복 방지
+			UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: GetRandomPlatform :: 선택된 플랫폼 인덱스: %d"), RandIndex);
+			return Candidate;
+		}
+	}
+
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: GetRandomPlatform :: 사용 가능한 플랫폼이 없습니다."));
+	return nullptr;
 }
