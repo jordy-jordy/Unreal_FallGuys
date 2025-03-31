@@ -53,6 +53,10 @@ public:
 	void StartStageLimitTimer();
 	void StartStageLimitTimer_Implementation();
 
+	// 목표 골인 인원 수 반환
+	UFUNCTION(BlueprintCallable)
+	int32 GetFinishPlayerCount() const { return FinishPlayer; }
+
 protected:
 	virtual void Tick(float DeltaSeconds) override;
 	void BeginPlay() override;
@@ -73,7 +77,10 @@ protected:
 	void OnStageLimitTimeOver();
 
 	// 목표 골인 인원 수 제어
-	void ControllFinishPlayer();
+	void ControllFinishPlayer(APlayGameState* _PlayState);
+
+	// 목표 골인 인원 수 세팅
+	void SetFinishPlayer(int32 _PlayerCount);
 
 private:
 	// 접속 제한

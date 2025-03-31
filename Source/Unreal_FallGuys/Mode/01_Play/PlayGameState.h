@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameState.h"
 
+#include <Mode/01_Play/PlayEnum.h>
 #include <Mode/01_Play/PlayPlayerState.h>
 
 #include "PlayGameState.generated.h"
@@ -100,6 +101,10 @@ public:
 		return LevelAssetName;
 	}
 
+	// 현재 스테이지 단계
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category = "LEVEL")
+	EStageType CurrentStage = EStageType::STAGE_1;
+
 private:
 	// 랜덤 레벨 네임
 	UPROPERTY(Replicated)
@@ -108,7 +113,6 @@ private:
 	// 랜덤 레벨 에셋 네임
 	UPROPERTY(Replicated)
 	FString LevelAssetName = TEXT("");
-
 
 // ::::::::::::::::: 카운트 다운 관련
 public: 

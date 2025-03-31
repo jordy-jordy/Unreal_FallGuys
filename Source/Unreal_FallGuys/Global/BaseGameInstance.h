@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 
+#include <Mode/01_Play/PlayEnum.h>
 #include <Mode/01_Play/PlayPlayerState.h>
 
 #include "BaseGameInstance.generated.h"
@@ -128,6 +129,16 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
 	UTexture2D* InsGetLevelImageFromAssetName(const FString& _AssetName);
 
+	// 현재 스테이지 저장용 (레벨 전환 시 유지)
+	UPROPERTY(BlueprintReadWrite, Category = "LEVEL")
+	EStageType SavedStage = EStageType::STAGE_1;
+
+	UFUNCTION(BlueprintCallable)
+	void InsSetSavedStage(EStageType _Stage) { SavedStage = _Stage; }
+
+	UFUNCTION(BlueprintCallable)
+	EStageType InsGetSavedStage() const { return SavedStage; }
+
 	// 레벨 이동했는지 체크하는 변수
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PLAYER DATA")
 	bool IsMovedLevel = false;
@@ -151,7 +162,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "DEBUG")
 	void InsPrintPlayerInfo();
 
-	// 디버그용 : 접속자 수, 카운트 다운 bool 값 확인
+	// 디버그용 : 현재 접속자 수, 카운트 다운 END 여부, 현재 스테이지 단계, 목표 골인 인원 수 확인
 	UFUNCTION(BlueprintCallable, Category = "DEBUG")
 	void InsPrintConnectedPlayers();
 

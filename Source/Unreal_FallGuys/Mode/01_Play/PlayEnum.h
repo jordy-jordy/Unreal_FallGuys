@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -32,6 +32,17 @@ enum class ERaceOverAnimation : uint8
 	Idle UMETA(DisplayName = "Idle"),
 	Falling UMETA(DisplayName = "Falling")
 };
+
+// 이현정 : 스테이지 관리
+UENUM(BlueprintType)
+enum class EStageType : uint8
+{
+	STAGE_1		UMETA(DisplayName = "Stage 1"),
+	STAGE_2		UMETA(DisplayName = "Stage 2"),
+	STAGE_3		UMETA(DisplayName = "Stage 3"),
+	FINISHED	UMETA(DisplayName = "Finished")
+};
+
 /**
  * 
  */

@@ -37,19 +37,33 @@ void APlayGameMode::ServerTravelToNextMap(const FString& url)
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT(":: 서버트래블 감지 ::"));
 
 	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
-	if (GameInstance)
+	APlayGameState* PlayGameState = GetGameState<APlayGameState>();
+	if (GameInstance && PlayGameState)
 	{
 		// 현재 게임 상태 가져오기
-		APlayGameState* PlayGameState = GetGameState<APlayGameState>();
-		if (PlayGameState)
+		for (const FPlayerInfoEntry& PlayerEntry : PlayGameState->PlayerInfoArray)
 		{
-			for (const FPlayerInfoEntry& PlayerEntry : PlayGameState->PlayerInfoArray)
-			{
-				GameInstance->InsBackupPlayerInfo(PlayerEntry.UniqueID, PlayerEntry.PlayerInfo);
-				UE_LOG(FALL_DEV_LOG, Log, TEXT("ServerTravelToNextMap :: 플레이어 정보 백업 완료 - UniqueID = %s, Tag = %s"),
-					*PlayerEntry.UniqueID, *PlayerEntry.PlayerInfo.Tag);
-			}
+			GameInstance->InsBackupPlayerInfo(PlayerEntry.UniqueID, PlayerEntry.PlayerInfo);
+			UE_LOG(FALL_DEV_LOG, Log, TEXT("ServerTravelToNextMap :: 플레이어 정보 백업 완료 - UniqueID = %s, Tag = %s"),
+				*PlayerEntry.UniqueID, *PlayerEntry.PlayerInfo.Tag);
 		}
+
+		// 다음 스테이지 값을 미리 저장
+		switch (PlayGameState->CurrentStage)
+		{
+		case EStageType::STAGE_1:
+			GameInstance->InsSetSavedStage(EStageType::STAGE_2);
+			break;
+		case EStageType::STAGE_2:
+			GameInstance->InsSetSavedStage(EStageType::STAGE_3);
+			break;
+		case EStageType::STAGE_3:
+			GameInstance->InsSetSavedStage(EStageType::FINISHED);
+			break;
+		default:
+			break;
+		}
+
 		// 스테이지 전환 했음을 알림
 		GameInstance->IsMovedLevel = true;
 	}
@@ -219,6 +233,7 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 	// 카운트 다운도 끝났고, 인원도 찼으니 게임 시작
 	if (true == pCountDownEnd && true == pNumberOfPlayer)
 	{
+		ControllFinishPlayer(FallState);
 		StartGame();
 	}
 
@@ -351,18 +366,57 @@ void APlayGameMode::OnStageLimitTimeOver()
 	ServerTravelToNextMap(UFallGlobal::GetRandomLevelWithOutPawn());
 }
 
-// 목표 골인 인원 수 제어
-void APlayGameMode::ControllFinishPlayer()
+// 목표 골인 인원 수 세팅
+void APlayGameMode::SetFinishPlayer(int32 _PlayerCount)
 {
-	if (2 >= UFallConst::MinPlayerCount) // 최소 인원이 2명 이하인 경우
-	{
-	}
-	else if (3 <= UFallConst::MinPlayerCount && UFallConst::MinPlayerCount <= 5) // 최소 인원이 3 ~ 5명인 경우
-	{
+	FinishPlayer = _PlayerCount;
+}
 
-	}
-	else // 최소 인원이 6명 이상인 경우
-	{
+// 목표 골인 인원 수 제어
+void APlayGameMode::ControllFinishPlayer(APlayGameState* _PlayState)
+{
+	if (!_PlayState) return;
 
+	int32 MinCount = UFallConst::MinPlayerCount;
+
+	switch (_PlayState->CurrentStage)
+	{
+	case EStageType::STAGE_1:
+		if (MinCount <= 2)
+		{
+			SetFinishPlayer(MinCount);
+		}
+		else if (MinCount <= 5)
+		{
+			SetFinishPlayer(3);
+		}
+		else
+		{
+			SetFinishPlayer(MinCount / 2);
+		}
+		break;
+
+	case EStageType::STAGE_2:
+		if (MinCount <= 2)
+		{
+			SetFinishPlayer(1);
+		}
+		else if (MinCount <= 5)
+		{
+			SetFinishPlayer(2);
+		}
+		else
+		{
+			SetFinishPlayer((MinCount / 2) / 2); 
+		}
+		break;
+
+	case EStageType::STAGE_3:
+		SetFinishPlayer(1);
+		break;
+
+	case EStageType::FINISHED:
+	default:
+		break;
 	}
 }

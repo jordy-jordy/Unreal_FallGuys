@@ -14,8 +14,10 @@
 #include <Global/FallGlobal.h>
 #include <Global/FallConst.h>
 #include <Global/Data/GlobalDataTable.h>
+#include <Mode/01_Play/PlayGameMode.h>
 #include <Mode/01_Play/PlayGameState.h>
 #include <Mode/01_Play/PlayPlayerState.h>
+
 
 
 UBaseGameInstance::UBaseGameInstance()
@@ -574,7 +576,7 @@ void UBaseGameInstance::InsPrintPlayerInfo()
 	}
 }
 
-// 디버그용 : 접속자 수, 카운트 다운 bool 값 확인
+// 디버그용 : 현재 접속자 수, 카운트 다운 END 여부, 현재 스테이지 단계, 목표 골인 인원 수 확인
 void UBaseGameInstance::InsPrintConnectedPlayers()
 {
 	APlayGameState* PlayGameState = GetWorld()->GetGameState<APlayGameState>();
@@ -590,19 +592,25 @@ void UBaseGameInstance::InsPrintConnectedPlayers()
 
 	int32 ConnectedCount = PlayGameState->GetConnectedPlayers();
 	bool IsOverCount = PlayGameState->GetIsCountDownOver();
+	EStageType Stage = PlayGameState->CurrentStage;
 
-	// 콘솔 로그 출력
+	// FinishPlayer 값 가져오기
+	APlayGameMode* GameMode = GetWorld()->GetAuthGameMode<APlayGameMode>();
+	int32 FinishPlayerCount = (GameMode) ? GameMode->GetFinishPlayerCount() : -1;
+
+	// 로그 출력
 	UE_LOG(FALL_DEV_LOG, Log, TEXT("현재 접속자 수 : %d"), ConnectedCount);
 	UE_LOG(FALL_DEV_LOG, Log, TEXT("카운트 다운 끝났니? : %s"), IsOverCount ? TEXT("true") : TEXT("false"));
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("현재 스테이지 : %s"), *UEnum::GetValueAsString(Stage));
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("목표 골인 인원 수 : %d"), FinishPlayerCount);
 
 	// 화면 출력
 	if (GEngine)
 	{
-		FString ScreenMsgPlayer = FString::Printf(TEXT("현재 접속자 수 : %d"), ConnectedCount);
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, ScreenMsgPlayer);
-
-		FString ScreenMsgCountOver = FString::Printf(TEXT("카운트 다운 끝났니? : %s"), IsOverCount ? TEXT("true") : TEXT("false"));
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, ScreenMsgCountOver);
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("현재 접속자 수 : %d"), ConnectedCount));
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("카운트 다운 끝났니? : %s"), IsOverCount ? TEXT("true") : TEXT("false")));
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("현재 스테이지 : %s"), *UEnum::GetValueAsString(Stage)));
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("목표 골인 인원 수 : %d"), FinishPlayerCount));
 	}
 }
 

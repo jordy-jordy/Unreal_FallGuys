@@ -21,8 +21,20 @@ void APlayGameState::BeginPlay()
 	Super::BeginPlay();
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameState BeginPlay START ======= "));
+
+	if (HasAuthority()) 
+	{
+		UBaseGameInstance* GameInstance = GetGameInstance<UBaseGameInstance>();
+		if (GameInstance)
+		{
+			CurrentStage = GameInstance->InsGetSavedStage();
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("GameState :: CurrentStage를 복구했습니다: %s"), *UEnum::GetValueAsString(CurrentStage));
+		}
+	}
+
 	UseStageLimitTime = SetUseStageLimitTime();
 	StageLimitTime = SetStageLimitTime();
+
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameState BeginPlay END ======= "));
 }
 
@@ -158,4 +170,5 @@ void APlayGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(APlayGameState, IsCountDownOver);
 	DOREPLIFETIME(APlayGameState, StageLimitTime);
 	DOREPLIFETIME(APlayGameState, UseStageLimitTime);
+	DOREPLIFETIME(APlayGameState, CurrentStage);
 }
