@@ -17,6 +17,9 @@ class UNREAL_FALLGUYS_API UPlayStandbyWidget : public UPlayUserWidget
 public:
 	UFUNCTION(BlueprintCallable)
 	FString GetCurLevelGuide();
+
+	UFUNCTION(BlueprintCallable)
+	int GetMinPlayerNum();
 	
 private:
 };
