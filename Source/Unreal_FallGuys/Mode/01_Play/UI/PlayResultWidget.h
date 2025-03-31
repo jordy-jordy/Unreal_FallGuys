@@ -13,5 +13,23 @@ UCLASS()
 class UNREAL_FALLGUYS_API UPlayResultWidget : public UPlayUserWidget
 {
 	GENERATED_BODY()
+
+public:
+	void NativeConstruct();
 	
+private:
+	UPROPERTY(EditAnywhere, Transient, meta = (BindWidgetAnim), Category = "UI")
+	UWidgetAnimation* LeftBigAnim;
+
+	UPROPERTY(EditAnywhere, Transient, meta = (BindWidgetAnim), Category = "UI")
+	UWidgetAnimation* LeftSmallAnim;
+
+	UPROPERTY(EditAnywhere, Transient, meta = (BindWidgetAnim), Category = "UI")
+	UWidgetAnimation* RightBigAnim;
+
+	UPROPERTY(EditAnywhere, Transient, meta = (BindWidgetAnim), Category = "UI")
+	UWidgetAnimation* RightSmallAnim;
+
+	UPROPERTY(EditAnywhere, Transient, meta = (BindWidgetAnim), Category = "UI")
+	UWidgetAnimation* TextAnim;
 };

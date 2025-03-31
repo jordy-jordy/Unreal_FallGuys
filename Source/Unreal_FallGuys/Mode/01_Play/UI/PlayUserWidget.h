@@ -17,6 +17,8 @@ class UNREAL_FALLGUYS_API UPlayUserWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
+	void NativeConstruct();
+
 	void SetMainWidget(class UPlayMainWidget* _MainWidget)
 	{
 		MainWidget = _MainWidget;

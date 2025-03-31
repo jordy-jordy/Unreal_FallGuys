@@ -6,3 +6,7 @@
 #include "Components/CanvasPanelSlot.h"
 
 
+void UPlayUserWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+}
