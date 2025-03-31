@@ -22,7 +22,7 @@ void APlayGameState::BeginPlay()
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameState BeginPlay START ======= "));
 
-	if (HasAuthority()) 
+	if (HasAuthority())
 	{
 		UBaseGameInstance* GameInstance = GetGameInstance<UBaseGameInstance>();
 		if (GameInstance)
@@ -30,10 +30,10 @@ void APlayGameState::BeginPlay()
 			CurrentStage = GameInstance->InsGetSavedStage();
 			UE_LOG(FALL_DEV_LOG, Warning, TEXT("GameState :: CurrentStage를 복구했습니다: %s"), *UEnum::GetValueAsString(CurrentStage));
 		}
-	}
 
-	UseStageLimitTime = SetUseStageLimitTime();
-	StageLimitTime = SetStageLimitTime();
+		UseStageLimitTime = SetUseStageLimitTime();
+		StageLimitTime = SetStageLimitTime();
+	}
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameState BeginPlay END ======= "));
 }
@@ -122,20 +122,6 @@ float APlayGameState::SetStageLimitTime() const
 	return UFallConst::FallStageLimitTime;
 }
 
-void APlayGameState::SpawnEggManager()
-{
-	if (HasAuthority())
-	{
-		Spawnner = GetWorld()->SpawnActor<AEggSpawnManager>(SpawnManagerFactory, FVector(0, 0, 400.0f), FRotator(0, 0, 0));
-		if (Spawnner == nullptr) return;
-
-
-	}
-
-
-	
-}
-
 // 게임 인스턴스에서 세팅된 레벨 이름
 void APlayGameState::SavePlayLevelName_Implementation(const FString& _LevelName)
 {
@@ -156,6 +142,16 @@ void APlayGameState::OnRep_ConnectedPlayers()
 	{
 		FString Message = FString::Printf(TEXT("PlayGameState :: 클라이언트 동기화된 접속자 수 : %d"), ConnectedPlayers);
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, Message);
+	}
+}
+
+// LMH
+void APlayGameState::SpawnEggManager()
+{
+	if (HasAuthority())
+	{
+		Spawnner = GetWorld()->SpawnActor<AEggSpawnManager>(SpawnManagerFactory, FVector(0, 0, 400.0f), FRotator(0, 0, 0));
+		if (Spawnner == nullptr) return;
 	}
 }
 

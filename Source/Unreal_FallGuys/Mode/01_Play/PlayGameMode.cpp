@@ -34,7 +34,7 @@ void APlayGameMode::ServerTravelToNextMap(const FString& url)
 {
 	if (!HasAuthority()) return;
 
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT(":: 서버트래블 감지 ::"));
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 서버트래블 감지 ::"));
 
 	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
 	APlayGameState* PlayGameState = GetGameState<APlayGameState>();
