@@ -23,8 +23,19 @@ public:
 
 #pragma region PlayGameMode :: 핵심 함수
 public: 
-	// 플레이어 접속시 실행되는 함수
-	virtual void PostLogin(APlayerController* NewPlayer) override;
+	// 플레이어 접속시 실행되는 함수 :: 가장 빠름
+	virtual void PreLogin(
+		const FString& _Options,
+		const FString& _Address,
+		const FUniqueNetIdRepl& _UniqueId,
+		FString& _ErrorMessage
+	) override;
+
+	// 플레이어 접속시 실행되는 함수 :: PreLogin 다음
+	virtual void PostLogin(APlayerController* _NewPlayer) override;
+
+	// 플레이어가 완전히 준비된 이후 실행되는 함수
+	virtual void HandleStartingNewPlayer_Implementation(APlayerController* _NewPlayer) override;
 
 protected:
 	virtual void Tick(float DeltaSeconds) override;

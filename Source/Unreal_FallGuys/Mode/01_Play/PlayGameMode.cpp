@@ -113,28 +113,169 @@ void APlayGameMode::CheckNumberOfPlayer(APlayGameState* _PlayState)
 	}
 }
 
-// 접속시 실행되는 함수
-void APlayGameMode::PostLogin(APlayerController* NewPlayer)
+// 플레이어 접속시 실행되는 함수 :: 가장 빠름
+void APlayGameMode::PreLogin(
+	const FString& _Options,
+	const FString& _Address,
+	const FUniqueNetIdRepl& _UniqueId,
+	FString& _ErrorMessage
+)
 {
-    Super::PostLogin(NewPlayer);
+	Super::PreLogin(_Options, _Address, _UniqueId, _ErrorMessage);
 
-	// 접속 제한
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode PreLogin START ======= "));
+
 	if (true == InvalidConnect)
 	{
-		// 클라이언트를 강제 종료
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("PostLogin :: 게임 인원이 가득차 접속할 수 없습니다."));
-		NewPlayer->ClientTravel(TEXT("/Game/Maps/TitleLevel"), TRAVEL_Absolute);
-		return;
+		_ErrorMessage = TEXT("접속 제한: 게임 인원이 가득찼습니다.");
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("PreLogin :: 게임 인원이 가득차 접속이 거절되었습니다."));
 	}
 
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode PreLogin END ======= "));
+}
+
+#pragma region PlayGameMode :: 플레이어 접속시 실행되는 함수 :: PreLogin 다음 (수정 전)
+//void APlayGameMode::PostLogin(APlayerController* NewPlayer)
+//{
+//    Super::PostLogin(NewPlayer);
+//
+//	// 접속 제한
+//	if (true == InvalidConnect)
+//	{
+//		// 클라이언트를 강제 종료
+//		UE_LOG(FALL_DEV_LOG, Error, TEXT("PostLogin :: 게임 인원이 가득차 접속할 수 없습니다."));
+//		NewPlayer->ClientTravel(TEXT("/Game/Maps/TitleLevel"), TRAVEL_Absolute);
+//		return;
+//	}
+//
+//	// 서버장이 아닐시 리턴
+//    if (!HasAuthority()) return;
+//
+//	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode PostLogin START ======= "));
+//
+//    // GameState가 없을시 리턴
+//    APlayGameState* FallState = GetGameState<APlayGameState>();
+//    if (!FallState) { UE_LOG(FALL_DEV_LOG, Error, TEXT("PostLogin :: GameState가 nullptr 입니다.")); return; }
+//
+//	// 인원 카운팅
+//	FallState->AddConnectedPlayers();
+//	int ConnectingPlayer = FallState->GetConnectedPlayers();
+//	UE_LOG(FALL_DEV_LOG, Log, TEXT("PostLogin :: 새로운 플레이어가 접속 했습니다. 현재 접속 인원 : %d"), ConnectingPlayer);
+//
+//	// 인원 수 체크
+//	CheckNumberOfPlayer(FallState);
+//	if (true == pNumberOfPlayer ) 
+//	{
+//		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PostLogin :: 게임 플레이를 위한 인원이 충족되었습니다."));
+//
+//		if (true == UFallConst::UsePlayerLimit) // 인원이 찼고 인원 제한을 사용하는 경우 접속 제한 활성화
+//		{
+//			InvalidConnect = true;
+//			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PostLogin :: 인원이 충족되었으므로 접속이 제한됩니다."));
+//		}
+//	}
+//
+//	// PlayerState가 없을시 리턴
+//    APlayPlayerState* PlayerState = Cast<APlayPlayerState>(NewPlayer->PlayerState);
+//    if (!PlayerState)
+//    {
+//        UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayerState가 nullptr 입니다."));
+//        return;
+//    }
+//
+//	// 기존 Player 정보 백업
+//	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
+//	FString PlayerUniqueID = PlayerState->GetUniqueId()->ToString(); // UniqueID 얻음
+//
+//	if (GameInstance && GameInstance->IsMovedLevel)
+//	{
+//		// 스테이지 전환 되었을때 IsDie를 true로 초기화
+//		GameInstance->SetIsDie(true);
+//
+//		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PostLogin :: 기존 플레이어 감지. 정보를 로드합니다."));
+//
+//		FPlayerInfo RestoredInfo;
+//		if (GameInstance->InsGetBackedUpPlayerInfo(PlayerUniqueID, RestoredInfo))
+//		{
+//			RestoredInfo.Status = EPlayerStatus::DEFAULT;  // Status 초기화
+//			PlayerState->PlayerInfo = RestoredInfo;
+//
+//			// 태그 복구
+//			NewPlayer->Tags.Add(*RestoredInfo.Tag);
+//			// 안전하게 태그 값 가져오기
+//			FString TagString = (NewPlayer->Tags.Num() > 0) ? NewPlayer->Tags[0].ToString() : TEXT("태그 없음");
+//
+//			UE_LOG(FALL_DEV_LOG, Log, TEXT("PostLogin :: 플레이어 정보 로드 완료 - UniqueID = %s, Tag = %s"),
+//				*RestoredInfo.UniqueID, *TagString);
+//		}
+//	}
+//	else
+//	{
+//		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PostLogin :: 신규 플레이어 감지. 정보를 세팅합니다."));
+//
+//		// 새로운 Player 등록 및 세팅
+//		FString UniqueTag = FString::Printf(TEXT("Player%d"), FallState->PlayerInfoArray.Num());
+//		PlayerState->SetPlayerInfo(UniqueTag, EPlayerStatus::DEFAULT);
+//		
+//		// 태그 부여
+//		NewPlayer->Tags.Add(*UniqueTag);
+//		// 안전하게 태그 값 가져오기
+//		FString TagString = (NewPlayer->Tags.Num() > 0) ? NewPlayer->Tags[0].ToString() : TEXT("태그 없음");
+//
+//		UE_LOG(FALL_DEV_LOG, Log, TEXT("PostLogin :: 신규 플레이어 정보 세팅 - UniqueID = %s, Tag = %s"),
+//			*PlayerState->PlayerInfo.UniqueID, *TagString);
+//	}
+//
+//	// 접속 여부 bool값 true로 변경
+//	GameInstance->InsSetbIsConnectedTrue();
+//	
+//	// 모든 클라이언트에게 정보 동기화
+//    SyncPlayerInfo();
+//
+//	// 게임 인스턴스에 저장된 레벨 이름을 게임 스테이트에 저장
+//	FallState->SavePlayLevelName(GameInstance->InsGetCurLevelName());
+//	// 게임 인스턴스에 저장된 레벨 에셋 이름을 게임 스테이트에 저장
+//	FallState->SavePlayLevelAssetName(GameInstance->InsGetCurLevelAssetName());
+//	
+//	// 인원 안찼으면 여기서 끝
+//	if (false == pNumberOfPlayer) { return; }
+//
+//	// 카운트 다운 사용할거야?
+//	if (true == UFallConst::UseCountDown)
+//	{
+//		// 카운트 다운 핸들 활성화
+//		StartCountdownTimer();
+//	}
+//	else
+//	{
+//		// 카운트 다운 바로 종료 처리
+//		pCountDownEnd = true;
+//	}
+//
+//	// 카운트 다운도 끝났고, 인원도 찼으니 게임 시작
+//	if (true == pCountDownEnd && true == pNumberOfPlayer)
+//	{
+//		ControllFinishPlayer(FallState);
+//		StartGame();
+//	}
+//
+//	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode PostLogin END ======= "));
+//}
+#pragma endregion
+
+// 플레이어 접속시 실행되는 함수 :: PreLogin 다음
+void APlayGameMode::PostLogin(APlayerController* _NewPlayer)
+{
+	Super::PostLogin(_NewPlayer);
+
 	// 서버장이 아닐시 리턴
-    if (!HasAuthority()) return;
+	if (!HasAuthority()) return;
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode PostLogin START ======= "));
 
-    // GameState가 없을시 리턴
-    APlayGameState* FallState = GetGameState<APlayGameState>();
-    if (!FallState) { UE_LOG(FALL_DEV_LOG, Error, TEXT("PostLogin :: GameState가 nullptr 입니다.")); return; }
+	// GameState가 없을시 리턴
+	APlayGameState* FallState = GetGameState<APlayGameState>();
+	if (!FallState) { UE_LOG(FALL_DEV_LOG, Error, TEXT("PostLogin :: GameState가 nullptr 입니다.")); return; }
 
 	// 인원 카운팅
 	FallState->AddConnectedPlayers();
@@ -143,7 +284,7 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 
 	// 인원 수 체크
 	CheckNumberOfPlayer(FallState);
-	if (true == pNumberOfPlayer ) 
+	if (true == pNumberOfPlayer)
 	{
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PostLogin :: 게임 플레이를 위한 인원이 충족되었습니다."));
 
@@ -155,12 +296,12 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 	}
 
 	// PlayerState가 없을시 리턴
-    APlayPlayerState* PlayerState = Cast<APlayPlayerState>(NewPlayer->PlayerState);
-    if (!PlayerState)
-    {
-        UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayerState가 nullptr 입니다."));
-        return;
-    }
+	APlayPlayerState* PlayerState = Cast<APlayPlayerState>(_NewPlayer->PlayerState);
+	if (!PlayerState)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayerState가 nullptr 입니다."));
+		return;
+	}
 
 	// 기존 Player 정보 백업
 	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
@@ -180,9 +321,9 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 			PlayerState->PlayerInfo = RestoredInfo;
 
 			// 태그 복구
-			NewPlayer->Tags.Add(*RestoredInfo.Tag);
+			_NewPlayer->Tags.Add(*RestoredInfo.Tag);
 			// 안전하게 태그 값 가져오기
-			FString TagString = (NewPlayer->Tags.Num() > 0) ? NewPlayer->Tags[0].ToString() : TEXT("태그 없음");
+			FString TagString = (_NewPlayer->Tags.Num() > 0) ? _NewPlayer->Tags[0].ToString() : TEXT("태그 없음");
 
 			UE_LOG(FALL_DEV_LOG, Log, TEXT("PostLogin :: 플레이어 정보 로드 완료 - UniqueID = %s, Tag = %s"),
 				*RestoredInfo.UniqueID, *TagString);
@@ -195,11 +336,11 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 		// 새로운 Player 등록 및 세팅
 		FString UniqueTag = FString::Printf(TEXT("Player%d"), FallState->PlayerInfoArray.Num());
 		PlayerState->SetPlayerInfo(UniqueTag, EPlayerStatus::DEFAULT);
-		
+
 		// 태그 부여
-		NewPlayer->Tags.Add(*UniqueTag);
+		_NewPlayer->Tags.Add(*UniqueTag);
 		// 안전하게 태그 값 가져오기
-		FString TagString = (NewPlayer->Tags.Num() > 0) ? NewPlayer->Tags[0].ToString() : TEXT("태그 없음");
+		FString TagString = (_NewPlayer->Tags.Num() > 0) ? _NewPlayer->Tags[0].ToString() : TEXT("태그 없음");
 
 		UE_LOG(FALL_DEV_LOG, Log, TEXT("PostLogin :: 신규 플레이어 정보 세팅 - UniqueID = %s, Tag = %s"),
 			*PlayerState->PlayerInfo.UniqueID, *TagString);
@@ -207,29 +348,17 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 
 	// 접속 여부 bool값 true로 변경
 	GameInstance->InsSetbIsConnectedTrue();
-	
+
 	// 모든 클라이언트에게 정보 동기화
-    SyncPlayerInfo();
+	SyncPlayerInfo();
 
 	// 게임 인스턴스에 저장된 레벨 이름을 게임 스테이트에 저장
 	FallState->SavePlayLevelName(GameInstance->InsGetCurLevelName());
 	// 게임 인스턴스에 저장된 레벨 에셋 이름을 게임 스테이트에 저장
 	FallState->SavePlayLevelAssetName(GameInstance->InsGetCurLevelAssetName());
-	
+
 	// 인원 안찼으면 여기서 끝
 	if (false == pNumberOfPlayer) { return; }
-
-	// 카운트 다운 사용할거야?
-	if (true == UFallConst::UseCountDown)
-	{
-		// 카운트 다운 핸들 활성화
-		StartCountdownTimer();
-	}
-	else
-	{
-		// 카운트 다운 바로 종료 처리
-		pCountDownEnd = true;
-	}
 
 	// 카운트 다운도 끝났고, 인원도 찼으니 게임 시작
 	if (true == pCountDownEnd && true == pNumberOfPlayer)
@@ -239,6 +368,41 @@ void APlayGameMode::PostLogin(APlayerController* NewPlayer)
 	}
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode PostLogin END ======= "));
+}
+
+void APlayGameMode::HandleStartingNewPlayer_Implementation(APlayerController* _NewPlayer)
+{
+	Super::HandleStartingNewPlayer_Implementation(_NewPlayer);
+
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode HandleStartingNewPlayer START ======= "));
+
+	APlayGameState* FallState = GetGameState<APlayGameState>();
+	if (!FallState)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: HandleStartingNewPlayer :: GameState가 nullptr 입니다."));
+		return;
+	}
+
+	// 인원이 충족되지 않았으면 카운트다운을 시작하지 않음
+	if (pNumberOfPlayer == false)
+	{
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: HandleStartingNewPlayer :: 인원 미충족 상태. 카운트다운 시작 보류."));
+		return;
+	}
+
+	// 카운트다운 조건 확인
+	if (UFallConst::UseCountDown == true)
+	{
+		// 카운트다운 핸들 활성화
+		StartCountdownTimer();
+	}
+	else
+	{
+		// 카운트다운 없이 바로 종료 처리
+		pCountDownEnd = true;
+	}
+
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode HandleStartingNewPlayer END ======= "));
 }
 
 // 게임 시작
