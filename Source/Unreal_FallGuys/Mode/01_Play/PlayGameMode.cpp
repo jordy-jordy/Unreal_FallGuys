@@ -386,7 +386,7 @@ void APlayGameMode::OnStageLimitTimeOver()
 		}
 	}
 	// 다음 맵 이동
-	ServerTravelToNextMap(UFallGlobal::GetRandomLevelWithOutPawn());
+	ServerTravelToNextMap(TEXT("TestTravelMap"));
 }
 
 // 목표 골인 인원 수 제어
