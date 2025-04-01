@@ -156,6 +156,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
 	UTexture2D* InsGetLevelImageFromAssetName(const FString& _AssetName);
 
+	// 플레이 목표 반환
+	UFUNCTION(BlueprintCallable, Category = "LEVEL")
+	FString InsGetGoalGuideFromAssetName(const FString& _AssetName);
+
 	// 현재 스테이지 저장용 (레벨 전환 시 유지)
 	UPROPERTY(BlueprintReadWrite, Category = "LEVEL")
 	EStageType SavedStage = EStageType::STAGE_1;

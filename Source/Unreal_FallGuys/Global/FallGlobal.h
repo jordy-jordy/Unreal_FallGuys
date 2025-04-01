@@ -138,6 +138,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static UTexture2D* GetLevelImageFromAssetName(const FString& _AssetName);
 
+	// 플레이 목표 반환
+	UFUNCTION(BlueprintCallable)
+	static FString GetGoalGuideFromAssetName(const FString& _AssetName);
+
 	// PlayGameState : 랜덤 레벨 함수에서 얻은 이름 반환
 	UFUNCTION(BlueprintCallable)
 	static FString GetLevelName();

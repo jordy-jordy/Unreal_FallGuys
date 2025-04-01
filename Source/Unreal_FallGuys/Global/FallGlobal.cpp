@@ -312,6 +312,19 @@ UTexture2D* UFallGlobal::GetLevelImageFromAssetName(const FString& _AssetName)
 	return GameIns->InsGetLevelImageFromAssetName(_AssetName);
 }
 
+// 플레이 목표 반환
+FString UFallGlobal::GetGoalGuideFromAssetName(const FString& _AssetName)
+{
+	UWorld* World = GWorld;
+	if (!World)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("GetPlayGuideFromAssetName: World is nullptr"));
+	}
+
+	UBaseGameInstance* GameIns = World->GetGameInstance<UBaseGameInstance>();
+	return GameIns->InsGetGoalGuideFromAssetName(_AssetName);
+}
+
 // PlayGameState : 랜덤 레벨 함수에서 얻은 이름 반환
 FString UFallGlobal::GetLevelName()
 {

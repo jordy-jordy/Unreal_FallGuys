@@ -6,6 +6,7 @@
 #include "Unreal_FallGuys.h"
 #include "Global/Data/GlobalDataTable.h"
 #include "Global/BaseGameInstance.h"
+#include "Global/FallConst.h"
 
 
 FString UPlayStandbyWidget::GetCurLevelGuide()
@@ -21,4 +22,9 @@ FString UPlayStandbyWidget::GetCurLevelGuide()
 	FString PlayGuide = Inst->InsGetRandomLevel();
 
 	return PlayGuide;
+}
+
+int UPlayStandbyWidget::GetMinPlayerNum()
+{
+	return UFallConst::MinPlayerCount;
 }
