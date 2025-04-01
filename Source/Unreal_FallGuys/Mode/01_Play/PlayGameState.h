@@ -118,7 +118,7 @@ private:
 	FString LevelAssetName = TEXT("");
 
 	// 레벨 시네마틱 끝
-	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category = "LEVEL")
+	UPROPERTY(Replicated)
 	bool IsLevelCinematicEnd = false;
 
 #pragma endregion
