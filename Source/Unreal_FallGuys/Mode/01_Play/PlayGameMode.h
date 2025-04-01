@@ -78,6 +78,8 @@ protected:
 	bool pNumberOfPlayer = false;
 	// 캐릭터 이동
 	bool pPlayerMoving = false;
+	// 게임 시작 카운트다운 썼니
+	bool pCountDownStarted = false;	
 	// 게임 시작 카운트다운 끝
 	bool pCountDownEnd = false;
 	

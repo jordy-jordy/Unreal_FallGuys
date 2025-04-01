@@ -90,21 +90,23 @@ public:
 
 	// 랜덤 레벨 함수에서 얻은 이름 반환
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
-	FString GetLevelName() const
-	{
-		return LevelName;
-	}
+	FString GetLevelName() const { return LevelName; }
 
 	// 랜덤 레벨 함수에서 얻은 에셋 이름 반환
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
-	FString GetLevelAssetName() const
-	{
-		return LevelAssetName;
-	}
+	FString GetLevelAssetName() const { return LevelAssetName; }
 
 	// 현재 스테이지 단계
 	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category = "LEVEL")
 	EStageType CurrentStage = EStageType::STAGE_1;
+
+	// 레벨 시네마틱 얻는 함수
+	UFUNCTION(BlueprintCallable, Category = "LEVEL")
+	bool GetIsLevelCinematicEnd() { return IsLevelCinematicEnd; }
+
+	// 레벨 시네마틱 true, false 세팅하는 함수
+	UFUNCTION(BlueprintCallable, Category = "LEVEL")
+	void SetIsLevelCinematicEnd(bool _Value) { IsLevelCinematicEnd = _Value; }
 
 private:
 	// 랜덤 레벨 네임
@@ -114,6 +116,10 @@ private:
 	// 랜덤 레벨 에셋 네임
 	UPROPERTY(Replicated)
 	FString LevelAssetName = TEXT("");
+
+	// 레벨 시네마틱 끝
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category = "LEVEL")
+	bool IsLevelCinematicEnd = false;
 
 #pragma endregion
 

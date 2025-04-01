@@ -136,21 +136,6 @@ void APlayGameMode::PostLogin(APlayerController* _NewPlayer)
 	// 게임 인스턴스에 저장된 레벨 에셋 이름을 게임 스테이트에 저장
 	FallState->SavePlayLevelAssetName(GameInstance->InsGetCurLevelAssetName());
 
-	// 인원 안찼으면 여기서 끝
-	if (false == pNumberOfPlayer) { return; }
-
-	// 카운트 다운 사용할거야?
-	if (true == UFallConst::UseCountDown)
-	{
-		// 카운트 다운 핸들 활성화
-		StartCountdownTimer();
-	}
-	else
-	{
-		// 카운트 다운 바로 종료 처리
-		pCountDownEnd = true;
-	}
-
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode PostLogin END ======= "));
 }
 #pragma endregion
@@ -259,6 +244,26 @@ void APlayGameMode::BeginPlay()
 // 게임 시작을 위한 조건 체크
 void APlayGameMode::CheckStartConditions()
 {
+	// 인원이 안찼으면 리턴
+	if (pNumberOfPlayer == false) return;
+
+	// 카운트 다운 사용할거야?
+	if (true == UFallConst::UseCountDown && false == pCountDownStarted)
+	{
+		// 카운트 다운 핸들 활성화
+		StartCountdownTimer();
+		pCountDownStarted = true;
+	}
+	else if (false == UFallConst::UseCountDown)
+	{
+		// 카운트 다운 바로 종료 처리
+		pCountDownEnd = true;
+	}
+
+	// 카운트 다운이 안끝났으면 리턴
+	if (pCountDownEnd == false) return;
+
+	// 인원도 찼고 카운트 다운도 끝났으니까 게임 시작 가능
 	if (pNumberOfPlayer == true && pCountDownEnd == true)
 	{
 		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: BeginPlay :: 게임 시작 조건 충족. StartGame 호출"));
