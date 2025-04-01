@@ -485,6 +485,31 @@ UTexture2D* UBaseGameInstance::InsGetLevelImageFromAssetName(const FString& _Ass
 	return nullptr;
 }
 
+// 플레이 목표 반환
+FString UBaseGameInstance::InsGetGoalGuideFromAssetName(const FString& _AssetName)
+{
+	if (!PlayLevelDataTable)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("InsGetGoalGuide :: PlayLevelDataTable이 nullptr입니다."));
+		return TEXT("Unknown");
+	}
+
+	const FPlayLevelDataRow* Row = UFallGlobal::FindRowByFStringField<FPlayLevelDataRow>(
+		PlayLevelDataTable,
+		_AssetName,
+		TEXT("GetGoalGuideFromAssetName"),
+		[](const FPlayLevelDataRow* R) { return R->Level.GetAssetName(); }
+	);
+
+	if (Row)
+	{
+		return Row->GoalGuide;
+	}
+
+	UE_LOG(FALL_DEV_LOG, Error, TEXT("InsGetGoalGuide :: 일치하는 레벨 이름을 찾을 수 없습니다. (AssetName = %s)"), *_AssetName);
+	return TEXT("Unknown");
+}
+
 // 플레이어 정보 백업 함수
 void UBaseGameInstance::InsBackupPlayerInfo(const FString& _UniqueID, const FPlayerInfo& _PlayerInfo)
 {

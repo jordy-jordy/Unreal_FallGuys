@@ -36,9 +36,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LEVEL DATA")
 	UTexture2D* LevelIMG = nullptr;
 
-	// 플레이 방법
+	// 플레이 가이드
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LEVEL DATA")
 	FString PlayGuide;
+
+	// 플레이 화면에서 보여주는 목표
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LEVEL DATA")
+	FString GoalGuide;
 };
 
 /**
