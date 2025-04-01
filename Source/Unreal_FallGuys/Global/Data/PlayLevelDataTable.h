@@ -18,11 +18,11 @@ struct FPlayLevelDataRow : public FTableRowBase
 public:
 	// 레벨
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LEVEL DATA")
-	TSoftObjectPtr<UWorld> Level;
+	TSoftObjectPtr<UWorld> Level = nullptr;
 
 	// 레벨 이름
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LEVEL DATA")
-	FString Name;
+	FString Name = TEXT("");
 
 	// 제한 시간 유무
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LEVEL DATA")
@@ -38,11 +38,11 @@ public:
 
 	// 플레이 가이드
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LEVEL DATA")
-	FString PlayGuide;
+	FString PlayGuide = TEXT("");
 
 	// 플레이 화면에서 보여주는 목표
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LEVEL DATA")
-	FString GoalGuide;
+	FString GoalGuide = TEXT("");
 };
 
 /**
