@@ -54,46 +54,11 @@ void APlayGameMode::PostLogin(APlayerController* _NewPlayer)
 
 	// GameState가 없을시 리턴
 	APlayGameState* FallState = GetGameState<APlayGameState>();
-	if (!FallState) { UE_LOG(FALL_DEV_LOG, Error, TEXT("PostLogin :: GameState가 nullptr 입니다.")); return; }
-
-	// 인원 카운팅
-	FallState->AddConnectedPlayers();
-	int ConnectingPlayer = FallState->GetConnectedPlayers();
-	UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: PostLogin :: 새로운 플레이어가 접속 했습니다. 현재 접속 인원 : %d"), ConnectingPlayer);
-
-	// 인원 수 체크
-	CheckNumberOfPlayer(FallState);
-	if (true == pNumberOfPlayer)
-	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: 게임 플레이를 위한 인원이 충족되었습니다."));
-
-		// 인원수가 찼을 시 설정한 시간 뒤에 시네마틱 시작
-		FTimerDelegate LevelCinematicReadyTimer;
-		LevelCinematicReadyTimer.BindUFunction(this, FName("CallLevelCinematicStart"), FallState);
-
-		GetWorldTimerManager().SetTimer(
-			SetLevelCinematicStartTimer,
-			LevelCinematicReadyTimer,
-			UFallConst::LevelCinematicReady,   // 설정된 시간 뒤에 실행
-			false   // 반복 실행 false
-		);
-
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: %.0f초 뒤에 레벨 시네마틱이 실행됩니다."), UFallConst::LevelCinematicReady);
-
-		if (true == UFallConst::UsePlayerLimit) // 인원이 찼고 인원 제한을 사용하는 경우 접속 제한 활성화
-		{
-			InvalidConnect = true;
-			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: 접속 제한을 사용하므로 이후 접속이 제한됩니다."));
-		}
-	}
+	if (!FallState) { UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: PostLogin :: GameState가 nullptr 입니다.")); return; }
 
 	// PlayerState가 없을시 리턴
 	APlayPlayerState* PlayerState = Cast<APlayPlayerState>(_NewPlayer->PlayerState);
-	if (!PlayerState)
-	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: PostLogin :: PlayerState가 nullptr 입니다."));
-		return;
-	}
+	if (!PlayerState) { UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: PostLogin :: PlayerState가 nullptr 입니다.")); return; }
 
 	// 기존 Player 정보 백업
 	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
@@ -148,6 +113,41 @@ void APlayGameMode::PostLogin(APlayerController* _NewPlayer)
 	FallState->SavePlayLevelName(GameInstance->InsGetCurLevelName());
 	// 게임 인스턴스에 저장된 레벨 에셋 이름을 게임 스테이트에 저장
 	FallState->SavePlayLevelAssetName(GameInstance->InsGetCurLevelAssetName());
+
+	// 인원 카운팅
+	FallState->AddConnectedPlayers();
+	int ConnectingPlayer = FallState->GetConnectedPlayers();
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: PostLogin :: 새로운 플레이어가 접속 했습니다. 현재 접속 인원 : %d"), ConnectingPlayer);
+
+	// 인원 수 체크
+	CheckNumberOfPlayer(FallState);
+	if (true == pNumberOfPlayer)
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: 게임 플레이를 위한 인원이 충족되었습니다."));
+
+		// 인원수가 찼을 시 설정한 시간 뒤에 시네마틱 시작
+		FTimerDelegate LevelCinematicReadyTimer;
+		LevelCinematicReadyTimer.BindUFunction(this, FName("CallLevelCinematicStart"), FallState);
+
+		GetWorldTimerManager().SetTimer(
+			SetLevelCinematicStartTimer,
+			LevelCinematicReadyTimer,
+			UFallConst::LevelCinematicReady,   // 설정된 시간 뒤에 실행
+			false   // 반복 실행 false
+		);
+
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: %.0f초 뒤에 레벨 시네마틱이 실행됩니다."), UFallConst::LevelCinematicReady);
+
+		if (true == UFallConst::UsePlayerLimit) // 인원이 찼고 인원 제한을 사용하는 경우 접속 제한 활성화
+		{
+			InvalidConnect = true;
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: 접속 제한을 사용하므로 이후 접속이 제한됩니다."));
+		}
+		else
+		{
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: 접속 제한을 사용하지 않습니다. 플레이어의 추가 접속이 가능합니다."));
+		}
+	}
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode PostLogin END ======= "));
 }
@@ -221,6 +221,7 @@ void APlayGameMode::CheckStartConditions()
 	// 시네마틱이 안끝났으면 리턴
 	APlayGameState* FallState = Cast<APlayGameState>(GameState);
 	if (false == FallState->GetIsLevelCinematicEnd()) { return; }
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: BeginPlay :: 레벨 시네마틱이 종료되었습니다."));
 
 	// 카운트 다운 사용할거야?
 	if (true == UFallConst::UseCountDown && false == pCountDownStarted)
