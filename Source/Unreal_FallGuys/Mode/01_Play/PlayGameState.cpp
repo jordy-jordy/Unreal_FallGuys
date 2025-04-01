@@ -29,7 +29,7 @@ void APlayGameState::BeginPlay()
 		if (GameInstance)
 		{
 			CurrentStage = GameInstance->InsGetSavedStage();
-			UE_LOG(FALL_DEV_LOG, Warning, TEXT("GameState :: CurrentStage를 복구했습니다: %s"), *UEnum::GetValueAsString(CurrentStage));
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: BeginPlay :: CurrentStage를 복구했습니다: %s"), *UEnum::GetValueAsString(CurrentStage));
 		}
 
 		UseStageLimitTime = SetUseStageLimitTime();

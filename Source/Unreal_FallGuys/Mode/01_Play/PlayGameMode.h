@@ -34,9 +34,6 @@ public:
 	// 플레이어 접속시 실행되는 함수 :: PreLogin 다음
 	virtual void PostLogin(APlayerController* _NewPlayer) override;
 
-	// 플레이어가 완전히 준비된 이후 실행되는 함수
-	virtual void HandleStartingNewPlayer_Implementation(APlayerController* _NewPlayer) override;
-
 protected:
 	virtual void Tick(float DeltaSeconds) override;
 	void BeginPlay() override;
@@ -73,7 +70,7 @@ protected:
 	void ControllFinishPlayer(APlayGameState* _PlayState);
 
 	// 목표 골인 인원 수 세팅
-	void SetFinishPlayer(int32 _PlayerCount);
+	void SetFinishPlayer(int32 _PlayerCount) { FinishPlayer = _PlayerCount; }
 
 	// 접속 제한
 	bool InvalidConnect = false;
@@ -83,6 +80,12 @@ protected:
 	bool pPlayerMoving = false;
 	// 게임 시작 카운트다운 끝
 	bool pCountDownEnd = false;
+	
+	// 게임 시작 조건 검사 타이머 핸들
+	FTimerHandle GameStartConditionTimer;
+
+	// 게임 시작 조건 검사 함수
+	void CheckStartConditions();
 
 #pragma endregion
 
