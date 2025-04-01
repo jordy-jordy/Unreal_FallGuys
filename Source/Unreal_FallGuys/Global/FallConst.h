@@ -57,6 +57,9 @@ public:
 	// 카운트 다운 시간
 	static float FallCountDownTime;
 
+	// 몇 초 뒤에 레벨 시네마틱을 보여줄지 결정하는 시간
+	static float LevelCinematicReady;
+
 	// 카운트 다운을 사용할 것인지 결정하는 변수
 	static bool UseCountDown;
 

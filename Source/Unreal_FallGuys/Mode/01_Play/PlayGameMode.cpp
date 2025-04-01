@@ -67,6 +67,19 @@ void APlayGameMode::PostLogin(APlayerController* _NewPlayer)
 	{
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: 게임 플레이를 위한 인원이 충족되었습니다."));
 
+		// 인원수가 찼을 시 설정한 시간 뒤에 시네마틱 시작
+		FTimerDelegate LevelCinematicReadyTimer;
+		LevelCinematicReadyTimer.BindUFunction(this, FName("CallLevelCinematicStart"), FallState);
+
+		GetWorldTimerManager().SetTimer(
+			SetLevelCinematicStartTimer,
+			LevelCinematicReadyTimer,
+			UFallConst::LevelCinematicReady,   // 설정된 시간 뒤에 실행
+			false   // 반복 실행 false
+		);
+
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: %.0f초 뒤에 레벨 시네마틱이 실행됩니다."), UFallConst::LevelCinematicReady);
+
 		if (true == UFallConst::UsePlayerLimit) // 인원이 찼고 인원 제한을 사용하는 경우 접속 제한 활성화
 		{
 			InvalidConnect = true;
@@ -167,10 +180,92 @@ void APlayGameMode::CheckNumberOfPlayer(APlayGameState* _PlayState)
 	}
 }
 
+// 레벨 시네마틱 시작을 호출하는 함수
+void APlayGameMode::CallLevelCinematicStart(APlayGameState* _PlayState)
+{
+	_PlayState->SetCanStartLevelCinematic();
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: 레벨 시네마틱이 실행됩니다."));
+}
+#pragma endregion
+
+#pragma region PlayGameMode :: BeginPlay :: 게임이 시작되는 곳
+void APlayGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (HasAuthority())
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode BeginPlay START ======= "));
+
+		// 게임 시작을 위한 조건을 주기적으로 체크
+		GetWorldTimerManager().SetTimer(
+			GameStartConditionTimer,
+			this,
+			&APlayGameMode::CheckStartConditions,
+			1.0f,  // 1초마다 검사
+			true   // 반복 실행
+		);
+
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode BeginPlay END ======= "));
+	}
+}
+#pragma endregion
+
+#pragma region PlayGameMode :: BeginPlay 에서 실행되는 함수들
+// 게임 시작을 위한 조건 체크
+void APlayGameMode::CheckStartConditions()
+{
+	// 인원이 안찼으면 리턴
+	if (pNumberOfPlayer == false) return;
+	
+	// 시네마틱이 안끝났으면 리턴
+	APlayGameState* FallState = Cast<APlayGameState>(GameState);
+	if (false == FallState->GetIsLevelCinematicEnd()) { return; }
+
+	// 카운트 다운 사용할거야?
+	if (true == UFallConst::UseCountDown && false == pCountDownStarted)
+	{
+		// 카운트 다운 핸들 활성화
+		StartCountdownTimer();
+		pCountDownStarted = true;
+	}
+	else if (false == UFallConst::UseCountDown)
+	{
+		// 카운트 다운 바로 종료 처리
+		pCountDownEnd = true;
+	}
+
+	// 카운트 다운이 안끝났으면 리턴
+	if (pCountDownEnd == false) return;
+
+	// 인원도 찼고, 레벨 시네마틱도 끝났고, 카운트 다운도 끝났으니까 게임 시작 가능
+	if (pNumberOfPlayer == true && FallState->GetIsLevelCinematicEnd() == true && pCountDownEnd == true)
+	{
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: BeginPlay :: 게임 시작 조건 충족. StartGame 호출"));
+
+		if (FallState)
+		{
+			ControllFinishPlayer(FallState);
+		}
+
+		// 게임 시작
+		StartGame();
+
+		// 조건 초기화 (중복 실행 방지)
+		pNumberOfPlayer = false;
+		pCountDownEnd = false;
+
+		// 타이머 제거
+		GetWorldTimerManager().ClearTimer(GameStartConditionTimer);
+
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: BeginPlay :: CheckStartConditions 함수 종료"));
+	}
+}
+
 // 게임 시작전 :: 카운트다운 핸들 활성화
 void APlayGameMode::StartCountdownTimer_Implementation()
 {
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: %.0f초 대기후 카운트 다운이 시작됩니다."), UFallConst::FallCountDownStandByTime);
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: %.0f 초 대기후 카운트 다운이 시작됩니다."), UFallConst::FallCountDownStandByTime);
 
 	// 설정한 대기 시간이 끝난 뒤 카운트다운 시작
 	FTimerHandle DelayTimer;
@@ -213,78 +308,6 @@ void APlayGameMode::UpdateCountdown()
 		// 카운트 다운 끝났음을 알림
 		pCountDownEnd = true;
 		FallState->SetIsCountDownOverTrue();
-	}
-}
-#pragma endregion
-
-#pragma region PlayGameMode :: BeginPlay :: 게임이 시작되는 곳
-void APlayGameMode::BeginPlay()
-{
-	Super::BeginPlay();
-
-	if (HasAuthority())
-	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode BeginPlay START ======= "));
-
-		// 게임 시작을 위한 조건을 주기적으로 체크
-		GetWorldTimerManager().SetTimer(
-			GameStartConditionTimer,
-			this,
-			&APlayGameMode::CheckStartConditions,
-			1.0f,  // 1초마다 검사
-			true   // 반복 실행
-		);
-
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode BeginPlay END ======= "));
-	}
-}
-#pragma endregion
-
-#pragma region PlayGameMode :: BeginPlay 에서 실행되는 함수들
-// 게임 시작을 위한 조건 체크
-void APlayGameMode::CheckStartConditions()
-{
-	// 인원이 안찼으면 리턴
-	if (pNumberOfPlayer == false) return;
-
-	// 카운트 다운 사용할거야?
-	if (true == UFallConst::UseCountDown && false == pCountDownStarted)
-	{
-		// 카운트 다운 핸들 활성화
-		StartCountdownTimer();
-		pCountDownStarted = true;
-	}
-	else if (false == UFallConst::UseCountDown)
-	{
-		// 카운트 다운 바로 종료 처리
-		pCountDownEnd = true;
-	}
-
-	// 카운트 다운이 안끝났으면 리턴
-	if (pCountDownEnd == false) return;
-
-	// 인원도 찼고 카운트 다운도 끝났으니까 게임 시작 가능
-	if (pNumberOfPlayer == true && pCountDownEnd == true)
-	{
-		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: BeginPlay :: 게임 시작 조건 충족. StartGame 호출"));
-
-		APlayGameState* FallState = Cast<APlayGameState>(GameState);
-		if (FallState)
-		{
-			ControllFinishPlayer(FallState);
-		}
-
-		// 게임 시작
-		StartGame();
-
-		// 조건 초기화 (중복 실행 방지)
-		pNumberOfPlayer = false;
-		pCountDownEnd = false;
-
-		// 타이머 제거
-		GetWorldTimerManager().ClearTimer(GameStartConditionTimer);
-
-		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: BeginPlay :: CheckStartConditions 함수 종료"));
 	}
 }
 

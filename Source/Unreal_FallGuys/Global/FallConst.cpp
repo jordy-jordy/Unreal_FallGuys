@@ -35,19 +35,22 @@ FString UFallConst::DefaultPort = TEXT("30000");
 ////	FallCountDownTime 으로 카운트 다운의 초를 조절하세요.
 
 // 게임 시작을 위한 최소 플레이어 수
-int UFallConst::MinPlayerCount = 1;
+int UFallConst::MinPlayerCount = 2;
 
 // 접속 제한 기능을 사용할 것인지 결정하는 변수
-bool UFallConst::UsePlayerLimit = false;
+bool UFallConst::UsePlayerLimit = true;
 
-// 카운트 다운을 사용할 것인지 결정하는 변수
-bool UFallConst::UseCountDown = false;
+// 카운트 다운을 사용할 true 결정하는 변수
+bool UFallConst::UseCountDown = true;
 
 // 카운트 다운 대기 시간
 float UFallConst::FallCountDownStandByTime = 5.0f;
 
 // 카운트 다운 시간
 float UFallConst::FallCountDownTime = 5.0f;
+
+// 몇 초 뒤에 레벨 시네마틱을 보여줄지 결정하는 시간
+float UFallConst::LevelCinematicReady = 3.0f;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -89,6 +89,13 @@ protected:
 	// 게임 시작 조건 검사 함수
 	void CheckStartConditions();
 
+	// 레벨 시네마틱을 시작하도록 하는 타이머
+	FTimerHandle SetLevelCinematicStartTimer;
+
+	// 레벨 시네마틱 시작을 호출하는 함수
+	UFUNCTION()
+	void CallLevelCinematicStart(APlayGameState* _PlayState);
+
 #pragma endregion
 
 #pragma region PlayGameMode :: 타이머 관련
