@@ -140,38 +140,23 @@ private:
 public:
 	// FallCountDownTime 에서 얻은 카운트 다운 시간 반환
 	UFUNCTION(BlueprintCallable, Category = "COUNT DOWN")
-	float GetCountDownTime()
-	{
-		return CountDownTime;
-	}
+	float GetCountDownTime() { return CountDownTime; }
 
 	// FallCountDownTime 설정 (정상적인 경우 사용할 일 없음)
 	UFUNCTION(BlueprintCallable, Category = "COUNT DOWN")
-	void SetCountDownTime(float _Time)
-	{
-		CountDownTime = _Time;
-	}
+	void SetCountDownTime(float _Time) { CountDownTime = _Time; }
 
 	// FallCountDownTime 에서 Value 차감
 	UFUNCTION(BlueprintCallable, Category = "COUNT DOWN")
-	void MinusCountDownTime(float _Value)
-	{
-		CountDownTime -= _Value;
-	}
+	void MinusCountDownTime(float _Value) { CountDownTime -= _Value; }
 
 	// 카운트다운이 끝났는지 확인하는 함수
 	UFUNCTION(BlueprintCallable, Category = "COUNT DOWN")
-	bool GetIsCountDownOver()
-	{
-		return IsCountDownOver;
-	}
+	bool GetIsCountDownOver() { return IsCountDownOver; }
 
 	// 카운트다운이 끝났음을 세팅하는 함수
 	UFUNCTION(BlueprintCallable, Category = "COUNT DOWN")
-	void SetIsCountDownOverTrue()
-	{
-		IsCountDownOver = true;
-	}
+	void SetIsCountDownOverTrue() { IsCountDownOver = true; }
 
 private:
 	// FallCountDownTime 에서 얻은 카운트 다운 시간 (서버에서 클라로 동기화)
@@ -192,16 +177,10 @@ public:
 #pragma region PlayGameState :: 스테이지 제한 시간 관련
 public:
 	UFUNCTION(BlueprintCallable, Category = "LEVEL LIMIT TIME")
-	bool GetUseStageLimitTime()
-	{
-		return UseStageLimitTime;
-	}
+	bool GetUseStageLimitTime() { return UseStageLimitTime;	}
 
 	UFUNCTION(BlueprintCallable, Category = "LEVEL LIMIT TIME")
-	float GetStageLimitTime()
-	{
-		return StageLimitTime;
-	}
+	float GetStageLimitTime() { return StageLimitTime; }
 
 protected:
 	// Stage 제한 시간 유무 결정 함수

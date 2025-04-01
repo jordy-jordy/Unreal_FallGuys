@@ -449,22 +449,6 @@ void APlayGameMode::Tick(float DeltaSeconds)
 	// 이미 게임 종료면 처리 안함
 	if (IsEndGame == true) { return; }
 
-	//// 게임 시작 조건 검사
-	//if (pNumberOfPlayer == true && pCountDownEnd == true)
-	//{
-	//	APlayGameState* FallState = GetGameState<APlayGameState>();
-	//	if (FallState)
-	//	{
-	//		ControllFinishPlayer(FallState);
-	//	}
-
-	//	StartGame();
-
-	//	// 중복 실행 방지
-	//	pNumberOfPlayer = false;
-	//	pCountDownEnd = false;
-	//}
-
 	// 게임 종료 조건 검사
 	if (CurFinishPlayer >= FinishPlayer)
 	{
