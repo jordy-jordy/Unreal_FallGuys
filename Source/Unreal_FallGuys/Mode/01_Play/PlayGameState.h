@@ -100,13 +100,20 @@ public:
 	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category = "LEVEL")
 	EStageType CurrentStage = EStageType::STAGE_1;
 
-	// 레벨 시네마틱 얻는 함수
+	// 레벨 시네마틱 시작을 세팅하는 함수
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
-	bool GetIsLevelCinematicEnd() { return IsLevelCinematicEnd; }
+	void SetCanStartLevelCinematic() { CanStartLevelCinematic = true; }
 
-	// 레벨 시네마틱 true, false 세팅하는 함수
+	// 레벨 시네마틱 시작해도 되는지 확인하는 함수
+	bool GetCanStartLevelCinematic() { return CanStartLevelCinematic; }
+
+	// 레벨 시네마틱 끝났는지 세팅하는 함수
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
 	void SetIsLevelCinematicEnd(bool _Value) { IsLevelCinematicEnd = _Value; }
+
+	// 레벨 시네마틱 끝났는지 확인하는 함수
+	UFUNCTION(BlueprintCallable, Category = "LEVEL")
+	bool GetIsLevelCinematicEnd() { return IsLevelCinematicEnd; }
 
 private:
 	// 랜덤 레벨 네임
@@ -117,7 +124,11 @@ private:
 	UPROPERTY(Replicated)
 	FString LevelAssetName = TEXT("");
 
-	// 레벨 시네마틱 끝
+	// 레벨 시네마틱 시작해도 되니?
+	UPROPERTY(Replicated)
+	bool CanStartLevelCinematic = false;
+
+	// 레벨 시네마틱 끝났니?
 	UPROPERTY(Replicated)
 	bool IsLevelCinematicEnd = false;
 
