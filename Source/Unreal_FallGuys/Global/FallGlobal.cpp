@@ -440,6 +440,26 @@ TArray<FString> UFallGlobal::GetCostumeColorNames(UObject* _WorldContext)
 	return ColorNames;
 }
 
+// PlayGameState : 레벨 시네마틱 시작해도 돼?
+bool UFallGlobal::GetCanStartLevelCinematic()
+{
+	UWorld* World = GWorld;
+	if (!World)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("GetCanStartLevelCinematic: World is nullptr"));
+		return 0;
+	}
+
+	APlayGameState* PlayState = Cast<APlayGameState>(World->GetGameState());
+	if (!PlayState)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("GetCanStartLevelCinematic: PlayGameState is nullptr"));
+		return 0;
+	}
+
+	return PlayState->GetCanStartLevelCinematic();
+}
+
 // 이재영 : 메인위젯을 얻는 함수
 UTitleMainWidget* UFallGlobal::GetMainWidget(UWorld* _World)
 {

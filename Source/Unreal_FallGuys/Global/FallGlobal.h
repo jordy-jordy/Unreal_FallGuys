@@ -162,6 +162,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static bool GetIsCountDownOver();
 
+	// PlayGameState : 레벨 시네마틱 시작해도 돼?
+	UFUNCTION(BlueprintCallable)
+	static bool GetCanStartLevelCinematic();
+
 	// 코스튬 관련 편의 기능 (현재 개발중)
 	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
 	static TArray<FString> GetCostumeColorNames(UObject* _WorldContext);
