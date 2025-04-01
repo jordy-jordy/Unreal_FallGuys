@@ -6,7 +6,6 @@
 #include "GameFramework/Actor.h"
 #include "Global/Data/ResourceDataTable.h"
 #include "FallGlobal.h"
-#include "Level/01_Play/Components/MovementActorComponent.h"
 #include "ShowDownPlatform.generated.h"
 
 UCLASS()
@@ -27,10 +26,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
-	// ActorComponent
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Movement")
-	UMovementActorComponent* MovementComponent;
-
 	// MeshComponent
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Platform")
 	USceneComponent* RootScene;
@@ -42,17 +37,11 @@ public:
 	UMaterialInterface* Material;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Platform")
-	bool IsBlue = false;
-
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Platform")
 	bool IsLive = true;
+
+	float ShakeTime = 5.0f;
+	FVector OriginPos = FVector::ZeroVector;
 
 	UFUNCTION()
 	void OperateMesh();
-
-	UFUNCTION()
-	void SetMesh_Orange();
-
-	UFUNCTION()
-	void SetMesh_Blue();
 };
