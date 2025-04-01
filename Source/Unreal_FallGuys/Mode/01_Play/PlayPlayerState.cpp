@@ -17,8 +17,14 @@ void APlayPlayerState::SetPlayerInfo_Implementation(const FString& _Tag, EPlayer
     PlayerInfo.Status = _Status;
 }
 
+void APlayPlayerState::SetTeam_Implementation(EPlayerTeam _Team)
+{
+    PlayerInfo.Team = _Team;
+}
+
 void APlayPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
     DOREPLIFETIME(APlayPlayerState, PlayerInfo);
 }
+

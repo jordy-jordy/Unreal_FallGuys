@@ -6,6 +6,7 @@
 #include "UObject/NoExportTypes.h"
 #include "PlayEnum.generated.h"
 
+
 UENUM(BlueprintType)
 enum class EPlayerAnimation : uint8
 {
