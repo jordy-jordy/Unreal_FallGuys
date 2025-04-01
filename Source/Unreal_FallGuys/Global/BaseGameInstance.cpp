@@ -666,3 +666,43 @@ void UBaseGameInstance::InsPrintLevelName()
 	}
 }
 
+// 디버그용 : 레벨 시네마틱 바로 끝나게
+void UBaseGameInstance::InsetLevelCinematicEnd()
+{
+	APlayGameState* PlayGameState = GetWorld()->GetGameState<APlayGameState>();
+	if (!PlayGameState)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("InsPrintLevelName: GameState가 nullptr 입니다."));
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Error: GameState가 nullptr 입니다."));
+		}
+		return;
+	}
+
+	// TRUE로 바뀌기 전
+	bool ValueBefore = PlayGameState->GetIsLevelCinematicEnd();
+	
+	// 콘솔 출력
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("현재 레벨 시네마틱 상태 : %s"), ValueBefore ? TEXT("true") : TEXT("false"));
+
+	// 화면 출력
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("현재 레벨 시네마틱 상태 : %s"), ValueBefore ? TEXT("true") : TEXT("false")));
+	}
+
+	// TRUE로 바꿈
+	PlayGameState->SetIsLevelCinematicEnd(true);
+
+	bool ValueAfter = PlayGameState->GetIsLevelCinematicEnd();
+
+	// 콘솔 출력
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("레벨 시네마틱 끝났니? : %s"), ValueAfter ? TEXT("true") : TEXT("false"));
+
+	// 화면 출력
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("레벨 시네마틱 끝났니? : %s"), ValueAfter ? TEXT("true") : TEXT("false")));
+	}
+}

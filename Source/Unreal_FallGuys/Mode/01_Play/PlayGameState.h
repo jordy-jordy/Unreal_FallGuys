@@ -101,15 +101,17 @@ public:
 	EStageType CurrentStage = EStageType::STAGE_1;
 
 	// 레벨 시네마틱 시작을 세팅하는 함수
-	UFUNCTION(BlueprintCallable, Category = "LEVEL")
-	void SetCanStartLevelCinematic() { CanStartLevelCinematic = true; }
+	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
+	void SetCanStartLevelCinematic();
+	void SetCanStartLevelCinematic_Implementation();
 
 	// 레벨 시네마틱 시작해도 되는지 확인하는 함수
 	bool GetCanStartLevelCinematic() { return CanStartLevelCinematic; }
 
 	// 레벨 시네마틱 끝났는지 세팅하는 함수
-	UFUNCTION(BlueprintCallable, Category = "LEVEL")
-	void SetIsLevelCinematicEnd(bool _Value) { IsLevelCinematicEnd = _Value; }
+	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
+	void SetIsLevelCinematicEnd(bool _Value);
+	void SetIsLevelCinematicEnd_Implementation(bool _Value);
 
 	// 레벨 시네마틱 끝났는지 확인하는 함수
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")

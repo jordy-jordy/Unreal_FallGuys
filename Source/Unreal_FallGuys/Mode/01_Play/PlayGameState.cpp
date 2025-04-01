@@ -135,6 +135,18 @@ void APlayGameState::SavePlayLevelAssetName_Implementation(const FString& _Level
 	LevelAssetName = _LevelAssetName;
 }
 
+// 레벨 시네마틱 시작을 세팅하는 함수
+void APlayGameState::SetCanStartLevelCinematic_Implementation()
+{
+	CanStartLevelCinematic = true;
+}
+
+// 레벨 시네마틱 끝났는지 세팅하는 함수
+void APlayGameState::SetIsLevelCinematicEnd_Implementation(bool _Value)
+{
+	IsLevelCinematicEnd = _Value;
+}
+
 void APlayGameState::OnRep_ConnectedPlayers()
 {
 	UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameState :: 클라이언트에서 접속자 수 동기화됨 : %d"), ConnectedPlayers);
@@ -155,7 +167,6 @@ void APlayGameState::SpawnEggManager()
 		if (Spawnner == nullptr) return;
 		Spawnner->SetOwner(this);
 	}
-
 }
 
 void APlayGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -170,4 +181,6 @@ void APlayGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(APlayGameState, StageLimitTime);
 	DOREPLIFETIME(APlayGameState, UseStageLimitTime);
 	DOREPLIFETIME(APlayGameState, CurrentStage);
+	DOREPLIFETIME(APlayGameState, CanStartLevelCinematic);
+	DOREPLIFETIME(APlayGameState, IsLevelCinematicEnd);
 }

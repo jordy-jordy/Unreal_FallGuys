@@ -245,6 +245,7 @@ void APlayGameMode::CheckStartConditions()
 
 		if (FallState)
 		{
+			// 인원 수에 따른 목표 횟수 설정
 			ControllFinishPlayer(FallState);
 		}
 

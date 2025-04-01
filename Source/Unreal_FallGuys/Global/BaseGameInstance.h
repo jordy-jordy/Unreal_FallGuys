@@ -240,6 +240,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "DEBUG")
 	void InsPrintLevelName();
 
+	// 디버그용 : 레벨 시네마틱 바로 끝나게
+	UFUNCTION(BlueprintCallable, Category = "DEBUG")
+	void InsetLevelCinematicEnd();
+
 #pragma endregion
 
 

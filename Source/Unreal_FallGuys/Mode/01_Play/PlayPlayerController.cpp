@@ -19,6 +19,19 @@ void APlayPlayerController::BeginPlay()
 	SetInputMode(Mode);
 }
 
+void APlayPlayerController::AddMappingContext(UInputMappingContext* _MappingContext)
+{
+	if (nullptr == GetLocalPlayer())
+	{
+		return;
+	}
+
+	UEnhancedInputLocalPlayerSubsystem* InputSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
+
+	InputSystem->ClearAllMappings();
+	InputSystem->AddMappingContext(_MappingContext, 0);
+}
+
 void APlayPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
@@ -39,22 +52,11 @@ void APlayPlayerController::SetupInputComponent()
 		{
 			EnhancedInput->BindAction(InputAction_LevelName, ETriggerEvent::Started, this, &APlayPlayerController::OnPrintLevelName);
 		}
+		if (InputAction_LevelCinematicEnd)
+		{
+			EnhancedInput->BindAction(InputAction_LevelCinematicEnd, ETriggerEvent::Started, this, &APlayPlayerController::OnPrintLevelCinematicEnd);
+		}
 	}
-
-}
-
-void APlayPlayerController::AddMappingContext(UInputMappingContext* _MappingContext)
-{
-
-	if (nullptr == GetLocalPlayer())
-	{
-		return;
-	}
-
-	UEnhancedInputLocalPlayerSubsystem* InputSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
-
-	InputSystem->ClearAllMappings();
-	InputSystem->AddMappingContext(_MappingContext, 0);
 }
 
 // 이현정
@@ -82,5 +84,14 @@ void APlayPlayerController::OnPrintLevelName()
 	if (UBaseGameInstance* GameIns = GetGameInstance<UBaseGameInstance>())
 	{
 		GameIns->InsPrintLevelName();
+	}
+}
+
+// 디버그용 : 레벨 시네마틱 바로 끝나게
+void APlayPlayerController::OnPrintLevelCinematicEnd()
+{
+	if (UBaseGameInstance* GameIns = GetGameInstance<UBaseGameInstance>())
+	{
+		GameIns->InsetLevelCinematicEnd();
 	}
 }
