@@ -58,6 +58,10 @@ public:
     void SetPlayerInfo(const FString& _Tag, EPlayerStatus _Status);
     void SetPlayerInfo_Implementation(const FString& _Tag, EPlayerStatus _Status);
 
+    UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "PLAYER INFO")
+    void SetTeam(EPlayerTeam _Team);
+    void SetTeam_Implementation(EPlayerTeam _Team);
+
     void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };
 

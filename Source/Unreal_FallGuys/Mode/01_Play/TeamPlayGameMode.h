@@ -6,6 +6,7 @@
 #include "Mode/01_Play/PlayGameMode.h"
 #include "TeamPlayGameMode.generated.h"
 
+
 /**
  * 
  */
@@ -13,5 +14,11 @@ UCLASS()
 class UNREAL_FALLGUYS_API ATeamPlayGameMode : public APlayGameMode
 {
 	GENERATED_BODY()
-	
+
+public:
+	virtual void PostLogin(APlayerController* _NewPlayer) override;
+
+
+private:
+	void AssignTeam(class APlayPlayerState* _PlayerState);
 };
