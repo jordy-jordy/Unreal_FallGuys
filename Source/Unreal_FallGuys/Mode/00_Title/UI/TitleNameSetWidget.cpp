@@ -3,3 +3,13 @@
 
 #include "Mode/00_Title/UI/TitleNameSetWidget.h"
 
+
+bool UTitleNameSetWidget::IsPlayerSetName(FString _Name)
+{
+	if (_Name == TEXT(""))
+	{
+		return false;
+	}
+
+	return true;
+}

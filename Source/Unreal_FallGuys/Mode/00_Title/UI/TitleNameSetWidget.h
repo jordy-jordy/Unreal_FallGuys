@@ -13,6 +13,10 @@ UCLASS()
 class UNREAL_FALLGUYS_API UTitleNameSetWidget : public UTitleUserWidget
 {
 	GENERATED_BODY()
+
+public:
+	UFUNCTION(BlueprintCallable)
+	bool IsPlayerSetName(FString _Name);
 	
 private:
 	FString Nickname = "";

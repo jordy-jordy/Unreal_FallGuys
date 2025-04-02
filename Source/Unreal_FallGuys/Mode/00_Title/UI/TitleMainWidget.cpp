@@ -3,13 +3,20 @@
 
 #include "Mode/00_Title/UI/TitleMainWidget.h"
 #include "Global/FallConst.h"
+#include "Global/FallGlobal.h"
 #include "Components/CanvasPanelSlot.h"
 
 
 void UTitleMainWidget::NativeConstruct()
 {
-	//MainWidgetInit();
-	//CreateChildWidget(UTitleNameSetWidget);
+	// 게임 나가기 후 플레이어 상태 리셋 및 TitleNameWidget 안해도 되게
+	bool HasName = UFallGlobal::GetHasNickname();
+
+	if (true == HasName)
+	{
+		SwitchWidget(ETitleUIType::TitleHome);
+		UFallGlobal::ResetPlayerCondition();
+	}
 }
 
 void UTitleMainWidget::MainWidgetInit()
@@ -311,20 +318,22 @@ void UTitleMainWidget::AllWidgetSelfHitTestInvisible()
 
 UTitleUserWidget* UTitleMainWidget::FindWidget(ETitleUIType _Type, int _Index/* = 0*/)
 {
-	if (ETitleUIType::CustomeInven != _Type)
+	if (ETitleUIType::InvenBtn == _Type)
 	{
-		for (TPair<ETitleUIType, UTitleUserWidget*> Pair : Widgets)
+		TArray<UTitleUserWidget*> InvenBtn;
+		Widgets.MultiFind(ETitleUIType::InvenBtn, InvenBtn);
+		return InvenBtn[_Index];
+	}
+
+	for (TPair<ETitleUIType, UTitleUserWidget*> Pair : Widgets)
+	{
+		if (Pair.Key == _Type)
 		{
-			if (Pair.Key == _Type)
-			{
-				return Pair.Value;
-			}
+			return Pair.Value;
 		}
 	}
 
-	TArray<UTitleUserWidget*> CustomInvens;
-	Widgets.MultiFind(ETitleUIType::CustomeInven, CustomInvens);
-	return CustomInvens[_Index];
+	return nullptr;
 }
 
 
