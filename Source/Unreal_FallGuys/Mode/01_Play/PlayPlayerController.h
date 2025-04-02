@@ -45,8 +45,12 @@ private:
 	UPROPERTY(EditAnywhere, Category = "DEBUG", meta = (AllowPrivateAccess = "true"))
 	UInputAction* InputAction_LevelCinematicEnd;
 
+	UPROPERTY(EditAnywhere, Category = "DEBUG", meta = (AllowPrivateAccess = "true"))
+	UInputAction* InputAction_CurFinishPlayer;
+
 	void OnPrintPlayerInfo();         // [ : 플레이어 인포 출력 (PlayerState)
 	void OnPrintConnectedPlayers();   // ] : 접속자 수 출력
 	void OnPrintLevelName();          // - : 현재 레벨의 이름 출력
 	void OnPrintLevelCinematicEnd();  // = : 레벨 시네마틱 끝나게
+	void OnPrintCurFinishPlayer();	  // \ : 골인한 인원 및 목표 골인 인원 출력
 };

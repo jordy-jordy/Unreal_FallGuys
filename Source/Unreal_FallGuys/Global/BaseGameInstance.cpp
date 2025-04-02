@@ -713,3 +713,33 @@ void UBaseGameInstance::InsetLevelCinematicEnd()
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("레벨 시네마틱 끝났니? : %s"), ValueAfter ? TEXT("true") : TEXT("false")));
 	}
 }
+
+// 디버그용 : 골인 목표 인원, 골인한 인원 출력
+void UBaseGameInstance::InsGetGameStateCurFinishPlayer()
+{
+	APlayGameState* PlayGameState = GetWorld()->GetGameState<APlayGameState>();
+	if (!PlayGameState)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("InsPrintLevelName: GameState가 nullptr 입니다."));
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Error: GameState가 nullptr 입니다."));
+		}
+		return;
+	}
+
+	int CurGoalCount = PlayGameState->GetGameStateCurFinishPlayer();
+	int TargetGoalCount = PlayGameState->GetGameStateFinishPlayer();
+
+	// 콘솔 출력
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("현재 골인한 인원 : %d"), CurGoalCount);
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("목표 골인 인원 : %d"), TargetGoalCount);
+
+	// 화면 출력
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("현재 골인한 인원 : %d"), CurGoalCount));
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("목표 골인 인원 : %d"), TargetGoalCount));
+	}
+
+}

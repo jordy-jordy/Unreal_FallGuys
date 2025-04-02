@@ -117,6 +117,24 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
 	bool GetIsLevelCinematicEnd() { return IsLevelCinematicEnd; }
 
+	// 골인 목표 인원 수 세팅 : GameMode에서 호출
+	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
+	void SetGameStateFinishPlayer(int _Value);
+	void SetGameStateFinishPlayer_Implementation(int _Value);
+
+	// 골인 목표 인원 수 반환
+	UFUNCTION(BlueprintCallable, Category = "LEVEL")
+	int GetGameStateFinishPlayer() { return GameStateFinishPlayer; }
+
+	// 현재 골인한 플레이어 수 세팅 : GameMode에서 호출
+	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
+	void SetGameStateCurFinishPlayer(int _Value);
+	void SetGameStateCurFinishPlayer_Implementation(int _Value);
+
+	// 현재 골인한 플레이어 수 반환
+	UFUNCTION(BlueprintCallable, Category = "LEVEL")
+	int GetGameStateCurFinishPlayer() { return GameStateCurFinishPlayer; }
+
 private:
 	// 랜덤 레벨 네임
 	UPROPERTY(Replicated)
@@ -133,6 +151,14 @@ private:
 	// 레벨 시네마틱 끝났니?
 	UPROPERTY(Replicated)
 	bool IsLevelCinematicEnd = false;
+
+	// 골인 목표 인원 수 : PlayGameMode에서 가져옴
+	UPROPERTY(Replicated)
+	int GameStateFinishPlayer = 99;
+
+	// 현재 골인한 플레이어 수 : PlayGameMode에서 가져옴
+	UPROPERTY(Replicated)
+	int GameStateCurFinishPlayer = 0;
 
 #pragma endregion
 
@@ -166,11 +192,6 @@ private:
 	// 카운트다운이 끝났는지 확인
 	UPROPERTY(Replicated)
 	bool IsCountDownOver = false;
-
-#pragma endregion
-
-#pragma region PlayGameState :: Jump Show Down 스테이지 관련
-public:
 
 #pragma endregion
 

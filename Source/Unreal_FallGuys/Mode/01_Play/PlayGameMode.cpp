@@ -389,6 +389,25 @@ void APlayGameMode::OnStageLimitTimeOver()
 	ServerTravelToNextMap(TEXT("TestTravelMap"));
 }
 
+// 이현정 : 25.04.02 : 동기화 함수로 수정 : 골인 인원 +1 카운팅
+void APlayGameMode::OnPlayerFinished()
+{
+	CurFinishPlayer += 1;
+
+	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
+	int Value = FallState->GetGameStateCurFinishPlayer() +1;
+	FallState->SetGameStateCurFinishPlayer(Value);
+}
+
+// 이현정 : 25.04.02 : 동기화 함수로 수정 : 골인 목표 인원 수 세팅
+void APlayGameMode::SetFinishPlayerCount(int _p)
+{
+	FinishPlayer = _p;
+
+	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
+	FallState->SetGameStateFinishPlayer(_p);
+}
+
 // 목표 골인 인원 수 제어
 void APlayGameMode::ControllFinishPlayer(APlayGameState* _PlayState)
 {
@@ -401,35 +420,35 @@ void APlayGameMode::ControllFinishPlayer(APlayGameState* _PlayState)
 	case EStageType::STAGE_1:
 		if (MinCount <= 2)
 		{
-			SetFinishPlayer(MinCount);
+			SetFinishPlayerCount(MinCount);
 		}
 		else if (MinCount <= 5)
 		{
-			SetFinishPlayer(3);
+			SetFinishPlayerCount(3);
 		}
 		else
 		{
-			SetFinishPlayer(MinCount / 2);
+			SetFinishPlayerCount(MinCount / 2);
 		}
 		break;
 
 	case EStageType::STAGE_2:
 		if (MinCount <= 2)
 		{
-			SetFinishPlayer(1);
+			SetFinishPlayerCount(1);
 		}
 		else if (MinCount <= 5)
 		{
-			SetFinishPlayer(2);
+			SetFinishPlayerCount(2);
 		}
 		else
 		{
-			SetFinishPlayer((MinCount / 2) / 2);
+			SetFinishPlayerCount((MinCount / 2) / 2);
 		}
 		break;
 
 	case EStageType::STAGE_3:
-		SetFinishPlayer(1);
+		SetFinishPlayerCount(1);
 		break;
 
 	case EStageType::FINISHED:
@@ -497,44 +516,4 @@ void APlayGameMode::ServerTravelToNextMap(const FString& url)
 	}
 	GetWorld()->ServerTravel(url, false);
 }
-
-#pragma region PlayGameMode :: 안써
-// 플랫폼 등록 함수
-void APlayGameMode::AddShowDownPlatform(AShowDownPlatform* _Platform)
-{
-	if (_Platform == nullptr)
-	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: ShowDownPlatform이 nullptr입니다."));
-		return;
-	}
-
-	AllPlatforms.Add(_Platform);
-	UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: 총 ShowDownPlatform 수: %d"), AllPlatforms.Num());
-}
-
-AShowDownPlatform* APlayGameMode::GetRandomPlatform()
-{
-	if (AllPlatforms.Num() == 0)
-	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: GetRandomPlatform :: 플랫폼 배열이 비어있습니다."));
-		return nullptr;
-	}
-
-	for (int32 Try = 0; Try < 10; ++Try) // 10번 정도 시도
-	{
-		int32 RandIndex = FMath::RandRange(0, AllPlatforms.Num() - 1);
-		AShowDownPlatform* Candidate = AllPlatforms[RandIndex];
-
-		if (Candidate && Candidate->IsLive)
-		{
-			Candidate->IsLive = false; // 중복 방지
-			UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: GetRandomPlatform :: 선택된 플랫폼 인덱스: %d"), RandIndex);
-			return Candidate;
-		}
-	}
-
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: GetRandomPlatform :: 사용 가능한 플랫폼이 없습니다."));
-	return nullptr;
-}
-#pragma endregion
 
