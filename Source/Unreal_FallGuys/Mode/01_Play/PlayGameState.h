@@ -69,9 +69,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "PLAYERS")
 	int GetConnectedPlayers() const { return ConnectedPlayers; }
 
-private:
+protected:
 	// 접속한 플레이어의 수
-	UPROPERTY(ReplicatedUsing = OnRep_ConnectedPlayers)
+	UPROPERTY(Replicated)
 	int ConnectedPlayers = 0;
 
 #pragma endregion
@@ -135,7 +135,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
 	int GetGameStateCurFinishPlayer() { return GameStateCurFinishPlayer; }
 
-private:
+protected:
 	// 랜덤 레벨 네임
 	UPROPERTY(Replicated)
 	FString LevelName = TEXT("");
@@ -184,10 +184,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "COUNT DOWN")
 	void SetIsCountDownOverTrue() { IsCountDownOver = true; }
 
-private:
+protected:
 	// FallCountDownTime 에서 얻은 카운트 다운 시간 (서버에서 클라로 동기화)
 	UPROPERTY(Replicated)
-	float CountDownTime;
+	float CountDownTime = 0.0f;
 
 	// 카운트다운이 끝났는지 확인
 	UPROPERTY(Replicated)
@@ -222,10 +222,7 @@ private:
 #pragma endregion
 
 #pragma region PlayGameState :: 동기화 관련
-public:
-	UFUNCTION()
-	void OnRep_ConnectedPlayers();
-
+protected:
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 #pragma endregion

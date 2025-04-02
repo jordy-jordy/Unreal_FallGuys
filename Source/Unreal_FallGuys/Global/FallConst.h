@@ -72,6 +72,8 @@ public:
 	// 디폴트 컬러
 	static const ECostumeColor DefaultColor = ECostumeColor::DEFAULT;
 
+	// 각 달걀의 점수
+	static int32 EggScore;
 
 private:
 

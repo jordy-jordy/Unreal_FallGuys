@@ -109,12 +109,12 @@ float APlayGameState::SetStageLimitTime() const
 	const FPlayLevelDataRow* Row = UGlobalDataTable::FindPlayLevelDataByAssetName(GetWorld(), LevelAssetName);
 	if (Row)
 	{
-		UE_LOG(FALL_DEV_LOG, Log, TEXT("패키징 빌드 - 레벨 데이터에서 제한 시간 설정: %.2f초"), Row->StageLimitTime);
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameState :: 패키징 빌드 - 레벨 데이터에서 제한 시간 설정: %.2f초"), Row->StageLimitTime);
 		return Row->StageLimitTime;
 	}
 	else
 	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("패키징 빌드 - 레벨 데이터를 찾을 수 없음. 기본값 사용"));
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: 패키징 빌드 - 레벨 데이터를 찾을 수 없음. 기본값 사용"));
 	}
 #endif
 
@@ -157,17 +157,6 @@ void APlayGameState::SetGameStateFinishPlayer_Implementation(int _Value)
 void APlayGameState::SetGameStateCurFinishPlayer_Implementation(int _Value)
 {
 	GameStateCurFinishPlayer = _Value;
-}
-
-void APlayGameState::OnRep_ConnectedPlayers()
-{
-	UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameState :: 클라이언트에서 접속자 수 동기화됨 : %d"), ConnectedPlayers);
-
-	if (GEngine)
-	{
-		FString Message = FString::Printf(TEXT("PlayGameState :: 클라이언트 동기화된 접속자 수 : %d"), ConnectedPlayers);
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, Message);
-	}
 }
 
 // LMH

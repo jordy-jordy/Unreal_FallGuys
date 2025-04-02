@@ -10,7 +10,7 @@
 #include "Global/BaseGameInstance.h"
 #include "Mode/01_Play/PlayPlayerState.h"
 #include "Mode/01_Play/PlayGameState.h"
-#include "TeamPlayGameMode.h"
+#include "Mode/01_Play/TeamPlayGameState.h"
 
 
 void ATeamPlayGameMode::PostLogin(APlayerController* _NewPlayer)
@@ -39,6 +39,7 @@ void ATeamPlayGameMode::PostLogin(APlayerController* _NewPlayer)
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= TeamPlayGameMode PostLogin END ======= "));
 }
 
+// 팀 배정
 void ATeamPlayGameMode::AssignTeam(APlayPlayerState* _PlayerState)
 {
 	APlayGameState* FallState = GetGameState<APlayGameState>();
@@ -63,6 +64,26 @@ void ATeamPlayGameMode::AssignTeam(APlayPlayerState* _PlayerState)
 	{
 		_PlayerState->SetTeam(ETeamType::BLUE);
 	}
+}
+
+// 레드팀 점수 계산
+void ATeamPlayGameMode::CountREDTeamScore(int32 _NumberOfEgg)
+{
+	REDTeamScore = _NumberOfEgg * UFallConst::EggScore;
+
+	// 점수 동기화
+	ATeamPlayGameState* TeamState = GWorld->GetGameState<ATeamPlayGameState>();
+	TeamState->SetREDTeamScore(REDTeamScore);
+}
+
+// 블루팀 점수 계산
+void ATeamPlayGameMode::CountBLUETeamScore(int32 _NumberOfEgg)
+{
+	BLUETeamScore = _NumberOfEgg * UFallConst::EggScore;
+
+	// 점수 동기화
+	ATeamPlayGameState* TeamState = GWorld->GetGameState<ATeamPlayGameState>();
+	TeamState->SetBLUETeamScore(BLUETeamScore);
 }
 
 //LMH

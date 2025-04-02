@@ -19,6 +19,13 @@ public:
 	// PlayGameMode의 PostLogin 다음으로 실행
 	virtual void PostLogin(APlayerController* _NewPlayer) override;
 
+	// 레드팀 점수 계산
+	UFUNCTION(BlueprintCallable, Category = "SCORE")
+	void CountREDTeamScore(int32 _NumberOfEgg);
+
+	// 블루팀 점수 계산
+	UFUNCTION(BlueprintCallable, Category = "SCORE")
+	void CountBLUETeamScore(int32 _NumberOfEgg);
 
 protected:
 	// 팀 배정
@@ -30,15 +37,12 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	int32 BLUETeamScore = 0;
 
-	// 각 팀 점수
-	UPROPERTY(BlueprintReadOnly)
+	// 각 팀의 달걀 수
+	UPROPERTY(BlueprintReadWrite)
 	int32 REDTeamEggCount = 0;
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadWrite)
 	int32 BLUETeamEggCount = 0;
 
-	// 점수 증가
-	//UFUNCTION(BlueprintCallable, Category = "SCORE")
-	//void CountTeamScore(int32 _NumberOfEgg);
 
 //LMH
 public:

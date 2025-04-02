@@ -174,7 +174,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static bool GetHasNickname();
 
-
 public:
 	// 코스튬 관련 편의 기능 (현재 개발중)
 	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
