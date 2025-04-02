@@ -6,6 +6,13 @@
 #include "UObject/NoExportTypes.h"
 #include "GlobalEnum.generated.h"
 
+UENUM(BlueprintType)
+enum class ETeamType : uint8
+{
+	RED UMETA(DisplayName = "Red"),
+	BLUE UMETA(DisplayName = "BLUE"),
+	
+};
 
 UENUM(BlueprintType)
 enum class ECostumeColor : uint8

@@ -8,6 +8,7 @@
 #include <Global/Data/CostumeDataTable.h>
 #include <Global/Data/CostumeColorDataTable.h>
 #include <Global/Data/PlayLevelDataTable.h>
+#include <Global/Data/TeamPlayLevelDataTable.h>
 #include <Global/Data/ResourceDataTable.h>
 
 #include "GlobalDataTable.generated.h"
@@ -53,5 +54,6 @@ public:
 	static const FCostumeColorDataRow* GetCostumeColorData(UWorld* _World, const FString& _Name);
 	static const FPlayLevelDataRow* GetPlayLevelData(UWorld* _World, const FString& _Name);
 	static const FPlayLevelDataRow* FindPlayLevelDataByAssetName(UWorld* _World, const FString& _AssetName);
+	static const FTeamPlayLevelDataRow* FindTeamPlayLevelDataByAssetName(UWorld* _World, const FString& _Name);
 	static const FResourceDataRow* GetResourceData(UWorld* _World, const FString& _Name);
 };

@@ -54,6 +54,13 @@ UBaseGameInstance::UBaseGameInstance()
 				UE_LOG(FALL_DEV_LOG, Error, TEXT("%S(%u)> if (nullptr == PlayLevelDataTable)"), __FUNCTION__, __LINE__);
 			}
 
+			// 팀플레이 레벨(맵) 데이터 로드
+			TeamPlayLevelDataTable = DataTables->FindRow<FDataTableRow>("DT_TeamPlayLevelDataTable", nullptr)->Resources;
+			if (nullptr == TeamPlayLevelDataTable)
+			{
+				UE_LOG(FALL_DEV_LOG, Error, TEXT("%S(%u)> if (nullptr == TeamPlayLevelDataTable)"), __FUNCTION__, __LINE__);
+			}
+
 			// 리소스 데이터 로드
 			ResourceDataTable = DataTables->FindRow<FDataTableRow>("DT_ResourceDataTable", nullptr)->Resources;
 			if (nullptr == ResourceDataTable)
