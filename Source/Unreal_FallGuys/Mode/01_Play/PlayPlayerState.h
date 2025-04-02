@@ -6,7 +6,6 @@
 #include "GameFramework/PlayerState.h"
 
 #include <Global/GlobalEnum.h>
-#include <Mode/01_Play/PlayEnum.h>
 
 #include "PlayPlayerState.generated.h"
 
@@ -30,10 +29,10 @@ struct FPlayerInfo
 
     // 팀 정보
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-    EPlayerTeam Team = EPlayerTeam::None;
+    ETeamType Team = ETeamType::NONE;
 
     FPlayerInfo()
-        : Tag(TEXT("NoTag")), Status(EPlayerStatus::DEFAULT), Team(EPlayerTeam::None)
+        : Tag(TEXT("NoTag")), Status(EPlayerStatus::DEFAULT), Team(ETeamType::NONE)
     {
     }
 };
@@ -59,8 +58,8 @@ public:
     void SetPlayerInfo_Implementation(const FString& _Tag, EPlayerStatus _Status);
 
     UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "PLAYER INFO")
-    void SetTeam(EPlayerTeam _Team);
-    void SetTeam_Implementation(EPlayerTeam _Team);
+    void SetTeam(ETeamType _Team);
+    void SetTeam_Implementation(ETeamType _Team);
 
     void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };

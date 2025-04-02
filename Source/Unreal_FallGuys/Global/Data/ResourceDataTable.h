@@ -18,11 +18,11 @@ struct FResourceDataRow : public FTableRowBase
 public:
 	// 리소스 이름
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RESOURCE")
-	FString Name;
+	FString Name = TEXT("");
 
 	// 리소스 컬러
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RESOURCE")
-	FString Color;
+	FString Color = TEXT("");
 
 	// 리소스 스테틱 메시
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RESOURCE")

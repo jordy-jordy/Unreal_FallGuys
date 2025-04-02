@@ -49,6 +49,7 @@ private:
 	class UDataTable* CostumeDataTable = nullptr;
 	class UDataTable* CostumeColorDataTable = nullptr;
 	class UDataTable* PlayLevelDataTable = nullptr;
+	class UDataTable* TeamPlayLevelDataTable = nullptr;
 	class UDataTable* ResourceDataTable = nullptr;
 	//class UDataTable* ActorDataTable = nullptr;
 

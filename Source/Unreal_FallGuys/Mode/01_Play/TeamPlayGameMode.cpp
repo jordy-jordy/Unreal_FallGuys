@@ -49,19 +49,19 @@ void ATeamPlayGameMode::AssignTeam(APlayPlayerState* _PlayerState)
 
 	for (const FPlayerInfoEntry& Entry : FallState->PlayerInfoArray)
 	{
-		if (Entry.PlayerInfo.Team == EPlayerTeam::Red)
+		if (Entry.PlayerInfo.Team == ETeamType::RED)
 			RedCount++;
-		else if (Entry.PlayerInfo.Team == EPlayerTeam::Blue)
+		else if (Entry.PlayerInfo.Team == ETeamType::BLUE)
 			BlueCount++;
 	}
 
 	if (RedCount <= BlueCount)
 	{
-		_PlayerState->SetTeam(EPlayerTeam::Red);
+		_PlayerState->SetTeam(ETeamType::RED);
 	}
 	else
 	{
-		_PlayerState->SetTeam(EPlayerTeam::Blue);
+		_PlayerState->SetTeam(ETeamType::BLUE);
 	}
 }
 
