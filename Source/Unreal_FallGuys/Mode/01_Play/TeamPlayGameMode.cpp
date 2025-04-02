@@ -10,6 +10,7 @@
 #include "Global/BaseGameInstance.h"
 #include "Mode/01_Play/PlayPlayerState.h"
 #include "Mode/01_Play/PlayGameState.h"
+#include "TeamPlayGameMode.h"
 
 
 void ATeamPlayGameMode::PostLogin(APlayerController* _NewPlayer)
@@ -62,5 +63,13 @@ void ATeamPlayGameMode::AssignTeam(APlayPlayerState* _PlayerState)
 	{
 		_PlayerState->SetTeam(ETeamType::BLUE);
 	}
+}
+
+//LMH
+TMap<ETeamType, int> ATeamPlayGameMode::GetTeamFloors()
+{
+	CalTeam();
+	return TeamFloors;
+
 }
 

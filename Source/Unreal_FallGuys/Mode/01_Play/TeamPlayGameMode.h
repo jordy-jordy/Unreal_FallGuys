@@ -21,4 +21,16 @@ public:
 
 private:
 	void AssignTeam(class APlayPlayerState* _PlayerState);
+
+//LMH
+public:
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Team")
+	TMap<ETeamType, int> TeamFloors;
+
+	UFUNCTION(BlueprintImplementableEvent,BlueprintCallable)
+	void CalTeam();
+
+	UFUNCTION(BlueprintCallable)
+	TMap<ETeamType, int> GetTeamFloors();
 };
