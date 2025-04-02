@@ -35,7 +35,7 @@ FString UFallConst::DefaultPort = TEXT("30000");
 ////	FallCountDownTime 으로 카운트 다운의 초를 조절하세요.
 
 // 게임 시작을 위한 최소 플레이어 수
-int UFallConst::MinPlayerCount = 4;
+int UFallConst::MinPlayerCount = 2;
 
 // 접속 제한 기능을 사용할 것인지 결정하는 변수
 bool UFallConst::UsePlayerLimit = true;

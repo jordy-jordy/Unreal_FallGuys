@@ -392,16 +392,19 @@ void APlayGameMode::OnStageLimitTimeOver()
 // 이현정 : 25.04.02 : 동기화 함수로 수정 : 골인 인원 +1 카운팅
 void APlayGameMode::OnPlayerFinished()
 {
+	if (!HasAuthority()) return;
+
 	CurFinishPlayer += 1;
 
 	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
-	int Value = FallState->GetGameStateCurFinishPlayer() +1;
-	FallState->SetGameStateCurFinishPlayer(Value);
+	FallState->SetGameStateCurFinishPlayer(CurFinishPlayer);
 }
 
 // 이현정 : 25.04.02 : 동기화 함수로 수정 : 골인 목표 인원 수 세팅
 void APlayGameMode::SetFinishPlayerCount(int _p)
 {
+	if (!HasAuthority()) return;
+
 	FinishPlayer = _p;
 
 	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
