@@ -108,7 +108,7 @@ void UUIInputManager::SwitchMenuWidget(const FInputActionValue& _Value)
 			case ETitleUIType::TitleEntrance:
 				return;
 				break;
-			case ETitleUIType::CustomInven:
+			case ETitleUIType::CustomeInven:
 				return;
 				break;
 			case ETitleUIType::TitleIPPort:
@@ -136,7 +136,7 @@ void UUIInputManager::SwitchMenuWidget(const FInputActionValue& _Value)
 				Widget->SwitchWidget(ETitleUIType::TitleHome);
 				return;
 				break;
-			case ETitleUIType::CustomInven:
+			case ETitleUIType::CustomeInven:
 				//Widget->SwitchWidget(EUIType::TitleHome);
 				Widget->SwitchWidget(ETitleUIType::TitleCustom);
 				return;

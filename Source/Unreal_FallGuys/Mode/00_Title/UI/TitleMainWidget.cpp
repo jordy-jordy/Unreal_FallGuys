@@ -77,9 +77,13 @@ void UTitleMainWidget::SetWidgetUIType(FString _CurWidgetName)
 	{
 		UIType = ETitleUIType::TitleEntrance;
 	}
+	else if (_CurWidgetName.Contains(FString("CustomeInven")))
+	{
+		UIType = ETitleUIType::CustomeInven;
+	}
 	else if (_CurWidgetName.Contains(FString("Btn")))
 	{
-		UIType = ETitleUIType::CustomInven;
+		UIType = ETitleUIType::InvenBtn;
 	}
 	else if (_CurWidgetName.Contains(FString("IPPort")))
 	{
@@ -135,7 +139,7 @@ void UTitleMainWidget::SwitchWidget(ETitleUIType _UIType)
 
 			for (TPair<ETitleUIType, UTitleUserWidget*> Pair : Widgets)
 			{
-				if (Pair.Key == ETitleUIType::CustomInven)
+				if (Pair.Key == ETitleUIType::InvenBtn)
 				{
 					Pair.Value->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 				}
@@ -165,21 +169,22 @@ void UTitleMainWidget::SwitchWidget(ETitleUIType _UIType)
 			MenuWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 			for (TPair<ETitleUIType, UTitleUserWidget*> Pair : Widgets)
 			{
-				if (Pair.Key == ETitleUIType::CustomInven)
+				if (Pair.Key == ETitleUIType::InvenBtn)
 				{
 					Pair.Value->SetVisibility(ESlateVisibility::Hidden);
 				}
 			}
 			break;
 		}
-		case ETitleUIType::CustomInven:
+		case ETitleUIType::CustomeInven:
 		{
 			CurUserWidget->SetVisibility(ESlateVisibility::Hidden);
+			ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 			for (TPair<ETitleUIType, UTitleUserWidget*> Pair : Widgets)
 			{
-				if (Pair.Key == ETitleUIType::CustomInven)
+				if (Pair.Key == ETitleUIType::InvenBtn)
 				{
-					Pair.Value->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+					Pair.Value->SetVisibility(ESlateVisibility::Hidden);
 				}
 			}
 			MenuWidget->SetVisibility(ESlateVisibility::Hidden);
@@ -213,7 +218,7 @@ void UTitleMainWidget::SwitchWidget(ETitleUIType _UIType)
 		}
 		break;
 	}
-	case ETitleUIType::CustomInven:
+	case ETitleUIType::CustomeInven:
 	{
 		switch (ETitleUIType(_UIType))
 		{
@@ -221,11 +226,12 @@ void UTitleMainWidget::SwitchWidget(ETitleUIType _UIType)
 		{
 			for (TPair<ETitleUIType, UTitleUserWidget*> Pair : Widgets)
 			{
-				if (Pair.Key == ETitleUIType::CustomInven)
+				if (Pair.Key == ETitleUIType::InvenBtn)
 				{
-					Pair.Value->SetVisibility(ESlateVisibility::Hidden);
+					Pair.Value->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 				}
 			}
+			CurUserWidget->SetVisibility(ESlateVisibility::Hidden);
 			ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 			MenuWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 			break;
@@ -305,7 +311,7 @@ void UTitleMainWidget::AllWidgetSelfHitTestInvisible()
 
 UTitleUserWidget* UTitleMainWidget::FindWidget(ETitleUIType _Type, int _Index/* = 0*/)
 {
-	if (ETitleUIType::CustomInven != _Type)
+	if (ETitleUIType::CustomeInven != _Type)
 	{
 		for (TPair<ETitleUIType, UTitleUserWidget*> Pair : Widgets)
 		{
@@ -317,7 +323,7 @@ UTitleUserWidget* UTitleMainWidget::FindWidget(ETitleUIType _Type, int _Index/* 
 	}
 
 	TArray<UTitleUserWidget*> CustomInvens;
-	Widgets.MultiFind(ETitleUIType::CustomInven, CustomInvens);
+	Widgets.MultiFind(ETitleUIType::CustomeInven, CustomInvens);
 	return CustomInvens[_Index];
 }
 
