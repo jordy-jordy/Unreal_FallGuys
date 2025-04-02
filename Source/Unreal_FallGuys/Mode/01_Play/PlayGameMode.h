@@ -69,9 +69,6 @@ protected:
 	// 목표 골인 인원 수 제어
 	void ControllFinishPlayer(APlayGameState* _PlayState);
 
-	// 목표 골인 인원 수 세팅
-	void SetFinishPlayer(int32 _PlayerCount) { FinishPlayer = _PlayerCount; }
-
 	// 접속 제한
 	bool InvalidConnect = false;
 	// 인원 충족
@@ -128,22 +125,6 @@ protected:
 
 #pragma endregion
 
-#pragma region PlayGameMode :: Jump Show Down 스테이지 관련
-public:
-	// 플랫폼 등록 함수
-	void AddShowDownPlatform(class AShowDownPlatform* _Platform);
-
-	// 랜덤 스테이지 활성화 함수
-	UFUNCTION()
-	class AShowDownPlatform* GetRandomPlatform();
-
-protected:
-	// 전체 플랫폼 리스트
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ShowDown", meta = (AllowPrivateAccess = "true"))
-	TArray<class AShowDownPlatform*> AllPlatforms;
-
-#pragma endregion
-
 
 //LMH
 protected:
@@ -151,7 +132,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Server", meta = (AllowPrivateAccess = "true"))
 	int FinishPlayer = 99;
 
-	// 골인한 플레이어 수
+	// 현재 골인한 플레이어 수
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Server", meta = (AllowPrivateAccess = "true"))
 	int CurFinishPlayer = 0;
 
@@ -165,15 +146,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ServerTravelToNextMap(const FString& url);
 
+	// 이현정 : 25.04.02 : 동기화 함수로 수정 : 골인 인원 +1 카운팅
 	UFUNCTION(BlueprintCallable)
-	void OnPlayerFinished()
-	{
-		CurFinishPlayer += 1;
-	}
+	void OnPlayerFinished();
 
+	// 이현정 : 25.04.02 : 동기화 함수로 수정 : 골인 목표 인원 수 세팅
 	UFUNCTION(BlueprintCallable)
-	void SetFinishPlayerCount(int _p)
-	{
-		FinishPlayer = _p;
-	}
+	void SetFinishPlayerCount(int _p);
 };

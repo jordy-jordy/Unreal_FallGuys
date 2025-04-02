@@ -56,6 +56,10 @@ void APlayPlayerController::SetupInputComponent()
 		{
 			EnhancedInput->BindAction(InputAction_LevelCinematicEnd, ETriggerEvent::Started, this, &APlayPlayerController::OnPrintLevelCinematicEnd);
 		}
+		if (InputAction_CurFinishPlayer)
+		{
+			EnhancedInput->BindAction(InputAction_CurFinishPlayer, ETriggerEvent::Started, this, &APlayPlayerController::OnPrintCurFinishPlayer);
+		}
 	}
 }
 
@@ -93,5 +97,14 @@ void APlayPlayerController::OnPrintLevelCinematicEnd()
 	if (UBaseGameInstance* GameIns = GetGameInstance<UBaseGameInstance>())
 	{
 		GameIns->InsetLevelCinematicEnd();
+	}
+}
+
+// 디버그용 : 골인한 인원 및 목표 골인 인원 출력
+void APlayPlayerController::OnPrintCurFinishPlayer()
+{
+	if (UBaseGameInstance* GameIns = GetGameInstance<UBaseGameInstance>())
+	{
+		GameIns->InsGetGameStateCurFinishPlayer();
 	}
 }

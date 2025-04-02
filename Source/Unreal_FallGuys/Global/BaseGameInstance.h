@@ -245,6 +245,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "DEBUG")
 	void InsetLevelCinematicEnd();
 
+	// 디버그용 : 골인 목표 인원, 골인한 인원 출력
+	UFUNCTION(BlueprintCallable, Category = "DEBUG")
+	void InsGetGameStateCurFinishPlayer();
+
 #pragma endregion
 
 

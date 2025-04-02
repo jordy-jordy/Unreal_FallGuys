@@ -40,7 +40,7 @@ int UFallConst::MinPlayerCount = 2;
 // 접속 제한 기능을 사용할 것인지 결정하는 변수
 bool UFallConst::UsePlayerLimit = true;
 
-// 카운트 다운을 사용할 true 결정하는 변수
+// 카운트 다운을 사용할 것인지 결정하는 변수
 bool UFallConst::UseCountDown = false;
 
 // 카운트 다운 대기 시간

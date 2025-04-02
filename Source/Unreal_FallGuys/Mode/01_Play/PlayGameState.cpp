@@ -123,13 +123,13 @@ float APlayGameState::SetStageLimitTime() const
 	return UFallConst::FallStageLimitTime;
 }
 
-// 게임 인스턴스에서 세팅된 레벨 이름
+// 게임 인스턴스에서 세팅된 레벨 이름 : GameMode에서 호출
 void APlayGameState::SavePlayLevelName_Implementation(const FString& _LevelName)
 {
 	LevelName = _LevelName;
 }
 
-// 게임 인스턴스에서 세팅된 레벨 에셋 이름
+// 게임 인스턴스에서 세팅된 레벨 에셋 이름 : GameMode에서 호출
 void APlayGameState::SavePlayLevelAssetName_Implementation(const FString& _LevelAssetName)
 {
 	LevelAssetName = _LevelAssetName;
@@ -145,6 +145,18 @@ void APlayGameState::SetCanStartLevelCinematic_Implementation()
 void APlayGameState::SetIsLevelCinematicEnd_Implementation(bool _Value)
 {
 	IsLevelCinematicEnd = _Value;
+}
+
+// 골인 목표 인원 수 세팅 : GameMode에서 호출
+void APlayGameState::SetGameStateFinishPlayer_Implementation(int _Value)
+{
+	GameStateFinishPlayer = _Value;
+}
+
+// 현재 골인한 플레이어 수 세팅 : GameMode에서 호출
+void APlayGameState::SetGameStateCurFinishPlayer_Implementation(int _Value)
+{
+	GameStateCurFinishPlayer = _Value;
 }
 
 void APlayGameState::OnRep_ConnectedPlayers()
@@ -183,4 +195,6 @@ void APlayGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(APlayGameState, CurrentStage);
 	DOREPLIFETIME(APlayGameState, CanStartLevelCinematic);
 	DOREPLIFETIME(APlayGameState, IsLevelCinematicEnd);
+	DOREPLIFETIME(APlayGameState, GameStateFinishPlayer);
+	DOREPLIFETIME(APlayGameState, GameStateCurFinishPlayer);
 }
