@@ -12,7 +12,9 @@
 #include <Global/Data/CostumeColorDataTable.h>
 #include <Mode/00_Title/TitleHUD.h>
 #include <Mode/01_Play/PlayGameMode.h>
+#include <Mode/01_Play/TeamPlayGameMode.h>
 #include <Mode/01_Play/PlayGameState.h>
+#include <Mode/01_Play/TeamPlayGameState.h>
 
 
 void UFallGlobal::AssetPackagePath(UClass* _Class, const FString& _AssetName, FString& _Path)
@@ -472,6 +474,20 @@ bool UFallGlobal::GetHasNickname()
 {
 	UBaseGameInstance* GameIns = GWorld->GetGameInstance<UBaseGameInstance>();
 	return GameIns->InsGetHasNickname();
+}
+
+// 레드팀 점수 반환
+int32 UFallGlobal::GetREDTeamScore()
+{
+	ATeamPlayGameState* TeamState = GWorld->GetGameState<ATeamPlayGameState>();
+	return TeamState->GetGameStateREDTeamScore();
+}
+
+// 블루팀 점수 반환
+int32 UFallGlobal::GetBLUETeamScore()
+{
+	ATeamPlayGameState* TeamState = GWorld->GetGameState<ATeamPlayGameState>();
+	return TeamState->GetGameStateBLUETeamScore();
 }
 
 // 이재영 : 메인위젯을 얻는 함수

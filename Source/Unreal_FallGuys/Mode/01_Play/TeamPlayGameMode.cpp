@@ -67,7 +67,7 @@ void ATeamPlayGameMode::AssignTeam(APlayPlayerState* _PlayerState)
 }
 
 // 레드팀 점수 계산
-void ATeamPlayGameMode::CountREDTeamScore(int32 _NumberOfEgg)
+void ATeamPlayGameMode::CountREDTeamScore(int _NumberOfEgg)
 {
 	REDTeamScore = _NumberOfEgg * UFallConst::EggScore;
 
@@ -77,7 +77,7 @@ void ATeamPlayGameMode::CountREDTeamScore(int32 _NumberOfEgg)
 }
 
 // 블루팀 점수 계산
-void ATeamPlayGameMode::CountBLUETeamScore(int32 _NumberOfEgg)
+void ATeamPlayGameMode::CountBLUETeamScore(int _NumberOfEgg)
 {
 	BLUETeamScore = _NumberOfEgg * UFallConst::EggScore;
 

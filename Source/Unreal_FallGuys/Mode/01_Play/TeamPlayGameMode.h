@@ -21,11 +21,11 @@ public:
 
 	// 레드팀 점수 계산
 	UFUNCTION(BlueprintCallable, Category = "SCORE")
-	void CountREDTeamScore(int32 _NumberOfEgg);
+	void CountREDTeamScore(int _NumberOfEgg);
 
 	// 블루팀 점수 계산
 	UFUNCTION(BlueprintCallable, Category = "SCORE")
-	void CountBLUETeamScore(int32 _NumberOfEgg);
+	void CountBLUETeamScore(int _NumberOfEgg);
 
 protected:
 	// 팀 배정
@@ -39,9 +39,9 @@ protected:
 
 	// 각 팀의 달걀 수
 	UPROPERTY(BlueprintReadWrite)
-	int32 REDTeamEggCount = 0;
+	int REDTeamEggCount = 0;
 	UPROPERTY(BlueprintReadWrite)
-	int32 BLUETeamEggCount = 0;
+	int BLUETeamEggCount = 0;
 
 
 //LMH

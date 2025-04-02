@@ -25,6 +25,13 @@ public:
 	void SetBLUETeamScore(int32 _NumberOfEgg);
 	void SetBLUETeamScore_Implementation(int32 _Score);
 
+	// 레드팀 점수 반환
+	UFUNCTION(BlueprintCallable, Category = "SCORE")
+	int32 GetGameStateREDTeamScore() { return GameStateREDTeamScore; }
+	// 블루팀 점수 반환
+	UFUNCTION(BlueprintCallable, Category = "SCORE")
+	int32 GetGameStateBLUETeamScore() { return GameStateBLUETeamScore; }
+
 protected:
 	// 각 팀 점수 : Mode에서 지정해줌
 	UPROPERTY(Replicated)
@@ -34,9 +41,9 @@ protected:
 
 	// 각 팀의 달걀 수 : Mode에서 지정해줌
 	UPROPERTY(Replicated)
-	int32 GameStateREDTeamEggCount = 0;
+	int GameStateREDTeamEggCount = 0;
 	UPROPERTY(Replicated)
-	int32 GameStateBLUETeamEggCount = 0;
+	int GameStateBLUETeamEggCount = 0;
 
 private:
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;

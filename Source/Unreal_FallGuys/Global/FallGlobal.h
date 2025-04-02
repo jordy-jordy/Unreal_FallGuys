@@ -174,6 +174,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static bool GetHasNickname();
 
+	// 레드팀 점수 반환
+	UFUNCTION(BlueprintCallable)
+	static int32 GetREDTeamScore();
+
+	// 블루팀 점수 반환
+	UFUNCTION(BlueprintCallable)
+	static int32 GetBLUETeamScore();
+
+
 public:
 	// 코스튬 관련 편의 기능 (현재 개발중)
 	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
