@@ -17,7 +17,7 @@ void APlayPlayerState::SetPlayerInfo_Implementation(const FString& _Tag, EPlayer
     PlayerInfo.Status = _Status;
 }
 
-void APlayPlayerState::SetTeam_Implementation(EPlayerTeam _Team)
+void APlayPlayerState::SetTeam_Implementation(ETeamType _Team)
 {
     PlayerInfo.Team = _Team;
 }

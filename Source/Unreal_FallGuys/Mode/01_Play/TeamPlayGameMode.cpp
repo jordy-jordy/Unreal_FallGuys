@@ -6,6 +6,7 @@
 #include "Unreal_FallGuys.h"
 #include "Global/FallConst.h"
 #include "Global/FallGlobal.h"
+#include "Global/GlobalEnum.h"
 #include "Global/BaseGameInstance.h"
 #include "Mode/01_Play/PlayPlayerState.h"
 #include "Mode/01_Play/PlayGameState.h"
@@ -47,19 +48,19 @@ void ATeamPlayGameMode::AssignTeam(APlayPlayerState* _PlayerState)
 
 	for (const FPlayerInfoEntry& Entry : FallState->PlayerInfoArray)
 	{
-		if (Entry.PlayerInfo.Team == EPlayerTeam::Red)
+		if (Entry.PlayerInfo.Team == ETeamType::RED)
 			RedCount++;
-		else if (Entry.PlayerInfo.Team == EPlayerTeam::Blue)
+		else if (Entry.PlayerInfo.Team == ETeamType::BLUE)
 			BlueCount++;
 	}
 
 	if (RedCount <= BlueCount)
 	{
-		_PlayerState->SetTeam(EPlayerTeam::Red);
+		_PlayerState->SetTeam(ETeamType::RED);
 	}
 	else
 	{
-		_PlayerState->SetTeam(EPlayerTeam::Blue);
+		_PlayerState->SetTeam(ETeamType::BLUE);
 	}
 }
 
