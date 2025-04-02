@@ -166,6 +166,16 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static bool GetCanStartLevelCinematic();
 
+	// 플레이어 상태를 리셋하는 함수
+	UFUNCTION(BlueprintCallable)
+	static void ResetPlayerCondition();
+
+	// 닉네임 설정했니?
+	UFUNCTION(BlueprintCallable)
+	static bool GetHasNickname();
+
+
+public:
 	// 코스튬 관련 편의 기능 (현재 개발중)
 	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
 	static TArray<FString> GetCostumeColorNames(UObject* _WorldContext);

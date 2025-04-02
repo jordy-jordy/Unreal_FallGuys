@@ -392,6 +392,9 @@ UStaticMesh* UBaseGameInstance::InsGetResourceMesh(UWorld* _World, const FString
 void UBaseGameInstance::InsChangeNickname(const FString& _NewNickname)
 {
 	Nickname = _NewNickname;
+
+	// 닉네임 설정한 상태로 전환
+	HasNickname = true;
 }
 
 // Random PlayLevel의 이름 반환

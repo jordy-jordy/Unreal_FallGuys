@@ -460,6 +460,20 @@ bool UFallGlobal::GetCanStartLevelCinematic()
 	return PlayState->GetCanStartLevelCinematic();
 }
 
+// 플레이어 상태를 리셋하는 함수
+void UFallGlobal::ResetPlayerCondition() 
+{
+	UBaseGameInstance* GameIns = GWorld->GetGameInstance<UBaseGameInstance>();
+	return GameIns->InsResetPlayerCondition();
+}
+
+// 닉네임 설정했니?
+bool UFallGlobal::GetHasNickname()
+{
+	UBaseGameInstance* GameIns = GWorld->GetGameInstance<UBaseGameInstance>();
+	return GameIns->InsGetHasNickname();
+}
+
 // 이재영 : 메인위젯을 얻는 함수
 UTitleMainWidget* UFallGlobal::GetMainWidget(UWorld* _World)
 {

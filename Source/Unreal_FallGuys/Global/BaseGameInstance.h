@@ -214,16 +214,27 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PLAYER DATA")
 	bool IsMovedLevel = false;
 
+	// 플레이어 상태를 리셋하는 함수
+	UFUNCTION(BlueprintCallable, Category = "PLAYER DATA")
+	void InsResetPlayerCondition() { IsMovedLevel = false; bIsConnected = false; }
+
+	// 닉네임 설정했니?
+	UFUNCTION(BlueprintCallable, Category = "PLAYER DATA")
+	bool InsGetHasNickname() { return HasNickname; }
+
 protected:
 	// 닉네임
 	UPROPERTY(VisibleAnywhere, Category = "PLAYER DATA")
 	FString Nickname = TEXT("TEST_JORDY");
 
-	// 플레이어 UniqueID -> FPlayerInfo 매핑 저장소
-	TMap<FString, struct FPlayerInfo> PlayerInfoBackup;
+	// 닉네임 설정 완료
+	bool HasNickname = false;
 
 	// 서버 연결 상태 변수
 	bool bIsConnected = false;
+
+	// 플레이어 UniqueID -> FPlayerInfo 매핑 저장소
+	TMap<FString, struct FPlayerInfo> PlayerInfoBackup;
 
 #pragma endregion
 
