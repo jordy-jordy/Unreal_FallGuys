@@ -9,7 +9,7 @@
 #include <Global/Data/GlobalDataTable.h>
 #include <Global/BaseGameInstance.h>
 #include <Level/01_Play/Actor/ImMovable/JumpShowDown/ShowDownStage.h>
-#include "Level/01_Play/Actor/EggSpawnManager.h"
+
 
 
 APlayGameState::APlayGameState()
@@ -174,17 +174,6 @@ void APlayGameState::MinusCountDownTime_Implementation(float _Value)
 void APlayGameState::SetIsCountDownOverTrue_Implementation()
 {
 	IsCountDownOver = true;
-}
-
-// LMH
-void APlayGameState::SpawnEggManager()
-{
-	if (HasAuthority())
-	{
-		Spawnner = GetWorld()->SpawnActor<AEggSpawnManager>(SpawnManagerFactory, FVector(0, 0, 400.0f), FRotator(0, 0, 0));
-		if (Spawnner == nullptr) return;
-		Spawnner->SetOwner(this);
-	}
 }
 
 void APlayGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

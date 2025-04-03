@@ -45,10 +45,12 @@ public:
 	TArray<int> TeamEggCount;
 
 	UFUNCTION(BlueprintCallable)
-	TArray<int> GetTeamEggCount()
+	TArray<int> GetTeamEggCount() const
+
 	{
 		return TeamEggCount;
 
 	}
+	
 	
 };

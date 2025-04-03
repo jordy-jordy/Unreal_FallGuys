@@ -41,5 +41,18 @@ protected:
 
 private:
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	
+
+	//LMHH
+public:
+	UFUNCTION(BlueprintCallable)
+	void SpawnEggManager();
+
+	UPROPERTY(EditAnywhere, Category = "Manager")
+	TSubclassOf<class AEggSpawnManager> SpawnManagerFactory;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Manager")
+	class AEggSpawnManager* Spawnner;
+
+	UFUNCTION(BlueprintCallable)
+	TArray<int> GetTeamEggCount() const;
 };

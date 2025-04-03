@@ -232,16 +232,6 @@ protected:
 #pragma endregion
 
 
-//LMHH
-public:
-	UFUNCTION(BlueprintCallable)
-	void SpawnEggManager();
-
-	UPROPERTY(EditAnywhere, Category = "Manager")
-	TSubclassOf<class AEggSpawnManager> SpawnManagerFactory;
-	
-	UPROPERTY(BlueprintReadWrite, Category = "Manager")
-	class AEggSpawnManager* Spawnner;
 
 
 };
