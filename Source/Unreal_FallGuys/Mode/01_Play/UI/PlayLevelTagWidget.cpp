@@ -10,3 +10,10 @@ void UPlayLevelTagWidget::StartPlayAnim()
 	PlayAnimation(TagWhitePartAnim);
 	PlayAnimation(LevelExpPartPanelAnim);
 }
+
+void UPlayLevelTagWidget::ReversePlayAnim()
+{
+	PlayAnimationReverse(LevelNamePartPanelAnim);
+	PlayAnimationReverse(TagWhitePartAnim);
+	PlayAnimationReverse(LevelExpPartPanelAnim);
+}

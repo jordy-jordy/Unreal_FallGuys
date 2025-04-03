@@ -18,6 +18,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void StartPlayAnim();
 
+	UFUNCTION(BlueprintCallable)
+	void ReversePlayAnim();
+
 private:
 	UPROPERTY(EditAnywhere, Transient, meta = (BindWidgetAnim), Category = "UI")
 	UWidgetAnimation* LevelNamePartPanelAnim;
