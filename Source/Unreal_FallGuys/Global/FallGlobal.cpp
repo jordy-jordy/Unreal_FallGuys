@@ -464,6 +464,14 @@ void UFallGlobal::MinusConnectedPlayers()
 	FallState->MinusConnectedPlayers();
 }
 
+// PlayGameState : 실패한 유저의 떨어지는 순번을 정해줌
+void UFallGlobal::SetDropOrder()
+{
+	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
+	FallState->SetDropOrder();
+}
+
+
 // 이재영 : 메인위젯을 얻는 함수
 UTitleMainWidget* UFallGlobal::GetMainWidget(UWorld* _World)
 {

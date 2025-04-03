@@ -186,6 +186,16 @@ void APlayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 void APlayCharacter::C2S_IsDie_Implementation(bool _val)
 {
 	IsDie = _val;
+	
+	if (_val == true)
+	{
+		GetPlayerState<APlayPlayerState>()->PlayerInfo.Status = EPlayerStatus::FAIL;
+	}
+	else
+	{
+		GetPlayerState<APlayPlayerState>()->PlayerInfo.Status = EPlayerStatus::SUCCESS;
+	}
+
 	S2M_IsDie(IsDie);
 }
 
@@ -193,6 +203,14 @@ void APlayCharacter::C2S_IsDie_Implementation(bool _val)
 void APlayCharacter::S2M_IsDie_Implementation(bool _val)
 {
 	IsDie = _val;
+	if (_val == true)
+	{
+		GetPlayerState<APlayPlayerState>()->PlayerInfo.Status = EPlayerStatus::FAIL;
+	}
+	else
+	{
+		GetPlayerState<APlayPlayerState>()->PlayerInfo.Status = EPlayerStatus::SUCCESS;
+	}
 }
 
 // 이현정 : 캐릭터 코스튬 설정 - 클라 > 서버

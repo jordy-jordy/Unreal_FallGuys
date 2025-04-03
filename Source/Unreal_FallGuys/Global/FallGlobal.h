@@ -193,6 +193,9 @@ public:
 	// PlayGameState : 접속자 수를 1씩 감소
 	static void MinusConnectedPlayers();
 
+	// PlayGameState : 실패한 유저의 떨어지는 순번을 정해줌
+	static void SetDropOrder();
+
 
 public:
 	// 코스튬 관련 편의 기능 (현재 개발중)

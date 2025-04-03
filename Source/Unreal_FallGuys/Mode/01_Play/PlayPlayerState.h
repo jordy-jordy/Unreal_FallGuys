@@ -35,8 +35,12 @@ struct FPlayerInfo
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
     ETeamType Team = ETeamType::NONE;
 
+    // 실패했을 경우 떨어지는 순서
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+    int DropOrder;
+
     FPlayerInfo()
-        : Tag(TEXT("NoTag")), NickName(TEXT("")), Status(EPlayerStatus::DEFAULT), Team(ETeamType::NONE)
+        : Tag(TEXT("NoTag")), NickName(TEXT("")), Status(EPlayerStatus::DEFAULT), Team(ETeamType::NONE), DropOrder(0)
     {
     }
 };

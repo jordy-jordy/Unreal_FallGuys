@@ -157,7 +157,7 @@ void APlayGameState::SetIsLevelCinematicEnd_Implementation(bool _Value)
 	
 	if (_Value == true)
 	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("APlayGameState :: 레벨 시네마틱이 종료되었습니다."));
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: 레벨 시네마틱이 종료되었습니다."));
 	}
 }
 
@@ -185,10 +185,69 @@ void APlayGameState::SetIsCountDownOverTrue_Implementation()
 	IsCountDownOver = true;
 }
 
+// 실패한 유저의 떨어지는 순번을 정해줌
+void APlayGameState::SetDropOrder_Implementation()
+{
+	FailPlayerInfoArray.Empty();
+
+	TArray<APlayPlayerState*> FailedPlayerStates;
+
+	// 1. 실패한 플레이어만 수집
+	for (APlayerState* PlayerState : PlayerArray)
+	{
+		APlayPlayerState* PlayPlayerState = Cast<APlayPlayerState>(PlayerState);
+		if (PlayPlayerState && PlayPlayerState->PlayerInfo.Status == EPlayerStatus::FAIL)
+		{
+			FailedPlayerStates.Add(PlayPlayerState);
+		}
+	}
+
+	const int32 NumFailed = FailedPlayerStates.Num();
+	if (NumFailed <= 0)
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("SetDropOrder :: 실패한 플레이어가 없습니다."));
+		return;
+	}
+
+	// 2. 1부터 NumFailed까지 순번 생성
+	TArray<int32> DropOrders;
+	for (int32 i = 1; i <= NumFailed; ++i)
+	{
+		DropOrders.Add(i);
+	}
+
+	// 3. 셔플
+	for (int32 i = DropOrders.Num() - 1; i > 0; --i)
+	{
+		const int32 j = FMath::RandRange(0, i);
+		DropOrders.Swap(i, j);
+	}
+
+	// 4. 순번 배정 + FailPlayerInfoArray에 저장
+	for (int32 i = 0; i < NumFailed; ++i)
+	{
+		APlayPlayerState* PlayerState = FailedPlayerStates[i];
+
+		PlayerState->PlayerInfo.DropOrder = DropOrders[i];
+
+		FailPlayerInfoArray.Add(FPlayerInfoEntry(
+			PlayerState->PlayerInfo.UniqueID,
+			PlayerState->PlayerInfo));
+	}
+
+	// 디버그 로그
+	for (const FPlayerInfoEntry& Entry : FailPlayerInfoArray)
+	{
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("FailPlayer :: %s, DropOrder = %d"),
+			*Entry.UniqueID, Entry.PlayerInfo.DropOrder);
+	}
+}
+
 void APlayGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(APlayGameState, PlayerInfoArray);
+	DOREPLIFETIME(APlayGameState, FailPlayerInfoArray);
 	DOREPLIFETIME(APlayGameState, CountDownTime);
 	DOREPLIFETIME(APlayGameState, ConnectedPlayers);
 	DOREPLIFETIME(APlayGameState, LevelName);

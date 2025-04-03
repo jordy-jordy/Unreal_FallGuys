@@ -273,13 +273,10 @@ public:
 //LMH
 public:
 	UFUNCTION(BlueprintCallable)
-	bool GetIsDie() { return IsDie; } const
+	bool GetIsDie() { return IsDie; }
 
 	UFUNCTION(BlueprintCallable)
-	void SetIsDie(bool _val)
-	{
-		IsDie = _val;
-	}
+	void SetIsDie(bool _val) { IsDie = _val; }
 
 	UPROPERTY(BlueprintReadWrite)
 	bool IsDie = true;

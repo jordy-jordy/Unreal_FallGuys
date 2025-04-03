@@ -32,7 +32,6 @@ void ATitlePawn::BeginPlay()
 	Super::BeginPlay();
 
 	// 이현정 : GameInstance에 저장된 코스튬 정보를 가져옴
-	UBaseGameInstance* GameIns = GWorld->GetGameInstance<UBaseGameInstance>();
 	CostumeColor = UFallGlobal::GetCostumeColor(this);
 	CostumeTop = UFallGlobal::GetCostumeTop(this);
 	CostumeBot = UFallGlobal::GetCostumeBot(this);

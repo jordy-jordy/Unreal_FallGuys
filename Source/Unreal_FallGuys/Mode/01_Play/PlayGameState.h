@@ -48,9 +48,13 @@ public:
 
 #pragma region PlayGameState :: 플레이어 관련
 public:
-	// 전체 플레이어 정보 목록 (GameState에서 관리)
+	// 전체 플레이어 정보 목록
 	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category = "PLAYER LIST")
 	TArray<FPlayerInfoEntry> PlayerInfoArray;
+
+	// 실패한 플레이어 정보 목록
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category = "PLAYER LIST")
+	TArray<FPlayerInfoEntry> FailPlayerInfoArray;
 
 	// `PlayerState`에서 데이터 동기화
 	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "PLAYER LIST")
@@ -75,6 +79,12 @@ public:
 	// 현재 접속한 플레이어 수 반환
 	UFUNCTION(BlueprintCallable, Category = "PLAYERS")
 	int GetConnectedPlayers() const { return ConnectedPlayers; }
+
+	// 실패한 유저의 떨어지는 순번을 정해줌
+	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "PLAYERS")
+	void SetDropOrder();
+	void SetDropOrder_Implementation();
+
 
 protected:
 	// 접속한 플레이어의 수
