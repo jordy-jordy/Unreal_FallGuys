@@ -10,8 +10,6 @@ void ATeamPlayGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ATeamPlayGameState, GameStateREDTeamScore);
 	DOREPLIFETIME(ATeamPlayGameState, GameStateBLUETeamScore);
-	DOREPLIFETIME(ATeamPlayGameState, GameStateREDTeamEggCount);
-	DOREPLIFETIME(ATeamPlayGameState, GameStateBLUETeamEggCount);
 }
 
 void ATeamPlayGameState::SetREDTeamScore_Implementation(int32 _Score)
