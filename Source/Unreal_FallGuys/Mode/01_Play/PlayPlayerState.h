@@ -70,6 +70,10 @@ public:
     UFUNCTION(BlueprintCallable, Category = "PLAYER INFO")
     FString GetPlayerStateNickName() { return PlayerInfo.NickName; }
 
+    // 현재 팀 반환
+    UFUNCTION(BlueprintCallable, Category = "PLAYER INFO")
+    ETeamType GetPlayerStateTeam() { return PlayerInfo.Team; }
+
 
 protected:
     // 동기화 관련
