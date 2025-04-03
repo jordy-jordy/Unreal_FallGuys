@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -56,4 +56,13 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI", meta = (AllowPrivateAccess = "true"))
 	class UUIInputManager* UIInputManager;
+
+// 이현정 : 코스튬 세팅
+protected:
+	// 코스튬 컬러
+	FString CostumeColor = TEXT("");
+	// 코스튬 상의
+	FString CostumeTop = TEXT("");
+	// 코스튬 하의
+	FString CostumeBot = TEXT("");
 };

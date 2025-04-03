@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Mode/00_Title/TitlePawn.h"
@@ -19,11 +19,8 @@ ATitlePawn::ATitlePawn()
 	USceneComponent* RootSceneComp = CreateDefaultSubobject<USceneComponent>(TEXT("RootComp"));
 	RootComponent = RootSceneComp;
 	UpComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Up"));
-
 	UpComp->SetupAttachment(RootComponent);
-
 	LowComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Low"));
-
 	LowComp->SetupAttachment(RootComponent);
 
 	UIInputManager = CreateDefaultSubobject<UUIInputManager>(TEXT("UIInputManager"));
@@ -34,8 +31,16 @@ void ATitlePawn::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UFallGlobal::ChangeCostumeTop(this,UpComp, "");
-	UFallGlobal::ChangeCostumeBot(this,LowComp, "");
+	// 이현정 : GameInstance에 저장된 코스튬 정보를 가져옴
+	UBaseGameInstance* GameIns = GWorld->GetGameInstance<UBaseGameInstance>();
+	CostumeColor = UFallGlobal::GetCostumeColor(this);
+	CostumeTop = UFallGlobal::GetCostumeTop(this);
+	CostumeBot = UFallGlobal::GetCostumeBot(this);
+
+	// 이현정 : GameInstance에서 가져온 코스튬 정보를 바탕으로 세팅
+	UFallGlobal::ChangeCostumeColor(this, CostumeColor);
+	UFallGlobal::ChangeCostumeTop(this, UpComp, CostumeTop);
+	UFallGlobal::ChangeCostumeBot(this, LowComp, CostumeBot);
 }
 
 // Called every frame
@@ -85,7 +90,7 @@ void ATitlePawn::PawnRotation(UStaticMeshComponent* _Target, const FVector2D& _V
 }
 void ATitlePawn::AttachCustomStaticMesh(ECostumeType Type, FString& _ImgName)
 {
-	// _ImgName �� �ش��ϴ� ���ҽ� ��������
+	// _ImgName 에 해당하는 리소스 가져오기
 
 	UBaseGameInstance* GameIns = GetGameInstance<UBaseGameInstance>();
 
