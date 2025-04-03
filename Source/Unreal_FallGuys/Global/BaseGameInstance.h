@@ -55,7 +55,6 @@ private:
 	class UDataTable* PlayLevelDataTable = nullptr;
 	class UDataTable* TeamPlayLevelDataTable = nullptr;
 	class UDataTable* ResourceDataTable = nullptr;
-	//class UDataTable* ActorDataTable = nullptr;
 
 #pragma endregion
 
