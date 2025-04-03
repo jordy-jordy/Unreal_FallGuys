@@ -282,6 +282,7 @@ void APlayCharacter::S2M_SetCanMoveFalse_Implementation()
 	CanMove = false;
 }
 
+// 이현정 : 클라이언트 플레이어의 상태 동기화
 void APlayCharacter::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();

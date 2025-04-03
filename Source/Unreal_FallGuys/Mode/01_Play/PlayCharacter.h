@@ -179,6 +179,7 @@ public:
 
 // 이현정 : 캐릭터 상태 동기화를 위한 함수
 public:
+	// 클라이언트 플레이어의 상태 동기화
 	virtual void OnRep_PlayerState() override;
 
 	UFUNCTION(BlueprintCallable, Reliable, NetMulticast)
