@@ -43,6 +43,10 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "DATA")
 	class UDataTable* GetPlayLevelDataTable() const;
 
+	// 팀플레이 레벨 데이터 테이블을 얻는 함수
+	UFUNCTION(BlueprintCallable, Category = "DATA")
+	class UDataTable* GetTeamPlayLevelDataTable() const;
+
 private:
 	UPROPERTY(VisibleAnywhere, Category = "DATA")
 	class UDataTable* DataTables = nullptr;
@@ -140,6 +144,10 @@ public:
 	// Random PlayLevel의 이름 반환
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
 	FString InsGetRandomLevel();
+
+	// Random TeamPlayLevel의 이름 반환
+	UFUNCTION(BlueprintCallable, Category = "LEVEL")
+	FString InsGetRandomTeamLevel();
 
 	// 저장된 레벨의 이름 반환
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")

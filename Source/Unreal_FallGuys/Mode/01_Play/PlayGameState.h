@@ -62,6 +62,11 @@ public:
 	void AddConnectedPlayers();
 	void AddConnectedPlayers_Implementation();
 
+	// 접속자 수 감소
+	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "PLAYERS")
+	void MinusConnectedPlayers();
+	void MinusConnectedPlayers_Implementation();
+
 	// 접속자 수 동기화
 	UFUNCTION(Reliable, NetMulticast, Category = "PLAYERS")
 	void MulticastUpdateConnectedPlayers(int _NewCount);
