@@ -19,7 +19,6 @@
 #include <Mode/01_Play/PlayPlayerState.h>
 
 
-
 UBaseGameInstance::UBaseGameInstance()
 {
 	UE_LOG(FALL_DEV_LOG, Log, TEXT("%S(%u)> DataTableLoading Start"), __FUNCTION__, __LINE__);
@@ -68,20 +67,11 @@ UBaseGameInstance::UBaseGameInstance()
 				UE_LOG(FALL_DEV_LOG, Error, TEXT("%S(%u)> if (nullptr == ResourceDataTable)"), __FUNCTION__, __LINE__);
 			}
 		}
-
-		//if (nullptr != DataTables)
-		//{
-		//	ActorDataTable = DataTables->FindRow<FDataTableRow>("DT_GlobalActorDataTable", nullptr)->Resources;
-		//	if (nullptr == ActorDataTable)
-		//	{
-		//		UE_LOG(FALL_DEV_LOG, Error, TEXT("%S(%u)> if (nullptr == ActorDataTable)"), __FUNCTION__, __LINE__);
-		//	}
-		//}
 	}
-	// 흰색
 	UE_LOG(FALL_DEV_LOG, Log, TEXT("%S(%u)> DataTableLoading End"), __FUNCTION__, __LINE__);
 }
 
+#pragma region BaseGameInstance :: 서버 관련
 // 서버 오픈
 void UBaseGameInstance::CServerStart(UWorld* _World, FString _Port)
 {
@@ -145,7 +135,7 @@ void UBaseGameInstance::CServerConnect(UWorld* _World, FString _IP, FString _Por
 	// IP 유효성 검사
 	bool ValidIP = false;
 	Addr->SetIp(*_IP, ValidIP);
-	
+
 	// Port 유효성 검사
 	int32 PortNum = FCString::Atoi(*_Port);
 	Addr->SetPort(PortNum);
@@ -172,7 +162,17 @@ void UBaseGameInstance::CServerConnect(UWorld* _World, FString _IP, FString _Por
 	UE_LOG(FALL_DEV_LOG, Log, TEXT("서버 접속 시도: %s"), *ConnectLevelName);
 	UGameplayStatics::OpenLevel(_World, FName(*ConnectLevelName));
 }
+#pragma endregion
 
+#pragma region BaseGameInstance :: 데이터 관련
+// 플레이 레벨 데이터 테이블을 얻는 함수
+UDataTable* UBaseGameInstance::GetPlayLevelDataTable() const
+{
+	return PlayLevelDataTable;
+}
+#pragma endregion
+
+#pragma region BaseGameInstance :: 코스튬 관련
 // 코스튬 컬러 저장
 void UBaseGameInstance::InsSaveCostumeColor(const FString& _CostumeColor)
 {
@@ -215,7 +215,6 @@ void UBaseGameInstance::InsChangeCostumeColor(APawn* _Pawn, const FString& _Cost
 	{
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsChangeCostumeColor :: 잘못된 데이터 또는 메시 없음"));
 	}
-
 	InsSaveCostumeColor(_CostumeColor);
 }
 
@@ -299,7 +298,6 @@ USkeletalMesh* UBaseGameInstance::InsGetCostumeColorMesh(APawn* _Pawn, const FSt
 		//	UE_LOG(FALL_DEV_LOG, Error, TEXT("InsGetCostumeMesh :: Invalid Costume Color Mesh Data or Mesh"));
 		//}
 	}
-
 	return nullptr;
 }
 
@@ -342,10 +340,11 @@ UStaticMesh* UBaseGameInstance::InsGetCostumeMesh(APawn* _Pawn, const FString& _
 		//	UE_LOG(FALL_DEV_LOG, Error, TEXT("InsGetCostumeMesh :: Invalid Costume Mesh Data or Mesh"));
 		//}
 	}
-
 	return nullptr;
 }
+#pragma endregion
 
+#pragma region BaseGameInstance :: 리소스 관련
 // 리소스의 스테틱 메시 머티리얼 반환
 UMaterialInterface* UBaseGameInstance::InsGetResourceMeshMaterial(const FString& _ColorName)
 {
@@ -387,16 +386,9 @@ UStaticMesh* UBaseGameInstance::InsGetResourceMesh(UWorld* _World, const FString
 
 	return nullptr;
 }
+#pragma endregion
 
-// 닉네임 변경
-void UBaseGameInstance::InsChangeNickname(const FString& _NewNickname)
-{
-	Nickname = _NewNickname;
-
-	// 닉네임 설정한 상태로 전환
-	HasNickname = true;
-}
-
+#pragma region BaseGameInstance :: 레벨 관련
 // Random PlayLevel의 이름 반환
 FString UBaseGameInstance::InsGetRandomLevel()
 {
@@ -429,12 +421,6 @@ FString UBaseGameInstance::InsGetRandomLevel()
 	CurLevelAssetName = SelectedAssetName;
 
 	return SelectedAssetName;
-}
-
-// 플레이 레벨 데이터 테이블을 얻는 함수
-UDataTable* UBaseGameInstance::GetPlayLevelDataTable() const
-{
-	return PlayLevelDataTable; 
 }
 
 // 레벨 가이드 반환
@@ -519,7 +505,9 @@ FString UBaseGameInstance::InsGetGoalGuideFromAssetName(const FString& _AssetNam
 	UE_LOG(FALL_DEV_LOG, Error, TEXT("InsGetGoalGuide :: 일치하는 레벨 이름을 찾을 수 없습니다. (AssetName = %s)"), *_AssetName);
 	return TEXT("Unknown");
 }
+#pragma endregion
 
+#pragma region BaseGameInstance :: 플레이어 데이터 관련
 // 플레이어 정보 백업 함수
 void UBaseGameInstance::InsBackupPlayerInfo(const FString& _UniqueID, const FPlayerInfo& _PlayerInfo)
 {
@@ -534,7 +522,7 @@ void UBaseGameInstance::InsBackupPlayerInfo(const FString& _UniqueID, const FPla
 		*_UniqueID, *_PlayerInfo.Tag);
 }
 
-// 백업된 플레이어 정보 가져오기 함수
+// 백업된 플레이어 정보 복구 함수
 bool UBaseGameInstance::InsGetBackedUpPlayerInfo(const FString& _UniqueID, FPlayerInfo& _OutPlayerInfo) const
 {
 	const FPlayerInfo* FoundInfo = PlayerInfoBackup.Find(_UniqueID);
@@ -549,6 +537,17 @@ bool UBaseGameInstance::InsGetBackedUpPlayerInfo(const FString& _UniqueID, FPlay
 	return false;
 }
 
+// 닉네임 변경
+void UBaseGameInstance::InsChangeNickname(const FString& _NewNickname)
+{
+	Nickname = _NewNickname;
+
+	// 닉네임 설정한 상태로 전환
+	HasNickname = true;
+}
+#pragma endregion
+
+#pragma region BaseGameInstance :: 개발용
 // 디버그용 : 플레이어 태그 확인
 void UBaseGameInstance::InsPrintPlayerInfo()
 {
@@ -692,7 +691,7 @@ void UBaseGameInstance::InsetLevelCinematicEnd()
 
 	// TRUE로 바뀌기 전
 	bool ValueBefore = PlayGameState->GetIsLevelCinematicEnd();
-	
+
 	// 콘솔 출력
 	UE_LOG(FALL_DEV_LOG, Log, TEXT("현재 레벨 시네마틱 상태 : %s"), ValueBefore ? TEXT("true") : TEXT("false"));
 
@@ -744,5 +743,6 @@ void UBaseGameInstance::InsGetGameStateCurFinishPlayer()
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("현재 골인한 인원 : %d"), CurGoalCount));
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("목표 골인 인원 : %d"), TargetGoalCount));
 	}
-
 }
+#pragma endregion
+
