@@ -15,12 +15,12 @@ class UNREAL_FALLGUYS_API ATeamPlayGameState : public APlayGameState
 	GENERATED_BODY()
 
 public:
-	// 레드팀 점수
+	// 레드팀 점수 : TeamPlayGameMode에서 호출됨
 	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "SCORE")
 	void SetREDTeamScore(int32 _Score);
 	void SetREDTeamScore_Implementation(int32 _Score);
 
-	// 블루팀 점수
+	// 블루팀 점수 : TeamPlayGameMode에서 호출됨
 	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "SCORE")
 	void SetBLUETeamScore(int32 _NumberOfEgg);
 	void SetBLUETeamScore_Implementation(int32 _Score);
@@ -33,7 +33,7 @@ public:
 	int32 GetGameStateBLUETeamScore() { return GameStateBLUETeamScore; }
 
 protected:
-	// 각 팀 점수 : Mode에서 지정해줌
+	// 각 팀 점수 : TeamPlayGameMode에서 지정해줌
 	UPROPERTY(Replicated)
 	int32 GameStateREDTeamScore = 0;
 	UPROPERTY(Replicated)

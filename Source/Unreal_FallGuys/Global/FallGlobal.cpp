@@ -270,7 +270,6 @@ TArray<FLevelDisplayInfo> UFallGlobal::GetAvailableLevelInfos()
 
 		LevelInfos.Add(Info);
 	}
-
 	return LevelInfos;
 }
 

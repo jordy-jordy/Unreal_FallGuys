@@ -62,55 +62,55 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static void ServerConnect(UObject* _Object, FString _IP, FString _Port);
 
-	// 저장된 코스튬의 컬러 반환
+	// BaseGameInstance : 저장된 코스튬의 컬러 반환
 	UFUNCTION(BlueprintCallable)
 	static FString GetCostumeColor(APawn* _Pawn);
 
-	// 저장된 코스튬의 상의 반환
+	// BaseGameInstance : 저장된 코스튬의 상의 반환
 	UFUNCTION(BlueprintCallable)
 	static FString GetCostumeTop(APawn* _Pawn);
 
-	// 저장된 코스튬의 하의 반환
+	// BaseGameInstance : 저장된 코스튬의 하의 반환
 	UFUNCTION(BlueprintCallable)
 	static FString GetCostumeBot(APawn* _Pawn);
 
-	// Pawn의 코스튬 컬러 변경
+	// BaseGameInstance : Pawn의 코스튬 컬러 변경
 	UFUNCTION(BlueprintCallable)
 	static void ChangeCostumeColor(APawn* _Pawn, const FString& _CostumeColor);
 
-	// Pawn의 코스튬 상의 변경
+	// BaseGameInstance : Pawn의 코스튬 상의 변경
 	UFUNCTION(BlueprintCallable)
 	static void ChangeCostumeTop(APawn* _Pawn, UStaticMeshComponent* _UpComp, const FString& _CostumeTop = TEXT("Default"));
 
-	// Pawn의 코스튬 하의 변경
+	// BaseGameInstance : Pawn의 코스튬 하의 변경
 	UFUNCTION(BlueprintCallable)
 	static void ChangeCostumeBot(APawn* _Pawn, UStaticMeshComponent* _LowComp, const FString& _CostumeBot = TEXT("Default"));
 
-	// 저장된 코스튬 컬러의 스켈레탈 메시 반환
+	// BaseGameInstance : 저장된 코스튬 컬러의 스켈레탈 메시 반환
 	UFUNCTION(BlueprintCallable)
 	static USkeletalMesh* GetCostumeColorMesh(APawn* _Pawn, const FString& _MeshName);
 
-	// 코스튬 컬러 UI용 머티리얼 반환
+	// BaseGameInstance : 코스튬 컬러 UI용 머티리얼 반환
 	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
 	static UMaterialInterface* GetCostumeColorUIMaterial(APawn* _Pawn, const FString& _ColorName);
 
-	// 저장된 코스튬의 스테틱 메시 반환
+	// BaseGameInstance : 저장된 코스튬의 스테틱 메시 반환
 	UFUNCTION(BlueprintCallable)
 	static UStaticMesh* GetCostumeMesh(APawn* _Pawn, const FString& _MeshName);
 
-	// 리소스의 스테틱 메시 머티리얼 반환
+	// BaseGameInstance : 리소스의 스테틱 메시 머티리얼 반환
 	UFUNCTION(BlueprintCallable)
 	static UMaterialInterface* GetResourceMeshMaterial(const FString& _ColorName);
 
-	// 리소스의 스테틱 메시 반환
+	// BaseGameInstance : 리소스의 스테틱 메시 반환
 	UFUNCTION(BlueprintCallable)
 	static UStaticMesh* GetResourceMesh(const FString& _MeshName);
 
-	// 닉네임 반환
+	// BaseGameInstance : 닉네임 반환
 	UFUNCTION(BlueprintCallable)
 	static FString GetNickname(APawn* _Pawn);
 
-	// 닉네임 저장
+	// BaseGameInstance : 닉네임 저장
 	UFUNCTION(BlueprintCallable)
 	static void ChangeNickname(APawn* _Pawn, const FString& _NewNickname);
 
@@ -122,23 +122,23 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static TArray<FLevelDisplayInfo> GetAvailableLevelInfos();
 
-	// 랜덤 스테이지 반환
+	// BaseGameInstance : 랜덤 스테이지 반환
 	UFUNCTION(BlueprintCallable)
 	static FString GetRandomLevel(APawn* _Pawn);
 
-	// 랜덤 스테이지 반환 : Pawn없이
+	// BaseGameInstance : 랜덤 스테이지 반환 : Pawn없이
 	UFUNCTION(BlueprintCallable)
 	static FString GetRandomLevelWithOutPawn();
 
-	// 레벨 가이드 반환
+	// BaseGameInstance : 레벨 가이드 반환
 	UFUNCTION(BlueprintCallable)
 	static FString GetPlayGuideFromAssetName(const FString& _AssetName);
 
-	// 레벨 이미지 반환
+	// BaseGameInstance : 레벨 이미지 반환
 	UFUNCTION(BlueprintCallable)
 	static UTexture2D* GetLevelImageFromAssetName(const FString& _AssetName);
 
-	// 플레이 목표 반환
+	// BaseGameInstance : 플레이 목표 반환
 	UFUNCTION(BlueprintCallable)
 	static FString GetGoalGuideFromAssetName(const FString& _AssetName);
 
@@ -166,19 +166,19 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static bool GetCanStartLevelCinematic();
 
-	// 플레이어 상태를 리셋하는 함수
+	// BaseGameInstance : 플레이어 상태를 리셋하는 함수
 	UFUNCTION(BlueprintCallable)
 	static void ResetPlayerCondition();
 
-	// 닉네임 설정했니?
+	// BaseGameInstance : 닉네임 설정했니?
 	UFUNCTION(BlueprintCallable)
 	static bool GetHasNickname();
 
-	// 레드팀 점수 반환
+	// TeamPlayGameState : 레드팀 점수 반환
 	UFUNCTION(BlueprintCallable)
 	static int32 GetREDTeamScore();
 
-	// 블루팀 점수 반환
+	// TeamPlayGameState : 블루팀 점수 반환
 	UFUNCTION(BlueprintCallable)
 	static int32 GetBLUETeamScore();
 
