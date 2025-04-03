@@ -112,6 +112,8 @@ void APlayGameMode::PostLogin(APlayerController* _NewPlayer)
 	// 모든 클라이언트에게 정보 동기화
 	SyncPlayerInfo();
 
+	// 게임 시작 인원 수에 따른 목표 횟수 설정
+	ControllFinishPlayer(FallState);
 	// 게임 인스턴스에 저장된 레벨 이름을 게임 스테이트에 저장
 	FallState->SavePlayLevelName(GameInstance->InsGetCurLevelName());
 	// 게임 인스턴스에 저장된 레벨 에셋 이름을 게임 스테이트에 저장
@@ -172,7 +174,6 @@ void APlayGameMode::SyncPlayerInfo()
 // 인원 충족 했는지 체크
 void APlayGameMode::CheckNumberOfPlayer(APlayGameState* _PlayState)
 {
-	UBaseGameInstance* GameIns = GetGameInstance<UBaseGameInstance>();
 	if (_PlayState->GetConnectedPlayers() >= UFallConst::MinPlayerCount)
 	{
 		pNumberOfPlayer = true;
@@ -188,6 +189,55 @@ void APlayGameMode::CallLevelCinematicStart(APlayGameState* _PlayState)
 {
 	_PlayState->SetCanStartLevelCinematic();
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: 레벨 시네마틱이 실행됩니다."));
+}
+
+// 목표 골인 인원 수 제어
+void APlayGameMode::ControllFinishPlayer(APlayGameState* _PlayState)
+{
+	if (!_PlayState) return;
+
+	int32 MinCount = UFallConst::MinPlayerCount;
+
+	switch (_PlayState->CurrentStage)
+	{
+	case EStageType::STAGE_1:
+		if (MinCount <= 2)
+		{
+			SetFinishPlayerCount(MinCount);
+		}
+		else if (MinCount <= 5)
+		{
+			SetFinishPlayerCount(3);
+		}
+		else
+		{
+			SetFinishPlayerCount(MinCount / 2);
+		}
+		break;
+
+	case EStageType::STAGE_2:
+		if (MinCount <= 2)
+		{
+			SetFinishPlayerCount(1);
+		}
+		else if (MinCount <= 5)
+		{
+			SetFinishPlayerCount(2);
+		}
+		else
+		{
+			SetFinishPlayerCount((MinCount / 2) / 2);
+		}
+		break;
+
+	case EStageType::STAGE_3:
+		SetFinishPlayerCount(1);
+		break;
+
+	case EStageType::FINISHED:
+	default:
+		break;
+	}
 }
 #pragma endregion
 
@@ -245,12 +295,6 @@ void APlayGameMode::CheckStartConditions()
 	if (pNumberOfPlayer == true && FallState->GetIsLevelCinematicEnd() == true && pCountDownEnd == true)
 	{
 		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: BeginPlay :: 게임 시작 조건 충족. StartGame 호출"));
-
-		if (FallState)
-		{
-			// 인원 수에 따른 목표 횟수 설정
-			ControllFinishPlayer(FallState);
-		}
 
 		// 게임 시작
 		StartGame();
@@ -411,55 +455,6 @@ void APlayGameMode::SetFinishPlayerCount(int _p)
 
 	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
 	FallState->SetGameStateFinishPlayer(_p);
-}
-
-// 목표 골인 인원 수 제어
-void APlayGameMode::ControllFinishPlayer(APlayGameState* _PlayState)
-{
-	if (!_PlayState) return;
-
-	int32 MinCount = UFallConst::MinPlayerCount;
-
-	switch (_PlayState->CurrentStage)
-	{
-	case EStageType::STAGE_1:
-		if (MinCount <= 2)
-		{
-			SetFinishPlayerCount(MinCount);
-		}
-		else if (MinCount <= 5)
-		{
-			SetFinishPlayerCount(3);
-		}
-		else
-		{
-			SetFinishPlayerCount(MinCount / 2);
-		}
-		break;
-
-	case EStageType::STAGE_2:
-		if (MinCount <= 2)
-		{
-			SetFinishPlayerCount(1);
-		}
-		else if (MinCount <= 5)
-		{
-			SetFinishPlayerCount(2);
-		}
-		else
-		{
-			SetFinishPlayerCount((MinCount / 2) / 2);
-		}
-		break;
-
-	case EStageType::STAGE_3:
-		SetFinishPlayerCount(1);
-		break;
-
-	case EStageType::FINISHED:
-	default:
-		break;
-	}
 }
 #pragma endregion
 
