@@ -145,6 +145,11 @@ void APlayGameState::SetCanStartLevelCinematic_Implementation()
 void APlayGameState::SetIsLevelCinematicEnd_Implementation(bool _Value)
 {
 	IsLevelCinematicEnd = _Value;
+	
+	if (_Value == true)
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("APlayGameState :: 레벨 시네마틱이 종료되었습니다."));
+	}
 }
 
 // 골인 목표 인원 수 세팅 : GameMode에서 호출
@@ -157,6 +162,18 @@ void APlayGameState::SetGameStateFinishPlayer_Implementation(int _Value)
 void APlayGameState::SetGameStateCurFinishPlayer_Implementation(int _Value)
 {
 	GameStateCurFinishPlayer = _Value;
+}
+
+// CountDownTime 에서 Value 차감 : PlayGameMode에서 호출
+void APlayGameState::MinusCountDownTime_Implementation(float _Value)
+{
+	CountDownTime -= _Value;
+}
+
+// 카운트 다운이 끝났음을 알림 : PlayGameMode에서 호출
+void APlayGameState::SetIsCountDownOverTrue_Implementation()
+{
+	IsCountDownOver = true;
 }
 
 // LMH

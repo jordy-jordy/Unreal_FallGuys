@@ -43,23 +43,20 @@ protected:
 #pragma region PlayGameMode :: 게임 시작 관련
 public:
 	// 게임 시작
-	UFUNCTION(BlueprintCallable, Reliable, NetMulticast, Category = "PLAY GAME")
+	UFUNCTION(BlueprintCallable, Category = "PLAY GAME")
 	void StartGame();
-	void StartGame_Implementation();
 
 	// 인원 충족 했는지 체크
 	UFUNCTION(BlueprintCallable, Category = "PLAY GAME")
 	void CheckNumberOfPlayer(class APlayGameState* _PlayState);
 
 	// 플레이어 정보 동기화
-	UFUNCTION(BlueprintCallable, Reliable, NetMulticast, Category = "PLAY GAME")
+	UFUNCTION(BlueprintCallable, Category = "PLAY GAME")
 	void SyncPlayerInfo();
-	void SyncPlayerInfo_Implementation();
 
 	// 캐릭터 이동 가능하게 세팅
-	UFUNCTION(BlueprintCallable, Reliable, NetMulticast, Category = "PLAY GAME")
+	UFUNCTION(BlueprintCallable, Category = "PLAY GAME")
 	void SetCharacterMovePossible();
-	void SetCharacterMovePossible_Implementation();
 
 	// 목표 골인 인원 수 반환
 	UFUNCTION(BlueprintCallable)
@@ -98,14 +95,12 @@ protected:
 #pragma region PlayGameMode :: 타이머 관련
 public:
 	// 게임 시작 전 카운트다운 핸들 활성화
-	UFUNCTION(BlueprintCallable, Reliable, Server, Category = "TIMER")
+	UFUNCTION(BlueprintCallable, Category = "TIMER")
 	void StartCountdownTimer();
-	void StartCountdownTimer_Implementation();
 
 	// 스테이지 제한 시간 타이머 활성화
-	UFUNCTION(BlueprintCallable, Reliable, Server, Category = "TIMER")
+	UFUNCTION(BlueprintCallable, Category = "TIMER")
 	void StartStageLimitTimer();
-	void StartStageLimitTimer_Implementation();
 
 protected:
 	// 카운트 다운 핸들

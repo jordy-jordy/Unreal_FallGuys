@@ -158,7 +158,7 @@ void APlayGameMode::PostLogin(APlayerController* _NewPlayer)
 
 #pragma region PlayGameMode :: PostLogin 에서 실행되는 함수들
 // 플레이어 인포 동기화
-void APlayGameMode::SyncPlayerInfo_Implementation()
+void APlayGameMode::SyncPlayerInfo()
 {
 	APlayGameState* FallState = GetGameState<APlayGameState>();
 	if (!FallState)
@@ -223,8 +223,7 @@ void APlayGameMode::CheckStartConditions()
 	
 	// 시네마틱이 안끝났으면 리턴
 	APlayGameState* FallState = Cast<APlayGameState>(GameState);
-	if (false == FallState->GetIsLevelCinematicEnd()) { return; }
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: BeginPlay :: 레벨 시네마틱이 종료되었습니다."));
+	if (false == FallState->GetIsLevelCinematicEnd()) {	return; }
 
 	// 카운트 다운 사용할거야?
 	if (true == UFallConst::UseCountDown && false == pCountDownStarted)
@@ -268,7 +267,7 @@ void APlayGameMode::CheckStartConditions()
 }
 
 // 게임 시작전 :: 카운트다운 핸들 활성화
-void APlayGameMode::StartCountdownTimer_Implementation()
+void APlayGameMode::StartCountdownTimer()
 {
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: %.0f 초 대기후 카운트 다운이 시작됩니다."), UFallConst::FallCountDownStandByTime);
 
@@ -317,7 +316,7 @@ void APlayGameMode::UpdateCountdown()
 }
 
 // 게임 시작
-void APlayGameMode::StartGame_Implementation()
+void APlayGameMode::StartGame()
 {
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: BeginPlay :: 게임이 시작되었습니다."));
 
@@ -330,7 +329,7 @@ void APlayGameMode::StartGame_Implementation()
 }
 
 // 캐릭터 이동 가능하게 세팅
-void APlayGameMode::SetCharacterMovePossible_Implementation()
+void APlayGameMode::SetCharacterMovePossible()
 {
 	FTimerHandle DelayHandle;
 	GetWorld()->GetTimerManager().SetTimer(DelayHandle, [this]()
@@ -349,7 +348,7 @@ void APlayGameMode::SetCharacterMovePossible_Implementation()
 }
 
 // 스테이지 제한 시간 타이머 활성화
-void APlayGameMode::StartStageLimitTimer_Implementation()
+void APlayGameMode::StartStageLimitTimer()
 {
 	if (!HasAuthority()) return;
 

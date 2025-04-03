@@ -119,7 +119,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
 	bool GetIsLevelCinematicEnd() { return IsLevelCinematicEnd; }
 
-	// 골인 목표 인원 수 세팅 : GameMode에서 호출
+	// 골인 목표 인원 수 세팅 : PlayGameMode에서 호출
 	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
 	void SetGameStateFinishPlayer(int _Value);
 	void SetGameStateFinishPlayer_Implementation(int _Value);
@@ -128,7 +128,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
 	int GetGameStateFinishPlayer() { return GameStateFinishPlayer; }
 
-	// 현재 골인한 플레이어 수 세팅 : GameMode에서 호출
+	// 현재 골인한 플레이어 수 세팅 : PlayGameMode에서 호출
 	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
 	void SetGameStateCurFinishPlayer(int _Value);
 	void SetGameStateCurFinishPlayer_Implementation(int _Value);
@@ -166,28 +166,30 @@ protected:
 
 #pragma region PlayGameState :: 키운트 다운 관련
 public:
-	// FallCountDownTime 에서 얻은 카운트 다운 시간 반환
+	// 카운트 다운 시간 반환
 	UFUNCTION(BlueprintCallable, Category = "COUNT DOWN")
 	float GetCountDownTime() { return CountDownTime; }
 
-	// FallCountDownTime 설정 (정상적인 경우 사용할 일 없음)
+	// CountDownTime 설정 (정상적인 경우 사용할 일 없음)
 	UFUNCTION(BlueprintCallable, Category = "COUNT DOWN")
 	void SetCountDownTime(float _Time) { CountDownTime = _Time; }
 
-	// FallCountDownTime 에서 Value 차감
-	UFUNCTION(BlueprintCallable, Category = "COUNT DOWN")
-	void MinusCountDownTime(float _Value) { CountDownTime -= _Value; }
+	// CountDownTime 에서 Value 차감 : PlayGameMode에서 호출
+	UFUNCTION(BlueprintCallable, Reliable, NetMulticast, Category = "COUNT DOWN")
+	void MinusCountDownTime(float _Value);
+	void MinusCountDownTime_Implementation(float _Value);
 
-	// 카운트다운이 끝났는지 확인하는 함수
+	// 카운트 다운이 끝났는지 확인하는 함수
 	UFUNCTION(BlueprintCallable, Category = "COUNT DOWN")
 	bool GetIsCountDownOver() { return IsCountDownOver; }
 
-	// 카운트다운이 끝났음을 세팅하는 함수
-	UFUNCTION(BlueprintCallable, Category = "COUNT DOWN")
-	void SetIsCountDownOverTrue() { IsCountDownOver = true; }
+	// 카운트 다운이 끝났음을 알림 : PlayGameMode에서 호출
+	UFUNCTION(BlueprintCallable, Reliable, NetMulticast, Category = "COUNT DOWN")
+	void SetIsCountDownOverTrue();
+	void SetIsCountDownOverTrue_Implementation();
 
 protected:
-	// FallCountDownTime 에서 얻은 카운트 다운 시간 (서버에서 클라로 동기화)
+	// 카운트 다운 시간 : FallConst로부터 가져옴
 	UPROPERTY(Replicated)
 	float CountDownTime = 0.0f;
 
