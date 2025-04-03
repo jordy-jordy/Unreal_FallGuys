@@ -69,6 +69,15 @@ void APlayGameState::AddConnectedPlayers_Implementation()
 	MulticastUpdateConnectedPlayers(ConnectedPlayers);
 }
 
+// 접속자 수 감소
+void APlayGameState::MinusConnectedPlayers_Implementation()
+{
+	ConnectedPlayers--;
+
+	// 모든 클라이언트에게 현재 접속자 수를 알려줌
+	MulticastUpdateConnectedPlayers(ConnectedPlayers);
+}
+
 // 접속자 수 동기화
 void APlayGameState::MulticastUpdateConnectedPlayers_Implementation(int _NewCount)
 {

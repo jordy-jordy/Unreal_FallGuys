@@ -122,6 +122,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static TArray<FLevelDisplayInfo> GetAvailableLevelInfos();
 
+	// 플레이 가능한 팀전 레벨 및 이름 반환
+	UFUNCTION(BlueprintCallable)
+	static TArray<FLevelDisplayInfo> GetAvailableTeamPlayLevelInfos();
+
 	// BaseGameInstance : 랜덤 스테이지 반환
 	UFUNCTION(BlueprintCallable)
 	static FString GetRandomLevel(APawn* _Pawn);
@@ -129,6 +133,10 @@ public:
 	// BaseGameInstance : 랜덤 스테이지 반환 : Pawn없이
 	UFUNCTION(BlueprintCallable)
 	static FString GetRandomLevelWithOutPawn();
+
+	// BaseGameInstance : 랜덤 팀전 스테이지 반환 : Pawn없이
+	UFUNCTION(BlueprintCallable)
+	static FString GetRandomTeamLevel();
 
 	// BaseGameInstance : 레벨 가이드 반환
 	UFUNCTION(BlueprintCallable)
@@ -181,6 +189,9 @@ public:
 	// TeamPlayGameState : 블루팀 점수 반환
 	UFUNCTION(BlueprintCallable)
 	static int32 GetBLUETeamScore();
+
+	// PlayGameState : 접속자 수를 1씩 감소
+	static void MinusConnectedPlayers();
 
 
 public:

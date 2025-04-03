@@ -170,6 +170,12 @@ UDataTable* UBaseGameInstance::GetPlayLevelDataTable() const
 {
 	return PlayLevelDataTable;
 }
+
+// 팀플레이 레벨 데이터 테이블을 얻는 함수
+UDataTable* UBaseGameInstance::GetTeamPlayLevelDataTable() const
+{
+	return TeamPlayLevelDataTable;
+}
 #pragma endregion
 
 #pragma region BaseGameInstance :: 코스튬 관련
@@ -406,6 +412,40 @@ FString UBaseGameInstance::InsGetRandomLevel()
 	if (MapList.Num() == 0)
 	{
 		UE_LOG(FALL_DEV_LOG, Error, TEXT("InsGetRandomLevel :: 사용 가능한 맵이 없습니다."));
+		return TEXT("DefaultMap");
+	}
+
+	int RandomIndex = 0;
+	do {
+		RandomIndex = FMath::RandRange(0, MapList.Num() - 1);
+	} while (PlayedMapList.Contains(RandomIndex));
+
+	PlayedMapList.Add(RandomIndex);
+
+	const FString& SelectedAssetName = MapList[RandomIndex];
+	CurLevelName = LevelNameMap.Contains(SelectedAssetName) ? LevelNameMap[SelectedAssetName] : TEXT("Unknown");
+	CurLevelAssetName = SelectedAssetName;
+
+	return SelectedAssetName;
+}
+
+// Random TeamPlayLevel의 이름 반환
+FString UBaseGameInstance::InsGetRandomTeamLevel()
+{
+	if (MapList.Num() == 0 || LevelNameMap.Num() == 0)
+	{
+		TArray<FLevelDisplayInfo> LevelInfos = UFallGlobal::GetAvailableTeamPlayLevelInfos();
+
+		for (const FLevelDisplayInfo& Info : LevelInfos)
+		{
+			MapList.Add(Info.AssetName);               // 기존 MapList에는 AssetName 저장
+			LevelNameMap.Add(Info.AssetName, Info.Name); // AssetName → Name 매핑
+		}
+	}
+
+	if (MapList.Num() == 0)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("InsGetRandomTeamLevel :: 사용 가능한 맵이 없습니다."));
 		return TEXT("DefaultMap");
 	}
 

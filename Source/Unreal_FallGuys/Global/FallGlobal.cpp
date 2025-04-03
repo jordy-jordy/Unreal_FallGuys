@@ -9,6 +9,7 @@
 #include <Unreal_FallGuys.h>
 #include <Global/BaseGameInstance.h>
 #include <Global/Data/PlayLevelDataTable.h>
+#include <Global/Data/TeamPlayLevelDataTable.h>
 #include <Global/Data/CostumeColorDataTable.h>
 #include <Mode/00_Title/TitleHUD.h>
 #include <Mode/01_Play/PlayGameMode.h>
@@ -52,7 +53,6 @@ TArray<FAssetData> UFallGlobal::AssetsPath(UClass* _Class)
 	{
 		return MapList;
 	}
-
 	return MapList;
 }
 
@@ -80,77 +80,77 @@ void UFallGlobal::ServerConnect(UObject* _Object, FString _IP, FString _Port)
 	GameIns->CServerConnect(CurWorld, _IP, _Port);
 }
 
-// 저장된 코스튬의 컬러 반환
+// BaseGameInstance : 저장된 코스튬의 컬러 반환
 FString UFallGlobal::GetCostumeColor(APawn* _Pawn)
 {
 	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
 	return GameIns->InsGetCostumeColor();
 }
 
-// 저장된 코스튬의 상의 반환
+// BaseGameInstance : 저장된 코스튬의 상의 반환
 FString UFallGlobal::GetCostumeTop(APawn* _Pawn)
 {
 	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
 	return GameIns->InsGetCostumeTop();
 }
 
-// 저장된 코스튬의 하의 반환
+// BaseGameInstance : 저장된 코스튬의 하의 반환
 FString UFallGlobal::GetCostumeBot(APawn* _Pawn)
 {
 	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
 	return GameIns->InsGetCostumeBot();
 }
 
-// Pawn의 코스튬 컬러 변경
+// BaseGameInstance : Pawn의 코스튬 컬러 변경
 void UFallGlobal::ChangeCostumeColor(APawn* _Pawn, const FString& _CostumeColor)
 {
 	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
 	GameIns->InsChangeCostumeColor(_Pawn, _CostumeColor);
 }
 
-// Pawn의 코스튬 상의 변경
+// BaseGameInstance : Pawn의 코스튬 상의 변경
 void UFallGlobal::ChangeCostumeTop(APawn* _Pawn, UStaticMeshComponent* _UpComp, const FString& _CostumeTop)
 {
 	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
 	GameIns->InsChangeCostumeTop(_Pawn, _UpComp, _CostumeTop);
 }
 
-// Pawn의 코스튬 하의 변경
+// BaseGameInstance : Pawn의 코스튬 하의 변경
 void UFallGlobal::ChangeCostumeBot(APawn* _Pawn, UStaticMeshComponent* _LowComp, const FString& _CostumeBot)
 {
 	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
 	GameIns->InsChangeCostumeBot(_Pawn, _LowComp, _CostumeBot);
 }
 
-// 저장된 코스튬 컬러의 스켈레탈 메시 반환
+// BaseGameInstance : 저장된 코스튬 컬러의 스켈레탈 메시 반환
 USkeletalMesh* UFallGlobal::GetCostumeColorMesh(APawn* _Pawn, const FString& _MeshName)
 {
 	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
 	return GameIns->InsGetCostumeColorMesh(_Pawn, _MeshName);
 }
 
-// 코스튬 컬러 UI용 머티리얼 반환
+// BaseGameInstance : 코스튬 컬러 UI용 머티리얼 반환
 UMaterialInterface* UFallGlobal::GetCostumeColorUIMaterial(APawn* _Pawn, const FString& _ColorName)
 {
 	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
 	return GameIns->InsGetCostumeColorUIMaterial(_ColorName);
 }
 
-// 저장된 코스튬의 스테틱 메시 반환
+// BaseGameInstance : 저장된 코스튬의 스테틱 메시 반환
 UStaticMesh* UFallGlobal::GetCostumeMesh(APawn* _Pawn, const FString& _MeshName)
 {
 	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
 	return GameIns->InsGetCostumeMesh(_Pawn, _MeshName);
 }
 
-// 리소스의 스테틱 메시 머티리얼 반환
+// BaseGameInstance : 리소스의 스테틱 메시 머티리얼 반환
 UMaterialInterface* UFallGlobal::GetResourceMeshMaterial(const FString& _ColorName)
 {
 	UBaseGameInstance* GameIns = GWorld->GetGameInstance<UBaseGameInstance>();
 	return GameIns->InsGetResourceMeshMaterial(_ColorName);
 }
 
-// 리소스의 스테틱 메시 반환
+// BaseGameInstance : 리소스의 스테틱 메시 반환
 UStaticMesh* UFallGlobal::GetResourceMesh(const FString& _MeshName)
 {
 	UWorld* World = GWorld;
@@ -158,14 +158,14 @@ UStaticMesh* UFallGlobal::GetResourceMesh(const FString& _MeshName)
 	return GameIns->InsGetResourceMesh(World, _MeshName);
 }
 
-// 닉네임 반환
+// BaseGameInstance : 닉네임 반환
 FString UFallGlobal::GetNickname(APawn* _Pawn)
 {
 	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
 	return GameIns->InsGetNickname();
 }
 
-// 닉네임 저장
+// BaseGameInstance : 닉네임 저장
 void UFallGlobal::ChangeNickname(APawn* _Pawn, const FString& _NewNickname)
 {
 	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
@@ -222,7 +222,6 @@ TArray<FString> UFallGlobal::GetAvailableLevels()
 			LevelAssetNames.Add(LevelAssetName);
 		}
 	}
-
 	return LevelAssetNames;
 }
 
@@ -273,144 +272,127 @@ TArray<FLevelDisplayInfo> UFallGlobal::GetAvailableLevelInfos()
 	return LevelInfos;
 }
 
-// 랜덤 스테이지 반환
+// 플레이 가능한 팀전 레벨 및 이름 반환
+TArray<FLevelDisplayInfo> UFallGlobal::GetAvailableTeamPlayLevelInfos()
+{
+	TArray<FLevelDisplayInfo> TeamPlayLevelInfos;
+
+	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GWorld->GetGameInstance());
+	if (!GameInstance)
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("GetAvailableTeamPlayLevelInfos: GameInstance is null!"));
+		return TeamPlayLevelInfos;
+	}
+
+	UDataTable* TeamPlayLevelDataTable = GameInstance->GetTeamPlayLevelDataTable();
+	if (!TeamPlayLevelDataTable)
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("GetAvailableTeamPlayLevelInfos: PlayLevelDataTable is null!"));
+		return TeamPlayLevelInfos;
+	}
+
+	static const FString ContextString(TEXT("GetAvailableTeamPlayLevelInfos"));
+	TArray<FTeamPlayLevelDataRow*> LevelRows;
+	TeamPlayLevelDataTable->GetAllRows<FTeamPlayLevelDataRow>(ContextString, LevelRows);
+
+	for (const FTeamPlayLevelDataRow* Row : LevelRows)
+	{
+		if (Row == nullptr)
+			continue;
+
+		// 강제로 로드
+		UWorld* LoadedLevel = Row->Level.LoadSynchronous();
+		if (!LoadedLevel)
+		{
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("Level Load Failed: %s"), *Row->Level.ToString());
+			continue;
+		}
+
+		FLevelDisplayInfo TeamPlayInfo;
+		TeamPlayInfo.Name = Row->Name;
+		TeamPlayInfo.AssetName = Row->Level.GetAssetName();
+
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("Level Info Added - Name: %s, Asset: %s"), *TeamPlayInfo.Name, *TeamPlayInfo.AssetName);
+
+		TeamPlayLevelInfos.Add(TeamPlayInfo);
+	}
+	return TeamPlayLevelInfos;
+}
+
+// BaseGameInstance : 랜덤 스테이지 반환
 FString UFallGlobal::GetRandomLevel(APawn* _Pawn)
 {
 	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
 	return GameIns->InsGetRandomLevel();
 }
 
-// 랜덤 스테이지 반환 : Pawn없이
+// BaseGameInstance : 랜덤 스테이지 반환 : Pawn없이
 FString UFallGlobal::GetRandomLevelWithOutPawn()
 {
 	UBaseGameInstance* GameIns = GWorld->GetGameInstance<UBaseGameInstance>();
 	return GameIns->InsGetRandomLevel();
 }
 
-// 레벨 가이드 반환
+// BaseGameInstance : 랜덤 팀전 스테이지 반환 : Pawn없이
+FString UFallGlobal::GetRandomTeamLevel()
+{
+	UBaseGameInstance* GameIns = GWorld->GetGameInstance<UBaseGameInstance>();
+	return GameIns->InsGetRandomTeamLevel();
+}
+
+// BaseGameInstance : 레벨 가이드 반환
 FString UFallGlobal::GetPlayGuideFromAssetName(const FString& _AssetName)
 {
-	UWorld* World = GWorld;
-	if (!World)
-	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("GetPlayGuideFromAssetName: World is nullptr"));
-	}
-
-	UBaseGameInstance* GameIns = World->GetGameInstance<UBaseGameInstance>();
+	UBaseGameInstance* GameIns = GWorld->GetGameInstance<UBaseGameInstance>();
 	return GameIns->InsGetPlayGuideFromAssetName(_AssetName);
 }
 
-// 레벨 이미지 반환
+// BaseGameInstance : 레벨 이미지 반환
 UTexture2D* UFallGlobal::GetLevelImageFromAssetName(const FString& _AssetName)
 {
-	UWorld* World = GWorld;
-	if (!World)
-	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("GetLevelImage: World is nullptr"));
-	}
-
-	UBaseGameInstance* GameIns = World->GetGameInstance<UBaseGameInstance>();
+	UBaseGameInstance* GameIns = GWorld->GetGameInstance<UBaseGameInstance>();
 	return GameIns->InsGetLevelImageFromAssetName(_AssetName);
 }
 
-// 플레이 목표 반환
+// BaseGameInstance : 플레이 목표 반환
 FString UFallGlobal::GetGoalGuideFromAssetName(const FString& _AssetName)
 {
-	UWorld* World = GWorld;
-	if (!World)
-	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("GetPlayGuideFromAssetName: World is nullptr"));
-	}
-
-	UBaseGameInstance* GameIns = World->GetGameInstance<UBaseGameInstance>();
+	UBaseGameInstance* GameIns = GWorld->GetGameInstance<UBaseGameInstance>();
 	return GameIns->InsGetGoalGuideFromAssetName(_AssetName);
 }
 
 // PlayGameState : 랜덤 레벨 함수에서 얻은 이름 반환
 FString UFallGlobal::GetLevelName()
 {
-	UWorld* World = GWorld;
-	if (!World)
-	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("GetConnectedPlayers: World is nullptr"));
-		return TEXT("GetLevelName False");
-	}
-
-	APlayGameState* FallState = Cast<APlayGameState>(World->GetGameState());
+	APlayGameState* FallState = Cast<APlayGameState>(GWorld->GetGameState());
 	return FallState->GetLevelName();
 }
 
 // PlayGameState : 랜덤 레벨 함수에서 얻은 에셋 이름 반환
 FString UFallGlobal::GetLevelAssetName()
 {
-	UWorld* World = GWorld;
-	if (!World)
-	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("GetConnectedPlayers: World is nullptr"));
-		return TEXT("GetLevelName False");
-	}
-
-	APlayGameState* FallState = Cast<APlayGameState>(World->GetGameState());
+	APlayGameState* FallState = Cast<APlayGameState>(GWorld->GetGameState());
 	return FallState->GetLevelAssetName();
 }
 
 // PlayGameState : 현재 접속한 플레이어 수 반환
 int UFallGlobal::GetConnectedPlayers()
 {
-	UWorld* World = GWorld; 
-	if (!World)
-	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("GetConnectedPlayers: World is nullptr"));
-		return 0;
-	}
-
-	APlayGameState* PlayState = Cast<APlayGameState>(World->GetGameState());
-	if (!PlayState)
-	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("GetConnectedPlayers: PlayGameState is nullptr"));
-		return 0;
-	}
-
+	APlayGameState* PlayState = Cast<APlayGameState>(GWorld->GetGameState());
 	return PlayState->GetConnectedPlayers();
 }
 
 // PlayGameState : Count Down Time 반환 - 실시간으로 줄어드는 시간
 float UFallGlobal::GetCountDownTime()
 {
-	UWorld* World = GWorld;
-	if (!World)
-	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("GetCountDownTime: World is nullptr"));
-		return 0;
-	}
-
-	APlayGameState* PlayState = Cast<APlayGameState>(World->GetGameState());
-	if (!PlayState)
-	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("GetCountDownTime: PlayGameState is nullptr"));
-		return 0;
-	}
-
+	APlayGameState* PlayState = Cast<APlayGameState>(GWorld->GetGameState());
 	return PlayState->GetCountDownTime();
 }
 
 // PlayGameState : Is Count Down Over 반환 - 카운트 다운 끝났어?
 bool UFallGlobal::GetIsCountDownOver()
 {
-	UWorld* World = GWorld;
-	if (!World)
-	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("GetCountDownTime: World is nullptr"));
-		return 0;
-	}
-
-	APlayGameState* PlayState = Cast<APlayGameState>(World->GetGameState());
-	if (!PlayState)
-	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("GetCountDownTime: PlayGameState is nullptr"));
-		return 0;
-	}
-
+	APlayGameState* PlayState = Cast<APlayGameState>(GWorld->GetGameState());
 	return PlayState->GetIsCountDownOver();
 }
 
@@ -437,56 +419,49 @@ TArray<FString> UFallGlobal::GetCostumeColorNames(UObject* _WorldContext)
 			ColorNames.Add(Row->Name); // Name은 FString이어야 해
 		}
 	}
-
 	return ColorNames;
 }
 
 // PlayGameState : 레벨 시네마틱 시작해도 돼?
 bool UFallGlobal::GetCanStartLevelCinematic()
 {
-	UWorld* World = GWorld;
-	if (!World)
-	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("GetCanStartLevelCinematic: World is nullptr"));
-		return 0;
-	}
-
-	APlayGameState* PlayState = Cast<APlayGameState>(World->GetGameState());
-	if (!PlayState)
-	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("GetCanStartLevelCinematic: PlayGameState is nullptr"));
-		return 0;
-	}
-
+	APlayGameState* PlayState = GWorld->GetGameState<APlayGameState>();
 	return PlayState->GetCanStartLevelCinematic();
 }
 
-// 플레이어 상태를 리셋하는 함수
-void UFallGlobal::ResetPlayerCondition() 
+// BaseGameInstance : 플레이어 상태를 리셋하는 함수
+void UFallGlobal::ResetPlayerCondition()
 {
 	UBaseGameInstance* GameIns = GWorld->GetGameInstance<UBaseGameInstance>();
 	return GameIns->InsResetPlayerCondition();
 }
 
-// 닉네임 설정했니?
+// BaseGameInstance : 닉네임 설정했니?
 bool UFallGlobal::GetHasNickname()
 {
 	UBaseGameInstance* GameIns = GWorld->GetGameInstance<UBaseGameInstance>();
 	return GameIns->InsGetHasNickname();
 }
 
-// 레드팀 점수 반환
+// TeamPlayGameState : 레드팀 점수 반환
 int32 UFallGlobal::GetREDTeamScore()
 {
 	ATeamPlayGameState* TeamState = GWorld->GetGameState<ATeamPlayGameState>();
 	return TeamState->GetGameStateREDTeamScore();
 }
 
-// 블루팀 점수 반환
+// TeamPlayGameState : 블루팀 점수 반환
 int32 UFallGlobal::GetBLUETeamScore()
 {
 	ATeamPlayGameState* TeamState = GWorld->GetGameState<ATeamPlayGameState>();
 	return TeamState->GetGameStateBLUETeamScore();
+}
+
+// PlayGameState : 접속자 수를 1씩 감소
+void UFallGlobal::MinusConnectedPlayers()
+{
+	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
+	FallState->MinusConnectedPlayers();
 }
 
 // 이재영 : 메인위젯을 얻는 함수
