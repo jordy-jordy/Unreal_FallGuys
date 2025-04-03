@@ -174,6 +174,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static bool GetCanStartLevelCinematic();
 
+	// PlayGameState : 레벨 시네마틱 끝났어?
+	UFUNCTION(BlueprintCallable)
+	static bool GetIsLevelCinematicEnd();
+
 	// BaseGameInstance : 플레이어 상태를 리셋하는 함수
 	UFUNCTION(BlueprintCallable)
 	static void ResetPlayerCondition();

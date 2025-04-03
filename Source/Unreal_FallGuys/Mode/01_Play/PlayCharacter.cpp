@@ -102,11 +102,17 @@ void APlayCharacter::BeginPlay()
 		}
 	}
 
-	UBaseGameInstance* GameIns = Cast<UBaseGameInstance>(GetGameInstance());
-	if (UGameplayStatics::GetPlayerController(GetWorld(), 0) == GetController())
+	// 서버장일 경우: 직접 PlayerState에 Status 설정
+	if (HasAuthority()) // 서버만 실행
 	{
+		UBaseGameInstance* GameIns = Cast<UBaseGameInstance>(GetGameInstance());
 		IsDie = GameIns->GetIsDie();
-		C2S_IsDie(IsDie);
+
+		APlayPlayerState* PS = GetPlayerState<APlayPlayerState>();
+		if (PS != nullptr)
+		{
+			PS->PlayerInfo.Status = IsDie ? EPlayerStatus::FAIL : EPlayerStatus::SUCCESS;
+		}
 	}
 }
 
@@ -187,13 +193,14 @@ void APlayCharacter::C2S_IsDie_Implementation(bool _val)
 {
 	IsDie = _val;
 	
-	if (_val == true)
+	APlayPlayerState* PS = GetPlayerState<APlayPlayerState>();
+	if (IsDie == false)
 	{
-		GetPlayerState<APlayPlayerState>()->PlayerInfo.Status = EPlayerStatus::FAIL;
+		PS->PlayerInfo.Status = EPlayerStatus::SUCCESS;
 	}
 	else
 	{
-		GetPlayerState<APlayPlayerState>()->PlayerInfo.Status = EPlayerStatus::SUCCESS;
+		PS->PlayerInfo.Status = EPlayerStatus::FAIL;
 	}
 
 	S2M_IsDie(IsDie);
@@ -203,13 +210,15 @@ void APlayCharacter::C2S_IsDie_Implementation(bool _val)
 void APlayCharacter::S2M_IsDie_Implementation(bool _val)
 {
 	IsDie = _val;
-	if (_val == true)
+
+	APlayPlayerState* PS = GetPlayerState<APlayPlayerState>();
+	if (IsDie == false)
 	{
-		GetPlayerState<APlayPlayerState>()->PlayerInfo.Status = EPlayerStatus::FAIL;
+		PS->PlayerInfo.Status = EPlayerStatus::SUCCESS;
 	}
 	else
 	{
-		GetPlayerState<APlayPlayerState>()->PlayerInfo.Status = EPlayerStatus::SUCCESS;
+		PS->PlayerInfo.Status = EPlayerStatus::FAIL;
 	}
 }
 
@@ -273,3 +282,22 @@ void APlayCharacter::S2M_SetCanMoveFalse_Implementation()
 	CanMove = false;
 }
 
+void APlayCharacter::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	APlayPlayerState* PS = GetPlayerState<APlayPlayerState>();
+	if (!IsValid(PS))
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("OnRep_PlayerState :: PS가 nullptr입니다."));
+		return;
+	}
+
+	// GameInstance에서 IsDie 가져와서 서버에 전달
+	UBaseGameInstance* GameIns = Cast<UBaseGameInstance>(GetGameInstance());
+	if (GameIns)
+	{
+		IsDie = GameIns->GetIsDie();
+		C2S_IsDie(IsDie); // 클라 → 서버
+	}
+}

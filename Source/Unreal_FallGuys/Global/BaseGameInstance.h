@@ -267,6 +267,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "DEBUG")
 	void InsGetGameStateCurFinishPlayer();
 
+	// 디버그용 : 플레이어 성공시키고 상태 출력
+	UFUNCTION(BlueprintCallable, Category = "DEBUG")
+	void InsSetPlayerDie(APlayerController* _Controller);
+
 #pragma endregion
 
 

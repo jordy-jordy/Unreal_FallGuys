@@ -429,6 +429,13 @@ bool UFallGlobal::GetCanStartLevelCinematic()
 	return PlayState->GetCanStartLevelCinematic();
 }
 
+// PlayGameState : 레벨 시네마틱 끝났어?
+bool UFallGlobal::GetIsLevelCinematicEnd()
+{
+	APlayGameState* PlayState = GWorld->GetGameState<APlayGameState>();
+	return PlayState->GetIsLevelCinematicEnd();
+}
+
 // BaseGameInstance : 플레이어 상태를 리셋하는 함수
 void UFallGlobal::ResetPlayerCondition()
 {

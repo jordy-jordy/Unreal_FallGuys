@@ -179,6 +179,8 @@ public:
 
 // 이현정 : 캐릭터 상태 동기화를 위한 함수
 public:
+	virtual void OnRep_PlayerState() override;
+
 	UFUNCTION(BlueprintCallable, Reliable, NetMulticast)
 	void S2M_IsDie(bool _val);
 	void S2M_IsDie_Implementation(bool _val);

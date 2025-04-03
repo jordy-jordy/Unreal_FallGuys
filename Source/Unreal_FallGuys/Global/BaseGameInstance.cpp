@@ -17,6 +17,7 @@
 #include <Mode/01_Play/PlayGameMode.h>
 #include <Mode/01_Play/PlayGameState.h>
 #include <Mode/01_Play/PlayPlayerState.h>
+#include <Mode/01_Play/PlayCharacter.h>
 
 
 UBaseGameInstance::UBaseGameInstance()
@@ -662,8 +663,9 @@ void UBaseGameInstance::InsPrintPlayerInfo()
 
 	for (const FPlayerInfoEntry& Entry : PlayGameState->PlayerInfoArray)
 	{
-		FString LogMessage = FString::Printf(TEXT("UniqueID: %s, Tag: %s, Status: %d"),
-			*Entry.UniqueID, *Entry.PlayerInfo.Tag, static_cast<int32>(Entry.PlayerInfo.Status));
+		FString StatusStr = UEnum::GetValueAsString(Entry.PlayerInfo.Status);
+		FString LogMessage = FString::Printf(TEXT("UniqueID: %s, Tag: %s, Status: %s"),
+			*Entry.UniqueID, *Entry.PlayerInfo.Tag, *StatusStr);
 
 		UE_LOG(FALL_DEV_LOG, Log, TEXT("%s"), *LogMessage);
 
@@ -682,9 +684,9 @@ void UBaseGameInstance::InsPrintPlayerInfo()
 		APlayPlayerState* PlayPlayerState = Cast<APlayPlayerState>(PlayerState);
 		if (PlayPlayerState)
 		{
-			FString LogMessage = FString::Printf(TEXT("UniqueID: %s, Tag: %s, Status: %d"),
-				*PlayPlayerState->PlayerInfo.UniqueID, *PlayPlayerState->PlayerInfo.Tag,
-				static_cast<int32>(PlayPlayerState->PlayerInfo.Status));
+			FString StatusStr = UEnum::GetValueAsString(PlayPlayerState->PlayerInfo.Status);
+			FString LogMessage = FString::Printf(TEXT("UniqueID: %s, Tag: %s, Status: %s"),
+				*PlayPlayerState->PlayerInfo.UniqueID, *PlayPlayerState->PlayerInfo.Tag, *StatusStr);
 
 			UE_LOG(FALL_DEV_LOG, Log, TEXT("%s"), *LogMessage);
 
@@ -836,4 +838,20 @@ void UBaseGameInstance::InsGetGameStateCurFinishPlayer()
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("목표 골인 인원 : %d"), TargetGoalCount));
 	}
 }
+
+// 디버그용 : 플레이어 성공시키고 상태 출력
+void UBaseGameInstance::InsSetPlayerDie(APlayerController* _Controller)
+{
+	APlayCharacter* PlayerCH = Cast<APlayCharacter>(_Controller->GetCharacter());
+	APlayPlayerState* PlayerState = PlayerCH->GetPlayerState<APlayPlayerState>();
+
+	PlayerCH->C2S_IsDie(false);
+	FString PlayerStat = UEnum::GetValueAsString(PlayerState->PlayerInfo.Status);
+	
+	bool Value = PlayerCH->IsDie;
+
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("플레이어 상태(bool) : %s"), Value ? TEXT("True") : TEXT("False"));
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("플레이어 상태(enum) : %s"), *PlayerStat);
+}
+
 #pragma endregion
