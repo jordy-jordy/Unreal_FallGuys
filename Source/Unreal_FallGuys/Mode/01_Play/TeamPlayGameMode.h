@@ -37,12 +37,6 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	int32 BLUETeamScore = 0;
 
-	// 각 팀의 달걀 수
-	UPROPERTY(BlueprintReadWrite)
-	int REDTeamEggCount = 0;
-	UPROPERTY(BlueprintReadWrite)
-	int BLUETeamEggCount = 0;
-
 
 //LMH
 public:

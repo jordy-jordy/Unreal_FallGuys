@@ -16,9 +16,11 @@ struct FPlayerInfoEntry
 {
 	GENERATED_BODY()
 
+	// 언리얼 엔진이 지정해주는 고유 ID
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	FString UniqueID;
 
+	// 각 플레이어의 정보
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	FPlayerInfo PlayerInfo;
 

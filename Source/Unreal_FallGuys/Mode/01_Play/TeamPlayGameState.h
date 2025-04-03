@@ -39,12 +39,6 @@ protected:
 	UPROPERTY(Replicated)
 	int32 GameStateBLUETeamScore = 0;
 
-	// 각 팀의 달걀 수 : Mode에서 지정해줌
-	UPROPERTY(Replicated)
-	int GameStateREDTeamEggCount = 0;
-	UPROPERTY(Replicated)
-	int GameStateBLUETeamEggCount = 0;
-
 private:
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	

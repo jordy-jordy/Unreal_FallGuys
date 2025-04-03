@@ -23,13 +23,9 @@ void ATeamPlayGameMode::PostLogin(APlayerController* _NewPlayer)
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= TeamPlayGameMode PostLogin START ======= "));
 
 	APlayPlayerState* PlayerState = Cast<APlayPlayerState>(_NewPlayer->PlayerState);
-	if (!PlayerState)
-	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("TeamPlayGameMode :: PostLogin :: PlayerState가 nullptr입니다."));
-		return;
-	}
+	if (!PlayerState) { UE_LOG(FALL_DEV_LOG, Error, TEXT("TeamPlayGameMode :: PostLogin :: PlayerState가 nullptr입니다.")); return; }
 
-	// 팀 분배
+	// 팀 배정
 	AssignTeam(PlayerState);
 
 	UE_LOG(FALL_DEV_LOG, Log, TEXT("TeamPlayGameMode :: PostLogin :: 플레이어 %s 팀 배정 완료: %s"),
@@ -51,9 +47,13 @@ void ATeamPlayGameMode::AssignTeam(APlayPlayerState* _PlayerState)
 	for (const FPlayerInfoEntry& Entry : FallState->PlayerInfoArray)
 	{
 		if (Entry.PlayerInfo.Team == ETeamType::RED)
+		{
 			RedCount++;
+		}
 		else if (Entry.PlayerInfo.Team == ETeamType::BLUE)
+		{
 			BlueCount++;
+		}
 	}
 
 	if (RedCount <= BlueCount)

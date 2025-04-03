@@ -60,10 +60,10 @@ void APlayGameMode::PostLogin(APlayerController* _NewPlayer)
 	APlayPlayerState* PlayerState = Cast<APlayPlayerState>(_NewPlayer->PlayerState);
 	if (!PlayerState) { UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: PostLogin :: PlayerState가 nullptr 입니다.")); return; }
 
-	// 기존 Player 정보 백업
 	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
 	FString PlayerUniqueID = PlayerState->GetUniqueId()->ToString(); // UniqueID 얻음
 
+	// 기존 Player인 경우 정보 복구
 	if (GameInstance && GameInstance->IsMovedLevel)
 	{
 		// 스테이지 전환 되었을때 IsDie를 true로 초기화
@@ -74,7 +74,7 @@ void APlayGameMode::PostLogin(APlayerController* _NewPlayer)
 		FPlayerInfo RestoredInfo;
 		if (GameInstance->InsGetBackedUpPlayerInfo(PlayerUniqueID, RestoredInfo))
 		{
-			RestoredInfo.Status = EPlayerStatus::DEFAULT;  // Status 초기화
+			// BaseGameInstance에 저장한 플레이어 정보를 복구
 			PlayerState->PlayerInfo = RestoredInfo;
 
 			// 태그 복구
@@ -86,18 +86,21 @@ void APlayGameMode::PostLogin(APlayerController* _NewPlayer)
 				*RestoredInfo.UniqueID, *TagString);
 		}
 	}
-	else
+	else // 새로운 Player 등록 및 정보 세팅
 	{
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: 신규 플레이어 감지. 정보를 세팅합니다."));
 
-		// 새로운 Player 등록 및 세팅
+		// 태그 설정
 		FString UniqueTag = FString::Printf(TEXT("Player%d"), FallState->PlayerInfoArray.Num());
-		PlayerState->SetPlayerInfo(UniqueTag, EPlayerStatus::DEFAULT);
-
-		// 태그 부여
 		_NewPlayer->Tags.Add(*UniqueTag);
 		// 안전하게 태그 값 가져오기
 		FString TagString = (_NewPlayer->Tags.Num() > 0) ? _NewPlayer->Tags[0].ToString() : TEXT("태그 없음");
+
+		// 닉네임 설정
+		FString PlayerNickname = GameInstance->InsGetNickname();
+
+		// 정보 세팅
+		PlayerState->SetPlayerInfo(UniqueTag, PlayerNickname);
 
 		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: PostLogin :: 신규 플레이어 정보 세팅 - UniqueID = %s, Tag = %s"),
 			*PlayerState->PlayerInfo.UniqueID, *TagString);

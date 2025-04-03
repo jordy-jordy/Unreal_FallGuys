@@ -10,11 +10,11 @@ APlayPlayerState::APlayPlayerState()
 {
 }
 
-void APlayPlayerState::SetPlayerInfo_Implementation(const FString& _Tag, EPlayerStatus _Status)
+void APlayPlayerState::SetPlayerInfo_Implementation(const FString& _Tag, const FString& _NickName)
 {
     PlayerInfo.UniqueID = GetUniqueId()->ToString();
     PlayerInfo.Tag = _Tag;
-    PlayerInfo.Status = _Status;
+    PlayerInfo.NickName = _NickName;
 }
 
 void APlayPlayerState::SetTeam_Implementation(ETeamType _Team)
