@@ -18,11 +18,6 @@ void AFootHold::BeginPlay()
 	Super::BeginPlay();
 	
 	SetMesh();
-
-	TimeEvent->AddEndEvent(DelayTime, [this]
-	{
-		Destroy();
-	});
 }
 
 // Called every frame
@@ -34,9 +29,6 @@ void AFootHold::Tick(float DeltaTime)
 
 void AFootHold::OperateMesh()
 {
-	// TimeEvent
-	TimeEvent = CreateDefaultSubobject<UTimeEventActorComponent>(TEXT("TimeEvent"));
-
 	// SetMesh And Location
 	RootScene = CreateDefaultSubobject<USceneComponent>(TEXT("RootScene"));
 	RootComponent = RootScene;

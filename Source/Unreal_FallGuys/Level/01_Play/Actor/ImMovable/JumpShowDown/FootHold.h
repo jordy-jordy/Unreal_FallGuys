@@ -6,7 +6,6 @@
 #include "GameFramework/Actor.h"
 #include "Global/Data/ResourceDataTable.h"
 #include "FallGlobal.h"
-#include "Level/01_Play/Components/TimeEventActorComponent.h"
 #include "FootHold.generated.h"
 
 UCLASS()
@@ -27,23 +26,12 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
-	// ActorComponent
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "TimeEvent")
-	UTimeEventActorComponent* TimeEvent;
-
 	// MeshComponent
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "FootHold")
 	USceneComponent* RootScene;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "FootHold")
 	UStaticMeshComponent* Platform;
-
-	// Variables
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "FootHold")
-	bool IsStart = true;
-
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "FootHold")
-	float DelayTime = 5.0f;
 
 private:
 	// Functions
