@@ -52,12 +52,15 @@ public:
 	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category = "PLAYER LIST")
 	TArray<FPlayerInfoEntry> PlayerInfoArray;
 
+	// 플레이어 정보 캐싱용 맵 (UID → PlayerInfo)
+	TMap<FString, FPlayerInfo> CachedPlayerInfoMap;
+
 	// 실패한 플레이어 정보 목록
 	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category = "PLAYER LIST")
 	TArray<FPlayerInfoEntry> FailPlayerInfoArray;
 
 	// `PlayerState`에서 데이터 동기화
-	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "PLAYER LIST")
+	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "PLAYER LIST")
 	void SyncPlayerInfoFromPlayerState();
 	void SyncPlayerInfoFromPlayerState_Implementation();
 
@@ -81,7 +84,7 @@ public:
 	int GetConnectedPlayers() const { return ConnectedPlayers; }
 
 	// 실패한 유저의 떨어지는 순번을 정해줌
-	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "PLAYERS")
+	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "PLAYERS")
 	void SetDropOrder();
 	void SetDropOrder_Implementation();
 
@@ -246,6 +249,10 @@ protected:
 
 #pragma endregion
 
+// 디버그용
+public:
+	UFUNCTION(BlueprintCallable, Category = "DEBUG")
+	void PrintFailPlayersInfo();
 
 
 

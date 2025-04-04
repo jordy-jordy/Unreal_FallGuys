@@ -76,6 +76,8 @@ protected:
 	bool pCountDownStarted = false;	
 	// 게임 시작 카운트다운 끝
 	bool pCountDownEnd = false;
+	// 결과 화면이니
+	bool bMODEIsResultLevel = false;
 	
 	// 게임 시작 조건 검사 타이머 핸들
 	FTimerHandle GameStartConditionTimer;
@@ -108,6 +110,9 @@ protected:
 
 	// 스테이지 제한 시간 핸들
 	FTimerHandle StageLimitTimerHandle;
+
+	// 동기화 타이머 핸들
+	FTimerHandle SyncPlayerInfoTimer;
 
 	// 카운트다운 시작 (3초 대기 후 실행)
 	void StartCountdown();

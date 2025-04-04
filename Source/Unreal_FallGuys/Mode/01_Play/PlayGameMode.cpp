@@ -60,35 +60,45 @@ void APlayGameMode::PostLogin(APlayerController* _NewPlayer)
 	APlayPlayerState* PlayerState = Cast<APlayPlayerState>(_NewPlayer->PlayerState);
 	if (!PlayerState) { UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: PostLogin :: PlayerState가 nullptr 입니다.")); return; }
 
+	// GameInstance가 없을시 리턴
 	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
+	if (!GameInstance) { UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: PostLogin :: GameInstance가 nullptr 입니다.")); return; }
+	
 	FString PlayerUniqueID = PlayerState->GetUniqueId()->ToString(); // UniqueID 얻음
 
-	// 기존 Player인 경우 정보 복구
-	if (GameInstance && GameInstance->IsMovedLevel)
+	// 결과 화면인지 확인
+	bMODEIsResultLevel = GameInstance->bIsResultLevel;
+
+	if (GameInstance->IsMovedLevel)
 	{
-		// 스테이지 전환 되었을때 IsDie를 true로 초기화
-		GameInstance->SetIsDie(true);
-
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: 기존 플레이어 감지. 정보를 로드합니다."));
-
 		FPlayerInfo RestoredInfo;
-		if (GameInstance->InsGetBackedUpPlayerInfo(PlayerUniqueID, RestoredInfo))
+		GameInstance->InsGetBackedUpPlayerInfo(PlayerUniqueID, RestoredInfo);
+		if (bMODEIsResultLevel)
 		{
-			// BaseGameInstance에 저장한 플레이어 정보를 복구
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: 결과 화면입니다. 기존 플레이어 정보를 복구 합니다."));
 			PlayerState->PlayerInfo = RestoredInfo;
-
-			// 태그 복구
-			_NewPlayer->Tags.Add(*RestoredInfo.Tag);
-			// 안전하게 태그 값 가져오기
-			FString TagString = (_NewPlayer->Tags.Num() > 0) ? _NewPlayer->Tags[0].ToString() : TEXT("태그 없음");
-
-			UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: PostLogin :: 플레이어 정보 로드 완료 - UniqueID = %s, Tag = %s"),
-				*RestoredInfo.UniqueID, *TagString);
 		}
+		else if (!bMODEIsResultLevel)
+		{
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: 게임 스테이지 입니다. 기존 플레이어 정보를 리셋 합니다."));
+			GameInstance->SetIsDie(true);
+			PlayerState->PlayerInfo = RestoredInfo;
+		}
+		else
+		{
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: 있을 수 없는 조건. 로직 확인 필요"));
+		}
+
+		// 태그 복구
+		_NewPlayer->Tags.Add(*RestoredInfo.Tag);
+		FString TagString = (_NewPlayer->Tags.Num() > 0) ? _NewPlayer->Tags[0].ToString() : TEXT("태그 없음");
+
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: PostLogin :: 플레이어 정보 로드 완료 - UniqueID = %s, Tag = %s"),
+			*RestoredInfo.UniqueID, *TagString);
 	}
-	else // 새로운 Player 등록 및 정보 세팅
+	else
 	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: 신규 플레이어 감지. 정보를 세팅합니다."));
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: 첫 스테이지 입니다. 새 플레이어 정보를 세팅합니다."));
 
 		// 태그 설정
 		FString UniqueTag = FString::Printf(TEXT("Player%d"), FallState->PlayerInfoArray.Num());
@@ -109,9 +119,6 @@ void APlayGameMode::PostLogin(APlayerController* _NewPlayer)
 	// 접속 여부 bool값 true로 변경
 	GameInstance->InsSetbIsConnectedTrue();
 
-	// 모든 클라이언트에게 정보 동기화
-	SyncPlayerInfo();
-
 	// 게임 시작 인원 수에 따른 목표 횟수 설정
 	ControllFinishPlayer(FallState);
 	// 게임 인스턴스에 저장된 레벨 이름을 게임 스테이트에 저장
@@ -130,18 +137,24 @@ void APlayGameMode::PostLogin(APlayerController* _NewPlayer)
 	{
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: 게임 플레이를 위한 인원이 충족되었습니다."));
 
-		// 인원수가 찼을 시 설정한 시간 뒤에 시네마틱 시작
-		FTimerDelegate LevelCinematicReadyTimer;
-		LevelCinematicReadyTimer.BindUFunction(this, FName("CallLevelCinematicStart"), FallState);
+		if (!bMODEIsResultLevel)
+		{
+			// 인원수가 찼을 시 설정한 시간 뒤에 시네마틱 시작
+			FTimerDelegate LevelCinematicReadyTimer;
+			LevelCinematicReadyTimer.BindUFunction(this, FName("CallLevelCinematicStart"), FallState);
 
-		GetWorldTimerManager().SetTimer(
-			SetLevelCinematicStartTimer,
-			LevelCinematicReadyTimer,
-			UFallConst::LevelCinematicReady,   // 설정된 시간 뒤에 실행
-			false   // 반복 실행 false
-		);
-
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: %.0f초 뒤에 레벨 시네마틱이 실행됩니다."), UFallConst::LevelCinematicReady);
+			GetWorldTimerManager().SetTimer(
+				SetLevelCinematicStartTimer,
+				LevelCinematicReadyTimer,
+				UFallConst::LevelCinematicReady,   // 설정된 시간 뒤에 실행
+				false   // 반복 실행 false
+			);
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: %.0f초 뒤에 레벨 시네마틱이 실행됩니다."), UFallConst::LevelCinematicReady);
+		}
+		else
+		{
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: 결과 화면이므로 레벨 시네마틱이 실행되지 않습니다."));
+		}
 
 		if (true == UFallConst::UsePlayerLimit) // 인원이 찼고 인원 제한을 사용하는 경우 접속 제한 활성화
 		{
@@ -159,18 +172,6 @@ void APlayGameMode::PostLogin(APlayerController* _NewPlayer)
 #pragma endregion
 
 #pragma region PlayGameMode :: PostLogin 에서 실행되는 함수들
-// 플레이어 인포 동기화
-void APlayGameMode::SyncPlayerInfo()
-{
-	APlayGameState* FallState = GetGameState<APlayGameState>();
-	if (!FallState)
-	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: PostLogin :: GameState가 nullptr 입니다."));
-		return;
-	}
-	FallState->SyncPlayerInfoFromPlayerState();
-}
-
 // 인원 충족 했는지 체크
 void APlayGameMode::CheckNumberOfPlayer(APlayGameState* _PlayState)
 {
@@ -207,7 +208,7 @@ void APlayGameMode::ControllFinishPlayer(APlayGameState* _PlayState)
 		}
 		else if (MinCount <= 5)
 		{
-			SetFinishPlayerCount(3);
+			SetFinishPlayerCount(2);
 		}
 		else
 		{
@@ -259,6 +260,15 @@ void APlayGameMode::BeginPlay()
 			true   // 반복 실행
 		);
 
+		// 플레이어 정보 지속 동기화용 타이머
+		GetWorldTimerManager().SetTimer(
+			SyncPlayerInfoTimer,
+			this,
+			&APlayGameMode::SyncPlayerInfo,
+			1.0f,
+			true
+		);
+
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode BeginPlay END ======= "));
 	}
 }
@@ -269,27 +279,39 @@ void APlayGameMode::BeginPlay()
 void APlayGameMode::CheckStartConditions()
 {
 	// 인원이 안찼으면 리턴
-	if (pNumberOfPlayer == false) return;
-	
-	// 시네마틱이 안끝났으면 리턴
-	APlayGameState* FallState = Cast<APlayGameState>(GameState);
-	if (false == FallState->GetIsLevelCinematicEnd()) {	return; }
+	if (pNumberOfPlayer == false) { return; }
 
-	// 카운트 다운 사용할거야?
-	if (true == UFallConst::UseCountDown && false == pCountDownStarted)
+	// 현 레벨이 결과 화면인 경우 : 실패자 처리 하고 바로 게임 시작되게
+	APlayGameState* FallState = GetGameState<APlayGameState>();
+	if (bMODEIsResultLevel)
 	{
-		// 카운트 다운 핸들 활성화
-		StartCountdownTimer();
-		pCountDownStarted = true;
-	}
-	else if (false == UFallConst::UseCountDown)
-	{
-		// 카운트 다운 바로 종료 처리
+		FallState->SetDropOrder();
+		FallState->PrintFailPlayersInfo();
+
+		FallState->SetIsLevelCinematicEnd(true);
 		pCountDownEnd = true;
 	}
+	else // 결과 화면이 아닐때만
+	{
+		// 시네마틱이 안끝났으면 리턴
+		if (false == FallState->GetIsLevelCinematicEnd()) { return; }
 
-	// 카운트 다운이 안끝났으면 리턴
-	if (pCountDownEnd == false) return;
+		// 카운트 다운 사용할거야?
+		if (true == UFallConst::UseCountDown && false == pCountDownStarted)
+		{
+			// 카운트 다운 핸들 활성화
+			StartCountdownTimer();
+			pCountDownStarted = true;
+		}
+		else if (false == UFallConst::UseCountDown)
+		{
+			// 카운트 다운 바로 종료 처리
+			pCountDownEnd = true;
+		}
+
+		// 카운트 다운이 안끝났으면 리턴
+		if (pCountDownEnd == false) return;
+	}
 
 	// 인원도 찼고, 레벨 시네마틱도 끝났고, 카운트 다운도 끝났으니까 게임 시작 가능
 	if (pNumberOfPlayer == true && FallState->GetIsLevelCinematicEnd() == true && pCountDownEnd == true)
@@ -418,21 +440,8 @@ void APlayGameMode::OnStageLimitTimeOver()
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: BeginPlay :: 제한 시간 초과! 스테이지를 종료합니다."));
 
-	// 예시: 남은 플레이어 FAIL 처리
-	APlayGameState* FallState = GetGameState<APlayGameState>();
-	if (!FallState) return;
-
-	for (APlayerState* PS : FallState->PlayerArray)
-	{
-		APlayPlayerState* PState = Cast<APlayPlayerState>(PS);
-		if (PState && PState->PlayerInfo.Status == EPlayerStatus::DEFAULT)
-		{
-			PState->PlayerInfo.Status = EPlayerStatus::FAIL;
-			UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: BeginPlay :: Player FAIL 처리됨: %s"), *PState->PlayerInfo.Tag);
-		}
-	}
 	// 다음 맵 이동
-	ServerTravelToNextMap(TEXT("TestTravelMap"));
+	ServerTravelToNextMap(UFallGlobal::GetRandomLevelWithOutPawn());
 }
 
 // 이현정 : 25.04.02 : 동기화 함수로 수정 : 골인 인원 +1 카운팅
@@ -456,6 +465,18 @@ void APlayGameMode::SetFinishPlayerCount(int _p)
 	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
 	FallState->SetGameStateFinishPlayer(_p);
 }
+
+// 플레이어 인포 동기화
+void APlayGameMode::SyncPlayerInfo()
+{
+	APlayGameState* FallState = GetGameState<APlayGameState>();
+	if (!FallState)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: PostLogin :: GameState가 nullptr 입니다."));
+		return;
+	}
+	FallState->SyncPlayerInfoFromPlayerState();
+}
 #pragma endregion
 
 #pragma region PlayGameMode :: Tick :: 게임이 진행되는 곳
@@ -473,6 +494,11 @@ void APlayGameMode::Tick(float DeltaSeconds)
 	if (CurFinishPlayer >= FinishPlayer)
 	{
 		IsEndGame = true;
+
+		// 동기화 타이머 해제
+		GetWorldTimerManager().ClearTimer(SyncPlayerInfoTimer);
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: Tick :: 게임 종료 → SyncPlayerInfo 타이머 제거"));
+
 		ServerTravelToNextMap(NextLevel);
 	}
 }
@@ -483,6 +509,7 @@ void APlayGameMode::ServerTravelToNextMap(const FString& url)
 	if (!HasAuthority()) { return; }
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 서버트래블 감지 ::"));
+
 
 	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
 	APlayGameState* PlayGameState = GetGameState<APlayGameState>();
@@ -500,14 +527,30 @@ void APlayGameMode::ServerTravelToNextMap(const FString& url)
 		switch (PlayGameState->CurrentStage)
 		{
 		case EStageType::STAGE_1:
+			GameInstance->InsSetSavedStage(EStageType::STAGE_1_RESULT);
+			GameInstance->bIsResultLevel = true;
+			break;
+
+		case EStageType::STAGE_1_RESULT:
 			GameInstance->InsSetSavedStage(EStageType::STAGE_2);
+			GameInstance->bIsResultLevel = false;
 			break;
+
 		case EStageType::STAGE_2:
-			GameInstance->InsSetSavedStage(EStageType::STAGE_3);
+			GameInstance->InsSetSavedStage(EStageType::STAGE_2_RESULT);
+			GameInstance->bIsResultLevel = true;
 			break;
+
+		case EStageType::STAGE_2_RESULT:
+			GameInstance->InsSetSavedStage(EStageType::STAGE_3);
+			GameInstance->bIsResultLevel = false;
+			break;
+
 		case EStageType::STAGE_3:
 			GameInstance->InsSetSavedStage(EStageType::FINISHED);
+			GameInstance->bIsResultLevel = true; // 마지막 결과화면이라고 가정
 			break;
+
 		default:
 			break;
 		}

@@ -39,24 +39,85 @@ void APlayGameState::BeginPlay()
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameState BeginPlay END ======= "));
 }
 
+// 플레이어 정보 동기화
 void APlayGameState::SyncPlayerInfoFromPlayerState_Implementation()
 {
-	TMap<FString, FPlayerInfo> TempMap;
+	if (!HasAuthority()) return;  // 서버만 실행
+
+	TArray<FPlayerInfoEntry> ChangedEntries;
+
 	for (APlayerState* PlayerState : PlayerArray)
 	{
 		APlayPlayerState* PlayPlayerState = Cast<APlayPlayerState>(PlayerState);
-		if (PlayPlayerState)
+		if (!PlayPlayerState) continue;
+
+		const FString& UID = PlayPlayerState->PlayerInfo.UniqueID;
+		const FPlayerInfo& Info = PlayPlayerState->PlayerInfo;
+
+		// 이전 정보와 비교
+		if (CachedPlayerInfoMap.Contains(UID) && CachedPlayerInfoMap[UID] == Info)
 		{
-			TempMap.Add(PlayPlayerState->PlayerInfo.UniqueID, PlayPlayerState->PlayerInfo);
+			continue; // 이전과 같다면 스킵
+		}
+
+		// 변경 사항 기록
+		ChangedEntries.Add(FPlayerInfoEntry(UID, Info));
+
+		// 캐시 갱신
+		CachedPlayerInfoMap.Add(UID, Info);
+	}
+
+	// 변경된 항목만 PlayerInfoArray에 적용
+	for (const FPlayerInfoEntry& Entry : ChangedEntries)
+	{
+		int32 Index = PlayerInfoArray.IndexOfByPredicate([&](const FPlayerInfoEntry& E)
+			{
+				return E.UniqueID == Entry.UniqueID;
+			});
+
+		if (Index == INDEX_NONE)
+		{
+			PlayerInfoArray.Add(Entry); // 새로 추가
+			UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameState :: SyncPlayerInfo :: 플레이어 정보 추가 - UID: %s, Tag: %s"),
+				*Entry.UniqueID, *Entry.PlayerInfo.Tag);
+		}
+		else
+		{
+			PlayerInfoArray[Index] = Entry; // 값 갱신
+			UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameState :: SyncPlayerInfo :: 플레이어 정보 갱신 - UID: %s, Tag: %s"),
+				*Entry.UniqueID, *Entry.PlayerInfo.Tag);
 		}
 	}
 
-	PlayerInfoArray.Empty();
-	for (const auto& Elem : TempMap)
+	// 유령 UID 제거
+	PlayerInfoArray.RemoveAll([&](const FPlayerInfoEntry& Entry)
+		{
+			return !PlayerArray.ContainsByPredicate([&](APlayerState* PS)
+				{
+					APlayPlayerState* PState = Cast<APlayPlayerState>(PS);
+					return PState && PState->PlayerInfo.UniqueID == Entry.UniqueID;
+				});
+		});
+
+	// 캐시에서도 제거
+	TArray<FString> KeysToRemove;
+	for (const auto& Elem : CachedPlayerInfoMap)
 	{
-		PlayerInfoArray.Add(FPlayerInfoEntry(Elem.Key, Elem.Value));
-		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameState :: 플레이어 정보 동기화 - UniqueId: %s, Tag: %s"),
-			*Elem.Key, *Elem.Value.Tag);
+		bool bExists = PlayerArray.ContainsByPredicate([&](APlayerState* PS)
+			{
+				APlayPlayerState* PState = Cast<APlayPlayerState>(PS);
+				return PState && PState->PlayerInfo.UniqueID == Elem.Key;
+			});
+
+		if (!bExists)
+		{
+			KeysToRemove.Add(Elem.Key);
+		}
+	}
+
+	for (const FString& Key : KeysToRemove)
+	{
+		CachedPlayerInfoMap.Remove(Key);
 	}
 }
 
@@ -188,6 +249,8 @@ void APlayGameState::SetIsCountDownOverTrue_Implementation()
 // 실패한 유저의 떨어지는 순번을 정해줌
 void APlayGameState::SetDropOrder_Implementation()
 {
+	if (!HasAuthority()) return; // 서버에서만 실행
+
 	FailPlayerInfoArray.Empty();
 
 	TArray<APlayPlayerState*> FailedPlayerStates;
@@ -260,4 +323,26 @@ void APlayGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(APlayGameState, IsLevelCinematicEnd);
 	DOREPLIFETIME(APlayGameState, GameStateFinishPlayer);
 	DOREPLIFETIME(APlayGameState, GameStateCurFinishPlayer);
+}
+
+void APlayGameState::PrintFailPlayersInfo()
+{
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("====== 실패한 플레이어 정보 ======"));
+
+	if (FailPlayerInfoArray.Num() == 0)
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("FailPlayerInfoArray가 비어있습니다."));
+		return;
+	}
+
+	for (const FPlayerInfoEntry& Entry : FailPlayerInfoArray)
+	{
+		const FPlayerInfo& Info = Entry.PlayerInfo;
+
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("UID: %s | Tag: %s | Status: %s | DropOrder: %d"),
+			*Entry.UniqueID,
+			*Info.Tag,
+			*UEnum::GetValueAsString(Info.Status),
+			Info.DropOrder);
+	}
 }

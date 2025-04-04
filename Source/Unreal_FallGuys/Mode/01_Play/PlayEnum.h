@@ -38,10 +38,12 @@ enum class ERaceOverAnimation : uint8
 UENUM(BlueprintType)
 enum class EStageType : uint8
 {
-	STAGE_1		UMETA(DisplayName = "Stage 1"),
-	STAGE_2		UMETA(DisplayName = "Stage 2"),
-	STAGE_3		UMETA(DisplayName = "Stage 3"),
-	FINISHED	UMETA(DisplayName = "Finished")
+	STAGE_1			UMETA(DisplayName = "Stage 1"),
+	STAGE_1_RESULT	UMETA(DisplayName = "Stage 1 Result"),
+	STAGE_2			UMETA(DisplayName = "Stage 1"),
+	STAGE_2_RESULT	UMETA(DisplayName = "Stage 2 Result"),
+	STAGE_3			UMETA(DisplayName = "Stage 3"),
+	FINISHED		UMETA(DisplayName = "Finished")
 };
 
 
