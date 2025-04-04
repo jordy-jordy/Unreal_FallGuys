@@ -610,9 +610,10 @@ void UBaseGameInstance::InsBackupPlayerInfo(const FString& _UniqueID, const FPla
 		return;
 	}
 
+	FString StatusStr = UEnum::GetValueAsString(_PlayerInfo.Status);
 	PlayerInfoBackup.Add(_UniqueID, _PlayerInfo);
-	UE_LOG(FALL_DEV_LOG, Log, TEXT("InsBackupPlayerInfo :: UniqueID = %s, PlayerTag = %s"),
-		*_UniqueID, *_PlayerInfo.Tag);
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("InsBackupPlayerInfo :: UniqueID = %s, PlayerTag = %s, PlayerStatus = %s"),
+		*_UniqueID, *_PlayerInfo.Tag, *StatusStr);
 }
 
 // 백업된 플레이어 정보 복구 함수
@@ -655,11 +656,8 @@ void UBaseGameInstance::InsPrintPlayerInfo()
 		return;
 	}
 
-	// 콘솔 로그
-	UE_LOG(FALL_DEV_LOG, Log, TEXT("=== PlayerInfoArray 목록 ==="));
-
-	// 화면 출력용 문자열
-	FString ScreenMessage = TEXT("=== PlayerInfoArray 목록 ===\n");
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("======== PlayerInfoArray 목록 ========"));
+	FString ScreenMessage = TEXT("======== PlayerInfoArray 목록 ========\n");
 
 	for (const FPlayerInfoEntry& Entry : PlayGameState->PlayerInfoArray)
 	{
@@ -676,8 +674,8 @@ void UBaseGameInstance::InsPrintPlayerInfo()
 		}
 	}
 
-	UE_LOG(FALL_DEV_LOG, Log, TEXT("=== 각 플레이어의 PlayerInfo ==="));
-	ScreenMessage += TEXT("=== 각 플레이어의 PlayerInfo ===\n");
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("======== 각 플레이어의 PlayerInfo ========"));
+	ScreenMessage += TEXT("======== 각 플레이어의 PlayerInfo ========\n");
 
 	for (APlayerState* PlayerState : PlayGameState->PlayerArray)
 	{

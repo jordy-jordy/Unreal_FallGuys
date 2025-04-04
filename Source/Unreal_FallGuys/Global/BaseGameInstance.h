@@ -178,6 +178,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	EStageType InsGetSavedStage() const { return SavedStage; }
 
+	// 스테이지 끝나고 나오는 결과창인지
+	UPROPERTY(BlueprintReadWrite, Category = "LEVEL")
+	bool bIsResultLevel = false;
+
 protected:
 	// 레벨 이름
 	UPROPERTY(VisibleAnywhere, Category = "LEVEL")
@@ -272,9 +276,5 @@ public:
 	void InsSetPlayerDie(APlayerController* _Controller);
 
 #pragma endregion
-
-	// 이현정 : 스테이지 끝나고 나오는 결과창인지 구분하기 위함
-	UPROPERTY(BlueprintReadWrite, Category = "LEVEL")
-	bool bIsResultLevel = false;
 };
 

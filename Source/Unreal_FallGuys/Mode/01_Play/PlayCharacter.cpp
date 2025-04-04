@@ -12,6 +12,7 @@
 #include "Net/UnrealNetwork.h"
 #include <Unreal_FallGuys.h>
 #include <Global/FallGlobal.h>
+#include <Global/GlobalEnum.h>
 #include <Global/BaseGameInstance.h>
 
 
@@ -47,6 +48,18 @@ APlayCharacter::APlayCharacter()
 	CostumeBOTStaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	CostumeBOTStaticMesh->SetGenerateOverlapEvents(false);
 	CostumeBOTStaticMesh->CanCharacterStepUpOn = ECanBeCharacterBase::ECB_No;
+}
+
+void APlayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(APlayCharacter, CostumeColor);
+	DOREPLIFETIME(APlayCharacter, CostumeTopName);
+	DOREPLIFETIME(APlayCharacter, CostumeBotName);
+	DOREPLIFETIME(APlayCharacter, IsDie);
+	DOREPLIFETIME(APlayCharacter, CanMove);
+	DOREPLIFETIME(APlayCharacter, CurStatus);
 }
 
 // Called when the game starts or when spawned
@@ -101,19 +114,6 @@ void APlayCharacter::BeginPlay()
 			CostumeBOTStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, CostumeBotName));
 		}
 	}
-
-	//// 서버장일 경우: 직접 PlayerState에 Status 설정
-	//if (HasAuthority()) // 서버만 실행
-	//{
-	//	UBaseGameInstance* GameIns = Cast<UBaseGameInstance>(GetGameInstance());
-	//	IsDie = GameIns->GetIsDie();
-
-	//	APlayPlayerState* PS = GetPlayerState<APlayPlayerState>();
-	//	if (PS != nullptr)
-	//	{
-	//		PS->PlayerInfo.Status = IsDie ? EPlayerStatus::FAIL : EPlayerStatus::SUCCESS;
-	//	}
-	//}
 }
 
 // Called every frame
@@ -178,17 +178,6 @@ void APlayCharacter::PlayerAMove()
 	AddMovementInput(-GetControllerRight());
 }
 
-void APlayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(APlayCharacter, CostumeColor);
-	DOREPLIFETIME(APlayCharacter, CostumeTopName);
-	DOREPLIFETIME(APlayCharacter, CostumeBotName);
-	DOREPLIFETIME(APlayCharacter, IsDie);
-	DOREPLIFETIME(APlayCharacter, CanMove);
-}
-
 // 이현정 : 캐릭터 코스튬 설정 - 클라 > 서버
 void APlayCharacter::C2S_Costume_Implementation(const FString& _Color, const FString& _TopName, const FString& _BotName)
 {
@@ -247,4 +236,95 @@ void APlayCharacter::S2M_SetCanMoveTrue_Implementation()
 void APlayCharacter::S2M_SetCanMoveFalse_Implementation()
 {
 	CanMove = false;
+}
+
+// 이현정 : 디버그용 : 캐릭터 상태 확인
+void APlayCharacter::DebugCheckDieStatus()
+{
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("========== 캐릭터 상태 디버그 =========="));
+	FString StatusStr = UEnum::GetValueAsString(CurStatus);
+	FString TagStringForLog;
+
+	if (Tags.Num() > 0)
+	{
+		for (const FName& Tag : Tags)
+		{
+			TagStringForLog += Tag.ToString() + TEXT(" ");
+		}
+	}
+	else
+	{
+		TagStringForLog = TEXT("태그 없음");
+	}
+
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("Tag: %s / CurStatus: %s / IsDie: %s"),
+		*TagStringForLog,
+		*StatusStr,
+		IsDie ? TEXT("true") : TEXT("false"));
+
+	if (GEngine)
+	{
+		FString TagStringForScreen;
+
+		if (Tags.Num() > 0)
+		{
+			for (const FName& Tag : Tags)
+			{
+				TagStringForScreen += Tag.ToString() + TEXT(" ");
+			}
+		}
+		else
+		{
+			TagStringForScreen = TEXT("태그 없음");
+		}
+
+		const FString ScreenMsg = FString::Printf(TEXT("[Debug] Tag: %s / CurStatus: %s / IsDie: %s"),
+			*TagStringForScreen,
+			*StatusStr,
+			IsDie ? TEXT("true") : TEXT("false"));
+
+		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Green, ScreenMsg);
+	}
+}
+
+// 이현정 : 서버장의 캐릭터 상태를 세팅
+void APlayCharacter::PossessedBy(AController* _NewController)
+{
+	Super::PossessedBy(_NewController);
+
+	APlayPlayerState* PlayState = GetPlayerState<APlayPlayerState>();
+	if (PlayState)
+	{
+		// PlayerState에 있는 Tag를 캐릭터 태그에 세팅
+		if (!PlayState->PlayerInfo.Tag.IsEmpty())
+		{
+			Tags.Add(FName(*PlayState->PlayerInfo.Tag));
+		}
+
+		// PlayerState의 Status에 따라 IsDie 세팅
+		CurStatus = PlayState->GetPlayerStateStatus();
+		IsDie = (CurStatus == EPlayerStatus::FAIL);
+		DebugCheckDieStatus(); // 상태 디버깅
+	}
+}
+
+// 이현정 : 클라이언트의 캐릭터 상태를 세팅
+void APlayCharacter::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	APlayPlayerState* PlayState = GetPlayerState<APlayPlayerState>();
+	if (PlayState)
+	{
+		// PlayerState에 있는 Tag를 캐릭터 태그에 세팅
+		if (!PlayState->PlayerInfo.Tag.IsEmpty())
+		{
+			Tags.Add(FName(*PlayState->PlayerInfo.Tag));
+		}
+
+		// PlayerState의 Status에 따라 IsDie 세팅
+		CurStatus = PlayState->GetPlayerStateStatus();
+		IsDie = (CurStatus == EPlayerStatus::FAIL);
+		DebugCheckDieStatus(); // 상태 디버깅
+	}
 }

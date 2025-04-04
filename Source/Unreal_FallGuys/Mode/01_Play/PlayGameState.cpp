@@ -11,7 +11,6 @@
 #include <Level/01_Play/Actor/ImMovable/JumpShowDown/ShowDownStage.h>
 
 
-
 APlayGameState::APlayGameState()
 {
 	CountDownTime = UFallConst::FallCountDownTime;
@@ -268,7 +267,7 @@ void APlayGameState::SetDropOrder_Implementation()
 	const int32 NumFailed = FailedPlayerStates.Num();
 	if (NumFailed <= 0)
 	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("SetDropOrder :: 실패한 플레이어가 없습니다."));
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: SetDropOrder :: 실패한 플레이어가 없습니다."));
 		return;
 	}
 
@@ -301,8 +300,8 @@ void APlayGameState::SetDropOrder_Implementation()
 	// 디버그 로그
 	for (const FPlayerInfoEntry& Entry : FailPlayerInfoArray)
 	{
-		UE_LOG(FALL_DEV_LOG, Log, TEXT("FailPlayer :: %s, DropOrder = %d"),
-			*Entry.UniqueID, Entry.PlayerInfo.DropOrder);
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameState :: SetDropOrder :: 실패한 플레이어의 태그(PlayerTag) = %s, 떨어지는 순서(DropOrder) = %d"),
+			*Entry.PlayerInfo.Tag, Entry.PlayerInfo.DropOrder);
 	}
 }
 
@@ -327,11 +326,11 @@ void APlayGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 
 void APlayGameState::PrintFailPlayersInfo()
 {
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("====== 실패한 플레이어 정보 ======"));
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("=============== 실패한 플레이어 정보 ==============="));
 
 	if (FailPlayerInfoArray.Num() == 0)
 	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("FailPlayerInfoArray가 비어있습니다."));
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: FailPlayerInfoArray가 비어있습니다."));
 		return;
 	}
 
@@ -339,7 +338,7 @@ void APlayGameState::PrintFailPlayersInfo()
 	{
 		const FPlayerInfo& Info = Entry.PlayerInfo;
 
-		UE_LOG(FALL_DEV_LOG, Log, TEXT("UID: %s | Tag: %s | Status: %s | DropOrder: %d"),
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameState :: UID: %s | Tag: %s | Status: %s | DropOrder: %d"),
 			*Entry.UniqueID,
 			*Info.Tag,
 			*UEnum::GetValueAsString(Info.Status),

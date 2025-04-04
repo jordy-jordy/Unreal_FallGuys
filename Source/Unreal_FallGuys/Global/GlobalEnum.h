@@ -35,6 +35,7 @@ enum class ECostumeType : uint8
 	MAX UMETA(DisplayName = "Max")
 };
 
+// 이현정 : 플레이어 상태
 UENUM(BlueprintType)
 enum class EPlayerStatus : uint8
 {

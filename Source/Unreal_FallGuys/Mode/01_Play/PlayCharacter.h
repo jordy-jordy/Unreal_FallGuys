@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Global/GlobalEnum.h"
 #include "Mode/01_Play/PlayEnum.h"
 #include "PlayCharacter.generated.h"
 
@@ -172,4 +173,20 @@ private:
 public:
 	UPROPERTY(VisibleAnywhere, Replicated, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	bool IsDie = true;
+
+
+// 이현정 : 캐릭터 상태 동기화
+public:
+	UPROPERTY(VisibleAnywhere, Replicated, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	EPlayerStatus CurStatus = EPlayerStatus::NONE;
+	
+	// 디버그용 : 캐릭터 상태 확인
+	UFUNCTION(BlueprintCallable)
+	void DebugCheckDieStatus();
+
+protected:
+	// 서버장의 캐릭터 상태를 세팅
+	virtual void PossessedBy(AController* _NewController) override;
+	// 클라이언트의 캐릭터 상태를 세팅
+	virtual void OnRep_PlayerState() override;
 };

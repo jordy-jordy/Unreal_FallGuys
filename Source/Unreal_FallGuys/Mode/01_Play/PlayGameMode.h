@@ -41,31 +41,50 @@ protected:
 
 #pragma endregion
 
-#pragma region PlayGameMode :: 게임 시작 관련
+#pragma region PlayGameMode :: 플레이어 정보 관련
 public:
-	// 게임 시작
-	UFUNCTION(BlueprintCallable, Category = "PLAY GAME")
-	void StartGame();
-
-	// 인원 충족 했는지 체크
-	UFUNCTION(BlueprintCallable, Category = "PLAY GAME")
-	void CheckNumberOfPlayer(class APlayGameState* _PlayState);
-
 	// 플레이어 정보 동기화
-	UFUNCTION(BlueprintCallable, Category = "PLAY GAME")
+	UFUNCTION(BlueprintCallable, Category = "PLAYGAMEMODE :: PLAYER")
 	void SyncPlayerInfo();
 
 	// 캐릭터 이동 가능하게 세팅
-	UFUNCTION(BlueprintCallable, Category = "PLAY GAME")
+	UFUNCTION(BlueprintCallable, Category = "PLAYGAMEMODE :: PLAYER")
 	void SetCharacterMovePossible();
 
+	// 모든 DEFAULT 상태의 플레이어를 FAIL로 전환
+	UFUNCTION(BlueprintCallable, Category = "PLAYGAMEMODE :: PLAYER")
+	void SetDefaultPlayersToFail();
+
+	// 모든 DEFAULT 상태의 플레이어를 SUCCESS로 전환
+	UFUNCTION(BlueprintCallable, Category = "PLAYGAMEMODE :: PLAYER")
+	void SetDefaultPlayersToSuccess();
+
+#pragma endregion
+
+#pragma region PlayGameMode :: 게임 시작 관련
+public:
+	// 게임 시작
+	UFUNCTION(BlueprintCallable, Category = "PLAYGAMEMODE :: GAME")
+	void StartGame();
+
+	// 인원 충족 했는지 체크
+	UFUNCTION(BlueprintCallable, Category = "PLAYGAMEMODE :: GAME")
+	void CheckNumberOfPlayer(class APlayGameState* _PlayState);
+
 	// 목표 골인 인원 수 반환
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "PLAYGAMEMODE :: GAME")
 	int32 GetFinishPlayerCount() const { return FinishPlayer; }
 
 protected:
 	// 목표 골인 인원 수 제어
 	void ControllFinishPlayer();
+
+	// 게임 시작 조건 검사 함수
+	void CheckStartConditions();
+
+	// 레벨 시네마틱 시작을 호출
+	UFUNCTION()
+	void CallLevelCinematicStart(APlayGameState* _PlayState);
 
 	// 접속 제한
 	bool InvalidConnect = false;
@@ -79,22 +98,8 @@ protected:
 	bool pCountDownEnd = false;
 	// 결과 화면이니
 	bool bMODEIsResultLevel = false;
-	
 	// 현재 스테이지 단계
 	EStageType MODECurrentStage = EStageType::STAGE_1;
-
-	// 게임 시작 조건 검사 타이머 핸들
-	FTimerHandle GameStartConditionTimer;
-
-	// 게임 시작 조건 검사 함수
-	void CheckStartConditions();
-
-	// 레벨 시네마틱을 시작하도록 하는 타이머
-	FTimerHandle SetLevelCinematicStartTimer;
-
-	// 레벨 시네마틱 시작을 호출하는 함수
-	UFUNCTION()
-	void CallLevelCinematicStart(APlayGameState* _PlayState);
 
 #pragma endregion
 
@@ -109,10 +114,16 @@ public:
 	void StartStageLimitTimer();
 
 protected:
-	// 카운트 다운 핸들
+	// 게임 시작 조건 검사 타이머 핸들
+	FTimerHandle GameStartConditionTimer;
+
+	// 레벨 시네마틱을 시작하도록 하는 타이머
+	FTimerHandle SetLevelCinematicStartTimer;
+
+	// 게임 시작 전 카운트 다운 핸들
 	FTimerHandle CountdownTimerHandle;
 
-	// 스테이지 제한 시간 핸들
+	// 게임 시작 후 스테이지 제한 시간 핸들
 	FTimerHandle StageLimitTimerHandle;
 
 	// 동기화 타이머 핸들
@@ -157,4 +168,7 @@ public:
 	// 이현정 : 25.04.02 : 동기화 함수로 수정 : 골인 목표 인원 수 세팅
 	UFUNCTION(BlueprintCallable)
 	void SetFinishPlayerCount(int _p);
+
+
+
 };

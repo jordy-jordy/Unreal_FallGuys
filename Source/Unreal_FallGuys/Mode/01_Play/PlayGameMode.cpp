@@ -69,6 +69,7 @@ void APlayGameMode::PostLogin(APlayerController* _NewPlayer)
 	// 결과 화면인지 확인
 	bMODEIsResultLevel = GameInstance->bIsResultLevel;
 
+	// 첫 스테이지인지 확인
 	if (GameInstance->IsMovedLevel)
 	{
 		FPlayerInfo RestoredInfo;
@@ -139,6 +140,7 @@ void APlayGameMode::PostLogin(APlayerController* _NewPlayer)
 	{
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: 게임 플레이를 위한 인원이 충족되었습니다."));
 
+		// 결과 화면이 아닌 경우에만 시네마틱 시작
 		if (!bMODEIsResultLevel)
 		{
 			// 인원수가 찼을 시 설정한 시간 뒤에 시네마틱 시작
@@ -499,8 +501,64 @@ void APlayGameMode::Tick(float DeltaSeconds)
 		GetWorldTimerManager().ClearTimer(SyncPlayerInfoTimer);
 		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: Tick :: 게임 종료 → SyncPlayerInfo 타이머 제거"));
 
+		SetDefaultPlayersToFail();
+
 		ServerTravelToNextMap(NextLevel);
 	}
+}
+#pragma endregion
+
+#pragma region PlayGameMode :: Tick 에서 실행되는 함수들
+// Default 상태인 플레이어를 FAIL 상태로 변경
+void APlayGameMode::SetDefaultPlayersToFail()
+{
+	// 마지막 동기화
+	SyncPlayerInfo();
+
+	APlayGameState* FallState = GetGameState<APlayGameState>();
+	if (!FallState)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: Tick :: GameState가 nullptr입니다."));
+		return;
+	}
+
+	for (APlayerState* PS : FallState->PlayerArray)
+	{
+		APlayPlayerState* PState = Cast<APlayPlayerState>(PS);
+		if (PState && PState->GetPlayerStateStatus() == EPlayerStatus::DEFAULT)
+		{
+			PState->S2M_SetPlayerStatusFail();
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: Tick :: FAIL 처리됨 - %s"), *PState->PlayerInfo.Tag);
+		}
+	}
+	// 상태 바꾼 것을 동기화
+	SyncPlayerInfo();
+}
+
+// Default 상태인 플레이어를 SUCCESS 상태로 변경
+void APlayGameMode::SetDefaultPlayersToSuccess()
+{
+	// 마지막 동기화
+	SyncPlayerInfo();
+
+	APlayGameState* FallState = GetGameState<APlayGameState>();
+	if (!FallState)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: Tick :: GameState가 nullptr입니다."));
+		return;
+	}
+
+	for (APlayerState* PS : FallState->PlayerArray)
+	{
+		APlayPlayerState* PState = Cast<APlayPlayerState>(PS);
+		if (PState && PState->GetPlayerStateStatus() == EPlayerStatus::DEFAULT)
+		{
+			PState->S2M_SetPlayerStatusSuccess();
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: Tick :: SUCCESS 처리됨 - %s"), *PState->PlayerInfo.Tag);
+		}
+	}
+	// 상태 바꾼 것을 동기화
+	SyncPlayerInfo();
 }
 #pragma endregion
 
@@ -514,9 +572,6 @@ void APlayGameMode::ServerTravelToNextMap(const FString& url)
 	APlayGameState* PlayGameState = GetGameState<APlayGameState>();
 	if (GameInstance && PlayGameState)
 	{
-		// 백업하기 전에 마지막 동기화
-		SyncPlayerInfo();
-
 		// 백업하기 전에 비워주자
 		GameInstance->PlayerInfoBackup.Empty();
 
