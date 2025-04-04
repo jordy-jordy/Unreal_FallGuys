@@ -4,6 +4,7 @@
 #include "Mode/01_Play/UI/PlayMainWidget.h"
 #include "Global/FallConst.h"
 #include "Components/CanvasPanelSlot.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 
 void UPlayMainWidget::MainWidgetInit()
@@ -91,6 +92,14 @@ void UPlayMainWidget::SetWidgetUIType(FString _CurWidgetName)
 	{
 		UIType = EPlayUIType::PlayGameOver;
 	}
+	else if (_CurWidgetName.Contains(FString("PlayClearCount")))
+	{
+		UIType = EPlayUIType::PlayClearCount;
+	}
+	else if (_CurWidgetName.Contains(FString("PlayScore")))
+	{
+		UIType = EPlayUIType::PlayScore;
+	}
 }
 
 void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
@@ -116,27 +125,75 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 		return;
 	}
 	
+	UPlayUserWidget* ClearCount = FindWidget(EPlayUIType::PlayClearCount);
+	UPlayUserWidget* StartCount = FindWidget(EPlayUIType::PlayStartCount);
+
 	//CurUIType À§Á¬ => _UIType À§Á¬
-	//switch (CurUIType)
-	//{
+	switch (CurUIType)
+	{
 	//case EPlayUIType::PlayStandby:
-	//{
 	//	switch (EPlayUIType(_UIType))
 	//	{
-	//	case EPlayUIType::PlayInGame:
+	//	case EPlayUIType::PlayLevelTag:
 	//		CurUserWidget->SetVisibility(ESlateVisibility::Hidden);
 	//		ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	//		break;
-	//	case EPlayUIType::PlayLevelTag:
-	//		break;
-	//	default:
-	//		break;
-	//	}
 	//	default:
 	//		break;
 	//	}
 	//	break;
-	//}
+	//case EPlayUIType::PlayInGame:
+	//	switch (EPlayUIType(_UIType))
+	//	{
+	//	case EPlayUIType::PlayStartCount:
+	//		break;
+	//	case EPlayUIType::PlayReturnHome:
+	//		break;
+	//	case EPlayUIType::PlayResult:
+	//		break;
+	//	case EPlayUIType::PlaySpectatorResult:
+	//		break;
+	//	case EPlayUIType::PlayGameOver:
+	//		break;
+	//	case EPlayUIType::PlayClearCount:
+	//		break;
+	//	case EPlayUIType::PlayScore:
+	//		break;
+	//	default:
+	//		break;
+	//	}
+	//	break;
+	
+	case EPlayUIType::PlayLevelTag:
+		switch (EPlayUIType(_UIType))
+		{
+		case EPlayUIType::PlayInGame:
+			ClearCount->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			StartCount->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			break;
+		default:
+			break;
+		}
+		break;
+	case EPlayUIType::PlayStartCount:
+		break;
+	case EPlayUIType::PlayReturnHome:
+		break;
+	case EPlayUIType::PlayResult:
+		break;
+	case EPlayUIType::PlaySpectatorResult:
+		break;
+	case EPlayUIType::PlayGameOver:
+		break;
+	case EPlayUIType::PlayClearCount:
+		break;
+	case EPlayUIType::PlayScore:
+		break;
+	case EPlayUIType::MAX:
+		break;
+	default:
+		break;
+	}
 
 	CurUserWidget->SetVisibility(ESlateVisibility::Hidden);
 	ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
