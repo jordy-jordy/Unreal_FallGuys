@@ -28,24 +28,6 @@ void AShowDownStage::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (nullptr == GetWorld()->GetAuthGameMode())
-	{
-		return;
-	}
-
-	if (true == Platforms.IsEmpty())
-	{
-		return;
-	}
-
-	CurDownTime -= DeltaTime;
-
-	if (0.0f >= CurDownTime)
-	{
-		Platforms[0]->IsLive = false;
-		Platforms.RemoveAt(0); 
-		CurDownTime = DownTime;
-	}
 }
 
 void AShowDownStage::SetPlatforms()
@@ -91,5 +73,28 @@ void AShowDownStage::SetPlatforms()
 		AShowDownPlatform* Temp = Platforms[Left];
 		Platforms[Left] = Platforms[Right];
 		Platforms[Right] = Temp;
+	}
+}
+
+void AShowDownStage::DownPlatforms(float DeltaTime)
+{
+
+	if (nullptr == GetWorld()->GetAuthGameMode())
+	{
+		return;
+	}
+
+	if (true == Platforms.IsEmpty())
+	{
+		return;
+	}
+
+	CurDownTime -= DeltaTime;
+
+	if (0.0f >= CurDownTime)
+	{
+		Platforms[0]->IsLive = false;
+		Platforms.RemoveAt(0);
+		CurDownTime = DownTime;
 	}
 }

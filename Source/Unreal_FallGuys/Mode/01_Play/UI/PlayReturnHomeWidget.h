@@ -14,17 +14,4 @@ class UNREAL_FALLGUYS_API UPlayReturnHomeWidget : public UPlayUserWidget
 {
 	GENERATED_BODY()
 
-public:
-	//UFUNCTION(BlueprintCallable)
-	//void ForwardAnim();
-	//
-	//UFUNCTION(BlueprintCallable)
-	//void ReverseAnim();
-	
-private:
-	//UPROPERTY(EditAnywhere, Transient, meta = (BindWidgetAnim), Category = "UI")
-	//UWidgetAnimation* ContinueAnim;
-
-	//UPROPERTY(EditAnywhere, Transient, meta = (BindWidgetAnim), Category = "UI")
-	//UWidgetAnimation* GoBackAnim;
 };
