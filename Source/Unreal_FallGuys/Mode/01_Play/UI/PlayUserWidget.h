@@ -17,7 +17,9 @@ class UNREAL_FALLGUYS_API UPlayUserWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
-	void NativeConstruct();
+	void NativeConstruct() override;
+
+	void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 	void SetMainWidget(class UPlayMainWidget* _MainWidget)
 	{

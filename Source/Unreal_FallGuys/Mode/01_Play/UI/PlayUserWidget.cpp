@@ -10,3 +10,8 @@ void UPlayUserWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 }
+
+void UPlayUserWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+}

@@ -116,7 +116,7 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 		return;
 	}
 	
-	// CurUIType 困连 => _UIType 困连
+	//CurUIType 困连 => _UIType 困连
 	//switch (CurUIType)
 	//{
 	//case EPlayUIType::PlayStandby:

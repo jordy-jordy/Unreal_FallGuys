@@ -4,40 +4,26 @@
 #include "Mode/01_Play/UI/PlayStartCountWidget.h"
 #include "Engine/Texture2D.h"
 #include "Components/Image.h"
+#include "TimerManager.h"
+#include "Global/FallGlobal.h"
 #include "Mode/01_Play/UI/PlayMainWidget.h"
 
 
-void UPlayStartCountWidget::SetWidgetImage(const TCHAR* _ImagePath)
+void UPlayStartCountWidget::NativeConstruct()
 {
-	UPlayUserWidget* CountWidget = GetMainWidget()->FindWidget(EPlayUIType::PlayStartCount);
-
-	// TEXT("/Script/Engine.Texture2D'/Game/Resources/UI/01_Play/Textures/Start/T_Count2.T_Count2'")
-	UTexture2D* Image = LoadObject<UTexture2D>(nullptr, _ImagePath);
-
-	CountImage = Cast<UImage>(CountWidget->GetWidgetFromName(TEXT("CountImage")));
-
-	FVector2D ImageSize = CountImage->GetBrush().ImageSize;
-
-	CountImage->SetBrushFromTexture(Image);
-	CountImage->SetDesiredSizeOverride(ImageSize);
+	Super::NativeConstruct();
 }
 
-void UPlayStartCountWidget::CountDownWidget()
+void UPlayStartCountWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
-	// FString ImagePath = TEXT("");
-
-
-	//UPlayUserWidget* CountWidget = GetMainWidget()->FindWidget(EPlayUIType::PlayStartCount);
-
-	//// UTexture2D* Image = LoadObject<UTexture2D>(nullptr, _ImagePath);
-
-	//CountImage = Cast<UImage>(CountWidget->GetWidgetFromName(TEXT("CountImage")));
-
-	//FVector2D ImageSize = CountImage->GetBrush().ImageSize;
-
-	//CountImage->SetBrushFromTexture(ArrTexture[static_cast<int>(_CountTime)]);
-	//CountImage->SetDesiredSizeOverride(ImageSize);
-
-	//PlayAnimation(CountAnim);
+	Super::NativeTick(MyGeometry, InDeltaTime);
 }
+
+void UPlayStartCountWidget::SetWidgetImage(class UImage* _CountImage, TArray<class UTexture2D*> _ArrTexture, int _Index)
+{
+	_CountImage->SetBrushFromTexture(_ArrTexture[_Index]);
+	_CountImage->SetColorAndOpacity(FLinearColor::White);
+}
+
+
 
