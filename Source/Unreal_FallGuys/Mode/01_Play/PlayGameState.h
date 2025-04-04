@@ -182,7 +182,7 @@ protected:
 
 #pragma endregion
 
-#pragma region PlayGameState :: 키운트 다운 관련
+#pragma region PlayGameState :: 카운트 다운 관련
 public:
 	// 카운트 다운 시간 반환
 	UFUNCTION(BlueprintCallable, Category = "COUNT DOWN")
@@ -209,7 +209,7 @@ public:
 protected:
 	// 카운트 다운 시간 : FallConst로부터 가져옴
 	UPROPERTY(Replicated)
-	float CountDownTime = 0.0f;
+	float CountDownTime;
 
 	// 카운트다운이 끝났는지 확인
 	UPROPERTY(Replicated)

@@ -191,10 +191,16 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "LEVEL")
 	FString CurLevelAssetName = TEXT("Race2Map");
 
-	// 레벨 리스트
+	// 레벨 이름 리스트 (AssetName 기준)
+	UPROPERTY()
 	TArray<FString> MapList;
-	TSet<int> PlayedMapList;
+
+	// 이미 플레이한 맵의 AssetName 목록
+	UPROPERTY()
+	TSet<FString> PlayedMapSet;
+
 	// 에셋명 → Row 이름 매핑
+	UPROPERTY()
 	TMap<FString, FString> LevelNameMap;
 
 #pragma endregion
@@ -203,7 +209,7 @@ protected:
 public: 
 	// 플레이어 정보 백업 함수
 	UFUNCTION(BlueprintCallable, Category = "PLAYER DATA")
-	void InsBackupPlayerInfo(const FString& _UniqueID, const FPlayerInfo& _PlayerInfo);
+	void InsBackupPlayerInfo(const FString& _UniqueID, FPlayerInfo& _PlayerInfo);
 
 	// 백업된 플레이어 정보 가져오기 함수
 	UFUNCTION(BlueprintCallable, Category = "PLAYER DATA")

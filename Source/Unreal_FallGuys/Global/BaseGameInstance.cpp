@@ -399,33 +399,35 @@ UStaticMesh* UBaseGameInstance::InsGetResourceMesh(UWorld* _World, const FString
 // Random PlayLevel의 이름 반환
 FString UBaseGameInstance::InsGetRandomLevel()
 {
-	if (MapList.Num() == 0 || LevelNameMap.Num() == 0)
+	// 1. 맵 목록이 없으면 초기화
+	if (MapList.IsEmpty() || LevelNameMap.IsEmpty())
 	{
 		TArray<FLevelDisplayInfo> LevelInfos = UFallGlobal::GetAvailableLevelInfos();
-
 		for (const FLevelDisplayInfo& Info : LevelInfos)
 		{
-			MapList.Add(Info.AssetName);               // 기존 MapList에는 AssetName 저장
-			LevelNameMap.Add(Info.AssetName, Info.Name); // AssetName → Name 매핑
+			MapList.Add(Info.AssetName);
+			LevelNameMap.Add(Info.AssetName, Info.Name);
 		}
 	}
 
-	if (MapList.Num() == 0)
+	// 2. 모든 맵을 다 돌았으면 초기화
+	if (PlayedMapSet.Num() >= MapList.Num())
 	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("InsGetRandomLevel :: 사용 가능한 맵이 없습니다."));
-		return TEXT("DefaultMap");
+		PlayedMapSet.Empty();
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("InsGetRandomLevel :: 모든 맵을 돌았으므로 초기화합니다."));
 	}
 
-	int RandomIndex = 0;
+	// 3. 중복되지 않은 맵 뽑기
+	FString SelectedAssetName;
 	do {
-		RandomIndex = FMath::RandRange(0, MapList.Num() - 1);
-	} while (PlayedMapList.Contains(RandomIndex));
+		int32 RandomIndex = FMath::RandRange(0, MapList.Num() - 1);
+		SelectedAssetName = MapList[RandomIndex];
+	} while (PlayedMapSet.Contains(SelectedAssetName));
 
-	PlayedMapList.Add(RandomIndex);
-
-	const FString& SelectedAssetName = MapList[RandomIndex];
-	CurLevelName = LevelNameMap.Contains(SelectedAssetName) ? LevelNameMap[SelectedAssetName] : TEXT("Unknown");
+	// 4. 선택된 맵 등록
+	PlayedMapSet.Add(SelectedAssetName);
 	CurLevelAssetName = SelectedAssetName;
+	CurLevelName = LevelNameMap.Contains(SelectedAssetName) ? LevelNameMap[SelectedAssetName] : TEXT("Unknown");
 
 	return SelectedAssetName;
 }
@@ -433,33 +435,36 @@ FString UBaseGameInstance::InsGetRandomLevel()
 // Random TeamPlayLevel의 이름 반환
 FString UBaseGameInstance::InsGetRandomTeamLevel()
 {
-	if (MapList.Num() == 0 || LevelNameMap.Num() == 0)
+	// 1. 맵 목록이 없으면 초기화
+	if (MapList.IsEmpty() || LevelNameMap.IsEmpty())
 	{
 		TArray<FLevelDisplayInfo> LevelInfos = UFallGlobal::GetAvailableTeamPlayLevelInfos();
-
 		for (const FLevelDisplayInfo& Info : LevelInfos)
 		{
-			MapList.Add(Info.AssetName);               // 기존 MapList에는 AssetName 저장
-			LevelNameMap.Add(Info.AssetName, Info.Name); // AssetName → Name 매핑
+			MapList.Add(Info.AssetName);
+			LevelNameMap.Add(Info.AssetName, Info.Name);
 		}
 	}
 
-	if (MapList.Num() == 0)
+	// 2. 모든 맵을 한 번 돌았으면 초기화
+	if (PlayedMapSet.Num() >= MapList.Num())
 	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("InsGetRandomTeamLevel :: 사용 가능한 맵이 없습니다."));
-		return TEXT("DefaultMap");
+		PlayedMapSet.Empty();
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("InsGetRandomTeamLevel :: 모든 맵을 돌았으므로 초기화합니다."));
 	}
 
-	int RandomIndex = 0;
-	do {
-		RandomIndex = FMath::RandRange(0, MapList.Num() - 1);
-	} while (PlayedMapList.Contains(RandomIndex));
+	// 3. 중복되지 않은 맵 뽑기
+	FString SelectedAssetName;
+	do
+	{
+		int32 RandomIndex = FMath::RandRange(0, MapList.Num() - 1);
+		SelectedAssetName = MapList[RandomIndex];
+	} while (PlayedMapSet.Contains(SelectedAssetName));
 
-	PlayedMapList.Add(RandomIndex);
-
-	const FString& SelectedAssetName = MapList[RandomIndex];
-	CurLevelName = LevelNameMap.Contains(SelectedAssetName) ? LevelNameMap[SelectedAssetName] : TEXT("Unknown");
+	// 4. 선택된 맵 등록
+	PlayedMapSet.Add(SelectedAssetName);
 	CurLevelAssetName = SelectedAssetName;
+	CurLevelName = LevelNameMap.Contains(SelectedAssetName) ? LevelNameMap[SelectedAssetName] : TEXT("Unknown");
 
 	return SelectedAssetName;
 }
@@ -602,7 +607,7 @@ FString UBaseGameInstance::InsGetGoalGuideFromAssetName(const FString& _AssetNam
 
 #pragma region BaseGameInstance :: 플레이어 데이터 관련
 // 플레이어 정보 백업 함수
-void UBaseGameInstance::InsBackupPlayerInfo(const FString& _UniqueID, const FPlayerInfo& _PlayerInfo)
+void UBaseGameInstance::InsBackupPlayerInfo(const FString& _UniqueID, FPlayerInfo& _PlayerInfo)
 {
 	if (_UniqueID.IsEmpty())
 	{
@@ -610,8 +615,13 @@ void UBaseGameInstance::InsBackupPlayerInfo(const FString& _UniqueID, const FPla
 		return;
 	}
 
+	if (PlayerInfoBackup.Contains(_UniqueID))
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsBackupPlayerInfo :: 덮어쓰기 발생! 기존 정보가 사라질 수 있음 → UniqueID = %s"), *_UniqueID);
+	}
+
 	FString StatusStr = UEnum::GetValueAsString(_PlayerInfo.Status);
-	PlayerInfoBackup.Add(_UniqueID, _PlayerInfo);
+	PlayerInfoBackup.Add(_UniqueID, MoveTemp(_PlayerInfo));
 	UE_LOG(FALL_DEV_LOG, Log, TEXT("InsBackupPlayerInfo :: UniqueID = %s, PlayerTag = %s, PlayerStatus = %s"),
 		*_UniqueID, *_PlayerInfo.Tag, *StatusStr);
 }

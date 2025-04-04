@@ -285,7 +285,7 @@ void APlayGameMode::CheckStartConditions()
 
 	// 현 레벨이 결과 화면인 경우 : 실패자 처리 하고 바로 게임 시작되게
 	APlayGameState* FallState = GetGameState<APlayGameState>();
-	if (bMODEIsResultLevel)
+	if (bMODEIsResultLevel == true)
 	{
 		FallState->SetDropOrder();
 		FallState->PrintFailPlayersInfo();
@@ -296,23 +296,25 @@ void APlayGameMode::CheckStartConditions()
 	else // 결과 화면이 아닐때만
 	{
 		// 시네마틱이 안끝났으면 리턴
-		if (false == FallState->GetIsLevelCinematicEnd()) { return; }
+		if (FallState->GetIsLevelCinematicEnd() == false) { return; }
 
 		// 카운트 다운 사용할거야?
-		if (true == UFallConst::UseCountDown && false == pCountDownStarted)
+		if (UFallConst::UseCountDown == true)
 		{
-			// 카운트 다운 핸들 활성화
-			StartCountdownTimer();
-			pCountDownStarted = true;
+			if (pCountDownStarted == false)
+			{
+				// 카운트 다운 핸들 활성화
+				StartCountdownTimer();
+				pCountDownStarted = true;
+			}
+			// 카운트 다운이 안끝났으면 리턴
+			if (pCountDownEnd == false) return;
 		}
-		else if (false == UFallConst::UseCountDown)
+		else
 		{
-			// 카운트 다운 바로 종료 처리
+			// 카운트다운을 사용하지 않으면 바로 끝난 것으로 처리
 			pCountDownEnd = true;
 		}
-
-		// 카운트 다운이 안끝났으면 리턴
-		if (pCountDownEnd == false) return;
 	}
 
 	// 인원도 찼고, 레벨 시네마틱도 끝났고, 카운트 다운도 끝났으니까 게임 시작 가능
@@ -368,18 +370,22 @@ void APlayGameMode::UpdateCountdown()
 	APlayGameState* FallState = GetGameState<APlayGameState>();
 	if (!FallState) return;
 
+	// 시간 감소 → 새로운 시간 저장
 	FallState->MinusCountDownTime(1.0f);
-	float Time = FallState->GetCountDownTime();
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: 카운트다운 : %.0f"), Time);
+	const float NewTime = FallState->GetCountDownTime();
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: 카운트다운 : %.0f"), NewTime);
 
-	if (FallState->GetCountDownTime() <= 0.0f)
+	// float 비교는 안전하게 처리 (±0.01 허용)
+	if (NewTime <= KINDA_SMALL_NUMBER)
 	{
+		// 타이머 정지
 		GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: 카운트다운 종료"));
 
-		// 카운트 다운 끝났음을 알림
+		// 카운트 다운 완료 처리
 		pCountDownEnd = true;
 		FallState->SetIsCountDownOverTrue();
+
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: 카운트다운 종료"));
 	}
 }
 
@@ -527,7 +533,7 @@ void APlayGameMode::SetDefaultPlayersToFail()
 		APlayPlayerState* PState = Cast<APlayPlayerState>(PS);
 		if (PState && PState->GetPlayerStateStatus() == EPlayerStatus::DEFAULT)
 		{
-			PState->S2M_SetPlayerStatusFail();
+			PState->SetPlayerStatus(EPlayerStatus::FAIL);
 			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: Tick :: FAIL 처리됨 - %s"), *PState->PlayerInfo.Tag);
 		}
 	}
@@ -553,7 +559,7 @@ void APlayGameMode::SetDefaultPlayersToSuccess()
 		APlayPlayerState* PState = Cast<APlayPlayerState>(PS);
 		if (PState && PState->GetPlayerStateStatus() == EPlayerStatus::DEFAULT)
 		{
-			PState->S2M_SetPlayerStatusSuccess();
+			PState->SetPlayerStatus(EPlayerStatus::SUCCESS);
 			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: Tick :: SUCCESS 처리됨 - %s"), *PState->PlayerInfo.Tag);
 		}
 	}
@@ -576,7 +582,7 @@ void APlayGameMode::ServerTravelToNextMap(const FString& url)
 		GameInstance->PlayerInfoBackup.Empty();
 
 		// 현재 게임 상태 가져오기
-		for (const FPlayerInfoEntry& PlayerEntry : PlayGameState->PlayerInfoArray)
+		for (FPlayerInfoEntry& PlayerEntry : PlayGameState->PlayerInfoArray)
 		{
 			GameInstance->InsBackupPlayerInfo(PlayerEntry.UniqueID, PlayerEntry.PlayerInfo);
 			UE_LOG(FALL_DEV_LOG, Log, TEXT("ServerTravelToNextMap :: 플레이어 정보 백업 완료 - UniqueID = %s, Tag = %s"),

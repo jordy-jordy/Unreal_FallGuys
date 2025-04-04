@@ -86,6 +86,11 @@ public:
     void SetTeam(ETeamType _Team);
     void SetTeam_Implementation(ETeamType _Team);
 
+    // 플레이어 상태 설정
+    UFUNCTION(Reliable, server, BlueprintCallable, Category = "PLAYER INFO")
+    void SetPlayerStatus(EPlayerStatus _NewStatus);
+    void SetPlayerStatus_Implementation(EPlayerStatus _NewStatus);
+
     // 닉네임 반환
     UFUNCTION(BlueprintCallable, Category = "PLAYER INFO")
     FString GetPlayerStateNickName() { return PlayerInfo.NickName; }
@@ -94,26 +99,19 @@ public:
     UFUNCTION(BlueprintCallable, Category = "PLAYER INFO")
     ETeamType GetPlayerStateTeam() { return PlayerInfo.Team; }
 
-    // 플레이어 상태 전환 : 성공 (서버)
-    UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "PLAYER INFO")
-    void S2M_SetPlayerStatusSuccess();
-    void S2M_SetPlayerStatusSuccess_Implementation();
-
-    // 플레이어 상태 전환 : 실패 (서버)
-    UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "PLAYER INFO")
-    void S2M_SetPlayerStatusFail();
-    void S2M_SetPlayerStatusFail_Implementation();
-
-    // 플레이어 상태 전환 : 디폴트 (서버)
-    UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "PLAYER INFO")
-    void S2M_SetPlayerStatusDefault();
-    void S2M_SetPlayerStatusDefault_Implementation();
-
     // 플레이어 상태 반환
 	UFUNCTION(BlueprintCallable, Category = "PLAYER INFO")
 	EPlayerStatus GetPlayerStateStatus() { return PlayerInfo.Status; }
 
 protected:
+    // 실시간 상태 동기화를 위한 변수
+    UPROPERTY(ReplicatedUsing = OnRep_PlayerStatus)
+    EPlayerStatus PlayerStatus = EPlayerStatus::NONE;
+
+    // PlayerStatus 가 변할 때 호출되는 함수 - 동기화
+    UFUNCTION()
+    void OnRep_PlayerStatus();
+
     // 동기화 관련
     void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };

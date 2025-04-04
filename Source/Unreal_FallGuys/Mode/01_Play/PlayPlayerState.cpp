@@ -3,6 +3,8 @@
 
 #include "Mode/01_Play/PlayPlayerState.h"
 
+#include <Global/GlobalEnum.h>
+
 #include <Net/UnrealNetwork.h>
 
 
@@ -22,26 +24,32 @@ void APlayPlayerState::SetTeam_Implementation(ETeamType _Team)
     PlayerInfo.Team = _Team;
 }
 
+// 플레이어 상태 설정
+void APlayPlayerState::SetPlayerStatus_Implementation(EPlayerStatus _NewStatus)
+{
+	if (!HasAuthority()) return; // 서버에서만 실행
+
+	// 상태가 다르면 변경
+	if (PlayerStatus != _NewStatus)
+	{
+		PlayerStatus = _NewStatus;
+
+		// 구조체에도 반영
+		PlayerInfo.Status = _NewStatus;
+	}
+}
+
+// PlayerStatus 가 변할 때 호출되는 함수 - 동기화
+void APlayPlayerState::OnRep_PlayerStatus()
+{
+	// 구조체 동기화
+	PlayerInfo.Status = PlayerStatus;
+}
+
 void APlayPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-    DOREPLIFETIME(APlayPlayerState, PlayerInfo);
+	DOREPLIFETIME(APlayPlayerState, PlayerInfo);
+	DOREPLIFETIME(APlayPlayerState, PlayerStatus);
 }
 
-// 플레이어 상태 전환 : 성공 (서버)
-void APlayPlayerState::S2M_SetPlayerStatusSuccess_Implementation()
-{
-	PlayerInfo.Status = EPlayerStatus::SUCCESS;
-}
-
-// 플레이어 상태 전환 : 실패 (서버)
-void APlayPlayerState::S2M_SetPlayerStatusFail_Implementation()
-{
-	PlayerInfo.Status = EPlayerStatus::FAIL;
-}
-
-// 플레이어 상태 전환 : 디폴트 (서버)
-void APlayPlayerState::S2M_SetPlayerStatusDefault_Implementation()
-{
-	PlayerInfo.Status = EPlayerStatus::DEFAULT;
-}
