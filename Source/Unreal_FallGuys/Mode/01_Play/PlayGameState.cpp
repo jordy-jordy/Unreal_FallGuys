@@ -290,7 +290,9 @@ void APlayGameState::SetDropOrder_Implementation()
 	{
 		APlayPlayerState* PlayerState = FailedPlayerStates[i];
 
-		PlayerState->PlayerInfo.DropOrder = DropOrders[i];
+		// PlayerState->PlayerInfo.DropOrder = DropOrders[i];
+		PlayerState->SetPlayerDropOrder(DropOrders[i]);
+
 
 		FailPlayerInfoArray.Add(FPlayerInfoEntry(
 			PlayerState->PlayerInfo.UniqueID,

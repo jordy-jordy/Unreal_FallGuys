@@ -184,6 +184,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void DebugCheckDieStatus();
 
+	// 디버그용 : 캐릭터 죽이기
+	UFUNCTION(BlueprintCallable)
+	void DebugCharacterDie();
+
 protected:
 	// 서버장의 캐릭터 상태를 세팅
 	virtual void PossessedBy(AController* _NewController) override;

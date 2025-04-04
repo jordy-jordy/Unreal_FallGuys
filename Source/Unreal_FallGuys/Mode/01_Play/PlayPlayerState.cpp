@@ -46,10 +46,33 @@ void APlayPlayerState::OnRep_PlayerStatus()
 	PlayerInfo.Status = PlayerStatus;
 }
 
+// 플레이어 떨어지는 순서 설정
+void APlayPlayerState::SetPlayerDropOrder_Implementation(int32 _Order)
+{
+	if (!HasAuthority()) return; // 서버에서만 실행
+
+	// 상태가 다르면 변경
+	if (PlayerDropOrder != _Order)
+	{
+		PlayerDropOrder = _Order;
+
+		// 구조체에도 반영
+		PlayerInfo.DropOrder = _Order;
+	}
+}
+
+// PlayerDropOrder 가 변할 때 호출되는 함수 - 동기화
+void APlayPlayerState::OnRep_PlayerDropOrder()
+{
+	// 구조체 동기화
+	PlayerInfo.DropOrder = PlayerDropOrder;
+}
+
 void APlayPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(APlayPlayerState, PlayerInfo);
 	DOREPLIFETIME(APlayPlayerState, PlayerStatus);
+	DOREPLIFETIME(APlayPlayerState, PlayerDropOrder);
 }
 

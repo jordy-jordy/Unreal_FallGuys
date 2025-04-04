@@ -37,7 +37,7 @@ struct FPlayerInfo
 
     // 실패했을 경우 떨어지는 순서
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-    int DropOrder;
+    int32 DropOrder;
 
     // 플레이어 정보가 모두 동일할 때 TRUE 반환
     bool operator==(const FPlayerInfo& Other) const
@@ -91,6 +91,11 @@ public:
     void SetPlayerStatus(EPlayerStatus _NewStatus);
     void SetPlayerStatus_Implementation(EPlayerStatus _NewStatus);
 
+    // 플레이어 떨어지는 순서 설정
+    UFUNCTION(Reliable, server, BlueprintCallable, Category = "PLAYER INFO")
+    void SetPlayerDropOrder(int32 _Order);
+    void SetPlayerDropOrder_Implementation(int32 _Order);
+
     // 닉네임 반환
     UFUNCTION(BlueprintCallable, Category = "PLAYER INFO")
     FString GetPlayerStateNickName() { return PlayerInfo.NickName; }
@@ -108,9 +113,17 @@ protected:
     UPROPERTY(ReplicatedUsing = OnRep_PlayerStatus)
     EPlayerStatus PlayerStatus = EPlayerStatus::NONE;
 
+    // 실시간 떨어지는 순서 동기화를 위한 변수
+    UPROPERTY(ReplicatedUsing = OnRep_PlayerDropOrder)
+    int32 PlayerDropOrder = -1;
+
     // PlayerStatus 가 변할 때 호출되는 함수 - 동기화
     UFUNCTION()
     void OnRep_PlayerStatus();
+
+	// PlayerDropOrder 가 변할 때 호출되는 함수 - 동기화
+    UFUNCTION()
+    void OnRep_PlayerDropOrder();
 
     // 동기화 관련
     void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;

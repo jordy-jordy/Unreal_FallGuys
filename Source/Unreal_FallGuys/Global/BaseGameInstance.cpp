@@ -672,8 +672,8 @@ void UBaseGameInstance::InsPrintPlayerInfo()
 	for (const FPlayerInfoEntry& Entry : PlayGameState->PlayerInfoArray)
 	{
 		FString StatusStr = UEnum::GetValueAsString(Entry.PlayerInfo.Status);
-		FString LogMessage = FString::Printf(TEXT("UniqueID: %s, Tag: %s, Status: %s"),
-			*Entry.UniqueID, *Entry.PlayerInfo.Tag, *StatusStr);
+		FString LogMessage = FString::Printf(TEXT("UniqueID: %s, Tag: %s, Status: %s, DropOder: %d"),
+			*Entry.UniqueID, *Entry.PlayerInfo.Tag, *StatusStr, Entry.PlayerInfo.DropOrder);
 
 		UE_LOG(FALL_DEV_LOG, Log, TEXT("%s"), *LogMessage);
 
@@ -693,8 +693,8 @@ void UBaseGameInstance::InsPrintPlayerInfo()
 		if (PlayPlayerState)
 		{
 			FString StatusStr = UEnum::GetValueAsString(PlayPlayerState->PlayerInfo.Status);
-			FString LogMessage = FString::Printf(TEXT("UniqueID: %s, Tag: %s, Status: %s"),
-				*PlayPlayerState->PlayerInfo.UniqueID, *PlayPlayerState->PlayerInfo.Tag, *StatusStr);
+			FString LogMessage = FString::Printf(TEXT("UniqueID: %s, Tag: %s, Status: %s DropOder: %d"),
+				*PlayPlayerState->PlayerInfo.UniqueID, *PlayPlayerState->PlayerInfo.Tag, *StatusStr, PlayPlayerState->PlayerInfo.DropOrder);
 
 			UE_LOG(FALL_DEV_LOG, Log, TEXT("%s"), *LogMessage);
 
@@ -845,11 +845,6 @@ void UBaseGameInstance::InsGetGameStateCurFinishPlayer()
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("현재 골인한 인원 : %d"), CurGoalCount));
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("목표 골인 인원 : %d"), TargetGoalCount));
 	}
-}
-
-// 디버그용 : 플레이어 성공시키고 상태 출력
-void UBaseGameInstance::InsSetPlayerDie(APlayerController* _Controller)
-{
 }
 
 #pragma endregion

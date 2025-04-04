@@ -237,6 +237,47 @@ void APlayCharacter::S2M_SetCanMoveFalse_Implementation()
 {
 	CanMove = false;
 }
+// 이현정 : 서버장의 캐릭터 상태를 세팅
+void APlayCharacter::PossessedBy(AController* _NewController)
+{
+	Super::PossessedBy(_NewController);
+
+	APlayPlayerState* PlayState = GetPlayerState<APlayPlayerState>();
+	if (PlayState)
+	{
+		// PlayerState에 있는 Tag를 캐릭터 태그에 세팅
+		if (!PlayState->PlayerInfo.Tag.IsEmpty())
+		{
+			Tags.Add(FName(*PlayState->PlayerInfo.Tag));
+		}
+
+		// PlayerState의 Status에 따라 IsDie 세팅
+		CurStatus = PlayState->GetPlayerStateStatus();
+		IsDie = (CurStatus == EPlayerStatus::FAIL);
+		DebugCheckDieStatus(); // 상태 디버깅
+	}
+}
+
+// 이현정 : 클라이언트의 캐릭터 상태를 세팅
+void APlayCharacter::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	APlayPlayerState* PlayState = GetPlayerState<APlayPlayerState>();
+	if (PlayState)
+	{
+		// PlayerState에 있는 Tag를 캐릭터 태그에 세팅
+		if (!PlayState->PlayerInfo.Tag.IsEmpty())
+		{
+			Tags.Add(FName(*PlayState->PlayerInfo.Tag));
+		}
+
+		// PlayerState의 Status에 따라 IsDie 세팅
+		CurStatus = PlayState->GetPlayerStateStatus();
+		IsDie = (CurStatus == EPlayerStatus::FAIL);
+		DebugCheckDieStatus(); // 상태 디버깅
+	}
+}
 
 // 이현정 : 디버그용 : 캐릭터 상태 확인
 void APlayCharacter::DebugCheckDieStatus()
@@ -287,44 +328,10 @@ void APlayCharacter::DebugCheckDieStatus()
 	}
 }
 
-// 이현정 : 서버장의 캐릭터 상태를 세팅
-void APlayCharacter::PossessedBy(AController* _NewController)
+// 이현정 : 디버그용 : 캐릭터 사망 처리
+void APlayCharacter::DebugCharacterDie()
 {
-	Super::PossessedBy(_NewController);
-
 	APlayPlayerState* PlayState = GetPlayerState<APlayPlayerState>();
-	if (PlayState)
-	{
-		// PlayerState에 있는 Tag를 캐릭터 태그에 세팅
-		if (!PlayState->PlayerInfo.Tag.IsEmpty())
-		{
-			Tags.Add(FName(*PlayState->PlayerInfo.Tag));
-		}
-
-		// PlayerState의 Status에 따라 IsDie 세팅
-		CurStatus = PlayState->GetPlayerStateStatus();
-		IsDie = (CurStatus == EPlayerStatus::FAIL);
-		DebugCheckDieStatus(); // 상태 디버깅
-	}
+	PlayState->SetPlayerStatus(EPlayerStatus::FAIL);
 }
 
-// 이현정 : 클라이언트의 캐릭터 상태를 세팅
-void APlayCharacter::OnRep_PlayerState()
-{
-	Super::OnRep_PlayerState();
-
-	APlayPlayerState* PlayState = GetPlayerState<APlayPlayerState>();
-	if (PlayState)
-	{
-		// PlayerState에 있는 Tag를 캐릭터 태그에 세팅
-		if (!PlayState->PlayerInfo.Tag.IsEmpty())
-		{
-			Tags.Add(FName(*PlayState->PlayerInfo.Tag));
-		}
-
-		// PlayerState의 Status에 따라 IsDie 세팅
-		CurStatus = PlayState->GetPlayerStateStatus();
-		IsDie = (CurStatus == EPlayerStatus::FAIL);
-		DebugCheckDieStatus(); // 상태 디버깅
-	}
-}

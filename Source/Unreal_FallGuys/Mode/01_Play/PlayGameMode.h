@@ -155,7 +155,7 @@ protected:
 
 	// 다음 스테이지 이름
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Server", meta = (AllowPrivateAccess = "true"))
-	FString NextLevel= TEXT("PlayLevel");
+	FString NextLevel= TEXT("LMHRaceOverMap");
 
 public:
 	UFUNCTION(BlueprintCallable)
