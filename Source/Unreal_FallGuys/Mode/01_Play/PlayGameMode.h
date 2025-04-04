@@ -6,6 +6,7 @@
 #include "GameFramework/GameMode.h"
 
 #include <Global/GlobalEnum.h>
+#include <Mode/01_Play/PlayEnum.h>
 
 #include "PlayGameMode.generated.h"
 
@@ -64,7 +65,7 @@ public:
 
 protected:
 	// 목표 골인 인원 수 제어
-	void ControllFinishPlayer(APlayGameState* _PlayState);
+	void ControllFinishPlayer();
 
 	// 접속 제한
 	bool InvalidConnect = false;
@@ -79,6 +80,9 @@ protected:
 	// 결과 화면이니
 	bool bMODEIsResultLevel = false;
 	
+	// 현재 스테이지 단계
+	EStageType MODECurrentStage = EStageType::STAGE_1;
+
 	// 게임 시작 조건 검사 타이머 핸들
 	FTimerHandle GameStartConditionTimer;
 

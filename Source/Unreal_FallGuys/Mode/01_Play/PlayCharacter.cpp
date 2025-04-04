@@ -194,16 +194,13 @@ void APlayCharacter::C2S_IsDie_Implementation(bool _val)
 	IsDie = _val;
 	
 	APlayPlayerState* PS = GetPlayerState<APlayPlayerState>();
-	if (PS)
+	if (IsDie == false)
 	{
-		if (IsDie == false)
-		{
-			PS->SetPlayerStatusSuccess();
-		}
-		else
-		{
-			PS->SetPlayerStatusFail();
-		}
+		PS->SetPlayerStatusSuccess();
+	}
+	else
+	{
+		PS->SetPlayerStatusFail();
 	}
 
 	S2M_IsDie(IsDie);
@@ -215,16 +212,13 @@ void APlayCharacter::S2M_IsDie_Implementation(bool _val)
 	IsDie = _val;
 
 	APlayPlayerState* PS = GetPlayerState<APlayPlayerState>();
-	if (PS)
+	if (IsDie == false)
 	{
-		if (IsDie == false)
-		{
-			PS->SetPlayerStatusSuccess();
-		}
-		else
-		{
-			PS->SetPlayerStatusFail();
-		}
+		PS->SetPlayerStatusSuccess();
+	}
+	else
+	{
+		PS->SetPlayerStatusFail();
 	}
 }
 

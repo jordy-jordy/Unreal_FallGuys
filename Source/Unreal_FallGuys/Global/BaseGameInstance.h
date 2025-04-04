@@ -181,11 +181,11 @@ public:
 protected:
 	// 레벨 이름
 	UPROPERTY(VisibleAnywhere, Category = "LEVEL")
-	FString CurLevelName = TEXT("");
+	FString CurLevelName = TEXT("테스트");
 
 	// 레벨 에셋 이름
 	UPROPERTY(VisibleAnywhere, Category = "LEVEL")
-	FString CurLevelAssetName = TEXT("");
+	FString CurLevelAssetName = TEXT("Race2Map");
 
 	// 레벨 리스트
 	TArray<FString> MapList;
@@ -229,6 +229,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "PLAYER DATA")
 	bool InsGetHasNickname() { return HasNickname; }
 
+	// 플레이어 UniqueID -> FPlayerInfo 매핑 저장소
+	TMap<FString, struct FPlayerInfo> PlayerInfoBackup;
+
 protected:
 	// 닉네임
 	UPROPERTY(VisibleAnywhere, Category = "PLAYER DATA")
@@ -239,9 +242,6 @@ protected:
 
 	// 서버 연결 상태 변수
 	bool bIsConnected = false;
-
-	// 플레이어 UniqueID -> FPlayerInfo 매핑 저장소
-	TMap<FString, struct FPlayerInfo> PlayerInfoBackup;
 
 #pragma endregion
 
@@ -280,7 +280,7 @@ public:
 	bool GetIsDie() { return IsDie; }
 
 	UFUNCTION(BlueprintCallable)
-	void SetIsDie(bool _val) { IsDie = _val; }
+	void SetIsDie(bool _val);
 
 	UPROPERTY(BlueprintReadWrite)
 	bool IsDie = true;

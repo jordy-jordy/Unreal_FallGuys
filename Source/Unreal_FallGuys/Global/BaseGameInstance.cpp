@@ -848,3 +848,8 @@ void UBaseGameInstance::InsSetPlayerDie(APlayerController* _Controller)
 }
 
 #pragma endregion
+
+void UBaseGameInstance::SetIsDie(bool _val)
+{
+	IsDie = _val;
+}

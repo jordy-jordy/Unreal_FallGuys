@@ -119,8 +119,10 @@ void APlayGameMode::PostLogin(APlayerController* _NewPlayer)
 	// 접속 여부 bool값 true로 변경
 	GameInstance->InsSetbIsConnectedTrue();
 
+	// 현 스테이지가 무엇이지?
+	MODECurrentStage = GameInstance->InsGetSavedStage();
 	// 게임 시작 인원 수에 따른 목표 횟수 설정
-	ControllFinishPlayer(FallState);
+	ControllFinishPlayer();
 	// 게임 인스턴스에 저장된 레벨 이름을 게임 스테이트에 저장
 	FallState->SavePlayLevelName(GameInstance->InsGetCurLevelName());
 	// 게임 인스턴스에 저장된 레벨 에셋 이름을 게임 스테이트에 저장
@@ -193,13 +195,11 @@ void APlayGameMode::CallLevelCinematicStart(APlayGameState* _PlayState)
 }
 
 // 목표 골인 인원 수 제어
-void APlayGameMode::ControllFinishPlayer(APlayGameState* _PlayState)
+void APlayGameMode::ControllFinishPlayer()
 {
-	if (!_PlayState) return;
-
 	int32 MinCount = UFallConst::MinPlayerCount;
 
-	switch (_PlayState->CurrentStage)
+	switch (MODECurrentStage)
 	{
 	case EStageType::STAGE_1:
 		if (MinCount <= 2)
@@ -208,7 +208,7 @@ void APlayGameMode::ControllFinishPlayer(APlayGameState* _PlayState)
 		}
 		else if (MinCount <= 5)
 		{
-			SetFinishPlayerCount(2);
+			SetFinishPlayerCount(3);
 		}
 		else
 		{
@@ -510,11 +510,13 @@ void APlayGameMode::ServerTravelToNextMap(const FString& url)
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 서버트래블 감지 ::"));
 
-
 	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
 	APlayGameState* PlayGameState = GetGameState<APlayGameState>();
 	if (GameInstance && PlayGameState)
 	{
+		// 백업하기 전에 비워주자
+		GameInstance->PlayerInfoBackup.Empty();
+
 		// 현재 게임 상태 가져오기
 		for (const FPlayerInfoEntry& PlayerEntry : PlayGameState->PlayerInfoArray)
 		{
@@ -524,7 +526,7 @@ void APlayGameMode::ServerTravelToNextMap(const FString& url)
 		}
 
 		// 다음 스테이지 값을 미리 저장
-		switch (PlayGameState->CurrentStage)
+		switch (MODECurrentStage)
 		{
 		case EStageType::STAGE_1:
 			GameInstance->InsSetSavedStage(EStageType::STAGE_1_RESULT);
@@ -548,7 +550,7 @@ void APlayGameMode::ServerTravelToNextMap(const FString& url)
 
 		case EStageType::STAGE_3:
 			GameInstance->InsSetSavedStage(EStageType::FINISHED);
-			GameInstance->bIsResultLevel = true; // 마지막 결과화면이라고 가정
+			GameInstance->bIsResultLevel = true; 
 			break;
 
 		default:
