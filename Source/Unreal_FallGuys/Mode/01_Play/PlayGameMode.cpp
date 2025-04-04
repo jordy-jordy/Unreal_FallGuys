@@ -73,15 +73,15 @@ void APlayGameMode::PostLogin(APlayerController* _NewPlayer)
 	{
 		FPlayerInfo RestoredInfo;
 		GameInstance->InsGetBackedUpPlayerInfo(PlayerUniqueID, RestoredInfo);
-		if (bMODEIsResultLevel)
+		if (bMODEIsResultLevel) // 결과 화면
 		{
 			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: 결과 화면입니다. 기존 플레이어 정보를 복구 합니다."));
 			PlayerState->PlayerInfo = RestoredInfo;
 		}
-		else if (!bMODEIsResultLevel)
+		else if (!bMODEIsResultLevel) // 게임 스테이지
 		{
 			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: 게임 스테이지 입니다. 기존 플레이어 정보를 리셋 합니다."));
-			GameInstance->SetIsDie(true);
+			RestoredInfo.Status = EPlayerStatus::DEFAULT;
 			PlayerState->PlayerInfo = RestoredInfo;
 		}
 		else
@@ -514,6 +514,9 @@ void APlayGameMode::ServerTravelToNextMap(const FString& url)
 	APlayGameState* PlayGameState = GetGameState<APlayGameState>();
 	if (GameInstance && PlayGameState)
 	{
+		// 백업하기 전에 마지막 동기화
+		SyncPlayerInfo();
+
 		// 백업하기 전에 비워주자
 		GameInstance->PlayerInfoBackup.Empty();
 

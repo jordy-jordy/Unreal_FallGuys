@@ -273,18 +273,6 @@ public:
 
 #pragma endregion
 
-
-//LMH
-public:
-	UFUNCTION(BlueprintCallable)
-	bool GetIsDie() { return IsDie; }
-
-	UFUNCTION(BlueprintCallable)
-	void SetIsDie(bool _val);
-
-	UPROPERTY(BlueprintReadWrite)
-	bool IsDie = true;
-
 	// 이현정 : 스테이지 끝나고 나오는 결과창인지 구분하기 위함
 	UPROPERTY(BlueprintReadWrite, Category = "LEVEL")
 	bool bIsResultLevel = false;

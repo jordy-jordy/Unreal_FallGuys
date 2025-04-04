@@ -102,18 +102,18 @@ void APlayCharacter::BeginPlay()
 		}
 	}
 
-	// 서버장일 경우: 직접 PlayerState에 Status 설정
-	if (HasAuthority()) // 서버만 실행
-	{
-		UBaseGameInstance* GameIns = Cast<UBaseGameInstance>(GetGameInstance());
-		IsDie = GameIns->GetIsDie();
+	//// 서버장일 경우: 직접 PlayerState에 Status 설정
+	//if (HasAuthority()) // 서버만 실행
+	//{
+	//	UBaseGameInstance* GameIns = Cast<UBaseGameInstance>(GetGameInstance());
+	//	IsDie = GameIns->GetIsDie();
 
-		APlayPlayerState* PS = GetPlayerState<APlayPlayerState>();
-		if (PS != nullptr)
-		{
-			PS->PlayerInfo.Status = IsDie ? EPlayerStatus::FAIL : EPlayerStatus::SUCCESS;
-		}
-	}
+	//	APlayPlayerState* PS = GetPlayerState<APlayPlayerState>();
+	//	if (PS != nullptr)
+	//	{
+	//		PS->PlayerInfo.Status = IsDie ? EPlayerStatus::FAIL : EPlayerStatus::SUCCESS;
+	//	}
+	//}
 }
 
 // Called every frame
@@ -189,39 +189,6 @@ void APlayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(APlayCharacter, CanMove);
 }
 
-void APlayCharacter::C2S_IsDie_Implementation(bool _val)
-{
-	IsDie = _val;
-	
-	APlayPlayerState* PS = GetPlayerState<APlayPlayerState>();
-	if (IsDie == false)
-	{
-		PS->SetPlayerStatusSuccess();
-	}
-	else
-	{
-		PS->SetPlayerStatusFail();
-	}
-
-	S2M_IsDie(IsDie);
-}
-
-// 이현정 : 캐릭터 상태 동기화를 위한 함수
-void APlayCharacter::S2M_IsDie_Implementation(bool _val)
-{
-	IsDie = _val;
-
-	APlayPlayerState* PS = GetPlayerState<APlayPlayerState>();
-	if (IsDie == false)
-	{
-		PS->SetPlayerStatusSuccess();
-	}
-	else
-	{
-		PS->SetPlayerStatusFail();
-	}
-}
-
 // 이현정 : 캐릭터 코스튬 설정 - 클라 > 서버
 void APlayCharacter::C2S_Costume_Implementation(const FString& _Color, const FString& _TopName, const FString& _BotName)
 {
@@ -280,25 +247,4 @@ void APlayCharacter::S2M_SetCanMoveTrue_Implementation()
 void APlayCharacter::S2M_SetCanMoveFalse_Implementation()
 {
 	CanMove = false;
-}
-
-// 이현정 : 클라이언트 플레이어의 상태 동기화
-void APlayCharacter::OnRep_PlayerState()
-{
-	Super::OnRep_PlayerState();
-
-	APlayPlayerState* PS = GetPlayerState<APlayPlayerState>();
-	if (!IsValid(PS))
-	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("OnRep_PlayerState :: PS가 nullptr입니다."));
-		return;
-	}
-
-	// GameInstance에서 IsDie 가져와서 서버에 전달
-	UBaseGameInstance* GameIns = Cast<UBaseGameInstance>(GetGameInstance());
-	if (GameIns)
-	{
-		IsDie = GameIns->GetIsDie();
-		C2S_IsDie(IsDie); // 클라 → 서버
-	}
 }

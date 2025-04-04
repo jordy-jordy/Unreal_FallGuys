@@ -28,3 +28,20 @@ void APlayPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
     DOREPLIFETIME(APlayPlayerState, PlayerInfo);
 }
 
+// 플레이어 상태 전환 : 성공 (서버)
+void APlayPlayerState::S2M_SetPlayerStatusSuccess_Implementation()
+{
+	PlayerInfo.Status = EPlayerStatus::SUCCESS;
+}
+
+// 플레이어 상태 전환 : 실패 (서버)
+void APlayPlayerState::S2M_SetPlayerStatusFail_Implementation()
+{
+	PlayerInfo.Status = EPlayerStatus::FAIL;
+}
+
+// 플레이어 상태 전환 : 디폴트 (서버)
+void APlayPlayerState::S2M_SetPlayerStatusDefault_Implementation()
+{
+	PlayerInfo.Status = EPlayerStatus::DEFAULT;
+}

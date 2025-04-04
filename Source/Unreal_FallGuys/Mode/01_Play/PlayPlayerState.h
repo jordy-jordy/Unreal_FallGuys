@@ -94,17 +94,20 @@ public:
     UFUNCTION(BlueprintCallable, Category = "PLAYER INFO")
     ETeamType GetPlayerStateTeam() { return PlayerInfo.Team; }
 
-    // 플레이어 상태 전환 : 성공
-    UFUNCTION(BlueprintCallable, Category = "PLAYER INFO")
-	void SetPlayerStatusSuccess() { PlayerInfo.Status = EPlayerStatus::SUCCESS; }
+    // 플레이어 상태 전환 : 성공 (서버)
+    UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "PLAYER INFO")
+    void S2M_SetPlayerStatusSuccess();
+    void S2M_SetPlayerStatusSuccess_Implementation();
 
-	// 플레이어 상태 전환 : 실패
-	UFUNCTION(BlueprintCallable, Category = "PLAYER INFO")  
-	void SetPlayerStatusFail() { PlayerInfo.Status = EPlayerStatus::FAIL; }
+    // 플레이어 상태 전환 : 실패 (서버)
+    UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "PLAYER INFO")
+    void S2M_SetPlayerStatusFail();
+    void S2M_SetPlayerStatusFail_Implementation();
 
-    // 플레이어 상태 전환 : 디폴트
-	UFUNCTION(BlueprintCallable, Category = "PLAYER INFO")
-	void SetPlayerStatusDefault() { PlayerInfo.Status = EPlayerStatus::DEFAULT; }
+    // 플레이어 상태 전환 : 디폴트 (서버)
+    UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "PLAYER INFO")
+    void S2M_SetPlayerStatusDefault();
+    void S2M_SetPlayerStatusDefault_Implementation();
 
     // 플레이어 상태 반환
 	UFUNCTION(BlueprintCallable, Category = "PLAYER INFO")

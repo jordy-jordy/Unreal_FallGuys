@@ -842,14 +842,7 @@ void UBaseGameInstance::InsGetGameStateCurFinishPlayer()
 // 디버그용 : 플레이어 성공시키고 상태 출력
 void UBaseGameInstance::InsSetPlayerDie(APlayerController* _Controller)
 {
-	UE_LOG(FALL_DEV_LOG, Log, TEXT("캐릭터 현 상태 : %s"), IsDie ? TEXT("true") : TEXT("false"));
-	SetIsDie(false);
-	UE_LOG(FALL_DEV_LOG, Log, TEXT("캐릭터 죽었니? : %s"), IsDie ? TEXT("true") : TEXT("false"));
 }
 
 #pragma endregion
 
-void UBaseGameInstance::SetIsDie(bool _val)
-{
-	IsDie = _val;
-}
