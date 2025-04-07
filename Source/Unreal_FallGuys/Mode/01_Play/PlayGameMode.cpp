@@ -120,15 +120,6 @@ void APlayGameMode::PostLogin(APlayerController* _NewPlayer)
 	// 접속 여부 bool값 true로 변경
 	GameInstance->InsSetbIsConnectedTrue();
 
-	// 현 스테이지가 무엇이지?
-	MODECurrentStage = GameInstance->InsGetSavedStage();
-	// 게임 시작 인원 수에 따른 목표 횟수 설정
-	ControllFinishPlayer();
-	// 게임 인스턴스에 저장된 레벨 이름을 게임 스테이트에 저장
-	FallState->SavePlayLevelName(GameInstance->InsGetCurLevelName());
-	// 게임 인스턴스에 저장된 레벨 에셋 이름을 게임 스테이트에 저장
-	FallState->SavePlayLevelAssetName(GameInstance->InsGetCurLevelAssetName());
-
 	// 인원 카운팅
 	FallState->AddConnectedPlayers();
 	int ConnectingPlayer = FallState->GetConnectedPlayers();
@@ -171,6 +162,9 @@ void APlayGameMode::PostLogin(APlayerController* _NewPlayer)
 		}
 	}
 
+	// 게임 시작 인원 수에 따른 목표 횟수 설정
+	ControllFinishPlayer();
+
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode PostLogin END ======= "));
 }
 #pragma endregion
@@ -201,16 +195,16 @@ void APlayGameMode::ControllFinishPlayer()
 {
 	int32 MinCount = UFallConst::MinPlayerCount;
 
-	switch (MODECurrentStage)
+	switch (MODE_CurStagePhase)
 	{
-	case EStageType::STAGE_1:
+	case EStagePhase::STAGE_1:
 		if (MinCount <= 2)
 		{
 			SetFinishPlayerCount(MinCount);
 		}
 		else if (MinCount <= 5)
 		{
-			SetFinishPlayerCount(3);
+			SetFinishPlayerCount(2);
 		}
 		else
 		{
@@ -218,7 +212,7 @@ void APlayGameMode::ControllFinishPlayer()
 		}
 		break;
 
-	case EStageType::STAGE_2:
+	case EStagePhase::STAGE_2:
 		if (MinCount <= 2)
 		{
 			SetFinishPlayerCount(1);
@@ -233,11 +227,11 @@ void APlayGameMode::ControllFinishPlayer()
 		}
 		break;
 
-	case EStageType::STAGE_3:
+	case EStagePhase::STAGE_3:
 		SetFinishPlayerCount(1);
 		break;
 
-	case EStageType::FINISHED:
+	case EStagePhase::FINISHED:
 	default:
 		break;
 	}
@@ -252,6 +246,29 @@ void APlayGameMode::BeginPlay()
 	if (HasAuthority())
 	{
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode BeginPlay START ======= "));
+
+		UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
+		APlayGameState* FallState = GetGameState<APlayGameState>();
+
+		// 게임 인스턴스에서 현재 스테이지의 에셋 이름을 가져옴
+		MODE_CurLevelAssetName = GameInstance->InsGetCurLevelAssetName();
+		// 게임 스테이트에 스테이지 에셋 이름을 전달
+		FallState->SetPlayLevelAssetName(MODE_CurLevelAssetName);
+
+		// 게임 인스턴스에서 현재 스테이지의 이름을 가져옴
+		MODE_CurLevelName = GameInstance->InsGetCurLevelName();
+		// 게임 스테이트에 스테이지 이름을 전달
+		FallState->SetPlayLevelName(MODE_CurLevelName);
+
+		// 게임 인스턴스에서 현재 스테이지 타입을 가져옴
+		MODE_CurStageType = GameInstance->InsGetCurStageType();
+		// 게임 스테이트에 스테이지 타입을 전달
+		FallState->SetCurStageType(MODE_CurStageType);
+
+		// 게임 인스턴스에서 현재 스테이지 페이즈를 가져옴
+		MODE_CurStagePhase = GameInstance->InsGetCurStagePhase();
+		// 게임 스테이트에 스테이지 페이즈를 전달
+		FallState->SetCurStagePhase(MODE_CurStagePhase);
 
 		// 게임 시작을 위한 조건을 주기적으로 체크
 		GetWorldTimerManager().SetTimer(
@@ -590,30 +607,30 @@ void APlayGameMode::ServerTravelToNextMap(const FString& url)
 		}
 
 		// 다음 스테이지 값을 미리 저장
-		switch (MODECurrentStage)
+		switch (MODE_CurStagePhase)
 		{
-		case EStageType::STAGE_1:
-			GameInstance->InsSetSavedStage(EStageType::STAGE_1_RESULT);
+		case EStagePhase::STAGE_1:
+			GameInstance->InsSetCurStagePhase(EStagePhase::STAGE_1_RESULT);
 			GameInstance->bIsResultLevel = true;
 			break;
 
-		case EStageType::STAGE_1_RESULT:
-			GameInstance->InsSetSavedStage(EStageType::STAGE_2);
+		case EStagePhase::STAGE_1_RESULT:
+			GameInstance->InsSetCurStagePhase(EStagePhase::STAGE_2);
 			GameInstance->bIsResultLevel = false;
 			break;
 
-		case EStageType::STAGE_2:
-			GameInstance->InsSetSavedStage(EStageType::STAGE_2_RESULT);
+		case EStagePhase::STAGE_2:
+			GameInstance->InsSetCurStagePhase(EStagePhase::STAGE_2_RESULT);
 			GameInstance->bIsResultLevel = true;
 			break;
 
-		case EStageType::STAGE_2_RESULT:
-			GameInstance->InsSetSavedStage(EStageType::STAGE_3);
+		case EStagePhase::STAGE_2_RESULT:
+			GameInstance->InsSetCurStagePhase(EStagePhase::STAGE_3);
 			GameInstance->bIsResultLevel = false;
 			break;
 
-		case EStageType::STAGE_3:
-			GameInstance->InsSetSavedStage(EStageType::FINISHED);
+		case EStagePhase::STAGE_3:
+			GameInstance->InsSetCurStagePhase(EStagePhase::FINISHED);
 			GameInstance->bIsResultLevel = true; 
 			break;
 

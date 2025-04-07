@@ -41,7 +41,7 @@ int UFallConst::MinPlayerCount = 3;
 bool UFallConst::UsePlayerLimit = true;
 
 // 카운트 다운을 사용할 것인지 결정하는 변수
-bool UFallConst::UseCountDown = true;
+bool UFallConst::UseCountDown = false;
 
 // 카운트 다운 대기 시간
 float UFallConst::FallCountDownStandByTime = 1.0f;

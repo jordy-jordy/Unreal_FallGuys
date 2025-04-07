@@ -98,8 +98,15 @@ protected:
 	bool pCountDownEnd = false;
 	// 결과 화면이니
 	bool bMODEIsResultLevel = false;
+
+	// 현재 스테이지 이름
+	FString MODE_CurLevelName = TEXT("Unknown");
+	// 현재 스테이지 에셋 이름
+	FString MODE_CurLevelAssetName = TEXT("Unknown");
+	// 현재 스테이지 타입
+	EStageType MODE_CurStageType = EStageType::NONE;
 	// 현재 스테이지 단계
-	EStageType MODECurrentStage = EStageType::STAGE_1;
+	EStagePhase MODE_CurStagePhase = EStagePhase::STAGE_1;
 
 #pragma endregion
 

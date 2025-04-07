@@ -98,42 +98,56 @@ protected:
 
 #pragma region PlayGameState :: 레벨 데이터 관련
 public:
-	// 게임 인스턴스에서 세팅된 레벨 이름
+	// 레벨 이름 세팅 : PlayGameMode에서 호출
 	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
-	void SavePlayLevelName(const FString& _LevelName);
-	void SavePlayLevelName_Implementation(const FString& _LevelName);
+	void SetPlayLevelName(const FString& _LevelName);
+	void SetPlayLevelName_Implementation(const FString& _LevelName);
 
-	// 게임 인스턴스에서 세팅된 레벨 에셋 이름
+	// 레벨 에셋 이름 세팅 : PlayGameMode에서 호출
 	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
-	void SavePlayLevelAssetName(const FString& _LevelName);
-	void SavePlayLevelAssetName_Implementation(const FString& _LevelAssetName);
+	void SetPlayLevelAssetName(const FString& _LevelName);
+	void SetPlayLevelAssetName_Implementation(const FString& _LevelAssetName);
 
-	// 랜덤 레벨 함수에서 얻은 이름 반환
+	// 레벨 타입 세팅 : PlayGameMode에서 호출
+	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
+	void SetCurStageType(EStageType _StageType);
+	void SetCurStageType_Implementation(EStageType _StageType);
+
+	// 레벨 페이즈 세팅 : PlayGameMode에서 호출
+	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
+	void SetCurStagePhase(EStagePhase _StagePhase);
+	void SetCurStagePhase_Implementation(EStagePhase _StagePhase);
+
+	// 세팅된 레벨 이름 반환
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
 	FString GetLevelName() const { return LevelName; }
 
-	// 랜덤 레벨 함수에서 얻은 에셋 이름 반환
+	// 세팅된 레벨 에셋 이름 반환
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
 	FString GetLevelAssetName() const { return LevelAssetName; }
 
-	// 현재 스테이지 단계
-	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category = "LEVEL")
-	EStageType CurrentStage = EStageType::STAGE_1;
+	// 세팅된 레벨 타입 반환
+	UFUNCTION(BlueprintCallable, Category = "LEVEL")
+	EStageType GetCurStageType() const { return GS_CurStageType; }
 
-	// 레벨 시네마틱 시작을 세팅하는 함수
+	// 세팅된 레벨 단계 반환
+	UFUNCTION(BlueprintCallable, Category = "LEVEL")
+	EStagePhase GetCurStagePhase() const { return GS_CurStagePhase; }
+
+	// 레벨 시네마틱 시작하세요
 	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
 	void SetCanStartLevelCinematic();
 	void SetCanStartLevelCinematic_Implementation();
 
-	// 레벨 시네마틱 시작해도 되는지 확인하는 함수
+	// 레벨 시네마틱 시작해도 되나요?
 	bool GetCanStartLevelCinematic() { return CanStartLevelCinematic; }
 
-	// 레벨 시네마틱 끝났는지 세팅하는 함수
+	// 레벨 시네마틱 끝났어요
 	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
 	void SetIsLevelCinematicEnd(bool _Value);
 	void SetIsLevelCinematicEnd_Implementation(bool _Value);
 
-	// 레벨 시네마틱 끝났는지 확인하는 함수
+	// 레벨 시네마틱 끝났나요?
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
 	bool GetIsLevelCinematicEnd() { return IsLevelCinematicEnd; }
 
@@ -163,6 +177,14 @@ protected:
 	// 랜덤 레벨 에셋 네임
 	UPROPERTY(Replicated)
 	FString LevelAssetName = TEXT("");
+
+	// 현재 스테이지 타입
+	UPROPERTY(Replicated)
+	EStageType GS_CurStageType = EStageType::NONE;
+
+	// 현재 스테이지 페이즈
+	UPROPERTY(Replicated)
+	EStagePhase GS_CurStagePhase = EStagePhase::STAGE_1;
 
 	// 레벨 시네마틱 시작해도 되니?
 	UPROPERTY(Replicated)

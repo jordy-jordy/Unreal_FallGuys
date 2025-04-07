@@ -396,7 +396,7 @@ UStaticMesh* UBaseGameInstance::InsGetResourceMesh(UWorld* _World, const FString
 #pragma endregion
 
 #pragma region BaseGameInstance :: 레벨 관련
-// Random PlayLevel의 이름 반환
+// 랜덤 레벨 반환 : 에셋 이름 반환
 FString UBaseGameInstance::InsGetRandomLevel()
 {
 	// 1. 맵 목록이 없으면 초기화
@@ -429,10 +429,13 @@ FString UBaseGameInstance::InsGetRandomLevel()
 	CurLevelAssetName = SelectedAssetName;
 	CurLevelName = LevelNameMap.Contains(SelectedAssetName) ? LevelNameMap[SelectedAssetName] : TEXT("Unknown");
 
+	// 스테이지 타입 : 솔로
+	CurStageType = EStageType::SOLO;
+
 	return SelectedAssetName;
 }
 
-// Random TeamPlayLevel의 이름 반환
+// 랜덤 팀전 레벨 반환 : 에셋 이름 반환
 FString UBaseGameInstance::InsGetRandomTeamLevel()
 {
 	// 1. 맵 목록이 없으면 초기화
@@ -465,6 +468,9 @@ FString UBaseGameInstance::InsGetRandomTeamLevel()
 	PlayedMapSet.Add(SelectedAssetName);
 	CurLevelAssetName = SelectedAssetName;
 	CurLevelName = LevelNameMap.Contains(SelectedAssetName) ? LevelNameMap[SelectedAssetName] : TEXT("Unknown");
+
+	// 스테이지 타입 : 솔로
+	CurStageType = EStageType::TEAM;
 
 	return SelectedAssetName;
 }
@@ -603,6 +609,50 @@ FString UBaseGameInstance::InsGetGoalGuideFromAssetName(const FString& _AssetNam
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsGetGoalGuideFromAssetName :: AssetName(%s)의 GoalGuide를 찾을 수 없습니다."), *_AssetName);
 	return TEXT("Unknown");
 }
+
+// 스테이지 타입 반환
+EStageType UBaseGameInstance::InsGetStageTypeFromAssetName(const FString& _AssetName)
+{
+	if (!PlayLevelDataTable && !TeamPlayLevelDataTable)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("InsGetStageTypeFromAssetName :: 데이터 테이블이 모두 nullptr입니다."));
+		return EStageType::NONE;
+	}
+
+	const FPlayLevelDataRow* Row = nullptr;
+	const FTeamPlayLevelDataRow* TeamRow = nullptr;
+
+	if (PlayLevelDataTable)
+	{
+		Row = UFallGlobal::FindRowByFStringField<FPlayLevelDataRow>(
+			PlayLevelDataTable,
+			_AssetName,
+			TEXT("InsGetStageTypeFromAssetName"),
+			[](const FPlayLevelDataRow* R) { return R->Level.GetAssetName(); }
+		);
+	}
+
+	if (TeamPlayLevelDataTable)
+	{
+		TeamRow = UFallGlobal::FindRowByFStringField<FTeamPlayLevelDataRow>(
+			TeamPlayLevelDataTable,
+			_AssetName,
+			TEXT("InsGetStageTypeFromAssetName_Team"),
+			[](const FTeamPlayLevelDataRow* R) { return R->Level.GetAssetName(); }
+		);
+	}
+
+	if (Row && TeamRow)
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsGetStageTypeFromAssetName :: AssetName(%s)가 두 개의 테이블에 모두 존재합니다."), *_AssetName);
+	}
+
+	if (Row) { return Row->LevelType; }
+	if (TeamRow) { return TeamRow->LevelType; }
+
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsGetStageTypeFromAssetName :: AssetName(%s)의 타입을 찾을 수 없습니다."), *_AssetName);
+	return EStageType::NONE;
+}
 #pragma endregion
 
 #pragma region BaseGameInstance :: 플레이어 데이터 관련
@@ -728,25 +778,27 @@ void UBaseGameInstance::InsPrintConnectedPlayers()
 
 	int32 ConnectedCount = PlayGameState->GetConnectedPlayers();
 	bool IsOverCount = PlayGameState->GetIsCountDownOver();
-	EStageType Stage = PlayGameState->CurrentStage;
+	EStagePhase StagePhase = PlayGameState->GetCurStagePhase();
 
 	// FinishPlayer 값 가져오기
-	APlayGameMode* GameMode = GetWorld()->GetAuthGameMode<APlayGameMode>();
-	int32 FinishPlayerCount = (GameMode) ? GameMode->GetFinishPlayerCount() : -1;
+	int TargetGoalCount = PlayGameState->GetGameStateFinishPlayer();
+	int CurGoalCount = PlayGameState->GetGameStateCurFinishPlayer();
 
 	// 로그 출력
 	UE_LOG(FALL_DEV_LOG, Log, TEXT("현재 접속자 수 : %d"), ConnectedCount);
 	UE_LOG(FALL_DEV_LOG, Log, TEXT("카운트 다운 끝났니? : %s"), IsOverCount ? TEXT("true") : TEXT("false"));
-	UE_LOG(FALL_DEV_LOG, Log, TEXT("현재 스테이지 : %s"), *UEnum::GetValueAsString(Stage));
-	UE_LOG(FALL_DEV_LOG, Log, TEXT("목표 골인 인원 수 : %d"), FinishPlayerCount);
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("현재 스테이지 단계 : %s"), *UEnum::GetValueAsString(StagePhase));
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("목표 골인 인원 수 : %d"), TargetGoalCount);
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("현재 골인 인원 수 : %d"), CurGoalCount);
 
 	// 화면 출력
 	if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("현재 접속자 수 : %d"), ConnectedCount));
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("카운트 다운 끝났니? : %s"), IsOverCount ? TEXT("true") : TEXT("false")));
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("현재 스테이지 : %s"), *UEnum::GetValueAsString(Stage)));
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("목표 골인 인원 수 : %d"), FinishPlayerCount));
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("현재 스테이지 단계 : %s"), *UEnum::GetValueAsString(StagePhase)));
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("목표 골인 인원 수 : %d"), TargetGoalCount));
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("현재 골인 인원 수 : %d"), CurGoalCount));
 	}
 }
 
@@ -832,18 +884,18 @@ void UBaseGameInstance::InsGetGameStateCurFinishPlayer()
 		return;
 	}
 
-	int CurGoalCount = PlayGameState->GetGameStateCurFinishPlayer();
 	int TargetGoalCount = PlayGameState->GetGameStateFinishPlayer();
+	int CurGoalCount = PlayGameState->GetGameStateCurFinishPlayer();
 
 	// 콘솔 출력
-	UE_LOG(FALL_DEV_LOG, Log, TEXT("현재 골인한 인원 : %d"), CurGoalCount);
 	UE_LOG(FALL_DEV_LOG, Log, TEXT("목표 골인 인원 : %d"), TargetGoalCount);
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("현재 골인한 인원 : %d"), CurGoalCount);
 
 	// 화면 출력
 	if (GEngine)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("현재 골인한 인원 : %d"), CurGoalCount));
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("목표 골인 인원 : %d"), TargetGoalCount));
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("현재 골인한 인원 : %d"), CurGoalCount));
 	}
 }
 

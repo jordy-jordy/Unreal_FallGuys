@@ -10,7 +10,7 @@
 UENUM(BlueprintType)
 enum class ETeamType : uint8
 {
-	RED UMETA(DisplayName = "Red"),
+	RED UMETA(DisplayName = "RED"),
 	BLUE UMETA(DisplayName = "BLUE"),
 	NONE UMETA(DisplayName = "NONE")
 };
@@ -39,10 +39,20 @@ enum class ECostumeType : uint8
 UENUM(BlueprintType)
 enum class EPlayerStatus : uint8
 {
-	NONE UMETA(DisplayName = "None"),
-	DEFAULT UMETA(DisplayName = "Default"),
-	FAIL UMETA(DisplayName = "Fail"),
-	SUCCESS UMETA(DisplayName = "Success"),
+	NONE UMETA(DisplayName = "NONE"),
+	DEFAULT UMETA(DisplayName = "DEFAULT"),
+	FAIL UMETA(DisplayName = "FAIL"),
+	SUCCESS UMETA(DisplayName = "SUCCESS"),
+	MAX UMETA(DisplayName = "MAX")
+};
+
+// 이현정 : 레벨 타입
+UENUM(BlueprintType)
+enum class EStageType : uint8
+{
+	NONE UMETA(DisplayName = "NONE"),
+	SOLO UMETA(DisplayName = "SOLO"),
+	TEAM UMETA(DisplayName = "TEAM"),
 	MAX UMETA(DisplayName = "Max")
 };
 
