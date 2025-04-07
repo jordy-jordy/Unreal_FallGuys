@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+
+#include "Global/GlobalEnum.h"
+
 #include "PlayLevelDataTable.generated.h"
 
 
@@ -24,13 +27,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LEVEL DATA")
 	FString Name = TEXT("");
 
-	// 제한 시간 유무
+	// 레벨 타입
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LEVEL DATA")
-	bool UseLimitTime = false;
+	EStageType LevelType = EStageType::SOLO;
 
-	// Stage 플레이 제한 시간 - 패키징때 쓰는 값
+	// 스테이지 종료 기준
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LEVEL DATA")
-	float StageLimitTime = 60.0f;
+	EPlayerStatus EndCondition = EPlayerStatus::NONE;
 
 	// 전환 화면용 레벨 이미지
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LEVEL DATA")

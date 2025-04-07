@@ -6,6 +6,7 @@
 
 #include <Unreal_FallGuys.h>
 #include <Global/FallConst.h>
+#include <Global/GlobalEnum.h>
 #include <Global/Data/GlobalDataTable.h>
 #include <Global/BaseGameInstance.h>
 #include <Level/01_Play/Actor/ImMovable/JumpShowDown/ShowDownStage.h>
@@ -25,11 +26,11 @@ void APlayGameState::BeginPlay()
 	if (HasAuthority())
 	{
 		UBaseGameInstance* GameInstance = GetGameInstance<UBaseGameInstance>();
-		if (GameInstance)
-		{
-			CurrentStage = GameInstance->InsGetSavedStage();
-			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: BeginPlay :: CurrentStage를 복구했습니다: %s"), *UEnum::GetValueAsString(CurrentStage));
-		}
+		if (!GameInstance) { return; }
+
+		// 현 스테이지의 페이즈를 가져옴
+		GS_CurStagePhase = GameInstance->InsGetCurStagePhase();
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: BeginPlay :: 스테이지의 페이즈가 세팅되었습니다. 페이즈 : %s"), *UEnum::GetValueAsString(GS_CurStagePhase));
 
 		UseStageLimitTime = SetUseStageLimitTime();
 		StageLimitTime = SetStageLimitTime();
@@ -156,61 +157,82 @@ void APlayGameState::MulticastUpdateConnectedPlayers_Implementation(int _NewCoun
 // Stage 제한 시간 유무 결정 함수
 bool APlayGameState::SetUseStageLimitTime() const
 {
-	const FPlayLevelDataRow* Row = UGlobalDataTable::FindPlayLevelDataByAssetName(GetWorld(), LevelAssetName);
+	if (GS_CurStageType == EStageType::NONE)
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: 스테이지 타입이 세팅되지 않았습니다."));
+		return false;
+	}
+	else if (GS_CurStageType == EStageType::SOLO)
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: 개인전에서는 스테이지 제한 시간을 사용하지 않습니다."));
+		return false;
+	}
+
+	const FTeamPlayLevelDataRow* Row = UGlobalDataTable::FindTeamPlayLevelDataByAssetName(GetWorld(), LevelAssetName);
 	if (Row)
 	{
-		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameState :: 제한 시간을 사용하니? : %s"), Row->UseLimitTime ? TEXT("true") : TEXT("false"));
-		return Row->UseLimitTime;
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: 스테이지 제한 시간이 세팅됩니다. 레벨 에셋 이름 : %s"), *LevelAssetName);
+		return true;
 	}
 	else
 	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: 레벨 데이터를 찾을 수 없음. 레벨 이름 : %s"), *LevelAssetName);
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: 팀전 레벨 데이터를 찾을 수 없음. 레벨 이름 : %s"), *LevelAssetName);
 	}
-
 	return false;
 }
 
 // Stage 제한 시간 결정 함수
 float APlayGameState::SetStageLimitTime() const
 {
+	if (GS_CurStageType != EStageType::TEAM)
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: 팀전에서만 제한 시간을 사용합니다. : %s"), *UEnum::GetValueAsString(GS_CurStageType));
+		return 0.0f;
+	}
+
 #if UE_BUILD_SHIPPING
 	// 패키징 빌드일 경우 데이터 테이블에서 가져오기
-	const FPlayLevelDataRow* Row = UGlobalDataTable::FindPlayLevelDataByAssetName(GetWorld(), LevelAssetName);
+	const FTeamPlayLevelDataRow* Row = UGlobalDataTable::FindTeamPlayLevelDataByAssetName(GetWorld(), LevelAssetName);
 	if (Row)
 	{
-		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameState :: 패키징 빌드 - 레벨 데이터에서 제한 시간 설정: %.2f초"), Row->StageLimitTime);
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameState :: 패키징 빌드 - 팀전 제한 시간 설정: %.2f초"), Row->StageLimitTime);
 		return Row->StageLimitTime;
 	}
 	else
 	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: 패키징 빌드 - 레벨 데이터를 찾을 수 없음. 기본값 사용"));
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: 패키징 빌드 - 팀전 레벨 데이터를 찾을 수 없습니다. 기본값을 사용"));
 	}
 #endif
-
 	// 개발 중일 경우 또는 실패했을 때는 Const 값 사용
-	UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameState :: 개발 빌드 - Const에서 제한 시간 사용 : %.2f초"), UFallConst::FallStageLimitTime);
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameState :: 개발 빌드 - Const에서 가져온 제한 시간 사용 : %.2f초"), UFallConst::FallStageLimitTime);
 	return UFallConst::FallStageLimitTime;
 }
 
-// 게임 인스턴스에서 세팅된 레벨 이름 : GameMode에서 호출
-void APlayGameState::SavePlayLevelName_Implementation(const FString& _LevelName)
+// 레벨 이름 세팅 : PlayGameMode에서 호출
+void APlayGameState::SetPlayLevelName_Implementation(const FString& _LevelName)
 {
 	LevelName = _LevelName;
 }
 
-// 게임 인스턴스에서 세팅된 레벨 에셋 이름 : GameMode에서 호출
-void APlayGameState::SavePlayLevelAssetName_Implementation(const FString& _LevelAssetName)
+// 레벨 에셋 이름 세팅 : PlayGameMode에서 호출
+void APlayGameState::SetPlayLevelAssetName_Implementation(const FString& _LevelAssetName)
 {
 	LevelAssetName = _LevelAssetName;
 }
 
-// 레벨 시네마틱 시작을 세팅하는 함수
+// 레벨 타입 세팅 : PlayGameMode에서 호출
+void APlayGameState::SetCurStageType_Implementation(EStageType _StageType)
+{
+	GS_CurStageType = _StageType;
+}
+
+// 레벨 시네마틱 시작하세요
 void APlayGameState::SetCanStartLevelCinematic_Implementation()
 {
 	CanStartLevelCinematic = true;
 }
 
-// 레벨 시네마틱 끝났는지 세팅하는 함수
+// 레벨 시네마틱 끝났어요
 void APlayGameState::SetIsLevelCinematicEnd_Implementation(bool _Value)
 {
 	IsLevelCinematicEnd = _Value;
@@ -221,13 +243,13 @@ void APlayGameState::SetIsLevelCinematicEnd_Implementation(bool _Value)
 	}
 }
 
-// 골인 목표 인원 수 세팅 : GameMode에서 호출
+// 골인 목표 인원 수 세팅 : PlayGameMode에서 호출
 void APlayGameState::SetGameStateFinishPlayer_Implementation(int _Value)
 {
 	GameStateFinishPlayer = _Value;
 }
 
-// 현재 골인한 플레이어 수 세팅 : GameMode에서 호출
+// 현재 골인한 플레이어 수 세팅 : PlayGameMode에서 호출
 void APlayGameState::SetGameStateCurFinishPlayer_Implementation(int _Value)
 {
 	GameStateCurFinishPlayer = _Value;
@@ -319,7 +341,8 @@ void APlayGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(APlayGameState, IsCountDownOver);
 	DOREPLIFETIME(APlayGameState, StageLimitTime);
 	DOREPLIFETIME(APlayGameState, UseStageLimitTime);
-	DOREPLIFETIME(APlayGameState, CurrentStage);
+	DOREPLIFETIME(APlayGameState, GS_CurStageType);
+	DOREPLIFETIME(APlayGameState, GS_CurStagePhase);
 	DOREPLIFETIME(APlayGameState, CanStartLevelCinematic);
 	DOREPLIFETIME(APlayGameState, IsLevelCinematicEnd);
 	DOREPLIFETIME(APlayGameState, GameStateFinishPlayer);

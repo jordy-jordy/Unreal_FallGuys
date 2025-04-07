@@ -140,11 +140,11 @@ public:
 
 #pragma region BaseGameInstance :: 레벨 관련
 public: 
-	// Random PlayLevel의 이름 반환
+	// 랜덤 레벨 반환 : 에셋 이름 반환
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
 	FString InsGetRandomLevel();
 
-	// Random TeamPlayLevel의 이름 반환
+	// 랜덤 팀전 레벨 반환 : 에셋 이름 반환
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
 	FString InsGetRandomTeamLevel();
 
@@ -168,15 +168,25 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
 	FString InsGetGoalGuideFromAssetName(const FString& _AssetName);
 
-	// 현재 스테이지 저장용 (레벨 전환 시 유지)
-	UPROPERTY(BlueprintReadWrite, Category = "LEVEL")
-	EStageType SavedStage = EStageType::STAGE_1;
+	// 스테이지 타입 반환
+	UFUNCTION(BlueprintCallable, Category = "LEVEL")
+	EStageType InsGetStageTypeFromAssetName(const FString& _AssetName);
 
+	// 현재의 스테이지 타입을 세팅
 	UFUNCTION(BlueprintCallable)
-	void InsSetSavedStage(EStageType _Stage) { SavedStage = _Stage; }
+	void InsSetCurStageType(EStageType _StageType) { CurStageType = _StageType; }
 
+	// 현재의 스테이지 타입을 얻음
 	UFUNCTION(BlueprintCallable)
-	EStageType InsGetSavedStage() const { return SavedStage; }
+	EStageType InsGetCurStageType() const { return CurStageType; }
+
+	// 현재의 스테이지 단계를 세팅
+	UFUNCTION(BlueprintCallable)
+	void InsSetCurStagePhase(EStagePhase _StagePhase) { CurStagePhase = _StagePhase; }
+
+	// 현재의 스테이지 단계를 얻음
+	UFUNCTION(BlueprintCallable)
+	EStagePhase InsGetCurStagePhase() const { return CurStagePhase; }
 
 	// 스테이지 끝나고 나오는 결과창인지
 	UPROPERTY(BlueprintReadWrite, Category = "LEVEL")
@@ -190,6 +200,14 @@ protected:
 	// 레벨 에셋 이름
 	UPROPERTY(VisibleAnywhere, Category = "LEVEL")
 	FString CurLevelAssetName = TEXT("Race2Map");
+
+	// 스테이지 타입
+	UPROPERTY(BlueprintReadWrite, Category = "LEVEL")
+	EStageType CurStageType = EStageType::NONE;
+
+	// 현재 스테이지
+	UPROPERTY(BlueprintReadWrite, Category = "LEVEL")
+	EStagePhase CurStagePhase = EStagePhase::STAGE_1;
 
 	// 레벨 이름 리스트 (AssetName 기준)
 	UPROPERTY()
