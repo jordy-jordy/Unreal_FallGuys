@@ -14,18 +14,18 @@ void UTitleWidget::PopulateLevelSelection()
 {
     if (!LevelSelection) return;
 
-    TArray<FString> LevelNames = UFallGlobal::GetAvailableLevels();
+    //TArray<FString> LevelNames = UFallGlobal::GetAvailableLevels();
 
-    for (const FString& LevelName : LevelNames)
-    {
-        LevelSelection->AddOption(LevelName);
-    }
+    //for (const FString& LevelName : LevelNames)
+    //{
+    //    LevelSelection->AddOption(LevelName);
+    //}
 
-    if (LevelNames.Num() > 0)
-    {
-        LevelSelection->SetSelectedOption(LevelNames[0]);
-        SelectedLevel = LevelNames[0];
-    }
+    //if (LevelNames.Num() > 0)
+    //{
+    //    LevelSelection->SetSelectedOption(LevelNames[0]);
+    //    SelectedLevel = LevelNames[0];
+    //}
 }
 
 void UTitleWidget::NativeConstruct()
