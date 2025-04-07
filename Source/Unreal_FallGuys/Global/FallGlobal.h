@@ -8,18 +8,6 @@
 #include "FallGlobal.generated.h"
 
 
-USTRUCT(BlueprintType)
-struct FLevelDisplayInfo
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString Name;  // Row의 Name
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString AssetName;  // 레벨의 AssetName
-};
-
 /**
  *
  */
@@ -28,6 +16,7 @@ class UNREAL_FALLGUYS_API UFallGlobal : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 
+#pragma region :: BASE :: 에셋 경로 및 템플릿 함수
 public:
 	UFUNCTION(BlueprintCallable)
 	static void AssetPackagePath(UClass* _Class, const FString& _AssetName, FString& _Path);
@@ -53,6 +42,10 @@ public:
 		return nullptr;
 	}
 
+#pragma endregion
+
+#pragma region :: BASE :: 서버 관련
+public:
 	UFUNCTION(BlueprintCallable)
 	static void ServerStart(UObject* _Object, FString _Port);
 
@@ -62,6 +55,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static void ServerConnect(UObject* _Object, FString _IP, FString _Port);
 
+#pragma endregion
+
+public:
 	// BaseGameInstance : 저장된 코스튬의 컬러 반환
 	UFUNCTION(BlueprintCallable)
 	static FString GetCostumeColor(APawn* _Pawn);
@@ -113,18 +109,6 @@ public:
 	// BaseGameInstance : 닉네임 저장
 	UFUNCTION(BlueprintCallable)
 	static void ChangeNickname(APawn* _Pawn, const FString& _NewNickname);
-
-	//// 플레이 가능한 레벨 반환
-	//UFUNCTION(BlueprintCallable)
-	//static TArray<FString> GetAvailableLevels();
-	//
-	//// 플레이 가능한 레벨 및 이름 반환
-	//UFUNCTION(BlueprintCallable)
-	//static TArray<FLevelInfo> GetAvailableLevelInfos();
-
-	//// 플레이 가능한 팀전 레벨 및 이름 반환
-	//UFUNCTION(BlueprintCallable)
-	//static TArray<FLevelDisplayInfo> GetAvailableTeamPlayLevelInfos();
 
 	// BaseGameInstance : 랜덤 스테이지 반환
 	UFUNCTION(BlueprintCallable)
@@ -195,10 +179,8 @@ public:
 	static int32 GetBLUETeamScore();
 
 	// PlayGameState : 접속자 수를 1씩 감소
+	UFUNCTION(BlueprintCallable)
 	static void MinusConnectedPlayers();
-
-	// PlayGameState : 실패한 유저의 떨어지는 순번을 정해줌
-	static void SetDropOrder();
 
 	// BaseGameInstance : 현재의 스테이지 타입(개인전, 팀전)을 얻음
 	UFUNCTION(BlueprintCallable)
@@ -207,6 +189,10 @@ public:
 	// PlayGameState : 결과 화면이니?
 	UFUNCTION(BlueprintCallable)
 	static bool GetIsResultLevel();
+
+	// BaseGameInstance : 현재 스테이지의 종료를 판단하는 기준 상태
+	UFUNCTION(BlueprintCallable)
+	static EPlayerStatus GetStageEndCondition();
 
 public:
 	// 코스튬 관련 편의 기능 (현재 개발중)

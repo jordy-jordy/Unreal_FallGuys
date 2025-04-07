@@ -9,11 +9,13 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
-#include "Net/UnrealNetwork.h"
+#include <Net/UnrealNetwork.h>
 #include <Unreal_FallGuys.h>
 #include <Global/FallGlobal.h>
 #include <Global/GlobalEnum.h>
 #include <Global/BaseGameInstance.h>
+#include <Mode/01_Play/PlayGameMode.h>
+#include <Mode/01_Play/PlayPlayerState.h>
 
 
 // Sets default values
@@ -331,7 +333,12 @@ void APlayCharacter::DebugCheckDieStatus()
 // 이현정 : 디버그용 : 캐릭터 사망 처리
 void APlayCharacter::DebugCharacterDie()
 {
+	if (!HasAuthority()) { return; }
+
 	APlayPlayerState* PlayState = GetPlayerState<APlayPlayerState>();
 	PlayState->SetPlayerStatus(EPlayerStatus::FAIL);
+
+	APlayGameMode* PlayMode = Cast<APlayGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+	PlayMode->OnPlayerFinished();
 }
 

@@ -7,6 +7,7 @@
 
 #include <Global/GlobalEnum.h>
 #include <Mode/01_Play/PlayEnum.h>
+#include <Mode/01_Play/PlayPlayerState.h>
 
 #include "BaseGameInstance.generated.h"
 
@@ -44,7 +45,7 @@ struct FTeamLevelInfo
 	GENERATED_BODY()
 
 	UPROPERTY()
-	TSoftObjectPtr<UWorld> LevelAssetName;
+	FString LevelAssetName;
 
 	UPROPERTY()
 	FString LevelName;
@@ -213,7 +214,7 @@ public:
 
 #pragma region BaseGameInstance :: 레벨 관련
 public: 
-	// 랜덤 레벨 반환 : 에셋 이름 반환
+	// 랜덤 개인전 레벨 반환 : 에셋 이름 반환
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
 	FString InsGetRandomLevel();
 
@@ -221,13 +222,28 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
 	FString InsGetRandomTeamLevel();
 
+	// 저장된 레벨의 에셋 이름 반환
+	UFUNCTION(BlueprintCallable, Category = "LEVEL")
+	FString InsGetCurLevelAssetName() const { return CurLevelAssetName; }
+
 	// 저장된 레벨의 이름 반환
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
 	FString InsGetCurLevelName() const { return CurLevelName; }
 
-	// 저장된 레벨의 에셋 이름 반환
-	UFUNCTION(BlueprintCallable, Category = "LEVEL")
-	FString InsGetCurLevelAssetName() const { return CurLevelAssetName; }
+	// 현재의 스테이지 타입을 얻음
+	UFUNCTION(BlueprintCallable)
+	EStageType InsGetCurStageType() const { return CurStageType; }
+
+	// 현재의 스테이지 단계를 얻음
+	UFUNCTION(BlueprintCallable)
+	EStagePhase InsGetCurStagePhase() const { return CurStagePhase; }
+
+	// 현재 스테이지의 종료를 판단하는 기준 상태
+	UFUNCTION(BlueprintCallable)
+	EPlayerStatus InsGetStageEndCondition() const { return StageEndCondition; }
+
+	// 현재의 팀전 스테이지의 제한 시간을 얻음
+	float InsGetStageLimitTime() const { return StageLimitTime; }
 
 	// 레벨 가이드 반환
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
@@ -241,50 +257,37 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
 	FString InsGetGoalGuideFromAssetName(const FString& _AssetName);
 
-	// 스테이지 타입 반환
-	UFUNCTION(BlueprintCallable, Category = "LEVEL")
-	EStageType InsGetStageTypeFromAssetName(const FString& _AssetName);
-
-	// 스테이지의 종료 기준 반환
-	UFUNCTION(BlueprintCallable, Category = "LEVEL")
-	EPlayerStatus InsGetStageResultStatusFromAssetName(const FString& _AssetName);
-
-	// 현재의 스테이지 타입을 세팅
-	UFUNCTION(BlueprintCallable)
-	void InsSetCurStageType(EStageType _StageType) { CurStageType = _StageType; }
-
-	// 현재의 스테이지 타입을 얻음
-	UFUNCTION(BlueprintCallable)
-	EStageType InsGetCurStageType() const { return CurStageType; }
-
 	// 현재의 스테이지 단계를 세팅
 	UFUNCTION(BlueprintCallable)
 	void InsSetCurStagePhase(EStagePhase _StagePhase) { CurStagePhase = _StagePhase; }
-
-	// 현재의 스테이지 단계를 얻음
-	UFUNCTION(BlueprintCallable)
-	EStagePhase InsGetCurStagePhase() const { return CurStagePhase; }
 
 	// 스테이지 끝나고 나오는 결과창인지
 	UPROPERTY(BlueprintReadWrite, Category = "LEVEL")
 	bool bIsResultLevel = false;
 
 protected:
-	// 레벨 이름
-	UPROPERTY(VisibleAnywhere, Category = "LEVEL")
-	FString CurLevelName = TEXT("테스트");
-
 	// 레벨 에셋 이름
 	UPROPERTY(VisibleAnywhere, Category = "LEVEL")
-	FString CurLevelAssetName = TEXT("Race2Map");
+	FString CurLevelAssetName = TEXT("");
 
-	// 스테이지 타입
+	// 레벨 이름
+	UPROPERTY(VisibleAnywhere, Category = "LEVEL")
+	FString CurLevelName = TEXT("");
+
+	// 스테이지(레벨) 타입
 	UPROPERTY(BlueprintReadWrite, Category = "LEVEL")
 	EStageType CurStageType = EStageType::NONE;
 
-	// 현재 스테이지
+	// 현재 스테이지 페이즈
 	UPROPERTY(BlueprintReadWrite, Category = "LEVEL")
 	EStagePhase CurStagePhase = EStagePhase::STAGE_1;
+
+	// 스테이지의 종료 조건
+	UPROPERTY(BlueprintReadWrite, Category = "LEVEL")
+	EPlayerStatus StageEndCondition = EPlayerStatus::NONE;
+
+	// 스테이지 제한 시간 : 팀전용
+	float StageLimitTime = 0.0f;
 
 	// 레벨 이름 리스트 (AssetName 기준)
 	UPROPERTY()
@@ -292,7 +295,7 @@ protected:
 
 	// 이미 플레이한 맵의 AssetName 목록
 	UPROPERTY()
-	TSet<FString> PlayedMapSet;
+	TSet<FString> PlayedMapList;
 
 	// 에셋명 → Row 이름 매핑
 	UPROPERTY()

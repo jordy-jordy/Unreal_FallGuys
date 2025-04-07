@@ -172,113 +172,6 @@ void UFallGlobal::ChangeNickname(APawn* _Pawn, const FString& _NewNickname)
 	return GameIns->InsChangeNickname(_NewNickname);
 }
 
-//// 플레이 가능한 레벨 반환
-//TArray<FString> UFallGlobal::GetAvailableLevels()
-//{
-//	TArray<FString> LevelAssetNames;
-//
-//	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GWorld->GetGameInstance());
-//	if (!GameInstance)
-//	{
-//		UE_LOG(FALL_DEV_LOG, Warning, TEXT("GetAvailableLevels: GameInstance is null!"));
-//		return LevelAssetNames;
-//	}
-//
-//	// PlayLevelDataTable 가져오기
-//	UDataTable* LevelDataTable = GameInstance->GetPlayLevelDataTable();
-//	if (!LevelDataTable)
-//	{
-//		UE_LOG(FALL_DEV_LOG, Warning, TEXT("GetAvailableLevels: PlayLevelDataTable is null!"));
-//		return LevelAssetNames;
-//	}
-//
-//	// 데이터 테이블의 모든 행 가져오기
-//	static const FString ContextString(TEXT("GetAvailableLevels :: "));
-//	TArray<FPlayLevelDataRow*> LevelRows;
-//	LevelDataTable->GetAllRows<FPlayLevelDataRow>(ContextString, LevelRows);
-//
-//	for (const FPlayLevelDataRow* Row : LevelRows)
-//	{
-//		if (Row)
-//		{
-//			UE_LOG(FALL_DEV_LOG, Log, TEXT("Row Name: %s"), *Row->Name);
-//			UE_LOG(FALL_DEV_LOG, Log, TEXT("Row Level Path: %s"), *Row->Level.ToString());
-//
-//			// 강제로 동기 로드하여 확인
-//			UWorld* LoadedLevel = Row->Level.LoadSynchronous();
-//			if (!LoadedLevel)
-//			{
-//				UE_LOG(FALL_DEV_LOG, Warning, TEXT("Row->Level failed to load synchronously!"));
-//			}
-//			else
-//			{
-//				UE_LOG(FALL_DEV_LOG, Log, TEXT("Row->Level loaded successfully!"));
-//			}
-//		}
-//
-//		if (Row && Row->Level.IsValid())
-//		{
-//			FString LevelAssetName = Row->Level.GetAssetName();
-//			LevelAssetNames.Add(LevelAssetName);
-//		}
-//	}
-//	return LevelAssetNames;
-//}
-//
-//// 플레이 가능한 레벨 및 이름 반환
-//TArray<FLevelInfo> UFallGlobal::GetAvailableLevelInfos()
-//{
-//	UBaseGameInstance* GameIns = GWorld->GetGameInstance<UBaseGameInstance>();
-//	return GameIns->InsGetAvailableLevelInfos();
-//}
-//
-//// 플레이 가능한 팀전 레벨 및 이름 반환
-//TArray<FLevelDisplayInfo> UFallGlobal::GetAvailableTeamPlayLevelInfos()
-//{
-//	TArray<FLevelDisplayInfo> TeamPlayLevelInfos;
-//
-//	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GWorld->GetGameInstance());
-//	if (!GameInstance)
-//	{
-//		UE_LOG(FALL_DEV_LOG, Warning, TEXT("GetAvailableTeamPlayLevelInfos: GameInstance is null!"));
-//		return TeamPlayLevelInfos;
-//	}
-//
-//	UDataTable* TeamPlayLevelDataTable = GameInstance->GetTeamPlayLevelDataTable();
-//	if (!TeamPlayLevelDataTable)
-//	{
-//		UE_LOG(FALL_DEV_LOG, Warning, TEXT("GetAvailableTeamPlayLevelInfos: PlayLevelDataTable is null!"));
-//		return TeamPlayLevelInfos;
-//	}
-//
-//	static const FString ContextString(TEXT("GetAvailableTeamPlayLevelInfos"));
-//	TArray<FTeamPlayLevelDataRow*> LevelRows;
-//	TeamPlayLevelDataTable->GetAllRows<FTeamPlayLevelDataRow>(ContextString, LevelRows);
-//
-//	for (const FTeamPlayLevelDataRow* Row : LevelRows)
-//	{
-//		if (Row == nullptr)
-//			continue;
-//
-//		// 강제로 로드
-//		UWorld* LoadedLevel = Row->Level.LoadSynchronous();
-//		if (!LoadedLevel)
-//		{
-//			UE_LOG(FALL_DEV_LOG, Warning, TEXT("Level Load Failed: %s"), *Row->Level.ToString());
-//			continue;
-//		}
-//
-//		FLevelDisplayInfo TeamPlayInfo;
-//		TeamPlayInfo.Name = Row->Name;
-//		TeamPlayInfo.AssetName = Row->Level.GetAssetName();
-//
-//		UE_LOG(FALL_DEV_LOG, Log, TEXT("Level Info Added - Name: %s, Asset: %s"), *TeamPlayInfo.Name, *TeamPlayInfo.AssetName);
-//
-//		TeamPlayLevelInfos.Add(TeamPlayInfo);
-//	}
-//	return TeamPlayLevelInfos;
-//}
-
 // BaseGameInstance : 랜덤 스테이지 반환
 FString UFallGlobal::GetRandomLevel(APawn* _Pawn)
 {
@@ -431,13 +324,6 @@ void UFallGlobal::MinusConnectedPlayers()
 	FallState->MinusConnectedPlayers();
 }
 
-// PlayGameState : 실패한 유저의 떨어지는 순번을 정해줌
-void UFallGlobal::SetDropOrder()
-{
-	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
-	FallState->SetDropOrder();
-}
-
 // BaseGameInstance : 현재의 스테이지 타입(개인전, 팀전)을 얻음
 EStageType UFallGlobal::GetCurStageType()
 {
@@ -450,6 +336,13 @@ bool UFallGlobal::GetIsResultLevel()
 {
 	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
 	return FallState->GetGameStateIsResultLevel();
+}
+
+// BaseGameInstance : 현재 스테이지의 종료를 판단하는 기준 상태
+EPlayerStatus UFallGlobal::GetStageEndCondition()
+{
+	UBaseGameInstance* GameIns = GWorld->GetGameInstance<UBaseGameInstance>();
+	return GameIns->InsGetStageEndCondition();
 }
 
 // 이재영 : 메인위젯을 얻는 함수

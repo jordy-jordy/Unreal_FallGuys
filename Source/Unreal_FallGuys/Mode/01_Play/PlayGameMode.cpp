@@ -274,6 +274,9 @@ void APlayGameMode::BeginPlay()
 		// 게임 스테이트에 스테이지 페이즈를 전달
 		FallState->SetCurStagePhase(MODE_CurStagePhase);
 
+		// 게임 인스턴스에서 스테이지의 종료 조건을 가져옴
+		MODE_CurStageResultStatus = GameInstance->InsGetStageEndCondition();
+
 		// 스테이지 종료의 기준 상태를 세팅
 		// MODE_CurStageResultStatus = GameInstance->InsGetCurStageResultStatus(MODE_CurLevelAssetName);
 
@@ -534,15 +537,19 @@ void APlayGameMode::Tick(float DeltaSeconds)
 		// 개인전이고 결과 화면이 아닐때만
 		if (MODE_CurStageType == EStageType::SOLO && !bMODEIsResultLevel)
 		{
-			//EPlayerStatus ResultStatus = GameInstance->InsGetDefaultPlayerStatusByAssetName(MODE_CurLevelAssetName);
-			//if (ResultStatus == EPlayerStatus::SUCCESS)
-			//{
-			//	SetDefaultPlayersToFail();
-			//}
-			//else if (ResultStatus == EPlayerStatus::FAIL)
-			//{
-			//	SetDefaultPlayersToSuccess();
-			//}
+			if (MODE_CurStageResultStatus == EPlayerStatus::SUCCESS)
+			{
+				SetDefaultPlayersToFail();
+			}
+			else if (MODE_CurStageResultStatus == EPlayerStatus::FAIL)
+			{
+				SetDefaultPlayersToSuccess();
+			}
+			else
+			{
+				UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: Tick :: 게임 종료 조건이 뭔가 잘못 됨"));
+				return;
+			}
 		}
 
 		ServerTravelToNextMap(NextLevel);
