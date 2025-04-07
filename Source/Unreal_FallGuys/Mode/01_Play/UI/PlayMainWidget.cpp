@@ -6,6 +6,7 @@
 #include "Global/FallGlobal.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Mode/01_Play/PlayGameState.h"
 
 
 void UPlayMainWidget::NativeConstruct()
@@ -136,9 +137,6 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 		return;
 	}
 	
-	UPlayUserWidget* ClearCount = FindWidget(EPlayUIType::PlayClearCount);
-	UPlayUserWidget* StartCount = FindWidget(EPlayUIType::PlayStartCount);
-
 	//CurUIType 위젯 => _UIType 위젯
 	switch (CurUIType)
 	{
@@ -179,13 +177,30 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 		switch (EPlayUIType(_UIType))
 		{
 		case EPlayUIType::PlayInGame:
-			ClearCount->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		{
+			APlayGameState* GameState = Cast<APlayGameState>(GetWorld()->GetGameState());
+			EStageType StageType = GameState->GetCurStageType();
+
+			UPlayUserWidget* ClearCount = FindWidget(EPlayUIType::PlayClearCount);
+			UPlayUserWidget* StartCount = FindWidget(EPlayUIType::PlayStartCount);
+			UPlayUserWidget* PlayScore = FindWidget(EPlayUIType::PlayScore);
+
+			if (StageType == EStageType::SOLO)
+			{
+				ClearCount->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			}
+			else if (StageType == EStageType::TEAM)
+			{
+				PlayScore->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			}
 			// 임시(나중에 주석 지우기)
 			if (true == UFallConst::UseCountDown)
 			{
 				StartCount->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 			}
+
 			break;
+		}
 		default:
 			break;
 		}
