@@ -26,4 +26,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Rhino|Factory")
 	TSubclassOf<class AActor> RhinoFactory;
 
+	UPROPERTY(BlueprintReadWrite, Category = "Rhino|Actor")
+	TArray<class AActor*> Rhinos;
+
 };
