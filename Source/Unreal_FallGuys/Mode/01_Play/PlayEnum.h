@@ -26,6 +26,18 @@ enum class EPlayerAnimation : uint8
 	MAX UMETA(DisplayName = "MAX"),
 };
 
+
+UENUM(BlueprintType)
+enum class ERhinoAnimation : uint8
+{
+	Idle UMETA(DisplayName = "Idle"),
+	Run UMETA(DisplayName = "Run"),
+	Antic UMETA(DisplayName = "Antic"),
+	Charge UMETA(DisplayName = "Charge"),
+	Stop UMETA(DisplayName = "Stop"),
+	MAX UMETA(DisplayName = "MAX"),
+};
+
 //LMH
 UENUM(BlueprintType)
 enum class ERaceOverAnimation : uint8
