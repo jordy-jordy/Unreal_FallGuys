@@ -169,6 +169,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
 	int GetGameStateCurFinishPlayer() { return GameStateCurFinishPlayer; }
 
+	// 결과 화면인지 세팅 : PlayGameMode에서 호출
+	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
+	void SetGameStateIsResultLevel(bool _Value);
+	void SetGameStateIsResultLevel_Implementation(bool _Value);
+
+	// 결과 화면인지 반환
+	bool GetGameStateIsResultLevel() { return bGameStateIsResultLevel; }
+
 protected:
 	// 랜덤 레벨 네임
 	UPROPERTY(Replicated)
@@ -201,6 +209,10 @@ protected:
 	// 현재 골인한 플레이어 수 : PlayGameMode에서 가져옴
 	UPROPERTY(Replicated)
 	int GameStateCurFinishPlayer = 0;
+
+	// 결과 화면이니?
+	UPROPERTY(Replicated)
+	bool bGameStateIsResultLevel = false;
 
 #pragma endregion
 

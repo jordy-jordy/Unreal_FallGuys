@@ -172,152 +172,112 @@ void UFallGlobal::ChangeNickname(APawn* _Pawn, const FString& _NewNickname)
 	return GameIns->InsChangeNickname(_NewNickname);
 }
 
-// 플레이 가능한 레벨 반환
-TArray<FString> UFallGlobal::GetAvailableLevels()
-{
-	TArray<FString> LevelAssetNames;
-
-	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GWorld->GetGameInstance());
-	if (!GameInstance)
-	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("GetAvailableLevels: GameInstance is null!"));
-		return LevelAssetNames;
-	}
-
-	// PlayLevelDataTable 가져오기
-	UDataTable* LevelDataTable = GameInstance->GetPlayLevelDataTable();
-	if (!LevelDataTable)
-	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("GetAvailableLevels: PlayLevelDataTable is null!"));
-		return LevelAssetNames;
-	}
-
-	// 데이터 테이블의 모든 행 가져오기
-	static const FString ContextString(TEXT("GetAvailableLevels :: "));
-	TArray<FPlayLevelDataRow*> LevelRows;
-	LevelDataTable->GetAllRows<FPlayLevelDataRow>(ContextString, LevelRows);
-
-	for (const FPlayLevelDataRow* Row : LevelRows)
-	{
-		if (Row)
-		{
-			UE_LOG(FALL_DEV_LOG, Log, TEXT("Row Name: %s"), *Row->Name);
-			UE_LOG(FALL_DEV_LOG, Log, TEXT("Row Level Path: %s"), *Row->Level.ToString());
-
-			// 강제로 동기 로드하여 확인
-			UWorld* LoadedLevel = Row->Level.LoadSynchronous();
-			if (!LoadedLevel)
-			{
-				UE_LOG(FALL_DEV_LOG, Warning, TEXT("Row->Level failed to load synchronously!"));
-			}
-			else
-			{
-				UE_LOG(FALL_DEV_LOG, Log, TEXT("Row->Level loaded successfully!"));
-			}
-		}
-
-		if (Row && Row->Level.IsValid())
-		{
-			FString LevelAssetName = Row->Level.GetAssetName();
-			LevelAssetNames.Add(LevelAssetName);
-		}
-	}
-	return LevelAssetNames;
-}
-
-// 플레이 가능한 레벨 및 이름 반환
-TArray<FLevelDisplayInfo> UFallGlobal::GetAvailableLevelInfos()
-{
-	TArray<FLevelDisplayInfo> LevelInfos;
-
-	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GWorld->GetGameInstance());
-	if (!GameInstance)
-	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("GetAvailableLevelInfos: GameInstance is null!"));
-		return LevelInfos;
-	}
-
-	UDataTable* LevelDataTable = GameInstance->GetPlayLevelDataTable();
-	if (!LevelDataTable)
-	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("GetAvailableLevelInfos: PlayLevelDataTable is null!"));
-		return LevelInfos;
-	}
-
-	static const FString ContextString(TEXT("GetAvailableLevelInfos"));
-	TArray<FPlayLevelDataRow*> LevelRows;
-	LevelDataTable->GetAllRows<FPlayLevelDataRow>(ContextString, LevelRows);
-
-	for (const FPlayLevelDataRow* Row : LevelRows)
-	{
-		if (Row == nullptr)
-			continue;
-
-		// 강제로 로드
-		UWorld* LoadedLevel = Row->Level.LoadSynchronous();
-		if (!LoadedLevel)
-		{
-			UE_LOG(FALL_DEV_LOG, Warning, TEXT("Level Load Failed: %s"), *Row->Level.ToString());
-			continue;
-		}
-
-		FLevelDisplayInfo Info;
-		Info.Name = Row->Name;
-		Info.AssetName = Row->Level.GetAssetName();
-
-		UE_LOG(FALL_DEV_LOG, Log, TEXT("Level Info Added - Name: %s, Asset: %s"), *Info.Name, *Info.AssetName);
-
-		LevelInfos.Add(Info);
-	}
-	return LevelInfos;
-}
-
-// 플레이 가능한 팀전 레벨 및 이름 반환
-TArray<FLevelDisplayInfo> UFallGlobal::GetAvailableTeamPlayLevelInfos()
-{
-	TArray<FLevelDisplayInfo> TeamPlayLevelInfos;
-
-	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GWorld->GetGameInstance());
-	if (!GameInstance)
-	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("GetAvailableTeamPlayLevelInfos: GameInstance is null!"));
-		return TeamPlayLevelInfos;
-	}
-
-	UDataTable* TeamPlayLevelDataTable = GameInstance->GetTeamPlayLevelDataTable();
-	if (!TeamPlayLevelDataTable)
-	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("GetAvailableTeamPlayLevelInfos: PlayLevelDataTable is null!"));
-		return TeamPlayLevelInfos;
-	}
-
-	static const FString ContextString(TEXT("GetAvailableTeamPlayLevelInfos"));
-	TArray<FTeamPlayLevelDataRow*> LevelRows;
-	TeamPlayLevelDataTable->GetAllRows<FTeamPlayLevelDataRow>(ContextString, LevelRows);
-
-	for (const FTeamPlayLevelDataRow* Row : LevelRows)
-	{
-		if (Row == nullptr)
-			continue;
-
-		// 강제로 로드
-		UWorld* LoadedLevel = Row->Level.LoadSynchronous();
-		if (!LoadedLevel)
-		{
-			UE_LOG(FALL_DEV_LOG, Warning, TEXT("Level Load Failed: %s"), *Row->Level.ToString());
-			continue;
-		}
-
-		FLevelDisplayInfo TeamPlayInfo;
-		TeamPlayInfo.Name = Row->Name;
-		TeamPlayInfo.AssetName = Row->Level.GetAssetName();
-
-		UE_LOG(FALL_DEV_LOG, Log, TEXT("Level Info Added - Name: %s, Asset: %s"), *TeamPlayInfo.Name, *TeamPlayInfo.AssetName);
-
-		TeamPlayLevelInfos.Add(TeamPlayInfo);
-	}
-	return TeamPlayLevelInfos;
-}
+//// 플레이 가능한 레벨 반환
+//TArray<FString> UFallGlobal::GetAvailableLevels()
+//{
+//	TArray<FString> LevelAssetNames;
+//
+//	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GWorld->GetGameInstance());
+//	if (!GameInstance)
+//	{
+//		UE_LOG(FALL_DEV_LOG, Warning, TEXT("GetAvailableLevels: GameInstance is null!"));
+//		return LevelAssetNames;
+//	}
+//
+//	// PlayLevelDataTable 가져오기
+//	UDataTable* LevelDataTable = GameInstance->GetPlayLevelDataTable();
+//	if (!LevelDataTable)
+//	{
+//		UE_LOG(FALL_DEV_LOG, Warning, TEXT("GetAvailableLevels: PlayLevelDataTable is null!"));
+//		return LevelAssetNames;
+//	}
+//
+//	// 데이터 테이블의 모든 행 가져오기
+//	static const FString ContextString(TEXT("GetAvailableLevels :: "));
+//	TArray<FPlayLevelDataRow*> LevelRows;
+//	LevelDataTable->GetAllRows<FPlayLevelDataRow>(ContextString, LevelRows);
+//
+//	for (const FPlayLevelDataRow* Row : LevelRows)
+//	{
+//		if (Row)
+//		{
+//			UE_LOG(FALL_DEV_LOG, Log, TEXT("Row Name: %s"), *Row->Name);
+//			UE_LOG(FALL_DEV_LOG, Log, TEXT("Row Level Path: %s"), *Row->Level.ToString());
+//
+//			// 강제로 동기 로드하여 확인
+//			UWorld* LoadedLevel = Row->Level.LoadSynchronous();
+//			if (!LoadedLevel)
+//			{
+//				UE_LOG(FALL_DEV_LOG, Warning, TEXT("Row->Level failed to load synchronously!"));
+//			}
+//			else
+//			{
+//				UE_LOG(FALL_DEV_LOG, Log, TEXT("Row->Level loaded successfully!"));
+//			}
+//		}
+//
+//		if (Row && Row->Level.IsValid())
+//		{
+//			FString LevelAssetName = Row->Level.GetAssetName();
+//			LevelAssetNames.Add(LevelAssetName);
+//		}
+//	}
+//	return LevelAssetNames;
+//}
+//
+//// 플레이 가능한 레벨 및 이름 반환
+//TArray<FLevelInfo> UFallGlobal::GetAvailableLevelInfos()
+//{
+//	UBaseGameInstance* GameIns = GWorld->GetGameInstance<UBaseGameInstance>();
+//	return GameIns->InsGetAvailableLevelInfos();
+//}
+//
+//// 플레이 가능한 팀전 레벨 및 이름 반환
+//TArray<FLevelDisplayInfo> UFallGlobal::GetAvailableTeamPlayLevelInfos()
+//{
+//	TArray<FLevelDisplayInfo> TeamPlayLevelInfos;
+//
+//	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GWorld->GetGameInstance());
+//	if (!GameInstance)
+//	{
+//		UE_LOG(FALL_DEV_LOG, Warning, TEXT("GetAvailableTeamPlayLevelInfos: GameInstance is null!"));
+//		return TeamPlayLevelInfos;
+//	}
+//
+//	UDataTable* TeamPlayLevelDataTable = GameInstance->GetTeamPlayLevelDataTable();
+//	if (!TeamPlayLevelDataTable)
+//	{
+//		UE_LOG(FALL_DEV_LOG, Warning, TEXT("GetAvailableTeamPlayLevelInfos: PlayLevelDataTable is null!"));
+//		return TeamPlayLevelInfos;
+//	}
+//
+//	static const FString ContextString(TEXT("GetAvailableTeamPlayLevelInfos"));
+//	TArray<FTeamPlayLevelDataRow*> LevelRows;
+//	TeamPlayLevelDataTable->GetAllRows<FTeamPlayLevelDataRow>(ContextString, LevelRows);
+//
+//	for (const FTeamPlayLevelDataRow* Row : LevelRows)
+//	{
+//		if (Row == nullptr)
+//			continue;
+//
+//		// 강제로 로드
+//		UWorld* LoadedLevel = Row->Level.LoadSynchronous();
+//		if (!LoadedLevel)
+//		{
+//			UE_LOG(FALL_DEV_LOG, Warning, TEXT("Level Load Failed: %s"), *Row->Level.ToString());
+//			continue;
+//		}
+//
+//		FLevelDisplayInfo TeamPlayInfo;
+//		TeamPlayInfo.Name = Row->Name;
+//		TeamPlayInfo.AssetName = Row->Level.GetAssetName();
+//
+//		UE_LOG(FALL_DEV_LOG, Log, TEXT("Level Info Added - Name: %s, Asset: %s"), *TeamPlayInfo.Name, *TeamPlayInfo.AssetName);
+//
+//		TeamPlayLevelInfos.Add(TeamPlayInfo);
+//	}
+//	return TeamPlayLevelInfos;
+//}
 
 // BaseGameInstance : 랜덤 스테이지 반환
 FString UFallGlobal::GetRandomLevel(APawn* _Pawn)
@@ -485,11 +445,11 @@ EStageType UFallGlobal::GetCurStageType()
 	return GameIns->InsGetCurStageType();
 }
 
-// BaseGameInstance : 중간 결과 창이니? (스테이지 끝나고 나오는 화면이니?)
+// PlayGameState : 결과 화면이니?
 bool UFallGlobal::GetIsResultLevel()
 {
-	UBaseGameInstance* GameIns = GWorld->GetGameInstance<UBaseGameInstance>();
-	return GameIns->bIsResultLevel;
+	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
+	return FallState->GetGameStateIsResultLevel();
 }
 
 // 이재영 : 메인위젯을 얻는 함수

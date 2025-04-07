@@ -68,6 +68,7 @@ void APlayGameMode::PostLogin(APlayerController* _NewPlayer)
 
 	// 결과 화면인지 확인
 	bMODEIsResultLevel = GameInstance->bIsResultLevel;
+	FallState->SetGameStateIsResultLevel(bMODEIsResultLevel);
 
 	// 첫 스테이지인지 확인
 	if (GameInstance->IsMovedLevel)
@@ -82,7 +83,10 @@ void APlayGameMode::PostLogin(APlayerController* _NewPlayer)
 		else if (!bMODEIsResultLevel) // 게임 스테이지
 		{
 			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: 게임 스테이지 입니다. 기존 플레이어 정보를 리셋 합니다."));
-			RestoredInfo.Status = EPlayerStatus::DEFAULT;
+			if (RestoredInfo.Status == EPlayerStatus::SUCCESS)
+			{
+				RestoredInfo.Status = EPlayerStatus::DEFAULT;
+			}
 			PlayerState->PlayerInfo = RestoredInfo;
 		}
 		else
@@ -269,6 +273,9 @@ void APlayGameMode::BeginPlay()
 		MODE_CurStagePhase = GameInstance->InsGetCurStagePhase();
 		// 게임 스테이트에 스테이지 페이즈를 전달
 		FallState->SetCurStagePhase(MODE_CurStagePhase);
+
+		// 스테이지 종료의 기준 상태를 세팅
+		// MODE_CurStageResultStatus = GameInstance->InsGetCurStageResultStatus(MODE_CurLevelAssetName);
 
 		// 게임 시작을 위한 조건을 주기적으로 체크
 		GetWorldTimerManager().SetTimer(
@@ -524,7 +531,19 @@ void APlayGameMode::Tick(float DeltaSeconds)
 		GetWorldTimerManager().ClearTimer(SyncPlayerInfoTimer);
 		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: Tick :: 게임 종료 → SyncPlayerInfo 타이머 제거"));
 
-		SetDefaultPlayersToFail();
+		// 개인전이고 결과 화면이 아닐때만
+		if (MODE_CurStageType == EStageType::SOLO && !bMODEIsResultLevel)
+		{
+			//EPlayerStatus ResultStatus = GameInstance->InsGetDefaultPlayerStatusByAssetName(MODE_CurLevelAssetName);
+			//if (ResultStatus == EPlayerStatus::SUCCESS)
+			//{
+			//	SetDefaultPlayersToFail();
+			//}
+			//else if (ResultStatus == EPlayerStatus::FAIL)
+			//{
+			//	SetDefaultPlayersToSuccess();
+			//}
+		}
 
 		ServerTravelToNextMap(NextLevel);
 	}

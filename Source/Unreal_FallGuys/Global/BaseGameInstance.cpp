@@ -14,6 +14,8 @@
 #include <Global/FallGlobal.h>
 #include <Global/FallConst.h>
 #include <Global/Data/GlobalDataTable.h>
+#include <Global/Data/PlayLevelDataTable.h>
+#include <Global/Data/TeamPlayLevelDataTable.h>
 #include <Mode/01_Play/PlayGameMode.h>
 #include <Mode/01_Play/PlayGameState.h>
 #include <Mode/01_Play/PlayPlayerState.h>
@@ -177,6 +179,99 @@ UDataTable* UBaseGameInstance::GetTeamPlayLevelDataTable() const
 {
 	return TeamPlayLevelDataTable;
 }
+
+// 플레이 가능한 개인전 레벨 및 레벨 데이터들의 내용을 세팅
+void UBaseGameInstance::InsSaveAvailableLevelInfos()
+{
+	if (!PlayLevelInfos.IsEmpty())
+	{
+		// 데이터 있으면 초기화 해줌
+		PlayLevelInfos.Empty();
+	}
+
+	if (!PlayLevelDataTable)
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsSaveAvailableLevelInfos: PlayLevelDataTable is null!"));
+	}
+
+	static const FString ContextString(TEXT("InsSaveAvailableLevelInfos"));
+	TArray<FPlayLevelDataRow*> LevelRows;
+	PlayLevelDataTable->GetAllRows<FPlayLevelDataRow>(ContextString, LevelRows);
+
+	for (const FPlayLevelDataRow* Row : LevelRows)
+	{
+		if (Row == nullptr)
+			continue;
+
+		// 강제로 로드
+		UWorld* LoadedLevel = Row->Level.LoadSynchronous();
+		if (!LoadedLevel)
+		{
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("Level Load Failed: %s"), *Row->Level.ToString());
+			continue;
+		}
+
+		FLevelInfo Info;
+		Info.LevelAssetName = Row->Level.GetAssetName();
+		Info.LevelName = Row->Name;
+		Info.LevelType = Row->LevelType;
+		Info.EndCondition = Row->EndCondition;
+		Info.PlayGuide = Row->PlayGuide;
+		Info.GoalGuide = Row->GoalGuide;
+		Info.LevelIMG = Row->LevelIMG;
+
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("Level Info Added - Name: %s, Asset: %s"), *Info.LevelAssetName, *Info.LevelName);
+
+		PlayLevelInfos.Add(Info);
+	}
+}
+
+// 플레이 가능한 팀전 레벨 및 레벨 데이터들의 내용을 세팅
+void UBaseGameInstance::InsSaveAvailableTeamLevelInfos()
+{
+	if (!TeamPlayLevelInfos.IsEmpty())
+	{
+		// 데이터 있으면 초기화 해줌
+		TeamPlayLevelInfos.Empty();
+	}
+
+	if (!TeamPlayLevelDataTable)
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsSaveAvailableTeamLevelInfos: TeamPlayLevelDataTable is null!"));
+	}
+
+	static const FString ContextString(TEXT("InsSaveAvailableTeamLevelInfos"));
+	TArray<FTeamPlayLevelDataRow*> LevelRows;
+	TeamPlayLevelDataTable->GetAllRows<FTeamPlayLevelDataRow>(ContextString, LevelRows);
+
+	for (const FTeamPlayLevelDataRow* Row : LevelRows)
+	{
+		if (Row == nullptr)
+			continue;
+
+		// 강제로 로드
+		UWorld* LoadedLevel = Row->Level.LoadSynchronous();
+		if (!LoadedLevel)
+		{
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("Level Load Failed: %s"), *Row->Level.ToString());
+			continue;
+		}
+
+		FTeamLevelInfo TeamInfo;
+		TeamInfo.LevelAssetName = Row->Level.GetAssetName();
+		TeamInfo.LevelName = Row->Name;
+		TeamInfo.LevelType = Row->LevelType;
+		TeamInfo.StageLimitTime = Row->StageLimitTime;
+		TeamInfo.PlayGuide = Row->PlayGuide;
+		TeamInfo.GoalGuide = Row->GoalGuide;
+		TeamInfo.LevelIMG = Row->LevelIMG;
+
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("Level Info Added - Name: %s, Asset: %s"), *TeamInfo.LevelAssetName, *TeamInfo.LevelName);
+
+		TeamPlayLevelInfos.Add(TeamInfo);
+	}
+}
+
 #pragma endregion
 
 #pragma region BaseGameInstance :: 코스튬 관련
@@ -429,7 +524,7 @@ FString UBaseGameInstance::InsGetRandomLevel()
 	CurLevelAssetName = SelectedAssetName;
 	CurLevelName = LevelNameMap.Contains(SelectedAssetName) ? LevelNameMap[SelectedAssetName] : TEXT("Unknown");
 
-	// 스테이지 타입 : 솔로
+	// 스테이지 타입 : 개인전
 	CurStageType = EStageType::SOLO;
 
 	return SelectedAssetName;
@@ -469,7 +564,7 @@ FString UBaseGameInstance::InsGetRandomTeamLevel()
 	CurLevelAssetName = SelectedAssetName;
 	CurLevelName = LevelNameMap.Contains(SelectedAssetName) ? LevelNameMap[SelectedAssetName] : TEXT("Unknown");
 
-	// 스테이지 타입 : 솔로
+	// 스테이지 타입 : 팀전
 	CurStageType = EStageType::TEAM;
 
 	return SelectedAssetName;
@@ -652,6 +747,29 @@ EStageType UBaseGameInstance::InsGetStageTypeFromAssetName(const FString& _Asset
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsGetStageTypeFromAssetName :: AssetName(%s)의 타입을 찾을 수 없습니다."), *_AssetName);
 	return EStageType::NONE;
+}
+
+// 스테이지의 종료 기준 반환
+EPlayerStatus UBaseGameInstance::InsGetStageResultStatusFromAssetName(const FString& _AssetName)
+{
+	if (!PlayLevelDataTable)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("InsGetStageEndConditionFromAssetName :: 해당 에셋 이름의 데이터를 찾을 수 없습니다. 에셋 이름 : %s."), *_AssetName);
+		return EPlayerStatus::NONE;
+	}
+
+	const FPlayLevelDataRow* Row = nullptr;
+	Row = UFallGlobal::FindRowByFStringField<FPlayLevelDataRow>(
+		PlayLevelDataTable,
+		_AssetName,
+		TEXT("InsGetStageEndConditionFromAssetName"),
+		[](const FPlayLevelDataRow* R) { return R->Level.GetAssetName(); }
+	);
+
+	if (Row) { return Row->EndCondition; }
+
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsGetStageEndConditionFromAssetName :: AssetName(%s)의 타입을 찾을 수 없습니다."), *_AssetName);
+	return EPlayerStatus::NONE;
 }
 #pragma endregion
 

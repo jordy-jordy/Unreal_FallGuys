@@ -273,6 +273,12 @@ void APlayGameState::SetIsCountDownOverTrue_Implementation()
 	IsCountDownOver = true;
 }
 
+// 결과 화면인지 세팅 : PlayGameMode에서 호출
+void APlayGameState::SetGameStateIsResultLevel_Implementation(bool _Value)
+{
+	bGameStateIsResultLevel = _Value;
+}
+
 // 실패한 유저의 떨어지는 순번을 정해줌
 void APlayGameState::SetDropOrder_Implementation()
 {
@@ -353,6 +359,7 @@ void APlayGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(APlayGameState, IsLevelCinematicEnd);
 	DOREPLIFETIME(APlayGameState, GameStateFinishPlayer);
 	DOREPLIFETIME(APlayGameState, GameStateCurFinishPlayer);
+	DOREPLIFETIME(APlayGameState, bGameStateIsResultLevel);
 }
 
 void APlayGameState::PrintFailPlayersInfo()

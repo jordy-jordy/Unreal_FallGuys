@@ -107,7 +107,8 @@ protected:
 	EStageType MODE_CurStageType = EStageType::NONE;
 	// 현재 스테이지 단계
 	EStagePhase MODE_CurStagePhase = EStagePhase::STAGE_1;
-
+	// 스테이지 종료 기준 상태
+	EPlayerStatus MODE_CurStageResultStatus = EPlayerStatus::NONE;
 #pragma endregion
 
 #pragma region PlayGameMode :: 타이머 관련

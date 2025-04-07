@@ -5,10 +5,65 @@
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 
+#include <Global/GlobalEnum.h>
 #include <Mode/01_Play/PlayEnum.h>
-#include <Mode/01_Play/PlayPlayerState.h>
 
 #include "BaseGameInstance.generated.h"
+
+
+USTRUCT(BlueprintType)
+struct FLevelInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FString LevelAssetName;
+
+	UPROPERTY()
+	FString LevelName;
+
+	UPROPERTY()
+	EStageType LevelType = EStageType::SOLO;
+
+	UPROPERTY()
+	EPlayerStatus EndCondition = EPlayerStatus::NONE;
+
+	UPROPERTY()
+	FString PlayGuide;
+
+	UPROPERTY()
+	FString GoalGuide;
+
+	UPROPERTY()
+	UTexture2D* LevelIMG;
+};
+
+USTRUCT(BlueprintType)
+struct FTeamLevelInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	TSoftObjectPtr<UWorld> LevelAssetName;
+
+	UPROPERTY()
+	FString LevelName;
+
+	UPROPERTY()
+	EStageType LevelType = EStageType::TEAM;
+
+	UPROPERTY()
+	float StageLimitTime = 120.0f;
+
+	UPROPERTY()
+	FString PlayGuide;
+
+	UPROPERTY()
+	FString GoalGuide;
+
+	UPROPERTY()
+	UTexture2D* LevelIMG = nullptr;
+};
 
 
 /**
@@ -47,6 +102,18 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "DATA")
 	class UDataTable* GetTeamPlayLevelDataTable() const;
 
+	// 플레이 가능한 개인전 레벨 및 레벨 데이터들을 저장
+	UFUNCTION(BlueprintCallable, Category = "DATA")
+	void InsSaveAvailableLevelInfos();
+
+	// 플레이 가능한 팀전 레벨 및 레벨 데이터들을 저장
+	UFUNCTION(BlueprintCallable, Category = "DATA")
+	void InsSaveAvailableTeamLevelInfos();
+
+	// InsGetAvailableLevelInfos 로 얻은 레벨 데이터들 반환
+	UFUNCTION(BlueprintCallable, Category = "DATA")
+	TArray<FLevelInfo> GetPlayLevelInfos() const { return PlayLevelInfos; }
+
 private:
 	UPROPERTY(VisibleAnywhere, Category = "DATA")
 	class UDataTable* DataTables = nullptr;
@@ -55,6 +122,12 @@ private:
 	class UDataTable* PlayLevelDataTable = nullptr;
 	class UDataTable* TeamPlayLevelDataTable = nullptr;
 	class UDataTable* ResourceDataTable = nullptr;
+
+	// 플레이 가능한 개인전 레벨 및 정보
+	TArray<FLevelInfo> PlayLevelInfos;
+
+	// 플레이 가능한 팀전 레벨 및 정보
+	TArray<FTeamLevelInfo> TeamPlayLevelInfos;
 
 #pragma endregion
 
@@ -171,6 +244,10 @@ public:
 	// 스테이지 타입 반환
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
 	EStageType InsGetStageTypeFromAssetName(const FString& _AssetName);
+
+	// 스테이지의 종료 기준 반환
+	UFUNCTION(BlueprintCallable, Category = "LEVEL")
+	EPlayerStatus InsGetStageResultStatusFromAssetName(const FString& _AssetName);
 
 	// 현재의 스테이지 타입을 세팅
 	UFUNCTION(BlueprintCallable)

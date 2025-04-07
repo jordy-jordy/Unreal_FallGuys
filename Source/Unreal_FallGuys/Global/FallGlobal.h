@@ -114,17 +114,17 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static void ChangeNickname(APawn* _Pawn, const FString& _NewNickname);
 
-	// 플레이 가능한 레벨 반환
-	UFUNCTION(BlueprintCallable)
-	static TArray<FString> GetAvailableLevels();
-	
-	// 플레이 가능한 레벨 및 이름 반환
-	UFUNCTION(BlueprintCallable)
-	static TArray<FLevelDisplayInfo> GetAvailableLevelInfos();
+	//// 플레이 가능한 레벨 반환
+	//UFUNCTION(BlueprintCallable)
+	//static TArray<FString> GetAvailableLevels();
+	//
+	//// 플레이 가능한 레벨 및 이름 반환
+	//UFUNCTION(BlueprintCallable)
+	//static TArray<FLevelInfo> GetAvailableLevelInfos();
 
-	// 플레이 가능한 팀전 레벨 및 이름 반환
-	UFUNCTION(BlueprintCallable)
-	static TArray<FLevelDisplayInfo> GetAvailableTeamPlayLevelInfos();
+	//// 플레이 가능한 팀전 레벨 및 이름 반환
+	//UFUNCTION(BlueprintCallable)
+	//static TArray<FLevelDisplayInfo> GetAvailableTeamPlayLevelInfos();
 
 	// BaseGameInstance : 랜덤 스테이지 반환
 	UFUNCTION(BlueprintCallable)
@@ -204,7 +204,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static EStageType GetCurStageType();
 
-	// BaseGameInstance : 중간 결과 창이니? (스테이지 끝나고 나오는 화면이니?)
+	// PlayGameState : 결과 화면이니?
 	UFUNCTION(BlueprintCallable)
 	static bool GetIsResultLevel();
 
