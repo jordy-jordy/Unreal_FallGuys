@@ -14,4 +14,10 @@ class UNREAL_FALLGUYS_API UPlayClearCountWidget : public UPlayUserWidget
 {
 	GENERATED_BODY()
 	
+public:
+	UFUNCTION(BlueprintCallable)
+	int GetWholePlayerNum();
+
+	UFUNCTION(BlueprintCallable)
+	int GetTargetPlayerNum();
 };
