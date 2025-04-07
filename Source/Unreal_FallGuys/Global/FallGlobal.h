@@ -200,6 +200,13 @@ public:
 	// PlayGameState : 실패한 유저의 떨어지는 순번을 정해줌
 	static void SetDropOrder();
 
+	// BaseGameInstance : 현재의 스테이지 타입(개인전, 팀전)을 얻음
+	UFUNCTION(BlueprintCallable)
+	static EStageType GetCurStageType();
+
+	// BaseGameInstance : 중간 결과 창이니? (스테이지 끝나고 나오는 화면이니?)
+	UFUNCTION(BlueprintCallable)
+	static bool GetIsResultLevel();
 
 public:
 	// 코스튬 관련 편의 기능 (현재 개발중)
