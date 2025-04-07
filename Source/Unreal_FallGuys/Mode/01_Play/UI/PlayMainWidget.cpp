@@ -3,9 +3,21 @@
 
 #include "Mode/01_Play/UI/PlayMainWidget.h"
 #include "Global/FallConst.h"
+#include "Global/FallGlobal.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Mode/01_Play/PlayGameState.h"
 
+
+void UPlayMainWidget::NativeConstruct()
+{
+	// ResultLevelÀÌ¸é À§Á¬ ²¨Áö°Ô
+	if (true == UFallGlobal::GetIsResultLevel())
+	{
+		UPlayUserWidget* StandbyWIdget = FindWidget(EPlayUIType::PlayStandby);
+		StandbyWIdget->SetVisibility(ESlateVisibility::Hidden);
+	}
+}
 
 void UPlayMainWidget::MainWidgetInit()
 {
@@ -125,9 +137,6 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 		return;
 	}
 	
-	UPlayUserWidget* ClearCount = FindWidget(EPlayUIType::PlayClearCount);
-	UPlayUserWidget* StartCount = FindWidget(EPlayUIType::PlayStartCount);
-
 	//CurUIType À§Á¬ => _UIType À§Á¬
 	switch (CurUIType)
 	{
@@ -168,13 +177,30 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 		switch (EPlayUIType(_UIType))
 		{
 		case EPlayUIType::PlayInGame:
-			ClearCount->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		{
+			APlayGameState* GameState = Cast<APlayGameState>(GetWorld()->GetGameState());
+			EStageType StageType = GameState->GetCurStageType();
+
+			UPlayUserWidget* ClearCount = FindWidget(EPlayUIType::PlayClearCount);
+			UPlayUserWidget* StartCount = FindWidget(EPlayUIType::PlayStartCount);
+			UPlayUserWidget* PlayScore = FindWidget(EPlayUIType::PlayScore);
+
+			if (StageType == EStageType::SOLO)
+			{
+				ClearCount->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			}
+			else if (StageType == EStageType::TEAM)
+			{
+				PlayScore->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			}
 			// ÀÓ½Ã(³ªÁß¿¡ ÁÖ¼® Áö¿ì±â)
 			if (true == UFallConst::UseCountDown)
 			{
 				StartCount->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 			}
+
 			break;
+		}
 		default:
 			break;
 		}

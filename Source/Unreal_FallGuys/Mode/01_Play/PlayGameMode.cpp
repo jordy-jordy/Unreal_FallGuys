@@ -207,7 +207,7 @@ void APlayGameMode::ControllFinishPlayer()
 		}
 		else if (MinCount <= 5)
 		{
-			SetFinishPlayerCount(2);
+			SetFinishPlayerCount(3);
 		}
 		else
 		{

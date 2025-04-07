@@ -16,20 +16,11 @@ class UNREAL_FALLGUYS_API UPlayResultWidget : public UPlayUserWidget
 
 public:
 	void NativeConstruct();
+
+	// юс╫ц
+	void HiddenWidget();
 	
 private:
 	UPROPERTY(VisibleAnywhere, Transient, meta = (BindWidgetAnim), Category = "UI")
-	UWidgetAnimation* LeftBigAnim;
-
-	UPROPERTY(VisibleAnywhere, Transient, meta = (BindWidgetAnim), Category = "UI")
-	UWidgetAnimation* LeftSmallAnim;
-
-	UPROPERTY(VisibleAnywhere, Transient, meta = (BindWidgetAnim), Category = "UI")
-	UWidgetAnimation* RightBigAnim;
-
-	UPROPERTY(VisibleAnywhere, Transient, meta = (BindWidgetAnim), Category = "UI")
-	UWidgetAnimation* RightSmallAnim;
-
-	UPROPERTY(VisibleAnywhere, Transient, meta = (BindWidgetAnim), Category = "UI")
-	UWidgetAnimation* TextAnim;
+	UWidgetAnimation* ResultAnim;
 };

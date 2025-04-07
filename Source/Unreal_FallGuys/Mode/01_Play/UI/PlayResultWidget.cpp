@@ -8,10 +8,15 @@ void UPlayResultWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	PlayAnimation(LeftBigAnim);
-	PlayAnimation(LeftSmallAnim);
-	PlayAnimation(RightBigAnim);
-	PlayAnimation(RightSmallAnim);
-	PlayAnimation(TextAnim);
+	PlayAnimation(ResultAnim);
+	//BindToAnimationFinished(ResultAnim, FWidgetAnimationDynamicEvent::BindUFunction(this, &UPlayResultWidget::HiddenWidget));
 }
+
+void UPlayResultWidget::HiddenWidget()
+{
+	SetVisibility(ESlateVisibility::Hidden);
+}
+
+
+
 
