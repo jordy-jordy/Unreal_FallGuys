@@ -762,7 +762,7 @@ void UBaseGameInstance::InsPrintPlayerInfo()
 	}
 }
 
-// 디버그용 : 현재 접속자 수, 카운트 다운 END 여부, 현재 스테이지 단계, 목표 골인 인원 수 확인
+// 디버그용 : 현재 접속자 수, 카운트 다운 END 여부, 현재 스테이지 단계, 목표 골인 인원 수, 현재 골인 인원 수 확인
 void UBaseGameInstance::InsPrintConnectedPlayers()
 {
 	APlayGameState* PlayGameState = GetWorld()->GetGameState<APlayGameState>();
@@ -817,15 +817,19 @@ void UBaseGameInstance::InsPrintLevelName()
 	}
 
 	FString LevelName = PlayGameState->GetLevelName();
+	FString LevelAssetName = PlayGameState->GetLevelAssetName();
 
 	// 콘솔 출력
-	UE_LOG(FALL_DEV_LOG, Log, TEXT("현재 PlayGameState의 LevelName: %s"), *LevelName);
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("현재 레벨의 이름: %s"), *LevelName);
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("현재 레벨의 에셋 이름: %s"), *LevelAssetName);
 
 	// 화면 출력
 	if (GEngine)
 	{
-		FString ScreenMessage = FString::Printf(TEXT("현재 레벨 이름: %s"), *LevelName);
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, ScreenMessage);
+		FString ScreenMessage0 = FString::Printf(TEXT("현재 레벨의 이름: %s"), *LevelName);
+		FString ScreenMessage1 = FString::Printf(TEXT("현재 레벨의 에셋 이름: %s"), *LevelAssetName);
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, ScreenMessage0);
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, ScreenMessage1);
 	}
 }
 

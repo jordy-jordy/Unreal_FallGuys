@@ -478,6 +478,19 @@ void UFallGlobal::SetDropOrder()
 	FallState->SetDropOrder();
 }
 
+// BaseGameInstance : 현재의 스테이지 타입(개인전, 팀전)을 얻음
+EStageType UFallGlobal::GetCurStageType()
+{
+	UBaseGameInstance* GameIns = GWorld->GetGameInstance<UBaseGameInstance>();
+	return GameIns->InsGetCurStageType();
+}
+
+// BaseGameInstance : 중간 결과 창이니? (스테이지 끝나고 나오는 화면이니?)
+bool UFallGlobal::GetIsResultLevel()
+{
+	UBaseGameInstance* GameIns = GWorld->GetGameInstance<UBaseGameInstance>();
+	return GameIns->bIsResultLevel;
+}
 
 // 이재영 : 메인위젯을 얻는 함수
 UTitleMainWidget* UFallGlobal::GetMainWidget(UWorld* _World)
@@ -500,3 +513,4 @@ UTitleMainWidget* UFallGlobal::GetMainWidget(UWorld* _World)
 
 	return TitleHUD->GetMainWidget();
 }
+

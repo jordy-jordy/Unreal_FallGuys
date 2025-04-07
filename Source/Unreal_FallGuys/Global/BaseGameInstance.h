@@ -279,7 +279,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "DEBUG")
 	void InsPrintPlayerInfo();
 
-	// 디버그용 : 현재 접속자 수, 카운트 다운 END 여부, 현재 스테이지 단계, 목표 골인 인원 수 확인
+	// 디버그용 : 현재 접속자 수, 카운트 다운 END 여부, 현재 스테이지 단계, 목표 골인 인원 수, 현재 골인 인원 수 확인
 	UFUNCTION(BlueprintCallable, Category = "DEBUG")
 	void InsPrintConnectedPlayers();
 
