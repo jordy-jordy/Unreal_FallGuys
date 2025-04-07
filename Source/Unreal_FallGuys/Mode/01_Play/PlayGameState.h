@@ -113,6 +113,11 @@ public:
 	void SetCurStageType(EStageType _StageType);
 	void SetCurStageType_Implementation(EStageType _StageType);
 
+	// 레벨 페이즈 세팅 : PlayGameMode에서 호출
+	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
+	void SetCurStagePhase(EStagePhase _StagePhase);
+	void SetCurStagePhase_Implementation(EStagePhase _StagePhase);
+
 	// 세팅된 레벨 이름 반환
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
 	FString GetLevelName() const { return LevelName; }
@@ -174,11 +179,11 @@ protected:
 	FString LevelAssetName = TEXT("");
 
 	// 현재 스테이지 타입
-	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category = "LEVEL")
+	UPROPERTY(Replicated)
 	EStageType GS_CurStageType = EStageType::NONE;
 
-	// 현재 스테이지 단계
-	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category = "LEVEL")
+	// 현재 스테이지 페이즈
+	UPROPERTY(Replicated)
 	EStagePhase GS_CurStagePhase = EStagePhase::STAGE_1;
 
 	// 레벨 시네마틱 시작해도 되니?

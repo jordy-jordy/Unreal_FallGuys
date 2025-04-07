@@ -781,14 +781,15 @@ void UBaseGameInstance::InsPrintConnectedPlayers()
 	EStagePhase StagePhase = PlayGameState->GetCurStagePhase();
 
 	// FinishPlayer 값 가져오기
-	APlayGameMode* GameMode = GetWorld()->GetAuthGameMode<APlayGameMode>();
-	int32 FinishPlayerCount = (GameMode) ? GameMode->GetFinishPlayerCount() : -1;
+	int TargetGoalCount = PlayGameState->GetGameStateFinishPlayer();
+	int CurGoalCount = PlayGameState->GetGameStateCurFinishPlayer();
 
 	// 로그 출력
 	UE_LOG(FALL_DEV_LOG, Log, TEXT("현재 접속자 수 : %d"), ConnectedCount);
 	UE_LOG(FALL_DEV_LOG, Log, TEXT("카운트 다운 끝났니? : %s"), IsOverCount ? TEXT("true") : TEXT("false"));
 	UE_LOG(FALL_DEV_LOG, Log, TEXT("현재 스테이지 단계 : %s"), *UEnum::GetValueAsString(StagePhase));
-	UE_LOG(FALL_DEV_LOG, Log, TEXT("목표 골인 인원 수 : %d"), FinishPlayerCount);
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("목표 골인 인원 수 : %d"), TargetGoalCount);
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("현재 골인 인원 수 : %d"), CurGoalCount);
 
 	// 화면 출력
 	if (GEngine)
@@ -796,7 +797,8 @@ void UBaseGameInstance::InsPrintConnectedPlayers()
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("현재 접속자 수 : %d"), ConnectedCount));
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("카운트 다운 끝났니? : %s"), IsOverCount ? TEXT("true") : TEXT("false")));
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("현재 스테이지 단계 : %s"), *UEnum::GetValueAsString(StagePhase)));
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("목표 골인 인원 수 : %d"), FinishPlayerCount));
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("목표 골인 인원 수 : %d"), TargetGoalCount));
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("현재 골인 인원 수 : %d"), CurGoalCount));
 	}
 }
 
@@ -882,18 +884,18 @@ void UBaseGameInstance::InsGetGameStateCurFinishPlayer()
 		return;
 	}
 
-	int CurGoalCount = PlayGameState->GetGameStateCurFinishPlayer();
 	int TargetGoalCount = PlayGameState->GetGameStateFinishPlayer();
+	int CurGoalCount = PlayGameState->GetGameStateCurFinishPlayer();
 
 	// 콘솔 출력
-	UE_LOG(FALL_DEV_LOG, Log, TEXT("현재 골인한 인원 : %d"), CurGoalCount);
 	UE_LOG(FALL_DEV_LOG, Log, TEXT("목표 골인 인원 : %d"), TargetGoalCount);
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("현재 골인한 인원 : %d"), CurGoalCount);
 
 	// 화면 출력
 	if (GEngine)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("현재 골인한 인원 : %d"), CurGoalCount));
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("목표 골인 인원 : %d"), TargetGoalCount));
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("현재 골인한 인원 : %d"), CurGoalCount));
 	}
 }
 

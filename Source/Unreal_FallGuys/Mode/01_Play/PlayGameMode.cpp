@@ -120,21 +120,6 @@ void APlayGameMode::PostLogin(APlayerController* _NewPlayer)
 	// 접속 여부 bool값 true로 변경
 	GameInstance->InsSetbIsConnectedTrue();
 
-	// 게임 인스턴스에서 현재 스테이지 타입을 가져옴
-	MODE_CurStageType = GameInstance->InsGetCurStageType();
-	// 게임 스테이트에 스테이지 타입을 전달
-	FallState->SetCurStageType(MODE_CurStageType);
-
-	// 게임 인스턴스에서 현재 스테이지의 에셋 이름을 가져옴
-	MODE_CurLevelAssetName = GameInstance->InsGetCurLevelAssetName();
-	// 게임 스테이트에 스테이지 에셋 이름을 전달
-	FallState->SetPlayLevelAssetName(MODE_CurLevelAssetName);
-
-	// 게임 인스턴스에서 현재 스테이지의 이름을 가져옴
-	MODE_CurLevelName = GameInstance->InsGetCurLevelName();
-	// 게임 스테이트에 스테이지 이름을 전달
-	FallState->SetPlayLevelName(MODE_CurLevelName);
-
 	// 인원 카운팅
 	FallState->AddConnectedPlayers();
 	int ConnectingPlayer = FallState->GetConnectedPlayers();
@@ -177,6 +162,9 @@ void APlayGameMode::PostLogin(APlayerController* _NewPlayer)
 		}
 	}
 
+	// 게임 시작 인원 수에 따른 목표 횟수 설정
+	ControllFinishPlayer();
+
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode PostLogin END ======= "));
 }
 #pragma endregion
@@ -216,7 +204,7 @@ void APlayGameMode::ControllFinishPlayer()
 		}
 		else if (MinCount <= 5)
 		{
-			SetFinishPlayerCount(3);
+			SetFinishPlayerCount(2);
 		}
 		else
 		{
@@ -260,13 +248,27 @@ void APlayGameMode::BeginPlay()
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode BeginPlay START ======= "));
 
 		UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
+		APlayGameState* FallState = GetGameState<APlayGameState>();
 
-		// 현 스테이지 타입이 뭐지?
+		// 게임 인스턴스에서 현재 스테이지의 에셋 이름을 가져옴
+		MODE_CurLevelAssetName = GameInstance->InsGetCurLevelAssetName();
+		// 게임 스테이트에 스테이지 에셋 이름을 전달
+		FallState->SetPlayLevelAssetName(MODE_CurLevelAssetName);
+
+		// 게임 인스턴스에서 현재 스테이지의 이름을 가져옴
+		MODE_CurLevelName = GameInstance->InsGetCurLevelName();
+		// 게임 스테이트에 스테이지 이름을 전달
+		FallState->SetPlayLevelName(MODE_CurLevelName);
+
+		// 게임 인스턴스에서 현재 스테이지 타입을 가져옴
 		MODE_CurStageType = GameInstance->InsGetCurStageType();
-		// 현 스테이지 페이즈가 뭐지?
+		// 게임 스테이트에 스테이지 타입을 전달
+		FallState->SetCurStageType(MODE_CurStageType);
+
+		// 게임 인스턴스에서 현재 스테이지 페이즈를 가져옴
 		MODE_CurStagePhase = GameInstance->InsGetCurStagePhase();
-		// 게임 시작 인원 수에 따른 목표 횟수 설정
-		ControllFinishPlayer();
+		// 게임 스테이트에 스테이지 페이즈를 전달
+		FallState->SetCurStagePhase(MODE_CurStagePhase);
 
 		// 게임 시작을 위한 조건을 주기적으로 체크
 		GetWorldTimerManager().SetTimer(

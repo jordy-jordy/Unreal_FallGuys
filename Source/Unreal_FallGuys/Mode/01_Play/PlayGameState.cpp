@@ -25,15 +25,15 @@ void APlayGameState::BeginPlay()
 
 	if (HasAuthority())
 	{
-		UBaseGameInstance* GameInstance = GetGameInstance<UBaseGameInstance>();
-		if (!GameInstance) { return; }
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: BeginPlay :: 스테이지 모드 : %s"), *UEnum::GetValueAsString(GS_CurStageType));
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: BeginPlay :: 스테이지 페이즈 : %s"), *UEnum::GetValueAsString(GS_CurStagePhase));
 
-		// 현 스테이지의 페이즈를 가져옴
-		GS_CurStagePhase = GameInstance->InsGetCurStagePhase();
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: BeginPlay :: 스테이지의 페이즈가 세팅되었습니다. 페이즈 : %s"), *UEnum::GetValueAsString(GS_CurStagePhase));
-
-		UseStageLimitTime = SetUseStageLimitTime();
-		StageLimitTime = SetStageLimitTime();
+		// 팀전인 경우 제한 시간 사용
+		if (GS_CurStageType == EStageType::TEAM)
+		{
+			UseStageLimitTime = SetUseStageLimitTime();
+			StageLimitTime = SetStageLimitTime();
+		}
 	}
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameState BeginPlay END ======= "));
@@ -226,6 +226,12 @@ void APlayGameState::SetCurStageType_Implementation(EStageType _StageType)
 	GS_CurStageType = _StageType;
 }
 
+// 레벨 페이즈 세팅 : PlayGameMode에서 호출
+void APlayGameState::SetCurStagePhase_Implementation(EStagePhase _StagePhase)
+{
+	GS_CurStagePhase = _StagePhase;
+}
+
 // 레벨 시네마틱 시작하세요
 void APlayGameState::SetCanStartLevelCinematic_Implementation()
 {
@@ -334,15 +340,15 @@ void APlayGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(APlayGameState, PlayerInfoArray);
 	DOREPLIFETIME(APlayGameState, FailPlayerInfoArray);
-	DOREPLIFETIME(APlayGameState, CountDownTime);
-	DOREPLIFETIME(APlayGameState, ConnectedPlayers);
 	DOREPLIFETIME(APlayGameState, LevelName);
 	DOREPLIFETIME(APlayGameState, LevelAssetName);
+	DOREPLIFETIME(APlayGameState, GS_CurStageType);
+	DOREPLIFETIME(APlayGameState, GS_CurStagePhase);
+	DOREPLIFETIME(APlayGameState, CountDownTime);
+	DOREPLIFETIME(APlayGameState, ConnectedPlayers);
 	DOREPLIFETIME(APlayGameState, IsCountDownOver);
 	DOREPLIFETIME(APlayGameState, StageLimitTime);
 	DOREPLIFETIME(APlayGameState, UseStageLimitTime);
-	DOREPLIFETIME(APlayGameState, GS_CurStageType);
-	DOREPLIFETIME(APlayGameState, GS_CurStagePhase);
 	DOREPLIFETIME(APlayGameState, CanStartLevelCinematic);
 	DOREPLIFETIME(APlayGameState, IsLevelCinematicEnd);
 	DOREPLIFETIME(APlayGameState, GameStateFinishPlayer);
