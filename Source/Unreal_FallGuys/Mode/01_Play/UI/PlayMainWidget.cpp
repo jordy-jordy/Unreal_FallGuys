@@ -169,7 +169,11 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 		{
 		case EPlayUIType::PlayInGame:
 			ClearCount->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			StartCount->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			// 임시(나중에 주석 지우기)
+			if (true == UFallConst::UseCountDown)
+			{
+				StartCount->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			}
 			break;
 		default:
 			break;
