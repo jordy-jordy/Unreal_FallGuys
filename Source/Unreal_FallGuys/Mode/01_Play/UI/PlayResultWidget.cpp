@@ -13,5 +13,14 @@ void UPlayResultWidget::NativeConstruct()
 	PlayAnimation(RightBigAnim);
 	PlayAnimation(RightSmallAnim);
 	PlayAnimation(TextAnim);
+	//BindToAnimationFinished(TextAnim, FWidgetAnimationDynamicEvent::BindUFunction(this, &UPlayResultWidget::HiddenWidget));
 }
+
+void UPlayResultWidget::HiddenWidget()
+{
+	SetVisibility(ESlateVisibility::Hidden);
+}
+
+
+
 

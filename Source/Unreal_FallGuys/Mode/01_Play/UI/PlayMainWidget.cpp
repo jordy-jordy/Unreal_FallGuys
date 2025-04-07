@@ -3,9 +3,20 @@
 
 #include "Mode/01_Play/UI/PlayMainWidget.h"
 #include "Global/FallConst.h"
+#include "Global/FallGlobal.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Kismet/KismetSystemLibrary.h"
 
+
+void UPlayMainWidget::NativeConstruct()
+{
+	// ResultLevelÀÌ¸é À§Á¬ ²¨Áö°Ô
+	if (true == UFallGlobal::GetIsResultLevel())
+	{
+		UPlayUserWidget* StandbyWIdget = FindWidget(EPlayUIType::PlayStandby);
+		StandbyWIdget->SetVisibility(ESlateVisibility::Hidden);
+	}
+}
 
 void UPlayMainWidget::MainWidgetInit()
 {

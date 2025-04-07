@@ -16,6 +16,9 @@ class UNREAL_FALLGUYS_API UPlayResultWidget : public UPlayUserWidget
 
 public:
 	void NativeConstruct();
+
+	// юс╫ц
+	void HiddenWidget();
 	
 private:
 	UPROPERTY(VisibleAnywhere, Transient, meta = (BindWidgetAnim), Category = "UI")
