@@ -12,7 +12,7 @@ APlayPlayerState::APlayPlayerState()
 {
 }
 
-void APlayPlayerState::SetPlayerInfo_Implementation(const FString& _Tag, const FString& _NickName)
+void APlayPlayerState::SetPlayerInfo_Implementation(const FName& _Tag, const FString& _NickName)
 {
     PlayerInfo.UniqueID = GetUniqueId()->ToString();
     PlayerInfo.Tag = _Tag;

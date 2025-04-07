@@ -29,7 +29,7 @@ void ATeamPlayGameMode::PostLogin(APlayerController* _NewPlayer)
 	AssignTeam(PlayerState);
 
 	UE_LOG(FALL_DEV_LOG, Log, TEXT("TeamPlayGameMode :: PostLogin :: 플레이어 %s 팀 배정 완료: %s"),
-		*PlayerState->PlayerInfo.Tag,
+		*PlayerState->PlayerInfo.Tag.ToString(),
 		*UEnum::GetValueAsString(PlayerState->PlayerInfo.Team));
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= TeamPlayGameMode PostLogin END ======= "));

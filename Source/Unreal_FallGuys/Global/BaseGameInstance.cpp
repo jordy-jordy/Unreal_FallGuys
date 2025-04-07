@@ -714,7 +714,7 @@ void UBaseGameInstance::InsBackupPlayerInfo(const FString& _UniqueID, FPlayerInf
 	FString StatusStr = UEnum::GetValueAsString(_PlayerInfo.Status);
 	PlayerInfoBackup.Add(_UniqueID, MoveTemp(_PlayerInfo));
 	UE_LOG(FALL_DEV_LOG, Log, TEXT("InsBackupPlayerInfo :: UniqueID = %s, PlayerTag = %s, PlayerStatus = %s"),
-		*_UniqueID, *_PlayerInfo.Tag, *StatusStr);
+		*_UniqueID, *_PlayerInfo.Tag.ToString(), *StatusStr);
 }
 
 // 백업된 플레이어 정보 복구 함수
@@ -764,7 +764,7 @@ void UBaseGameInstance::InsPrintPlayerInfo()
 	{
 		FString StatusStr = UEnum::GetValueAsString(Entry.PlayerInfo.Status);
 		FString LogMessage = FString::Printf(TEXT("UniqueID: %s, Tag: %s, Status: %s, DropOder: %d"),
-			*Entry.UniqueID, *Entry.PlayerInfo.Tag, *StatusStr, Entry.PlayerInfo.DropOrder);
+			*Entry.UniqueID, *Entry.PlayerInfo.Tag.ToString(), *StatusStr, Entry.PlayerInfo.DropOrder);
 
 		UE_LOG(FALL_DEV_LOG, Log, TEXT("%s"), *LogMessage);
 
@@ -785,7 +785,7 @@ void UBaseGameInstance::InsPrintPlayerInfo()
 		{
 			FString StatusStr = UEnum::GetValueAsString(PlayPlayerState->PlayerInfo.Status);
 			FString LogMessage = FString::Printf(TEXT("UniqueID: %s, Tag: %s, Status: %s DropOder: %d"),
-				*PlayPlayerState->PlayerInfo.UniqueID, *PlayPlayerState->PlayerInfo.Tag, *StatusStr, PlayPlayerState->PlayerInfo.DropOrder);
+				*PlayPlayerState->PlayerInfo.UniqueID, *PlayPlayerState->PlayerInfo.Tag.ToString(), *StatusStr, PlayPlayerState->PlayerInfo.DropOrder);
 
 			UE_LOG(FALL_DEV_LOG, Log, TEXT("%s"), *LogMessage);
 

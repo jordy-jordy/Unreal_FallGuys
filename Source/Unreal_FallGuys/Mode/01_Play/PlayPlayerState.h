@@ -21,7 +21,7 @@ struct FPlayerInfo
 
     // Player0, Player1 같은 태그 :: PlayGameMode에서 지정
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-    FString Tag;
+    FName Tag;
 
     // 닉네임 :: BaseGameInstance에서 지정
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
@@ -78,8 +78,8 @@ public:
 
     // 플레이어 정보 설정
     UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "PLAYER INFO")
-    void SetPlayerInfo(const FString& _Tag, const FString& _NickName);
-    void SetPlayerInfo_Implementation(const FString& _Tag, const FString& _NickName);
+    void SetPlayerInfo(const FName& _Tag, const FString& _NickName);
+    void SetPlayerInfo_Implementation(const FName& _Tag, const FString& _NickName);
     
     // 팀 세팅
     UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "PLAYER INFO")

@@ -79,13 +79,13 @@ void APlayGameState::SyncPlayerInfoFromPlayerState_Implementation()
 		{
 			PlayerInfoArray.Add(Entry); // 새로 추가
 			UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameState :: SyncPlayerInfo :: 플레이어 정보 추가 - UID: %s, Tag: %s"),
-				*Entry.UniqueID, *Entry.PlayerInfo.Tag);
+				*Entry.UniqueID, *Entry.PlayerInfo.Tag.ToString());
 		}
 		else
 		{
 			PlayerInfoArray[Index] = Entry; // 값 갱신
 			UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameState :: SyncPlayerInfo :: 플레이어 정보 갱신 - UID: %s, Tag: %s"),
-				*Entry.UniqueID, *Entry.PlayerInfo.Tag);
+				*Entry.UniqueID, *Entry.PlayerInfo.Tag.ToString());
 		}
 	}
 
@@ -337,7 +337,7 @@ void APlayGameState::SetDropOrder_Implementation()
 	for (const FPlayerInfoEntry& Entry : FailPlayerInfoArray)
 	{
 		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameState :: SetDropOrder :: 실패한 플레이어의 태그(PlayerTag) = %s, 떨어지는 순서(DropOrder) = %d"),
-			*Entry.PlayerInfo.Tag, Entry.PlayerInfo.DropOrder);
+			*Entry.PlayerInfo.Tag.ToString(), Entry.PlayerInfo.DropOrder);
 	}
 }
 
@@ -378,7 +378,7 @@ void APlayGameState::PrintFailPlayersInfo()
 
 		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameState :: UID: %s | Tag: %s | Status: %s | DropOrder: %d"),
 			*Entry.UniqueID,
-			*Info.Tag,
+			*Info.Tag.ToString(),
 			*UEnum::GetValueAsString(Info.Status),
 			Info.DropOrder);
 	}

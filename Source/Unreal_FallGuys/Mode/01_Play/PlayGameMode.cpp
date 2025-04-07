@@ -94,7 +94,7 @@ void APlayGameMode::PostLogin(APlayerController* _NewPlayer)
 		}
 
 		// 태그 복구
-		_NewPlayer->Tags.Add(*RestoredInfo.Tag);
+		_NewPlayer->Tags.Add(RestoredInfo.Tag);
 		FString TagString = (_NewPlayer->Tags.Num() > 0) ? _NewPlayer->Tags[0].ToString() : TEXT("태그 없음");
 
 		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: PostLogin :: 플레이어 정보 로드 완료 - UniqueID = %s, Tag = %s"),
@@ -104,18 +104,29 @@ void APlayGameMode::PostLogin(APlayerController* _NewPlayer)
 	{
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: 첫 스테이지 입니다. 새 플레이어 정보를 세팅합니다."));
 
-		// 태그 설정
-		FString UniqueTag = FString::Printf(TEXT("Player%d"), FallState->PlayerInfoArray.Num());
-		_NewPlayer->Tags.Add(*UniqueTag);
-		// 안전하게 태그 값 가져오기
-		FString TagString = (_NewPlayer->Tags.Num() > 0) ? _NewPlayer->Tags[0].ToString() : TEXT("태그 없음");
+		// 태그 생성
+		FName UniqueTag = FName(*FString::Printf(TEXT("Player%d"), FallState->PlayerInfoArray.Num()));
+
+		// 중복 체크 후 추가
+		if (!_NewPlayer->Tags.Contains(UniqueTag))
+		{
+			_NewPlayer->Tags.Add(UniqueTag);
+		}
+		else
+		{
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("중복된 태그가 감지되었습니다: %s"), *UniqueTag.ToString());
+		}
+
+		// 첫 번째 태그가 있으면 사용, 없으면 기본값
+		FString TagString = (_NewPlayer->Tags.Num() > 0) ? _NewPlayer->Tags[0].ToString() : TEXT("NoTag");
 
 		// 닉네임 설정
 		FString PlayerNickname = GameInstance->InsGetNickname();
 
-		// 정보 세팅
+		// 정보 세팅 (FName → FString 변환 후 전달)
 		PlayerState->SetPlayerInfo(UniqueTag, PlayerNickname);
 
+		// 로그 출력
 		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: PostLogin :: 신규 플레이어 정보 세팅 - UniqueID = %s, Tag = %s"),
 			*PlayerState->PlayerInfo.UniqueID, *TagString);
 	}
@@ -207,7 +218,7 @@ void APlayGameMode::ControllFinishPlayer()
 		}
 		else if (MinCount <= 5)
 		{
-			SetFinishPlayerCount(3);
+			SetFinishPlayerCount(2);
 		}
 		else
 		{
@@ -576,7 +587,7 @@ void APlayGameMode::SetDefaultPlayersToFail()
 		if (PState && PState->GetPlayerStateStatus() == EPlayerStatus::DEFAULT)
 		{
 			PState->SetPlayerStatus(EPlayerStatus::FAIL);
-			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: Tick :: FAIL 처리됨 - %s"), *PState->PlayerInfo.Tag);
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: Tick :: FAIL 처리됨 - %s"), *PState->PlayerInfo.Tag.ToString());
 		}
 	}
 	// 상태 바꾼 것을 동기화
@@ -602,7 +613,7 @@ void APlayGameMode::SetDefaultPlayersToSuccess()
 		if (PState && PState->GetPlayerStateStatus() == EPlayerStatus::DEFAULT)
 		{
 			PState->SetPlayerStatus(EPlayerStatus::SUCCESS);
-			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: Tick :: SUCCESS 처리됨 - %s"), *PState->PlayerInfo.Tag);
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: Tick :: SUCCESS 처리됨 - %s"), *PState->PlayerInfo.Tag.ToString());
 		}
 	}
 	// 상태 바꾼 것을 동기화
@@ -628,7 +639,7 @@ void APlayGameMode::ServerTravelToNextMap(const FString& url)
 		{
 			GameInstance->InsBackupPlayerInfo(PlayerEntry.UniqueID, PlayerEntry.PlayerInfo);
 			UE_LOG(FALL_DEV_LOG, Log, TEXT("ServerTravelToNextMap :: 플레이어 정보 백업 완료 - UniqueID = %s, Tag = %s"),
-				*PlayerEntry.UniqueID, *PlayerEntry.PlayerInfo.Tag);
+				*PlayerEntry.UniqueID, *PlayerEntry.PlayerInfo.Tag.ToString());
 		}
 
 		// 다음 스테이지 값을 미리 저장

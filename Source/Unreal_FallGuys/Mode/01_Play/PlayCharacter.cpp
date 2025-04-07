@@ -248,9 +248,9 @@ void APlayCharacter::PossessedBy(AController* _NewController)
 	if (PlayState)
 	{
 		// PlayerState에 있는 Tag를 캐릭터 태그에 세팅
-		if (!PlayState->PlayerInfo.Tag.IsEmpty())
+		if (!PlayState->PlayerInfo.Tag.IsNone())
 		{
-			Tags.Add(FName(*PlayState->PlayerInfo.Tag));
+			Tags.Add(FName(PlayState->PlayerInfo.Tag));
 		}
 
 		// PlayerState의 Status에 따라 IsDie 세팅
@@ -269,9 +269,9 @@ void APlayCharacter::OnRep_PlayerState()
 	if (PlayState)
 	{
 		// PlayerState에 있는 Tag를 캐릭터 태그에 세팅
-		if (!PlayState->PlayerInfo.Tag.IsEmpty())
+		if (!PlayState->PlayerInfo.Tag.IsNone())
 		{
-			Tags.Add(FName(*PlayState->PlayerInfo.Tag));
+			Tags.Add(FName(PlayState->PlayerInfo.Tag));
 		}
 
 		// PlayerState의 Status에 따라 IsDie 세팅
