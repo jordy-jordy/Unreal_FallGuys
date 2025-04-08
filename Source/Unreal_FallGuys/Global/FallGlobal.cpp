@@ -345,6 +345,14 @@ EPlayerStatus UFallGlobal::GetStageEndCondition()
 	return GameIns->InsGetStageEndCondition();
 }
 
+// PlayGameMode : 레벨 이동 해도 된다는 걸 알려주는 함수
+void UFallGlobal::SetCanMoveLevel(bool _Value)
+{
+	APlayGameMode* PlayMode = GWorld->GetAuthGameMode<APlayGameMode>();
+	PlayMode->SetCanMoveLevel(_Value);
+}
+
+
 // 이재영 : 메인위젯을 얻는 함수
 UTitleMainWidget* UFallGlobal::GetMainWidget(UWorld* _World)
 {

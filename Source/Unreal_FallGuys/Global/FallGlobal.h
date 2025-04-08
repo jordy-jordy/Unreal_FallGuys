@@ -194,6 +194,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static EPlayerStatus GetStageEndCondition();
 
+	// PlayGameMode : 레벨 이동 해도 된다는 걸 알려주는 함수
+	static void SetCanMoveLevel(bool _Value);
+
 public:
 	// 코스튬 관련 편의 기능 (현재 개발중)
 	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")

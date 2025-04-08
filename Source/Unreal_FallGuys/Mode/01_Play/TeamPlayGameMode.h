@@ -33,6 +33,10 @@ protected:
 	virtual void Tick(float DeltaSeconds) override;
 	void BeginPlay() override;
 
+	// 다음 팀전 맵으로 이동
+	UFUNCTION(BlueprintCallable)
+	void ServerTravelToNextTeamMap();
+
 	// 팀 배정
 	void AssignTeam(class APlayPlayerState* _PlayerState);
 

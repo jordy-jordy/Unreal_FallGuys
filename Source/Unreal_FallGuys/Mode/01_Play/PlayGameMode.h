@@ -76,6 +76,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "PLAYGAMEMODE :: GAME")
 	int32 GetFinishPlayerCount() const { return FinishPlayer; }
 
+
 protected:
 	// 목표 골인 인원 수 제어
 	void ControllFinishPlayer();
@@ -112,6 +113,7 @@ protected:
 	EStagePhase MODE_CurStagePhase = EStagePhase::STAGE_1;
 	// 스테이지 종료 기준 상태
 	EPlayerStatus MODE_CurStageResultStatus = EPlayerStatus::NONE;
+
 #pragma endregion
 
 #pragma region PlayGameMode :: 타이머 관련
@@ -144,6 +146,30 @@ protected:
 
 #pragma endregion
 
+public:
+	// 레벨 이동 해도 되~
+	UFUNCTION(Category = "PLAYGAMEMODE :: GAME")
+	void SetCanMoveLevel(bool _Value) { bCanMoveLevel = _Value; }
+
+protected:
+	// 남은 플레이어의 상태 일괄 변경
+	void ChangeDefaultPlayersTo();
+
+	// 플레이어 정보 백업
+	void BackUpPlayersInfo();
+
+	// 개인전 다음 레벨의 정보 세팅
+	void SetNextSoloLevelData();
+
+	// 플레이어 상태 바꼈니
+	bool bPlayerStatusChanged = false;
+	// 플레이어 정보 백업했니
+	bool bPlayerInfosBackUp = false;
+	// 다음 레벨 세팅 됐니
+	bool bNextLevelDataSetted = false;
+	// 다음 레벨로 넘어가도 되니?
+	bool bCanMoveLevel = false;
+
 
 //LMH
 protected:
@@ -162,8 +188,9 @@ protected:
 	FString NextLevel= TEXT("LMHRaceOverMap");
 
 public:
+	// 개인전용 : 중간 결과창으로 이동
 	UFUNCTION(BlueprintCallable)
-	void ServerTravelToNextMap(const FString& url);
+	void ServerTravelToNextMap();
 
 	// 이현정 : 25.04.02 : 동기화 함수로 수정 : 골인 인원 +1 카운팅
 	UFUNCTION(BlueprintCallable)

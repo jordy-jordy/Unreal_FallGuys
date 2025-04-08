@@ -8,6 +8,7 @@
 #include "Global/FallGlobal.h"
 #include "Global/GlobalEnum.h"
 #include "Global/BaseGameInstance.h"
+#include "Mode/01_Play/PlayEnum.h"
 #include "Mode/01_Play/PlayGameState.h"
 #include "Mode/01_Play/TeamPlayGameState.h"
 
@@ -141,7 +142,53 @@ void ATeamPlayGameMode::OnStageLimitTimeOver()
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("TeamPlayGameMode :: BeginPlay :: 제한 시간 초과! 스테이지를 종료합니다."));
 
 	// 다음 맵 이동
-	ServerTravelToNextMap(UFallGlobal::GetRandomTeamLevel());
+	ServerTravelToNextTeamMap();
+}
+
+void ATeamPlayGameMode::ServerTravelToNextTeamMap()
+{
+	if (!HasAuthority()) { return; }
+
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("TeamPlayGameMode :: 서버트래블 감지 ::"));
+
+	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
+	APlayGameState* PlayGameState = GetGameState<APlayGameState>();
+	if (GameInstance && PlayGameState)
+	{
+		// 백업하기 전에 비워주자
+		GameInstance->PlayerInfoBackup.Empty();
+
+		// 현재 게임 상태 가져오기
+		for (FPlayerInfoEntry& PlayerEntry : PlayGameState->PlayerInfoArray)
+		{
+			GameInstance->InsBackupPlayerInfo(PlayerEntry.UniqueID, PlayerEntry.PlayerInfo);
+			UE_LOG(FALL_DEV_LOG, Log, TEXT("ServerTravelToNextTeamMap :: 플레이어 정보 백업 완료 - UniqueID = %s, Tag = %s"),
+				*PlayerEntry.UniqueID, *PlayerEntry.PlayerInfo.Tag.ToString());
+		}
+
+		// 팀전의 경우
+		switch (MODE_CurStagePhase)
+		{
+		case EStagePhase::STAGE_1:
+			GameInstance->InsSetCurStagePhase(EStagePhase::STAGE_2);
+			break;
+
+		case EStagePhase::STAGE_2:
+			GameInstance->InsSetCurStagePhase(EStagePhase::STAGE_3);
+			break;
+
+		case EStagePhase::STAGE_3:
+			GameInstance->InsSetCurStagePhase(EStagePhase::FINISHED);
+			break;
+
+		default:
+			break;
+		}
+
+		// 스테이지 전환 했음을 알림
+		GameInstance->IsMovedLevel = true;
+	}
+	GetWorld()->ServerTravel(UFallGlobal::GetRandomTeamLevel(), false);
 }
 
 

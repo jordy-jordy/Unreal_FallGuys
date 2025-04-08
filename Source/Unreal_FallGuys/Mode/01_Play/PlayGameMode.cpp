@@ -513,22 +513,20 @@ void APlayGameMode::Tick(float DeltaSeconds)
 		// 개인전이고 결과 화면이 아닐때만
 		if (MODE_CurStageType == EStageType::SOLO && !bMODEIsResultLevel)
 		{
-			if (MODE_CurStageResultStatus == EPlayerStatus::SUCCESS)
-			{
-				SetDefaultPlayersToFail();
-			}
-			else if (MODE_CurStageResultStatus == EPlayerStatus::FAIL)
-			{
-				SetDefaultPlayersToSuccess();
-			}
-			else
-			{
-				UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: Tick :: 게임 종료 조건이 뭔가 잘못 됨"));
-				return;
-			}
+			// 남은 플레이어 상태 일괄 변경
+			ChangeDefaultPlayersTo();
+
+			// 플레이어 정보 백업
+			BackUpPlayersInfo();
+
+			// 다음 레벨에 대한 정보 세팅
+			SetNextSoloLevelData();
 		}
 
-		ServerTravelToNextMap(NextLevel);
+		if (bPlayerStatusChanged && bPlayerInfosBackUp && bNextLevelDataSetted && bCanMoveLevel)
+		{
+			ServerTravelToNextMap();
+		}
 	}
 }
 #pragma endregion
@@ -558,6 +556,9 @@ void APlayGameMode::SetDefaultPlayersToFail()
 	}
 	// 상태 바꾼 것을 동기화
 	SyncPlayerInfo();
+
+	// 상태 바뀌었다.
+	bPlayerStatusChanged = true;
 }
 
 // Default 상태인 플레이어를 SUCCESS 상태로 변경
@@ -584,89 +585,115 @@ void APlayGameMode::SetDefaultPlayersToSuccess()
 	}
 	// 상태 바꾼 것을 동기화
 	SyncPlayerInfo();
+
+	// 상태 바뀌었다.
+	bPlayerStatusChanged = true;
 }
 #pragma endregion
 
-void APlayGameMode::ServerTravelToNextMap(const FString& url)
+// 남은 플레이어의 상태 일괄 변경
+void APlayGameMode::ChangeDefaultPlayersTo()
+{
+	// 플레이어 상태를 변경한 이력이 없을때만
+	if (!bPlayerStatusChanged) { return; }
+
+	if (MODE_CurStageResultStatus == EPlayerStatus::SUCCESS)
+	{
+		SetDefaultPlayersToFail();
+	}
+	else if (MODE_CurStageResultStatus == EPlayerStatus::FAIL)
+	{
+		SetDefaultPlayersToSuccess();
+	}
+	else
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: Tick :: 게임 종료 조건이 뭔가 잘못 됨"));
+		return;
+	}
+
+	// 플레이어 상태 변경했다.
+	bPlayerStatusChanged = true;
+}
+
+// 플레이어 정보 백업
+void APlayGameMode::BackUpPlayersInfo()
+{
+	// 플레이어 인포를 백업한 이력이 없을때만
+	if (!bPlayerInfosBackUp) { return; }
+
+	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
+	APlayGameState* PlayGameState = GetGameState<APlayGameState>();
+
+	if (!GameInstance && !PlayGameState) { return; }
+
+	// 백업하기 전에 비워주자
+	GameInstance->PlayerInfoBackup.Empty();
+
+	// 현재 게임 상태 가져오기
+	for (FPlayerInfoEntry& PlayerEntry : PlayGameState->PlayerInfoArray)
+	{
+		GameInstance->InsBackupPlayerInfo(PlayerEntry.UniqueID, PlayerEntry.PlayerInfo);
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("ServerTravelToNextMap :: 플레이어 정보 백업 완료 - UniqueID = %s, Tag = %s"),
+			*PlayerEntry.UniqueID, *PlayerEntry.PlayerInfo.Tag.ToString());
+	}
+
+	// 플레이어 인포 백업 했다.
+	bPlayerInfosBackUp = true;
+}
+
+// 개인전 세팅
+void APlayGameMode::SetNextSoloLevelData()
+{
+	// 개인전 세팅을 한 이력이 없을때만
+	if (!bNextLevelDataSetted) { return; }
+
+	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
+
+	// 개인전인 경우
+	switch (MODE_CurStagePhase)
+	{
+	case EStagePhase::STAGE_1:
+		GameInstance->InsSetCurStagePhase(EStagePhase::STAGE_1_RESULT);
+		GameInstance->bIsResultLevel = true;
+		break;
+
+	case EStagePhase::STAGE_1_RESULT:
+		GameInstance->InsSetCurStagePhase(EStagePhase::STAGE_2);
+		GameInstance->bIsResultLevel = false;
+		break;
+
+	case EStagePhase::STAGE_2:
+		GameInstance->InsSetCurStagePhase(EStagePhase::STAGE_2_RESULT);
+		GameInstance->bIsResultLevel = true;
+		break;
+
+	case EStagePhase::STAGE_2_RESULT:
+		GameInstance->InsSetCurStagePhase(EStagePhase::STAGE_3);
+		GameInstance->bIsResultLevel = false;
+		break;
+
+	case EStagePhase::STAGE_3:
+		GameInstance->InsSetCurStagePhase(EStagePhase::FINISHED);
+		GameInstance->bIsResultLevel = true;
+		break;
+
+	default:
+		break;
+	}
+
+	// 스테이지 전환 했음을 알림
+	GameInstance->IsMovedLevel = true;
+
+	// 다음 레벨 세팅 끝났다.
+	bNextLevelDataSetted = true;
+}
+
+void APlayGameMode::ServerTravelToNextMap()
 {
 	if (!HasAuthority()) { return; }
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 서버트래블 감지 ::"));
 
-	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
-	APlayGameState* PlayGameState = GetGameState<APlayGameState>();
-	if (GameInstance && PlayGameState)
-	{
-		// 백업하기 전에 비워주자
-		GameInstance->PlayerInfoBackup.Empty();
-
-		// 현재 게임 상태 가져오기
-		for (FPlayerInfoEntry& PlayerEntry : PlayGameState->PlayerInfoArray)
-		{
-			GameInstance->InsBackupPlayerInfo(PlayerEntry.UniqueID, PlayerEntry.PlayerInfo);
-			UE_LOG(FALL_DEV_LOG, Log, TEXT("ServerTravelToNextMap :: 플레이어 정보 백업 완료 - UniqueID = %s, Tag = %s"),
-				*PlayerEntry.UniqueID, *PlayerEntry.PlayerInfo.Tag.ToString());
-		}
-
-		if (MODE_CurStageType == EStageType::SOLO)
-		{
-			// 개인전인 경우
-			switch (MODE_CurStagePhase)
-			{
-			case EStagePhase::STAGE_1:
-				GameInstance->InsSetCurStagePhase(EStagePhase::STAGE_1_RESULT);
-				GameInstance->bIsResultLevel = true;
-				break;
-
-			case EStagePhase::STAGE_1_RESULT:
-				GameInstance->InsSetCurStagePhase(EStagePhase::STAGE_2);
-				GameInstance->bIsResultLevel = false;
-				break;
-
-			case EStagePhase::STAGE_2:
-				GameInstance->InsSetCurStagePhase(EStagePhase::STAGE_2_RESULT);
-				GameInstance->bIsResultLevel = true;
-				break;
-
-			case EStagePhase::STAGE_2_RESULT:
-				GameInstance->InsSetCurStagePhase(EStagePhase::STAGE_3);
-				GameInstance->bIsResultLevel = false;
-				break;
-
-			case EStagePhase::STAGE_3:
-				GameInstance->InsSetCurStagePhase(EStagePhase::FINISHED);
-				GameInstance->bIsResultLevel = true;
-				break;
-
-			default:
-				break;
-			}
-		}
-		else
-		{
-			// 팀전의 경우
-			switch (MODE_CurStagePhase)
-			{
-			case EStagePhase::STAGE_1:
-				GameInstance->InsSetCurStagePhase(EStagePhase::STAGE_2);
-				break;
-
-			case EStagePhase::STAGE_2:
-				GameInstance->InsSetCurStagePhase(EStagePhase::STAGE_3);
-				break;
-
-			case EStagePhase::STAGE_3:
-				GameInstance->InsSetCurStagePhase(EStagePhase::FINISHED);
-				break;
-
-			default:
-				break;
-			}
-		}
-
-		// 스테이지 전환 했음을 알림
-		GameInstance->IsMovedLevel = true;
-	}
-	GetWorld()->ServerTravel(url, false);
+	GetWorld()->ServerTravel(NextLevel, false);
 }
 
