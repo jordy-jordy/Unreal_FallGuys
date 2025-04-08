@@ -11,7 +11,6 @@
 // 델리게이트 테스트
 #include <Global/FallGlobal.h>
 
-
 #include "PlayGameMode.generated.h"
 
 
@@ -33,7 +32,6 @@ public:
 
 	FGameOverWidgetDelegate WidgetDelegate;
 	// 델리게이트 테스트
-
 
 #pragma region PlayGameMode :: 핵심 함수
 public: 
@@ -177,6 +175,8 @@ protected:
 
 	// 동기화 타이머 해제 됐니
 	bool bSyncCleared = false;
+	// 레벨 종료 UI 띄웠니
+	bool bShowedLevelEndUI = false;
 	// 플레이어 상태 바꼈니
 	bool bPlayerStatusChanged = false;
 	// 플레이어 정보 백업했니

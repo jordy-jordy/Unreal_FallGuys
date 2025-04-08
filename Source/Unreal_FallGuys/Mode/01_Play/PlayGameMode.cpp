@@ -35,7 +35,6 @@ void APlayGameMode::GameOverWidgetDelegate()
 }
 // 델리게이트 테스트
 
-
 #pragma region PlayGameMode :: PreLogin :: 플레이어 접속시 가장 먼저 실행
 void APlayGameMode::PreLogin(
 	const FString& _Options,
@@ -229,9 +228,9 @@ void APlayGameMode::ControllFinishPlayer()
 	switch (MODE_CurStagePhase)
 	{
 	case EStagePhase::STAGE_1:
-		if (MinCount <= 2)
+		if (MinCount <= 3)
 		{
-			SetFinishPlayerCount(1);
+			SetFinishPlayerCount(2);
 		}
 		else if (MinCount <= 5)
 		{
@@ -544,7 +543,12 @@ void APlayGameMode::Tick(float DeltaSeconds)
 	// 게임 종료 조건 검사
 	if (CurFinishPlayer < FinishPlayer) { return; }
 
-	GameOverWidgetDelegate();
+	if (!bShowedLevelEndUI)
+	{
+		// 레벨 종료 UI 띄워
+		GameOverWidgetDelegate();
+		bShowedLevelEndUI = true;
+	}
 
 	// 캐릭터 멈추게
 	SetCharacterMoveImPossible();

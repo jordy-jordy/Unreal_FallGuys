@@ -249,32 +249,6 @@ bool UFallGlobal::GetIsCountDownOver()
 	return PlayState->GetIsCountDownOver();
 }
 
-TArray<FString> UFallGlobal::GetCostumeColorNames(UObject* _WorldContext)
-{
-	TArray<FString> ColorNames;
-
-	UBaseGameInstance* GameIns = Cast<UBaseGameInstance>(_WorldContext->GetWorld()->GetGameInstance());
-	if (nullptr == GameIns || nullptr == GameIns->CostumeColorDataTable)
-	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("GetCostumeColorNames: GameInstance나 CostumeColorDataTable이 null"));
-		return ColorNames;
-	}
-
-	// 데이터 테이블의 모든 행 가져오기
-	static const FString ContextString(TEXT("GetCostumeColorNames"));
-	TArray<FCostumeColorDataRow*> AllRows;
-	GameIns->CostumeColorDataTable->GetAllRows<FCostumeColorDataRow>(ContextString, AllRows);
-
-	for (const FCostumeColorDataRow* Row : AllRows)
-	{
-		if (Row)
-		{
-			ColorNames.Add(Row->Name); // Name은 FString이어야 해
-		}
-	}
-	return ColorNames;
-}
-
 // PlayGameState : 레벨 시네마틱 시작해도 돼?
 bool UFallGlobal::GetCanStartLevelCinematic()
 {
