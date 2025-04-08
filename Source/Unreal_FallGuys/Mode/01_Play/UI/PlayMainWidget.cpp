@@ -182,7 +182,7 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 			EStageType StageType = GameState->GetCurStageType();
 
 			UPlayUserWidget* ClearCount = FindWidget(EPlayUIType::PlayClearCount);
-			UPlayUserWidget* StartCount = FindWidget(EPlayUIType::PlayStartCount);
+			//UPlayUserWidget* StartCount = FindWidget(EPlayUIType::PlayStartCount);
 			UPlayUserWidget* PlayScore = FindWidget(EPlayUIType::PlayScore);
 
 			if (StageType == EStageType::SOLO)
@@ -194,10 +194,10 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 				PlayScore->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 			}
 			// 임시(나중에 주석 지우기)
-			if (true == UFallConst::UseCountDown)
-			{
-				StartCount->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			}
+			//if (true == UFallConst::UseCountDown)
+			//{
+			//	StartCount->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			//}
 
 			break;
 		}
@@ -205,8 +205,17 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 			break;
 		}
 		break;
-	case EPlayUIType::PlayStartCount:
+	case EPlayUIType::PlayInGame:
+	{
+		//UPlayUserWidget* StartCount = FindWidget(EPlayUIType::PlayStartCount);
+
+		//if (true == UFallConst::UseCountDown)
+		//{
+		//	StartCount->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		//}
+
 		break;
+	}
 	case EPlayUIType::PlayReturnHome:
 		break;
 	case EPlayUIType::PlayResult:
