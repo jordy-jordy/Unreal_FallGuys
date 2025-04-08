@@ -18,10 +18,10 @@ struct FLevelInfo
 	GENERATED_BODY()
 
 	UPROPERTY()
-	FString LevelAssetName;
+	FString LevelAssetName = TEXT("");
 
 	UPROPERTY()
-	FString LevelName;
+	FString LevelName = TEXT("");
 
 	UPROPERTY()
 	EStageType LevelType = EStageType::SOLO;
@@ -30,13 +30,13 @@ struct FLevelInfo
 	EPlayerStatus EndCondition = EPlayerStatus::NONE;
 
 	UPROPERTY()
-	FString PlayGuide;
+	FString PlayGuide = TEXT("");
 
 	UPROPERTY()
-	FString GoalGuide;
+	FString GoalGuide = TEXT("");
 
 	UPROPERTY()
-	UTexture2D* LevelIMG;
+	UTexture2D* LevelIMG = nullptr;
 };
 
 USTRUCT(BlueprintType)
@@ -45,10 +45,10 @@ struct FTeamLevelInfo
 	GENERATED_BODY()
 
 	UPROPERTY()
-	FString LevelAssetName;
+	FString LevelAssetName = TEXT("");
 
 	UPROPERTY()
-	FString LevelName;
+	FString LevelName = TEXT("");
 
 	UPROPERTY()
 	EStageType LevelType = EStageType::TEAM;
@@ -57,10 +57,10 @@ struct FTeamLevelInfo
 	float StageLimitTime = 120.0f;
 
 	UPROPERTY()
-	FString PlayGuide;
+	FString PlayGuide = TEXT("");
 
 	UPROPERTY()
-	FString GoalGuide;
+	FString GoalGuide = TEXT("");
 
 	UPROPERTY()
 	UTexture2D* LevelIMG = nullptr;
