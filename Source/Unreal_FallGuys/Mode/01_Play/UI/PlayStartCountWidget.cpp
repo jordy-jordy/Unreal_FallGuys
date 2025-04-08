@@ -8,15 +8,27 @@
 #include "Global/FallGlobal.h"
 #include "Mode/01_Play/UI/PlayMainWidget.h"
 
+// 델리게이트 테스트
+#include "Mode/01_Play/PlayGameMode.h"
+
 
 void UPlayStartCountWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-}
 
-void UPlayStartCountWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
-{
-	Super::NativeTick(MyGeometry, InDeltaTime);
+	// 델리게이트 테스트
+	APlayGameMode* PlayGameMode = Cast<APlayGameMode>(GetWorld()->GetAuthGameMode());
+	if (nullptr == PlayGameMode)
+	{
+		return;
+	}
+	else
+	{
+		PlayGameMode->RegisterWidgetDelegate(TEXT("StartCount"), 
+			FWidgetDelegate::CreateUObject(this, &UPlayStartCountWidget::StartCountWidget)
+		);
+	}
+	// 델리게이트 테스트
 }
 
 void UPlayStartCountWidget::SetWidgetImage(class UImage* _CountImage, TArray<class UTexture2D*> _ArrTexture, int _Index)
@@ -24,6 +36,20 @@ void UPlayStartCountWidget::SetWidgetImage(class UImage* _CountImage, TArray<cla
 	_CountImage->SetBrushFromTexture(_ArrTexture[_Index]);
 	_CountImage->SetColorAndOpacity(FLinearColor::White);
 }
+
+void UPlayStartCountWidget::StartCountWidget()
+{
+	SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	PlayAnimation(CountAnim);
+	CountWidgetAnimationEvent.BindUFunction(this, FName(FString(TEXT("HiddenWidget"))));
+	BindToAnimationFinished(CountAnim, CountWidgetAnimationEvent);
+}
+
+void UPlayStartCountWidget::HiddenWidget()
+{
+	SetVisibility(ESlateVisibility::Hidden);
+}
+
 
 
 

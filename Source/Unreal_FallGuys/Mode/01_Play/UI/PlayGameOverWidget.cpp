@@ -20,19 +20,14 @@ void UPlayGameOverWidget::NativeConstruct()
 	}
 	else
 	{
-		PlayGameMode->RegisterWidgetDelegate(
-			FGameOverWidgetDelegate::CreateUObject(this, &UPlayGameOverWidget::WidgetVisible)
+		PlayGameMode->RegisterWidgetDelegate(TEXT("GameOver"), 
+			FWidgetDelegate::CreateUObject(this, &UPlayGameOverWidget::WidgetVisible)
 		);
 	}
 	// 델리게이트 테스트
 
 	PlayAnimation(GameOverAnim);
 }
-
-//FGameOverWidgetDelegate UPlayGameOverWidget::GameOverWidgetVisible()
-//{
-//	return FGameOverWidgetDelegate::CreateUObject(this, &UPlayGameOverWidget::WidgetVisible);
-//}
 
 void UPlayGameOverWidget::WidgetVisible()
 {
