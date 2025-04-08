@@ -112,6 +112,10 @@ void UPlayMainWidget::SetWidgetUIType(FString _CurWidgetName)
 	{
 		UIType = EPlayUIType::PlayScore;
 	}
+	else if (_CurWidgetName.Contains(FString("PlayLevelResult")))
+	{
+		UIType = EPlayUIType::PlayLevelResult;
+	}
 }
 
 void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)

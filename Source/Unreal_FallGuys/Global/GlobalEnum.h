@@ -83,6 +83,7 @@ enum class EPlayUIType : uint8
 	PlayGameOver UMETA(DisplayName = "PlayGameOver"),
 	PlayClearCount UMETA(DisplayName = "PlayClearCount"),
 	PlayScore UMETA(DisplayName = "PlayScore"),
+	PlayLevelResult UMETA(DisplayName = "PlayLevelResult"),
 	MAX UMETA(DisplayName = "MAX"),
 };
 
