@@ -214,7 +214,7 @@ void APlayGameMode::ControllFinishPlayer()
 	case EStagePhase::STAGE_1:
 		if (MinCount <= 2)
 		{
-			SetFinishPlayerCount(MinCount);
+			SetFinishPlayerCount(1);
 		}
 		else if (MinCount <= 5)
 		{

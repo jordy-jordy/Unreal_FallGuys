@@ -113,8 +113,6 @@ protected:
 	EStageType MODE_CurStageType = EStageType::NONE;
 	// 현재 스테이지 단계
 	EStagePhase MODE_CurStagePhase = EStagePhase::STAGE_1;
-	// 스테이지 종료 기준 상태
-	EPlayerStatus MODE_CurStageResultStatus = EPlayerStatus::NONE;
 
 #pragma endregion
 
@@ -148,6 +146,8 @@ protected:
 
 #pragma endregion
 
+
+#pragma region PlayGameMode :: 게임 종료 관련
 public:
 	// 레벨 이동 해도 되~
 	UFUNCTION(Category = "PLAYGAMEMODE :: GAME")
@@ -156,7 +156,7 @@ public:
 protected:
 	// 남은 플레이어의 상태 일괄 변경
 	void ChangeDefaultPlayersTo();
-
+	
 	// 플레이어 정보 백업
 	void BackUpPlayersInfo();
 
@@ -174,7 +174,11 @@ protected:
 	bool bNextLevelDataSetted = false;
 	// 다음 레벨로 넘어가도 되니?
 	bool bCanMoveLevel = false;
+	
+	// 스테이지 종료 기준 상태
+	EPlayerStatus MODE_CurStageResultStatus = EPlayerStatus::NONE;
 
+#pragma endregion
 
 //LMH
 protected:
