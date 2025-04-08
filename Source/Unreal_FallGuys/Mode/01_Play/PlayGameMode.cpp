@@ -425,15 +425,16 @@ void APlayGameMode::UpdateCountdown()
 // 게임 시작
 void APlayGameMode::StartGame()
 {
+	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
+
+	// 게임 시작됐음
+	bGameStarted = true;
+	FallState->SetGameStateGameStarted(bGameStarted);
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: BeginPlay :: 게임이 시작되었습니다."));
 
 	// 캐릭터 움직이게 처리
 	SetCharacterMovePossible();
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: BeginPlay :: 캐릭터 이동이 가능합니다."));
-
-	// 게임 시작됐음
-	bGameStarted = true;
-
 }
 
 // 캐릭터 이동 가능하게 세팅
@@ -453,6 +454,28 @@ void APlayGameMode::SetCharacterMovePossible()
 		}, 0.2f, false); // 0.2초 뒤에 한 번 실행
 
 	pPlayerMoving = true;
+}
+
+// 캐릭터 이동 불가능하게 세팅
+void APlayGameMode::SetCharacterMoveImPossible()
+{
+	// 캐릭터 이동 가능할때만
+	if (!pPlayerMoving) { return; }
+
+	FTimerHandle DelayHandle;
+	GetWorld()->GetTimerManager().SetTimer(DelayHandle, [this]()
+		{
+			for (TActorIterator<APlayCharacter> It(GetWorld()); It; ++It)
+			{
+				APlayCharacter* PlayerCharacter = *It;
+				if (PlayerCharacter)
+				{
+					PlayerCharacter->S2M_SetCanMoveFalse();
+				}
+			}
+		}, 0.2f, false); // 0.2초 뒤에 한 번 실행
+
+	pPlayerMoving = false;
 }
 
 // 이현정 : 25.04.02 : 동기화 함수로 수정 : 골인 인원 +1 카운팅
@@ -504,11 +527,17 @@ void APlayGameMode::Tick(float DeltaSeconds)
 	// 게임 종료 조건 검사
 	if (CurFinishPlayer >= FinishPlayer)
 	{
-		IsEndGame = true;
+		// 캐릭터 멈추게
+		SetCharacterMoveImPossible();
 
 		// 동기화 타이머 해제
-		GetWorldTimerManager().ClearTimer(SyncPlayerInfoTimer);
-		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: Tick :: 게임 종료 → SyncPlayerInfo 타이머 제거"));
+		if (!bSyncCleared)
+		{
+			// 동기화 타이머 해제
+			GetWorldTimerManager().ClearTimer(SyncPlayerInfoTimer);
+			UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: Tick :: 게임 종료 → SyncPlayerInfo 타이머 제거"));
+			bSyncCleared = true;
+		}
 
 		// 개인전이고 결과 화면이 아닐때만
 		if (MODE_CurStageType == EStageType::SOLO && !bMODEIsResultLevel)
@@ -518,13 +547,15 @@ void APlayGameMode::Tick(float DeltaSeconds)
 
 			// 플레이어 정보 백업
 			BackUpPlayersInfo();
-
-			// 다음 레벨에 대한 정보 세팅
-			SetNextSoloLevelData();
 		}
 
+		// 다음 레벨에 대한 정보 세팅
+		SetNextSoloLevelData();
+
+		// 모든 조건이 true 가 되었을 때 서버 트래블 활성화
 		if (bPlayerStatusChanged && bPlayerInfosBackUp && bNextLevelDataSetted && bCanMoveLevel)
 		{
+			IsEndGame = true;
 			ServerTravelToNextMap();
 		}
 	}
@@ -595,7 +626,7 @@ void APlayGameMode::SetDefaultPlayersToSuccess()
 void APlayGameMode::ChangeDefaultPlayersTo()
 {
 	// 플레이어 상태를 변경한 이력이 없을때만
-	if (!bPlayerStatusChanged) { return; }
+	if (bPlayerStatusChanged) { return; }
 
 	if (MODE_CurStageResultStatus == EPlayerStatus::SUCCESS)
 	{
@@ -619,7 +650,7 @@ void APlayGameMode::ChangeDefaultPlayersTo()
 void APlayGameMode::BackUpPlayersInfo()
 {
 	// 플레이어 인포를 백업한 이력이 없을때만
-	if (!bPlayerInfosBackUp) { return; }
+	if (bPlayerInfosBackUp) { return; }
 
 	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
 	APlayGameState* PlayGameState = GetGameState<APlayGameState>();
@@ -645,7 +676,7 @@ void APlayGameMode::BackUpPlayersInfo()
 void APlayGameMode::SetNextSoloLevelData()
 {
 	// 개인전 세팅을 한 이력이 없을때만
-	if (!bNextLevelDataSetted) { return; }
+	if (bNextLevelDataSetted) { return; }
 
 	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
 

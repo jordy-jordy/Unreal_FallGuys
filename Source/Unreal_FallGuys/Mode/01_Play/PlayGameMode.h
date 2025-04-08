@@ -102,6 +102,8 @@ protected:
 	bool bMODEIsResultLevel = false;
 	// 게임 시작됐니
 	bool bGameStarted = false;
+	// 동기화 타이머 해제 됐니
+	bool bSyncCleared = false;
 
 	// 현재 스테이지 이름
 	FString MODE_CurLevelName = TEXT("Unknown");
@@ -160,6 +162,10 @@ protected:
 
 	// 개인전 다음 레벨의 정보 세팅
 	void SetNextSoloLevelData();
+
+	// 캐릭터 이동 불가능하게 세팅
+	void SetCharacterMoveImPossible();
+
 
 	// 플레이어 상태 바꼈니
 	bool bPlayerStatusChanged = false;

@@ -177,6 +177,14 @@ public:
 	// 결과 화면인지 반환
 	bool GetGameStateIsResultLevel() { return bGameStateIsResultLevel; }
 
+	// 게임 시작했음을 세팅 : PlayGameMode에서 호출
+	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
+	void SetGameStateGameStarted(bool _Value);
+	void SetGameStateGameStarted_Implementation(bool _Value);
+
+	// 게임 시작했니?
+	bool GetGameStateGameStarted() { return bGameStateGameStarted; }
+
 protected:
 	// 랜덤 레벨 네임
 	UPROPERTY(Replicated)
@@ -213,6 +221,10 @@ protected:
 	// 결과 화면이니?
 	UPROPERTY(Replicated)
 	bool bGameStateIsResultLevel = false;
+
+	// 게임 시작했니?
+	UPROPERTY(Replicated)
+	bool bGameStateGameStarted = false;
 
 #pragma endregion
 

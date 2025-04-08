@@ -352,6 +352,12 @@ void UFallGlobal::SetCanMoveLevel(bool _Value)
 	PlayMode->SetCanMoveLevel(_Value);
 }
 
+// PlayGameState : 게임 시작했니?
+bool UFallGlobal::GetGameStarted()
+{
+	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
+	return FallState->GetGameStateGameStarted();
+}
 
 // 이재영 : 메인위젯을 얻는 함수
 UTitleMainWidget* UFallGlobal::GetMainWidget(UWorld* _World)

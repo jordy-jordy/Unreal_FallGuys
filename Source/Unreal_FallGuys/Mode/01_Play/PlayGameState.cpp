@@ -218,6 +218,12 @@ void APlayGameState::SetGameStateIsResultLevel_Implementation(bool _Value)
 	bGameStateIsResultLevel = _Value;
 }
 
+// 게임 시작했음을 세팅 : PlayGameMode에서 호출
+void APlayGameState::SetGameStateGameStarted_Implementation(bool _Value)
+{
+	bGameStateGameStarted = _Value;
+}
+
 // 실패한 유저의 떨어지는 순번을 정해줌
 void APlayGameState::SetDropOrder_Implementation()
 {
@@ -296,6 +302,7 @@ void APlayGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(APlayGameState, GameStateFinishPlayer);
 	DOREPLIFETIME(APlayGameState, GameStateCurFinishPlayer);
 	DOREPLIFETIME(APlayGameState, bGameStateIsResultLevel);
+	DOREPLIFETIME(APlayGameState, bGameStateGameStarted);
 }
 
 void APlayGameState::PrintFailPlayersInfo()
