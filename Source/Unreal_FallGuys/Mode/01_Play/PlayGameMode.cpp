@@ -25,7 +25,7 @@ void APlayGameMode::RegisterWidgetDelegate(FName _Name, FWidgetDelegate InDelega
 {
 	if (WidgetDelegates.Contains(_Name))
 	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: WIdgetDelegates에 %s가 이미 있습니다."), _Name.ToString());
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: WIdgetDelegates에 %s가 이미 있습니다."), *_Name.ToString());
 	}
 
 	WidgetDelegates.Add(_Name, InDelegate);
