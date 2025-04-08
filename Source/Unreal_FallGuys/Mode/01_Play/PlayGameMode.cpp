@@ -472,28 +472,6 @@ void APlayGameMode::SetCharacterMovePossible()
 	pPlayerMoving = true;
 }
 
-// 캐릭터 이동 불가능하게 세팅
-void APlayGameMode::SetCharacterMoveImPossible()
-{
-	// 캐릭터 이동 가능할때만
-	if (!pPlayerMoving) { return; }
-
-	FTimerHandle DelayHandle;
-	GetWorld()->GetTimerManager().SetTimer(DelayHandle, [this]()
-		{
-			for (TActorIterator<APlayCharacter> It(GetWorld()); It; ++It)
-			{
-				APlayCharacter* PlayerCharacter = *It;
-				if (PlayerCharacter)
-				{
-					PlayerCharacter->S2M_SetCanMoveFalse();
-				}
-			}
-		}, 0.2f, false); // 0.2초 뒤에 한 번 실행
-
-	pPlayerMoving = false;
-}
-
 // 이현정 : 25.04.02 : 동기화 함수로 수정 : 골인 인원 +1 카운팅
 void APlayGameMode::OnPlayerFinished()
 {
@@ -503,6 +481,11 @@ void APlayGameMode::OnPlayerFinished()
 
 	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
 	FallState->SetGameStateCurFinishPlayer(CurFinishPlayer);
+
+	if (CurFinishPlayer >= FinishPlayer && IsEndGame == false)
+	{
+		SetEndCondition_Trigger();
+	}
 }
 
 // 이현정 : 25.04.02 : 동기화 함수로 수정 : 골인 목표 인원 수 세팅
@@ -537,57 +520,184 @@ void APlayGameMode::Tick(float DeltaSeconds)
 	// 서버만 실행
 	if (!HasAuthority()) { return; }
 
-	// 이미 게임 종료면 처리 안함
-	if (IsEndGame == true) { return; }
-
-	// 게임 종료 조건 검사
-	if (CurFinishPlayer < FinishPlayer) { return; }
-
-	if (!bShowedLevelEndUI)
-	{
-		// 레벨 종료 UI 띄워
-		GameOverWidgetDelegate();
-		bShowedLevelEndUI = true;
-	}
-
-	// 캐릭터 멈추게
-	SetCharacterMoveImPossible();
-
-	// 동기화 타이머 해제
-	if (!bSyncCleared)
-	{
-		// 동기화 타이머 해제
-		GetWorldTimerManager().ClearTimer(SyncPlayerInfoTimer);
-		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: Tick :: 게임 종료 → SyncPlayerInfo 타이머 제거"));
-		bSyncCleared = true;
-	}
-
 	// 개인전이 아니면 여기서 끝
 	if (MODE_CurStageType != EStageType::SOLO) { return; }
 
-	// 결과 화면이 아닐때만
-	if (!bMODEIsResultLevel)
-	{
-		// 남은 플레이어 상태 일괄 변경
-		ChangeDefaultPlayersTo();
-
-		// 플레이어 정보 백업
-		BackUpPlayersInfo();
-	}
-
-	// 다음 레벨에 대한 정보 세팅
-	SetNextSoloLevelData();
-
 	// 모든 조건이 true 가 되었을 때 서버 트래블 활성화
-	if (bPlayerStatusChanged && bPlayerInfosBackUp && bNextLevelDataSetted && bCanMoveLevel)
+	if (IsEndGame && bPlayerStatusChanged && bPlayerInfosBackUp && bNextLevelDataSetted && bCanMoveLevel)
 	{
-		IsEndGame = true;
 		ServerTravelToNextMap();
 	}
 }
 #pragma endregion
 
 #pragma region PlayGameMode :: Tick 에서 실행되는 함수들
+// 게임 종료 트리거
+void APlayGameMode::SetEndCondition_Trigger()
+{
+	if (IsEndGame == true) { return; }
+	IsEndGame = true;
+
+	// 공통 종료 로직
+	SetEndCondition_Common();
+
+	// 개인전 종료 로직
+	SetEndCondition_Solo();
+}
+
+// 개인전 및 팀전 공용 종료 로직
+void APlayGameMode::SetEndCondition_Common()
+{
+	// 레벨 종료 UI 띄워
+	if (!bShowedLevelEndUI)
+	{
+		GameOverWidgetDelegate();
+		bShowedLevelEndUI = true;
+	}
+
+	// 캐릭터 멈추게
+	if (pPlayerMoving)
+	{
+		SetCharacterMoveImPossible();
+		pPlayerMoving = false;
+	}
+
+	// 동기화 타이머 해제
+	if (!bSyncCleared)
+	{
+		GetWorldTimerManager().ClearTimer(SyncPlayerInfoTimer);
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: SetEndCondition_Common :: SyncPlayerInfo 타이머 제거"));
+		bSyncCleared = true;
+	}
+}
+
+// 캐릭터 이동 불가능하게 세팅
+void APlayGameMode::SetCharacterMoveImPossible()
+{
+	FTimerHandle DelayHandle;
+	GetWorld()->GetTimerManager().SetTimer(DelayHandle, [this]()
+		{
+			for (TActorIterator<APlayCharacter> It(GetWorld()); It; ++It)
+			{
+				APlayCharacter* PlayerCharacter = *It;
+				if (PlayerCharacter)
+				{
+					PlayerCharacter->S2M_SetCanMoveFalse();
+				}
+			}
+		}, 0.2f, false); // 0.2초 뒤에 한 번 실행
+}
+
+// 개인전 종료 로직
+void APlayGameMode::SetEndCondition_Solo()
+{
+	// 결과 화면이 아닐때만
+	if (!bMODEIsResultLevel)
+	{
+		// 플레이어 상태를 변경한 이력이 없을때만
+		if (!bPlayerStatusChanged)
+		{
+			// 남은 플레이어 상태 일괄 변경
+			ChangeDefaultPlayersTo();
+			bPlayerStatusChanged = true;
+		}
+
+		// 플레이어 인포를 백업한 이력이 없을때만
+		if (!bPlayerInfosBackUp)
+		{
+			// 플레이어 정보 백업
+			BackUpPlayersInfo();
+			bPlayerInfosBackUp = true;
+		}
+	}
+
+	// 개인전 세팅을 한 이력이 없을때만
+	if (!bNextLevelDataSetted)
+	{
+		// 다음 레벨에 대한 정보 세팅
+		SetNextSoloLevelData();
+		bNextLevelDataSetted = true;
+	}
+}
+
+// 플레이어 정보 백업
+void APlayGameMode::BackUpPlayersInfo()
+{
+	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
+	APlayGameState* PlayGameState = GetGameState<APlayGameState>();
+
+	if (!GameInstance && !PlayGameState) { return; }
+
+	// 백업하기 전에 비워주자
+	GameInstance->PlayerInfoBackup.Empty();
+
+	// 현재 게임 상태 가져오기
+	for (FPlayerInfoEntry& PlayerEntry : PlayGameState->PlayerInfoArray)
+	{
+		GameInstance->InsBackupPlayerInfo(PlayerEntry.UniqueID, PlayerEntry.PlayerInfo);
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("ServerTravelToNextMap :: 플레이어 정보 백업 완료 - UniqueID = %s, Tag = %s"),
+			*PlayerEntry.UniqueID, *PlayerEntry.PlayerInfo.Tag.ToString());
+	}
+}
+
+// 개인전 세팅
+void APlayGameMode::SetNextSoloLevelData()
+{
+	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
+
+	// 개인전인 경우
+	switch (MODE_CurStagePhase)
+	{
+	case EStagePhase::STAGE_1:
+		GameInstance->InsSetCurStagePhase(EStagePhase::STAGE_1_RESULT);
+		GameInstance->bIsResultLevel = true;
+		break;
+
+	case EStagePhase::STAGE_1_RESULT:
+		GameInstance->InsSetCurStagePhase(EStagePhase::STAGE_2);
+		GameInstance->bIsResultLevel = false;
+		break;
+
+	case EStagePhase::STAGE_2:
+		GameInstance->InsSetCurStagePhase(EStagePhase::STAGE_2_RESULT);
+		GameInstance->bIsResultLevel = true;
+		break;
+
+	case EStagePhase::STAGE_2_RESULT:
+		GameInstance->InsSetCurStagePhase(EStagePhase::STAGE_3);
+		GameInstance->bIsResultLevel = false;
+		break;
+
+	case EStagePhase::STAGE_3:
+		GameInstance->InsSetCurStagePhase(EStagePhase::FINISHED);
+		GameInstance->bIsResultLevel = true;
+		break;
+
+	default:
+		break;
+	}
+
+	// 스테이지 전환 했음을 알림
+	GameInstance->IsMovedLevel = true;
+}
+
+// 남은 플레이어의 상태 일괄 변경
+void APlayGameMode::ChangeDefaultPlayersTo()
+{
+	if (MODE_CurStageResultStatus == EPlayerStatus::SUCCESS)
+	{
+		SetDefaultPlayersToFail();
+	}
+	else if (MODE_CurStageResultStatus == EPlayerStatus::FAIL)
+	{
+		SetDefaultPlayersToSuccess();
+	}
+	else
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: Tick :: 게임 종료 조건이 뭔가 잘못 됨"));
+	}
+}
+
 // Default 상태인 플레이어를 FAIL 상태로 변경
 void APlayGameMode::SetDefaultPlayersToFail()
 {
@@ -646,103 +756,6 @@ void APlayGameMode::SetDefaultPlayersToSuccess()
 	bPlayerStatusChanged = true;
 }
 #pragma endregion
-
-// 남은 플레이어의 상태 일괄 변경
-void APlayGameMode::ChangeDefaultPlayersTo()
-{
-	// 플레이어 상태를 변경한 이력이 없을때만
-	if (bPlayerStatusChanged) { return; }
-
-	if (MODE_CurStageResultStatus == EPlayerStatus::SUCCESS)
-	{
-		SetDefaultPlayersToFail();
-	}
-	else if (MODE_CurStageResultStatus == EPlayerStatus::FAIL)
-	{
-		SetDefaultPlayersToSuccess();
-	}
-	else
-	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: Tick :: 게임 종료 조건이 뭔가 잘못 됨"));
-		return;
-	}
-
-	// 플레이어 상태 변경했다.
-	bPlayerStatusChanged = true;
-}
-
-// 플레이어 정보 백업
-void APlayGameMode::BackUpPlayersInfo()
-{
-	// 플레이어 인포를 백업한 이력이 없을때만
-	if (bPlayerInfosBackUp) { return; }
-
-	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
-	APlayGameState* PlayGameState = GetGameState<APlayGameState>();
-
-	if (!GameInstance && !PlayGameState) { return; }
-
-	// 백업하기 전에 비워주자
-	GameInstance->PlayerInfoBackup.Empty();
-
-	// 현재 게임 상태 가져오기
-	for (FPlayerInfoEntry& PlayerEntry : PlayGameState->PlayerInfoArray)
-	{
-		GameInstance->InsBackupPlayerInfo(PlayerEntry.UniqueID, PlayerEntry.PlayerInfo);
-		UE_LOG(FALL_DEV_LOG, Log, TEXT("ServerTravelToNextMap :: 플레이어 정보 백업 완료 - UniqueID = %s, Tag = %s"),
-			*PlayerEntry.UniqueID, *PlayerEntry.PlayerInfo.Tag.ToString());
-	}
-
-	// 플레이어 인포 백업 했다.
-	bPlayerInfosBackUp = true;
-}
-
-// 개인전 세팅
-void APlayGameMode::SetNextSoloLevelData()
-{
-	// 개인전 세팅을 한 이력이 없을때만
-	if (bNextLevelDataSetted) { return; }
-
-	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
-
-	// 개인전인 경우
-	switch (MODE_CurStagePhase)
-	{
-	case EStagePhase::STAGE_1:
-		GameInstance->InsSetCurStagePhase(EStagePhase::STAGE_1_RESULT);
-		GameInstance->bIsResultLevel = true;
-		break;
-
-	case EStagePhase::STAGE_1_RESULT:
-		GameInstance->InsSetCurStagePhase(EStagePhase::STAGE_2);
-		GameInstance->bIsResultLevel = false;
-		break;
-
-	case EStagePhase::STAGE_2:
-		GameInstance->InsSetCurStagePhase(EStagePhase::STAGE_2_RESULT);
-		GameInstance->bIsResultLevel = true;
-		break;
-
-	case EStagePhase::STAGE_2_RESULT:
-		GameInstance->InsSetCurStagePhase(EStagePhase::STAGE_3);
-		GameInstance->bIsResultLevel = false;
-		break;
-
-	case EStagePhase::STAGE_3:
-		GameInstance->InsSetCurStagePhase(EStagePhase::FINISHED);
-		GameInstance->bIsResultLevel = true;
-		break;
-
-	default:
-		break;
-	}
-
-	// 스테이지 전환 했음을 알림
-	GameInstance->IsMovedLevel = true;
-
-	// 다음 레벨 세팅 끝났다.
-	bNextLevelDataSetted = true;
-}
 
 void APlayGameMode::ServerTravelToNextMap()
 {

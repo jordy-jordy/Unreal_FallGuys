@@ -173,6 +173,14 @@ protected:
 	// 캐릭터 이동 불가능하게 세팅
 	void SetCharacterMoveImPossible();
 
+	// 게임 종료 트리거
+	void SetEndCondition_Trigger();
+
+	// 개인전 및 팀전 공용 종료 로직
+	void SetEndCondition_Common();
+	// 개인전 종료 로직
+	void SetEndCondition_Solo();
+
 	// 동기화 타이머 해제 됐니
 	bool bSyncCleared = false;
 	// 레벨 종료 UI 띄웠니
