@@ -21,16 +21,21 @@ APlayGameMode::APlayGameMode()
 }
 
 // 델리게이트 테스트
-void APlayGameMode::RegisterWidgetDelegate(FGameOverWidgetDelegate InDelegate)
+void APlayGameMode::RegisterWidgetDelegate(FName _Name, FWidgetDelegate InDelegate)
 {
-	WidgetDelegate = InDelegate;
+	if (WidgetDelegates.Contains(_Name))
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: WIdgetDelegates에 %s가 이미 있습니다."), _Name.ToString());
+	}
+
+	WidgetDelegates.Add(_Name, InDelegate);
 }
 
-void APlayGameMode::GameOverWidgetDelegate()
+void APlayGameMode::WidgetDelegate(FName _Name)
 {
-	if (WidgetDelegate.IsBound())
+	if (WidgetDelegates.Contains(_Name))
 	{
-		WidgetDelegate.Execute();
+		WidgetDelegates[_Name].ExecuteIfBound();
 	}
 }
 // 델리게이트 테스트
@@ -354,6 +359,7 @@ void APlayGameMode::CheckStartConditions()
 			{
 				// 카운트 다운 핸들 활성화
 				StartCountdownTimer();
+				WidgetDelegate(TEXT("StartCount"));
 				pCountDownStarted = true;
 			}
 			// 카운트 다운이 안끝났으면 리턴
@@ -551,7 +557,7 @@ void APlayGameMode::SetEndCondition_Common()
 	// 레벨 종료 UI 띄워
 	if (!bShowedLevelEndUI)
 	{
-		GameOverWidgetDelegate();
+		WidgetDelegate(TEXT("GameOver"));
 		bShowedLevelEndUI = true;
 	}
 

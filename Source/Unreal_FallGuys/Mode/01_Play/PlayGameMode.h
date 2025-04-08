@@ -26,11 +26,11 @@ public:
 	APlayGameMode();
 
 	// 델리게이트 테스트
-	void RegisterWidgetDelegate(FGameOverWidgetDelegate InDelegate);
+	void RegisterWidgetDelegate(FName _Name, FWidgetDelegate InDelegate);
 
-	void GameOverWidgetDelegate();
+	void WidgetDelegate(FName _Name);
 
-	FGameOverWidgetDelegate WidgetDelegate;
+	TMap<FName, FWidgetDelegate> WidgetDelegates;
 	// 델리게이트 테스트
 
 #pragma region PlayGameMode :: 핵심 함수

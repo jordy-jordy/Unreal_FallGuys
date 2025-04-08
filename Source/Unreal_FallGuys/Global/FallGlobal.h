@@ -13,7 +13,7 @@
  */
 
 // 델리게이트 테스트
-DECLARE_DELEGATE(FGameOverWidgetDelegate);
+DECLARE_DELEGATE(FWidgetDelegate);
 
 
 UCLASS()
@@ -212,4 +212,5 @@ public:
 public:
 	UFUNCTION(BlueprintCallable)
 	static UTitleMainWidget* GetMainWidget(UWorld* _World);
+
 };
