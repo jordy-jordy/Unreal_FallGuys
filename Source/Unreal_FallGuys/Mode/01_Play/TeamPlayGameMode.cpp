@@ -57,6 +57,11 @@ void ATeamPlayGameMode::BeginPlay()
 
 void ATeamPlayGameMode::Tick(float DeltaSeconds)
 {
+	Super::Tick(DeltaSeconds);
+
+	// 서버만 실행
+	if (!HasAuthority()) { return; }
+
 	// 게임이 시작되지 않았으면 리턴
 	if (!bGameStarted) { return; } 
 
