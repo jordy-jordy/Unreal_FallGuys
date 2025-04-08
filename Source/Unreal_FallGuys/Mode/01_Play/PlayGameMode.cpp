@@ -525,39 +525,41 @@ void APlayGameMode::Tick(float DeltaSeconds)
 	if (IsEndGame == true) { return; }
 
 	// 게임 종료 조건 검사
-	if (CurFinishPlayer >= FinishPlayer)
+	if (CurFinishPlayer < FinishPlayer) { return; }
+
+	// 캐릭터 멈추게
+	SetCharacterMoveImPossible();
+
+	// 동기화 타이머 해제
+	if (!bSyncCleared)
 	{
-		// 캐릭터 멈추게
-		SetCharacterMoveImPossible();
-
 		// 동기화 타이머 해제
-		if (!bSyncCleared)
-		{
-			// 동기화 타이머 해제
-			GetWorldTimerManager().ClearTimer(SyncPlayerInfoTimer);
-			UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: Tick :: 게임 종료 → SyncPlayerInfo 타이머 제거"));
-			bSyncCleared = true;
-		}
+		GetWorldTimerManager().ClearTimer(SyncPlayerInfoTimer);
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: Tick :: 게임 종료 → SyncPlayerInfo 타이머 제거"));
+		bSyncCleared = true;
+	}
 
-		// 개인전이고 결과 화면이 아닐때만
-		if (MODE_CurStageType == EStageType::SOLO && !bMODEIsResultLevel)
-		{
-			// 남은 플레이어 상태 일괄 변경
-			ChangeDefaultPlayersTo();
+	// 개인전이 아니면 여기서 끝
+	if (MODE_CurStageType != EStageType::SOLO) { return; }
 
-			// 플레이어 정보 백업
-			BackUpPlayersInfo();
-		}
+	// 결과 화면이 아닐때만
+	if (!bMODEIsResultLevel)
+	{
+		// 남은 플레이어 상태 일괄 변경
+		ChangeDefaultPlayersTo();
 
-		// 다음 레벨에 대한 정보 세팅
-		SetNextSoloLevelData();
+		// 플레이어 정보 백업
+		BackUpPlayersInfo();
+	}
 
-		// 모든 조건이 true 가 되었을 때 서버 트래블 활성화
-		if (bPlayerStatusChanged && bPlayerInfosBackUp && bNextLevelDataSetted && bCanMoveLevel)
-		{
-			IsEndGame = true;
-			ServerTravelToNextMap();
-		}
+	// 다음 레벨에 대한 정보 세팅
+	SetNextSoloLevelData();
+
+	// 모든 조건이 true 가 되었을 때 서버 트래블 활성화
+	if (bPlayerStatusChanged && bPlayerInfosBackUp && bNextLevelDataSetted && bCanMoveLevel)
+	{
+		IsEndGame = true;
+		ServerTravelToNextMap();
 	}
 }
 #pragma endregion

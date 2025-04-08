@@ -78,15 +78,15 @@ public:
 
 
 protected:
+	// 레벨 시네마틱 시작을 호출
+	UFUNCTION()
+	void CallLevelCinematicStart(APlayGameState* _PlayState);
+
 	// 목표 골인 인원 수 제어
 	void ControllFinishPlayer();
 
 	// 게임 시작 조건 검사 함수
 	void CheckStartConditions();
-
-	// 레벨 시네마틱 시작을 호출
-	UFUNCTION()
-	void CallLevelCinematicStart(APlayGameState* _PlayState);
 
 	// 접속 제한
 	bool InvalidConnect = false;
@@ -165,7 +165,6 @@ protected:
 
 	// 캐릭터 이동 불가능하게 세팅
 	void SetCharacterMoveImPossible();
-
 
 	// 플레이어 상태 바꼈니
 	bool bPlayerStatusChanged = false;
