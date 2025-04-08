@@ -76,7 +76,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "PLAYGAMEMODE :: GAME")
 	int32 GetFinishPlayerCount() const { return FinishPlayer; }
 
-
 protected:
 	// 레벨 시네마틱 시작을 호출
 	UFUNCTION()
@@ -102,8 +101,6 @@ protected:
 	bool bMODEIsResultLevel = false;
 	// 게임 시작됐니
 	bool bGameStarted = false;
-	// 동기화 타이머 해제 됐니
-	bool bSyncCleared = false;
 
 	// 현재 스테이지 이름
 	FString MODE_CurLevelName = TEXT("Unknown");
@@ -146,7 +143,6 @@ protected:
 
 #pragma endregion
 
-
 #pragma region PlayGameMode :: 게임 종료 관련
 public:
 	// 레벨 이동 해도 되~
@@ -166,6 +162,8 @@ protected:
 	// 캐릭터 이동 불가능하게 세팅
 	void SetCharacterMoveImPossible();
 
+	// 동기화 타이머 해제 됐니
+	bool bSyncCleared = false;
 	// 플레이어 상태 바꼈니
 	bool bPlayerStatusChanged = false;
 	// 플레이어 정보 백업했니
