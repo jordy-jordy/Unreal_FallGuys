@@ -7,7 +7,8 @@
 #include "EngineUtils.h"
 
 #include <Unreal_FallGuys.h>
-#include <Global/FallGlobal.h>
+// 델리게이트 테스트
+//#include <Global/FallGlobal.h>
 #include <Global/FallConst.h>
 #include <Global/BaseGameInstance.h>
 #include <Mode/01_Play/PlayGameState.h>
@@ -18,6 +19,22 @@
 APlayGameMode::APlayGameMode()
 {
 }
+
+// 델리게이트 테스트
+void APlayGameMode::RegisterWidgetDelegate(FGameOverWidgetDelegate InDelegate)
+{
+	WidgetDelegate = InDelegate;
+}
+
+void APlayGameMode::GameOverWidgetDelegate()
+{
+	if (WidgetDelegate.IsBound())
+	{
+		WidgetDelegate.Execute();
+	}
+}
+// 델리게이트 테스트
+
 
 #pragma region PlayGameMode :: PreLogin :: 플레이어 접속시 가장 먼저 실행
 void APlayGameMode::PreLogin(
@@ -526,6 +543,8 @@ void APlayGameMode::Tick(float DeltaSeconds)
 
 	// 게임 종료 조건 검사
 	if (CurFinishPlayer < FinishPlayer) { return; }
+
+	GameOverWidgetDelegate();
 
 	// 캐릭터 멈추게
 	SetCharacterMoveImPossible();

@@ -11,6 +11,11 @@
 /**
  *
  */
+
+// 델리게이트 테스트
+DECLARE_DELEGATE(FGameOverWidgetDelegate);
+
+
 UCLASS()
 class UNREAL_FALLGUYS_API UFallGlobal : public UBlueprintFunctionLibrary
 {

@@ -9,6 +9,8 @@
 /**
  * 
  */
+DECLARE_DELEGATE(FGameOverWidgetDelegate);
+
 UCLASS()
 class UNREAL_FALLGUYS_API UPlayGameOverWidget : public UPlayUserWidget
 {
@@ -17,9 +19,11 @@ class UNREAL_FALLGUYS_API UPlayGameOverWidget : public UPlayUserWidget
 public:
 	void NativeConstruct();
 
+	//FGameOverWidgetDelegate GameOverWidgetVisible();
+
 	UFUNCTION(BlueprintCallable)
-	void AnimationDebug();
-	
+	void WidgetVisible();
+
 private:
 	UPROPERTY(VisibleAnywhere, Transient, meta = (BindWidgetAnim), Category = "UI")
 	UWidgetAnimation* GameOverAnim;

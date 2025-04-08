@@ -2,20 +2,41 @@
 
 
 #include "Mode/01_Play/UI/PlayResultWidget.h"
+#include "Mode/01_Play/PlayGameState.h"
 
 
-void UPlayResultWidget::NativeConstruct()
+bool UPlayResultWidget::GetGameFinished()
 {
-	Super::NativeConstruct();
+	APlayGameState* PlayGameState = Cast<APlayGameState>(GetWorld()->GetGameState());
 
-	PlayAnimation(ResultAnim);
-	//BindToAnimationFinished(ResultAnim, FWidgetAnimationDynamicEvent::BindUFunction(this, &UPlayResultWidget::HiddenWidget));
+	if (nullptr == PlayGameState)
+	{
+		return false;
+	}
+
+	int GoalNum = PlayGameState->GetGameStateFinishPlayer();
+	int TargetNum = PlayGameState->GetGameStateCurFinishPlayer();
+
+	if (GoalNum == TargetNum)
+	{
+		return true;
+	}
+
+	return false;
 }
 
-void UPlayResultWidget::HiddenWidget()
-{
-	SetVisibility(ESlateVisibility::Hidden);
-}
+//void UPlayResultWidget::NativeConstruct()
+//{
+//	Super::NativeConstruct();
+//
+//	PlayAnimation(ResultAnim);
+//	BindToAnimationFinished(ResultAnim, FWidgetAnimationDynamicEvent::BindUFunction(this, &UPlayResultWidget::HiddenWidget));
+//}
+//
+//void UPlayResultWidget::HiddenWidget()
+//{
+//	SetVisibility(ESlateVisibility::Hidden);
+//}
 
 
 

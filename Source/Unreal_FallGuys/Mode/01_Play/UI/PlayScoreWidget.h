@@ -13,5 +13,17 @@ UCLASS()
 class UNREAL_FALLGUYS_API UPlayScoreWidget : public UPlayUserWidget
 {
 	GENERATED_BODY()
+
+public:
+	// 임시
+	UFUNCTION(BlueprintCallable)
+	int GetTimeLimit_Minutes();
+
+	// 임시
+	UFUNCTION(BlueprintCallable)
+	int GetTimeLimit_Seconds();
+
+	UFUNCTION(BlueprintCallable)
+	float GetLimitTime();
 	
 };
