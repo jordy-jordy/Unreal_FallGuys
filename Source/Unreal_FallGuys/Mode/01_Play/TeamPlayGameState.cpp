@@ -12,6 +12,7 @@ void ATeamPlayGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ATeamPlayGameState, GameStateREDTeamScore);
 	DOREPLIFETIME(ATeamPlayGameState, GameStateBLUETeamScore);
+	DOREPLIFETIME(ATeamPlayGameState, STATE_StageLimitTime);
 }
 
 void ATeamPlayGameState::SetREDTeamScore_Implementation(int32 _Score)
@@ -23,6 +24,13 @@ void ATeamPlayGameState::SetBLUETeamScore_Implementation(int32 _Score)
 {
 	GameStateBLUETeamScore = _Score;
 }
+
+void ATeamPlayGameState::SetStageLimitTime_Implementation(float _Time)
+{
+	STATE_StageLimitTime = _Time;
+}
+
+
 // LMH
 void ATeamPlayGameState::SpawnEggManager()
 {
@@ -38,3 +46,5 @@ TArray<int> ATeamPlayGameState::GetTeamEggCount() const
 {
 	return Spawnner->GetTeamEggCount();
 }
+
+

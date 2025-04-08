@@ -16,6 +16,8 @@ class UNREAL_FALLGUYS_API ATeamPlayGameMode : public APlayGameMode
 	GENERATED_BODY()
 
 public:
+	ATeamPlayGameMode();
+
 	// PlayGameMode의 PostLogin 다음으로 실행
 	virtual void PostLogin(APlayerController* _NewPlayer) override;
 
@@ -28,6 +30,9 @@ public:
 	void CountBLUETeamScore(int _NumberOfEgg);
 
 protected:
+	virtual void Tick(float DeltaSeconds) override;
+	void BeginPlay() override;
+
 	// 팀 배정
 	void AssignTeam(class APlayPlayerState* _PlayerState);
 
@@ -36,6 +41,19 @@ protected:
 	int32 REDTeamScore = 0;
 	UPROPERTY(BlueprintReadOnly)
 	int32 BLUETeamScore = 0;
+
+	// 팀전 제한 시간
+	float MODE_StageLimitTime = 0.0f;
+	// 제한 시간 타이머 활성화 됐니?
+	bool IsStartedLimitTimer = false;
+
+	// 스테이지 제한 시간 타이머 활성화
+	UFUNCTION(BlueprintCallable, Category = "LEVEL LIMIT TIME")
+	void StartStageLimitTimer();
+
+	// 스테이지 제한 시간 오버 처리
+	UFUNCTION(BlueprintCallable, Category = "LEVEL LIMIT TIME")
+	void OnStageLimitTimeOver();
 
 
 //LMH

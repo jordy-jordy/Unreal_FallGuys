@@ -251,31 +251,6 @@ protected:
 
 #pragma endregion
 
-#pragma region PlayGameState :: 스테이지 제한 시간 관련
-public:
-	UFUNCTION(BlueprintCallable, Category = "LEVEL LIMIT TIME")
-	bool GetUseStageLimitTime() { return UseStageLimitTime;	}
-
-	UFUNCTION(BlueprintCallable, Category = "LEVEL LIMIT TIME")
-	float GetStageLimitTime() { return StageLimitTime; }
-
-protected:
-	// Stage 제한 시간 유무 결정 함수
-	bool SetUseStageLimitTime() const;
-
-	// Stage 제한 시간 결정 함수
-	float SetStageLimitTime() const;
-
-private:
-	// Stage 제한 시간 유무 - 외부에서 값 가져옴
-	UPROPERTY(Replicated)
-	bool UseStageLimitTime;
-
-	// Stage 제한 시간 - 외부에서 값 가져옴
-	UPROPERTY(Replicated)
-	float StageLimitTime;
-
-#pragma endregion
 
 #pragma region PlayGameState :: 동기화 관련
 protected:

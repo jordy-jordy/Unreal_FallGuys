@@ -24,6 +24,7 @@ public:
 
 #pragma region PlayGameMode :: 핵심 함수
 public: 
+protected:
 	// 플레이어 접속시 실행되는 함수 :: 가장 빠름
 	virtual void PreLogin(
 		const FString& _Options,
@@ -35,8 +36,8 @@ public:
 	// 플레이어 접속시 실행되는 함수 :: PreLogin 다음
 	virtual void PostLogin(APlayerController* _NewPlayer) override;
 
-protected:
 	virtual void Tick(float DeltaSeconds) override;
+
 	void BeginPlay() override;
 
 #pragma endregion
@@ -98,6 +99,8 @@ protected:
 	bool pCountDownEnd = false;
 	// 결과 화면이니
 	bool bMODEIsResultLevel = false;
+	// 게임 시작됐니
+	bool bGameStarted = false;
 
 	// 현재 스테이지 이름
 	FString MODE_CurLevelName = TEXT("Unknown");
@@ -116,10 +119,6 @@ public:
 	// 게임 시작 전 카운트다운 핸들 활성화
 	UFUNCTION(BlueprintCallable, Category = "TIMER")
 	void StartCountdownTimer();
-
-	// 스테이지 제한 시간 타이머 활성화
-	UFUNCTION(BlueprintCallable, Category = "TIMER")
-	void StartStageLimitTimer();
 
 protected:
 	// 게임 시작 조건 검사 타이머 핸들
@@ -142,9 +141,6 @@ protected:
 
 	// 카운트다운 진행 (매초 실행)
 	void UpdateCountdown();
-
-	// 스테이지 제한 시간 오버 처리
-	void OnStageLimitTimeOver();
 
 #pragma endregion
 

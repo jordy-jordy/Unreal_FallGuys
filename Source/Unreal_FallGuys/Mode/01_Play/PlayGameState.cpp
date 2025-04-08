@@ -27,13 +27,6 @@ void APlayGameState::BeginPlay()
 	{
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: BeginPlay :: 스테이지 모드 : %s"), *UEnum::GetValueAsString(GS_CurStageType));
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: BeginPlay :: 스테이지 페이즈 : %s"), *UEnum::GetValueAsString(GS_CurStagePhase));
-
-		// 팀전인 경우 제한 시간 사용
-		if (GS_CurStageType == EStageType::TEAM)
-		{
-			UseStageLimitTime = SetUseStageLimitTime();
-			StageLimitTime = SetStageLimitTime();
-		}
 	}
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameState BeginPlay END ======= "));
@@ -152,60 +145,6 @@ void APlayGameState::MulticastUpdateConnectedPlayers_Implementation(int _NewCoun
 		FString Message = FString::Printf(TEXT("PlayGameState :: 접속자 수 갱신 : %d"), ConnectedPlayers);
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, Message);
 	}
-}
-
-// Stage 제한 시간 유무 결정 함수
-bool APlayGameState::SetUseStageLimitTime() const
-{
-	if (GS_CurStageType == EStageType::NONE)
-	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: 스테이지 타입이 세팅되지 않았습니다."));
-		return false;
-	}
-	else if (GS_CurStageType == EStageType::SOLO)
-	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: 개인전에서는 스테이지 제한 시간을 사용하지 않습니다."));
-		return false;
-	}
-
-	const FTeamPlayLevelDataRow* Row = UGlobalDataTable::FindTeamPlayLevelDataByAssetName(GetWorld(), LevelAssetName);
-	if (Row)
-	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: 스테이지 제한 시간이 세팅됩니다. 레벨 에셋 이름 : %s"), *LevelAssetName);
-		return true;
-	}
-	else
-	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: 팀전 레벨 데이터를 찾을 수 없음. 레벨 이름 : %s"), *LevelAssetName);
-	}
-	return false;
-}
-
-// Stage 제한 시간 결정 함수
-float APlayGameState::SetStageLimitTime() const
-{
-	if (GS_CurStageType != EStageType::TEAM)
-	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: 팀전에서만 제한 시간을 사용합니다. : %s"), *UEnum::GetValueAsString(GS_CurStageType));
-		return 0.0f;
-	}
-
-#if UE_BUILD_SHIPPING
-	// 패키징 빌드일 경우 데이터 테이블에서 가져오기
-	const FTeamPlayLevelDataRow* Row = UGlobalDataTable::FindTeamPlayLevelDataByAssetName(GetWorld(), LevelAssetName);
-	if (Row)
-	{
-		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameState :: 패키징 빌드 - 팀전 제한 시간 설정: %.2f초"), Row->StageLimitTime);
-		return Row->StageLimitTime;
-	}
-	else
-	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: 패키징 빌드 - 팀전 레벨 데이터를 찾을 수 없습니다. 기본값을 사용"));
-	}
-#endif
-	// 개발 중일 경우 또는 실패했을 때는 Const 값 사용
-	UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameState :: 개발 빌드 - Const에서 가져온 제한 시간 사용 : %.2f초"), UFallConst::FallStageLimitTime);
-	return UFallConst::FallStageLimitTime;
 }
 
 // 레벨 이름 세팅 : PlayGameMode에서 호출
@@ -327,7 +266,6 @@ void APlayGameState::SetDropOrder_Implementation()
 		// PlayerState->PlayerInfo.DropOrder = DropOrders[i];
 		PlayerState->SetPlayerDropOrder(DropOrders[i]);
 
-
 		FailPlayerInfoArray.Add(FPlayerInfoEntry(
 			PlayerState->PlayerInfo.UniqueID,
 			PlayerState->PlayerInfo));
@@ -353,8 +291,6 @@ void APlayGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(APlayGameState, CountDownTime);
 	DOREPLIFETIME(APlayGameState, ConnectedPlayers);
 	DOREPLIFETIME(APlayGameState, IsCountDownOver);
-	DOREPLIFETIME(APlayGameState, StageLimitTime);
-	DOREPLIFETIME(APlayGameState, UseStageLimitTime);
 	DOREPLIFETIME(APlayGameState, CanStartLevelCinematic);
 	DOREPLIFETIME(APlayGameState, IsLevelCinematicEnd);
 	DOREPLIFETIME(APlayGameState, GameStateFinishPlayer);

@@ -14,6 +14,7 @@ class UNREAL_FALLGUYS_API ATeamPlayGameState : public APlayGameState
 {
 	GENERATED_BODY()
 
+#pragma region TeamPlayGameState :: 팀 관련
 public:
 	// 레드팀 점수 : TeamPlayGameMode에서 호출됨
 	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "SCORE")
@@ -39,10 +40,30 @@ protected:
 	UPROPERTY(Replicated)
 	int32 GameStateBLUETeamScore = 0;
 
+#pragma endregion
+
+#pragma region TeamPlayGameState :: 스테이지 제한 시간 관련
+public:
+	// Stage 제한 시간 반환
+	UFUNCTION(BlueprintCallable, Category = "LEVEL LIMIT TIME")
+	float GetStageLimitTime() { return STATE_StageLimitTime; }
+
+	// Stage 제한 시간 결정 함수
+	UFUNCTION(BlueprintCallable, Reliable, NetMulticast, Category = "LEVEL LIMIT TIME")
+	void SetStageLimitTime(float _Time);
+	void SetStageLimitTime_Implementation(float _Time);
+
+protected:
+	// Stage 제한 시간 - 외부에서 값 가져옴
+	UPROPERTY(Replicated)
+	float STATE_StageLimitTime;
+
+#pragma endregion
+
 private:
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	//LMHH
+//LMHH
 public:
 	UFUNCTION(BlueprintCallable)
 	void SpawnEggManager();

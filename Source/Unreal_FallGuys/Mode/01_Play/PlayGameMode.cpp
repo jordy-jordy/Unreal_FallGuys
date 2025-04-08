@@ -257,59 +257,55 @@ void APlayGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (HasAuthority())
-	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode BeginPlay START ======= "));
+	if (!HasAuthority()) { return; } // 서버에서만 실행
 
-		UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
-		APlayGameState* FallState = GetGameState<APlayGameState>();
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode BeginPlay START ======= "));
 
-		// 게임 인스턴스에서 현재 스테이지의 에셋 이름을 가져옴
-		MODE_CurLevelAssetName = GameInstance->InsGetCurLevelAssetName();
-		// 게임 스테이트에 스테이지 에셋 이름을 전달
-		FallState->SetPlayLevelAssetName(MODE_CurLevelAssetName);
+	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
+	APlayGameState* FallState = GetGameState<APlayGameState>();
 
-		// 게임 인스턴스에서 현재 스테이지의 이름을 가져옴
-		MODE_CurLevelName = GameInstance->InsGetCurLevelName();
-		// 게임 스테이트에 스테이지 이름을 전달
-		FallState->SetPlayLevelName(MODE_CurLevelName);
+	// 게임 인스턴스에서 현재 스테이지의 에셋 이름을 가져옴
+	MODE_CurLevelAssetName = GameInstance->InsGetCurLevelAssetName();
+	// 게임 스테이트에 스테이지 에셋 이름을 전달
+	FallState->SetPlayLevelAssetName(MODE_CurLevelAssetName);
 
-		// 게임 인스턴스에서 현재 스테이지 타입을 가져옴
-		MODE_CurStageType = GameInstance->InsGetCurStageType();
-		// 게임 스테이트에 스테이지 타입을 전달
-		FallState->SetCurStageType(MODE_CurStageType);
+	// 게임 인스턴스에서 현재 스테이지의 이름을 가져옴
+	MODE_CurLevelName = GameInstance->InsGetCurLevelName();
+	// 게임 스테이트에 스테이지 이름을 전달
+	FallState->SetPlayLevelName(MODE_CurLevelName);
 
-		// 게임 인스턴스에서 현재 스테이지 페이즈를 가져옴
-		MODE_CurStagePhase = GameInstance->InsGetCurStagePhase();
-		// 게임 스테이트에 스테이지 페이즈를 전달
-		FallState->SetCurStagePhase(MODE_CurStagePhase);
+	// 게임 인스턴스에서 현재 스테이지 타입을 가져옴
+	MODE_CurStageType = GameInstance->InsGetCurStageType();
+	// 게임 스테이트에 스테이지 타입을 전달
+	FallState->SetCurStageType(MODE_CurStageType);
 
-		// 게임 인스턴스에서 스테이지의 종료 조건을 가져옴
-		MODE_CurStageResultStatus = GameInstance->InsGetStageEndCondition();
+	// 게임 인스턴스에서 현재 스테이지 페이즈를 가져옴
+	MODE_CurStagePhase = GameInstance->InsGetCurStagePhase();
+	// 게임 스테이트에 스테이지 페이즈를 전달
+	FallState->SetCurStagePhase(MODE_CurStagePhase);
 
-		// 스테이지 종료의 기준 상태를 세팅
-		// MODE_CurStageResultStatus = GameInstance->InsGetCurStageResultStatus(MODE_CurLevelAssetName);
+	// 게임 인스턴스에서 스테이지의 종료 조건을 가져옴
+	MODE_CurStageResultStatus = GameInstance->InsGetStageEndCondition();
 
-		// 게임 시작을 위한 조건을 주기적으로 체크
-		GetWorldTimerManager().SetTimer(
-			GameStartConditionTimer,
-			this,
-			&APlayGameMode::CheckStartConditions,
-			1.0f,  // 1초마다 검사
-			true   // 반복 실행
-		);
+	// 게임 시작을 위한 조건을 주기적으로 체크
+	GetWorldTimerManager().SetTimer(
+		GameStartConditionTimer,
+		this,
+		&APlayGameMode::CheckStartConditions,
+		1.0f,  // 1초마다 검사
+		true   // 반복 실행
+	);
 
-		// 플레이어 정보 지속 동기화용 타이머
-		GetWorldTimerManager().SetTimer(
-			SyncPlayerInfoTimer,
-			this,
-			&APlayGameMode::SyncPlayerInfo,
-			1.0f,
-			true
-		);
+	// 플레이어 정보 지속 동기화용 타이머
+	GetWorldTimerManager().SetTimer(
+		SyncPlayerInfoTimer,
+		this,
+		&APlayGameMode::SyncPlayerInfo,
+		1.0f,
+		true
+	);
 
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode BeginPlay END ======= "));
-	}
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode BeginPlay END ======= "));
 }
 #pragma endregion
 
@@ -435,8 +431,9 @@ void APlayGameMode::StartGame()
 	SetCharacterMovePossible();
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: BeginPlay :: 캐릭터 이동이 가능합니다."));
 
-	// 스테이지 제한 시간 처리
-	StartStageLimitTimer();
+	// 게임 시작됐음
+	bGameStarted = true;
+
 }
 
 // 캐릭터 이동 가능하게 세팅
@@ -456,37 +453,6 @@ void APlayGameMode::SetCharacterMovePossible()
 		}, 0.2f, false); // 0.2초 뒤에 한 번 실행
 
 	pPlayerMoving = true;
-}
-
-// 스테이지 제한 시간 타이머 활성화
-void APlayGameMode::StartStageLimitTimer()
-{
-	if (!HasAuthority()) return;
-
-	APlayGameState* FallState = GetGameState<APlayGameState>();
-	if (!FallState) return;
-
-	if (FallState->GetUseStageLimitTime() == false)
-	{
-		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: BeginPlay :: 스테이지 제한 시간을 사용하지 않으므로 타이머 시작 안함"));
-		return;
-	}
-
-	float Time = FallState->GetStageLimitTime();
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: BeginPlay :: 스테이지 제한 시간 타이머 시작: %.2f초"), Time);
-
-	GetWorldTimerManager().SetTimer(StageLimitTimerHandle, this, &APlayGameMode::OnStageLimitTimeOver, Time, false);
-}
-
-// 스테이지 제한 시간 오버 처리
-void APlayGameMode::OnStageLimitTimeOver()
-{
-	if (!HasAuthority()) return;
-
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: BeginPlay :: 제한 시간 초과! 스테이지를 종료합니다."));
-
-	// 다음 맵 이동
-	ServerTravelToNextMap(UFallGlobal::GetRandomLevelWithOutPawn());
 }
 
 // 이현정 : 25.04.02 : 동기화 함수로 수정 : 골인 인원 +1 카운팅
@@ -642,37 +608,62 @@ void APlayGameMode::ServerTravelToNextMap(const FString& url)
 				*PlayerEntry.UniqueID, *PlayerEntry.PlayerInfo.Tag.ToString());
 		}
 
-		// 다음 스테이지 값을 미리 저장
-		switch (MODE_CurStagePhase)
+		if (MODE_CurStageType == EStageType::SOLO)
 		{
-		case EStagePhase::STAGE_1:
-			GameInstance->InsSetCurStagePhase(EStagePhase::STAGE_1_RESULT);
-			GameInstance->bIsResultLevel = true;
-			break;
+			// 개인전인 경우
+			switch (MODE_CurStagePhase)
+			{
+			case EStagePhase::STAGE_1:
+				GameInstance->InsSetCurStagePhase(EStagePhase::STAGE_1_RESULT);
+				GameInstance->bIsResultLevel = true;
+				break;
 
-		case EStagePhase::STAGE_1_RESULT:
-			GameInstance->InsSetCurStagePhase(EStagePhase::STAGE_2);
-			GameInstance->bIsResultLevel = false;
-			break;
+			case EStagePhase::STAGE_1_RESULT:
+				GameInstance->InsSetCurStagePhase(EStagePhase::STAGE_2);
+				GameInstance->bIsResultLevel = false;
+				break;
 
-		case EStagePhase::STAGE_2:
-			GameInstance->InsSetCurStagePhase(EStagePhase::STAGE_2_RESULT);
-			GameInstance->bIsResultLevel = true;
-			break;
+			case EStagePhase::STAGE_2:
+				GameInstance->InsSetCurStagePhase(EStagePhase::STAGE_2_RESULT);
+				GameInstance->bIsResultLevel = true;
+				break;
 
-		case EStagePhase::STAGE_2_RESULT:
-			GameInstance->InsSetCurStagePhase(EStagePhase::STAGE_3);
-			GameInstance->bIsResultLevel = false;
-			break;
+			case EStagePhase::STAGE_2_RESULT:
+				GameInstance->InsSetCurStagePhase(EStagePhase::STAGE_3);
+				GameInstance->bIsResultLevel = false;
+				break;
 
-		case EStagePhase::STAGE_3:
-			GameInstance->InsSetCurStagePhase(EStagePhase::FINISHED);
-			GameInstance->bIsResultLevel = true; 
-			break;
+			case EStagePhase::STAGE_3:
+				GameInstance->InsSetCurStagePhase(EStagePhase::FINISHED);
+				GameInstance->bIsResultLevel = true;
+				break;
 
-		default:
-			break;
+			default:
+				break;
+			}
 		}
+		else
+		{
+			// 팀전의 경우
+			switch (MODE_CurStagePhase)
+			{
+			case EStagePhase::STAGE_1:
+				GameInstance->InsSetCurStagePhase(EStagePhase::STAGE_2);
+				break;
+
+			case EStagePhase::STAGE_2:
+				GameInstance->InsSetCurStagePhase(EStagePhase::STAGE_3);
+				break;
+
+			case EStagePhase::STAGE_3:
+				GameInstance->InsSetCurStagePhase(EStagePhase::FINISHED);
+				break;
+
+			default:
+				break;
+			}
+		}
+
 		// 스테이지 전환 했음을 알림
 		GameInstance->IsMovedLevel = true;
 	}
