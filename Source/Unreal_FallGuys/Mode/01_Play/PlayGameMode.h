@@ -8,6 +8,10 @@
 #include <Global/GlobalEnum.h>
 #include <Mode/01_Play/PlayEnum.h>
 
+// 델리게이트 테스트
+#include <Global/FallGlobal.h>
+
+
 #include "PlayGameMode.generated.h"
 
 
@@ -21,6 +25,15 @@ class UNREAL_FALLGUYS_API APlayGameMode : public AGameMode
 	
 public:
 	APlayGameMode();
+
+	// 델리게이트 테스트
+	void RegisterWidgetDelegate(FGameOverWidgetDelegate InDelegate);
+
+	void GameOverWidgetDelegate();
+
+	FGameOverWidgetDelegate WidgetDelegate;
+	// 델리게이트 테스트
+
 
 #pragma region PlayGameMode :: 핵심 함수
 public: 
