@@ -204,12 +204,12 @@ void UBaseGameInstance::InsSaveAvailableLevelInfos()
 			continue;
 
 		// 강제로 로드
-		UWorld* LoadedLevel = Row->Level.LoadSynchronous();
-		if (!LoadedLevel)
-		{
-			UE_LOG(FALL_DEV_LOG, Warning, TEXT("BaseGameInstance :: Level Load Failed: %s"), *Row->Level.ToString());
-			continue;
-		}
+		//UWorld* LoadedLevel = Row->Level.LoadSynchronous();
+		//if (!LoadedLevel)
+		//{
+		//	UE_LOG(FALL_DEV_LOG, Warning, TEXT("BaseGameInstance :: Level Load Failed: %s"), *Row->Level.ToString());
+		//	continue;
+		//}
 
 		FLevelInfo Info;
 		Info.LevelAssetName = Row->Level.GetAssetName();
@@ -250,12 +250,12 @@ void UBaseGameInstance::InsSaveAvailableTeamLevelInfos()
 			continue;
 
 		// 강제로 로드
-		UWorld* LoadedLevel = Row->Level.LoadSynchronous();
-		if (!LoadedLevel)
-		{
-			UE_LOG(FALL_DEV_LOG, Warning, TEXT("BaseGameInstance :: Level Load Failed: %s"), *Row->Level.ToString());
-			continue;
-		}
+		//UWorld* LoadedLevel = Row->Level.LoadSynchronous();
+		//if (!LoadedLevel)
+		//{
+		//	UE_LOG(FALL_DEV_LOG, Warning, TEXT("BaseGameInstance :: Level Load Failed: %s"), *Row->Level.ToString());
+		//	continue;
+		//}
 
 		FTeamLevelInfo TeamInfo;
 		TeamInfo.LevelAssetName = Row->Level.GetAssetName();
