@@ -14,4 +14,7 @@ class UNREAL_FALLGUYS_API UPlayLevelResultWidget : public UPlayUserWidget
 {
 	GENERATED_BODY()
 	
+public:
+	void NativeConstruct();
+
 };
