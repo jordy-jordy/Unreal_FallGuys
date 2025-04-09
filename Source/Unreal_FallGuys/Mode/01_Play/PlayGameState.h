@@ -153,8 +153,8 @@ public:
 
 	// 골인 목표 인원 수 세팅 완료 했는지
 	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
-	void SetGameStateSettedGoalCountTrue(bool _Value);
-	void SetGameStateSettedGoalCountTrue_Implementation(bool _Value);
+	void SetGameStateGoalCountSetted(bool _Value);
+	void SetGameStateGoalCountSetted_Implementation(bool _Value);
 
 	// 골인 목표 인원 수 세팅 됐는지 확인할게
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")

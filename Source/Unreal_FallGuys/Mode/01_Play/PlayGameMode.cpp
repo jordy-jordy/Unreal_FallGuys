@@ -308,7 +308,7 @@ void APlayGameMode::CheckStartConditions()
 			// 디폴트 상태의 플레이어 수에 따른 목표 횟수 설정
 			ControllFinishPlayer();
 			bSettedGoalCount = true;
-			FallState->SetGameStateSettedGoalCountTrue(bSettedGoalCount);
+			FallState->SetGameStateGoalCountSetted(bSettedGoalCount);
 		}
 
 		// 시네마틱이 안끝났으면 리턴
