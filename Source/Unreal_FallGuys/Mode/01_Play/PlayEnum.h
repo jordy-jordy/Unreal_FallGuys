@@ -55,6 +55,7 @@ enum class EStagePhase : uint8
 	STAGE_2			UMETA(DisplayName = "STAGE 2"),
 	STAGE_2_RESULT	UMETA(DisplayName = "STAGE 2 RESULT"),
 	STAGE_3			UMETA(DisplayName = "STAGE 3"),
+	STAGE_3_RESULT	UMETA(DisplayName = "STAGE 3 RESULT"),
 	FINISHED		UMETA(DisplayName = "FINISHED")
 };
 

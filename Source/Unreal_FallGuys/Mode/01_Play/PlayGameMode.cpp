@@ -747,7 +747,7 @@ void APlayGameMode::BackUpPlayersInfo()
 	for (FPlayerInfoEntry& PlayerEntry : PlayGameState->PlayerInfoArray)
 	{
 		GameInstance->InsBackupPlayerInfo(PlayerEntry.UniqueID, PlayerEntry.PlayerInfo);
-		UE_LOG(FALL_DEV_LOG, Log, TEXT("ServerTravelToNextMap :: 플레이어 정보 백업 완료 - UniqueID = %s, Tag = %s"),
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: BackUpPlayersInfo :: 플레이어 정보 백업 완료 - UniqueID = %s, Tag = %s"),
 			*PlayerEntry.UniqueID, *PlayerEntry.PlayerInfo.Tag.ToString());
 	}
 }
@@ -781,6 +781,11 @@ void APlayGameMode::SetNextSoloLevelData()
 		break;
 
 	case EStagePhase::STAGE_3:
+		GameInstance->InsSetCurStagePhase(EStagePhase::STAGE_3_RESULT);
+		GameInstance->bIsResultLevel = true;
+		break;
+
+	case EStagePhase::STAGE_3_RESULT:
 		GameInstance->InsSetCurStagePhase(EStagePhase::FINISHED);
 		GameInstance->bIsResultLevel = true;
 		break;
@@ -806,7 +811,7 @@ void APlayGameMode::ChangeDefaultPlayersTo()
 	}
 	else
 	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: Tick :: 게임 종료 조건이 뭔가 잘못 됨"));
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: ChangeDefaultPlayersTo :: 게임 종료 조건이 뭔가 잘못 됨"));
 	}
 }
 
@@ -819,7 +824,7 @@ void APlayGameMode::SetDefaultPlayersToFail()
 	APlayGameState* FallState = GetGameState<APlayGameState>();
 	if (!FallState)
 	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: Tick :: GameState가 nullptr입니다."));
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: SetDefaultPlayersToFail :: GameState가 nullptr입니다."));
 		return;
 	}
 
@@ -829,7 +834,7 @@ void APlayGameMode::SetDefaultPlayersToFail()
 		if (PState && PState->GetPlayerStateStatus() == EPlayerStatus::DEFAULT)
 		{
 			PState->SetPlayerStatus(EPlayerStatus::FAIL);
-			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: Tick :: FAIL 처리됨 - %s"), *PState->PlayerInfo.Tag.ToString());
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: SetDefaultPlayersToFail :: FAIL 처리됨 - %s"), *PState->PlayerInfo.Tag.ToString());
 		}
 	}
 	// 상태 바꾼 것을 동기화
@@ -845,7 +850,7 @@ void APlayGameMode::SetDefaultPlayersToSuccess()
 	APlayGameState* FallState = GetGameState<APlayGameState>();
 	if (!FallState)
 	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: Tick :: GameState가 nullptr입니다."));
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: SetDefaultPlayersToSuccess :: GameState가 nullptr입니다."));
 		return;
 	}
 
@@ -855,7 +860,7 @@ void APlayGameMode::SetDefaultPlayersToSuccess()
 		if (PState && PState->GetPlayerStateStatus() == EPlayerStatus::DEFAULT)
 		{
 			PState->SetPlayerStatus(EPlayerStatus::SUCCESS);
-			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: Tick :: SUCCESS 처리됨 - %s"), *PState->PlayerInfo.Tag.ToString());
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: SetDefaultPlayersToSuccess :: SUCCESS 처리됨 - %s"), *PState->PlayerInfo.Tag.ToString());
 		}
 	}
 	// 상태 바꾼 것을 동기화
