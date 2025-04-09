@@ -207,6 +207,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static bool GetGameStarted();
 
+	// PlayGameState : 목표 인원 세팅 완료했니?
+	UFUNCTION(BlueprintCallable)
+	static bool GetSettedGoalCountDone();
+
 
 // 이재영 : 메인위젯을 얻는 함수
 public:

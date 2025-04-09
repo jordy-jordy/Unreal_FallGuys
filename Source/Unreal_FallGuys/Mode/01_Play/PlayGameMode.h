@@ -108,15 +108,17 @@ protected:
 	void CheckStartConditions();
 
 	// 접속 제한
-	bool InvalidConnect = false;
+	bool bInvalidConnect = false;
 	// 인원 충족
-	bool pNumberOfPlayer = false;
+	bool bNumberOfPlayer = false;
+	// 목표 인원 수 세팅했니
+	bool bSettedGoalCount = false;
 	// 캐릭터 이동
-	bool pPlayerMoving = false;
+	bool bPlayerMoving = false;
 	// 게임 시작 카운트다운 썼니
-	bool pCountDownStarted = false;	
+	bool bCountDownStarted = false;	
 	// 게임 시작 카운트다운 끝
-	bool pCountDownEnd = false;
+	bool bCountDownEnd = false;
 	// 결과 화면이니
 	bool bMODEIsResultLevel = false;
 	// 게임 시작됐니
@@ -130,6 +132,9 @@ protected:
 	EStageType MODE_CurStageType = EStageType::NONE;
 	// 현재 스테이지 단계
 	EStagePhase MODE_CurStagePhase = EStagePhase::STAGE_1;
+
+	// 디폴트 상태의 플레이어 수
+	int32 DefaultPlayerCount = 0;
 
 #pragma endregion
 

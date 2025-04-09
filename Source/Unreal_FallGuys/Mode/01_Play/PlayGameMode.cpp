@@ -52,7 +52,7 @@ void APlayGameMode::PreLogin(
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode PreLogin START ======= "));
 
-	if (true == InvalidConnect)
+	if (true == bInvalidConnect)
 	{
 		_ErrorMessage = TEXT("접속 제한: 게임 인원이 가득찼습니다.");
 		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: PreLogin :: 게임 인원이 가득차 접속이 거절되었습니다."));
@@ -162,7 +162,7 @@ void APlayGameMode::PostLogin(APlayerController* _NewPlayer)
 
 	// 인원 수 체크
 	CheckNumberOfPlayer(FallState);
-	if (true == pNumberOfPlayer)
+	if (true == bNumberOfPlayer)
 	{
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: 게임 플레이를 위한 인원이 충족되었습니다."));
 
@@ -188,7 +188,7 @@ void APlayGameMode::PostLogin(APlayerController* _NewPlayer)
 
 		if (true == UFallConst::UsePlayerLimit) // 인원이 찼고 인원 제한을 사용하는 경우 접속 제한 활성화
 		{
-			InvalidConnect = true;
+			bInvalidConnect = true;
 			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: 접속 제한을 사용하므로 이후 접속이 제한됩니다."));
 		}
 		else
@@ -200,9 +200,6 @@ void APlayGameMode::PostLogin(APlayerController* _NewPlayer)
 	// 게임 인스턴스에서 스테이지의 종료 조건을 가져옴
 	MODE_CurStageResultStatus = GameInstance->InsGetStageEndCondition();
 
-	// 게임 시작 인원 수에 따른 목표 횟수 설정
-	ControllFinishPlayer();
-
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode PostLogin END ======= "));
 }
 #pragma endregion
@@ -213,11 +210,11 @@ void APlayGameMode::CheckNumberOfPlayer(APlayGameState* _PlayState)
 {
 	if (_PlayState->GetConnectedPlayers() >= UFallConst::MinPlayerCount)
 	{
-		pNumberOfPlayer = true;
+		bNumberOfPlayer = true;
 	}
 	else
 	{
-		pNumberOfPlayer = false;
+		bNumberOfPlayer = false;
 	}
 }
 
@@ -226,6 +223,134 @@ void APlayGameMode::CallLevelCinematicStart(APlayGameState* _PlayState)
 {
 	_PlayState->SetCanStartLevelCinematic();
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: 레벨 시네마틱이 실행됩니다."));
+}
+#pragma endregion
+
+#pragma region PlayGameMode :: BeginPlay :: 게임이 시작되는 곳
+void APlayGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (!HasAuthority()) { return; } // 서버에서만 실행
+
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode BeginPlay START ======= "));
+
+	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
+	APlayGameState* FallState = GetGameState<APlayGameState>();
+
+	// 게임 인스턴스에서 현재 스테이지의 에셋 이름을 가져옴
+	MODE_CurLevelAssetName = GameInstance->InsGetCurLevelAssetName();
+	// 게임 스테이트에 스테이지 에셋 이름을 전달
+	FallState->SetPlayLevelAssetName(MODE_CurLevelAssetName);
+
+	// 게임 인스턴스에서 현재 스테이지의 이름을 가져옴
+	MODE_CurLevelName = GameInstance->InsGetCurLevelName();
+	// 게임 스테이트에 스테이지 이름을 전달
+	FallState->SetPlayLevelName(MODE_CurLevelName);
+
+	// 게임 인스턴스에서 현재 스테이지 타입을 가져옴
+	MODE_CurStageType = GameInstance->InsGetCurStageType();
+	// 게임 스테이트에 스테이지 타입을 전달
+	FallState->SetCurStageType(MODE_CurStageType);
+
+	// 게임 인스턴스에서 현재 스테이지 페이즈를 가져옴
+	MODE_CurStagePhase = GameInstance->InsGetCurStagePhase();
+	// 게임 스테이트에 스테이지 페이즈를 전달
+	FallState->SetCurStagePhase(MODE_CurStagePhase);
+
+	// 게임 시작을 위한 조건을 주기적으로 체크
+	GetWorldTimerManager().SetTimer(
+		GameStartConditionTimer,
+		this,
+		&APlayGameMode::CheckStartConditions,
+		1.0f,  // 1초마다 검사
+		true   // 반복 실행
+	);
+
+	// 플레이어 정보 지속 동기화용 타이머
+	GetWorldTimerManager().SetTimer(
+		SyncPlayerInfoTimer,
+		this,
+		&APlayGameMode::SyncPlayerInfo,
+		1.0f,
+		true
+	);
+
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode BeginPlay END ======= "));
+}
+#pragma endregion
+
+#pragma region PlayGameMode :: BeginPlay 에서 실행되는 함수들
+// 게임 시작을 위한 조건 체크
+void APlayGameMode::CheckStartConditions()
+{
+	// 인원이 안찼으면 리턴
+	if (bNumberOfPlayer == false) { return; }
+
+	APlayGameState* FallState = GetGameState<APlayGameState>();
+
+	// 현 레벨이 결과 화면인 경우 : 시네마틱, 카운트 다운 바로 종료 처리 및 종료 트리거 모두 true 세팅
+	if (bMODEIsResultLevel == true)
+	{
+		FallState->SetIsLevelCinematicEnd(true);
+		bCountDownEnd = true;
+
+		SetEndCondition_Trigger();
+		bCanMoveLevel = true;
+	}
+	else
+	{
+		// 인원수 조정
+		if (bSettedGoalCount == false)
+		{
+			// 디폴트 상태의 플레이어 수 카운트
+			DefaultPlayerCount = GetDefaultPlayerCount();
+			// 디폴트 상태의 플레이어 수에 따른 목표 횟수 설정
+			ControllFinishPlayer();
+			bSettedGoalCount = true;
+			FallState->SetGameStateSettedGoalCountTrue(bSettedGoalCount);
+		}
+
+		// 시네마틱이 안끝났으면 리턴
+		if (FallState->GetIsLevelCinematicEnd() == false) { return; }
+
+		// 카운트 다운 사용할거야?
+		if (UFallConst::UseCountDown == true)
+		{
+			if (bCountDownStarted == false)
+			{
+				// 카운트 다운 핸들 활성화
+				StartCountdownTimer();
+				WidgetDelegate(TEXT("StartCount"));
+				bCountDownStarted = true;
+			}
+			// 카운트 다운이 안끝났으면 리턴
+			if (bCountDownEnd == false) return;
+		}
+		else
+		{
+			// 카운트다운을 사용하지 않으면 바로 끝난 것으로 처리
+			bCountDownEnd = true;
+		}
+	}
+
+	// 인원도 찼고, 레벨 시네마틱도 끝났고, 카운트 다운도 끝났으니까 게임 시작 가능
+	if (bNumberOfPlayer == true && FallState->GetIsLevelCinematicEnd() == true && bCountDownEnd == true)
+	{
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: BeginPlay :: 게임 시작 조건 충족. StartGame 호출"));
+
+		// 게임 시작
+		StartGame();
+
+		// 조건 초기화 (중복 실행 방지)
+		bNumberOfPlayer = false;
+		bCountDownEnd = false;
+
+		// 타이머 제거
+		GetWorldTimerManager().ClearTimer(GameStartConditionTimer);
+
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: BeginPlay :: CheckStartConditions 함수 종료"));
+	}
 }
 
 // 상태가 디폴트인 플레이어 수
@@ -250,11 +375,22 @@ int32 APlayGameMode::GetDefaultPlayerCount()
 	return Count;
 }
 
+// 목표 골인 인원 수 제어
+void APlayGameMode::ControllFinishPlayer()
+{
+	if (MODE_CurStageResultStatus == EPlayerStatus::SUCCESS)
+	{
+		FinishPlayer_Race();
+	}
+	else if (MODE_CurStageResultStatus == EPlayerStatus::FAIL)
+	{
+		FinishPlayer_Survive();
+	}
+}
+
 // 목표 골인 인원 수 : 레이싱
 void APlayGameMode::FinishPlayer_Race()
 {
-	int32 DefaultPlayerCount = GetDefaultPlayerCount();
-
 	switch (MODE_CurStagePhase)
 	{
 	case EStagePhase::STAGE_1:
@@ -304,8 +440,6 @@ void APlayGameMode::FinishPlayer_Race()
 // 목표 골인 인원 수 : 생존
 void APlayGameMode::FinishPlayer_Survive()
 {
-	int32 DefaultPlayerCount = GetDefaultPlayerCount();
-
 	switch (MODE_CurStagePhase)
 	{
 	case EStagePhase::STAGE_1:
@@ -359,136 +493,6 @@ void APlayGameMode::FinishPlayer_Survive()
 	}
 }
 
-// 목표 골인 인원 수 제어
-void APlayGameMode::ControllFinishPlayer()
-{
-	if (MODE_CurStageResultStatus == EPlayerStatus::SUCCESS)
-	{
-		FinishPlayer_Race();
-	}
-	else if (MODE_CurStageResultStatus == EPlayerStatus::FAIL)
-	{
-		FinishPlayer_Survive();
-	}
-}
-#pragma endregion
-
-#pragma region PlayGameMode :: BeginPlay :: 게임이 시작되는 곳
-void APlayGameMode::BeginPlay()
-{
-	Super::BeginPlay();
-
-	if (!HasAuthority()) { return; } // 서버에서만 실행
-
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode BeginPlay START ======= "));
-
-	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
-	APlayGameState* FallState = GetGameState<APlayGameState>();
-
-	// 게임 인스턴스에서 현재 스테이지의 에셋 이름을 가져옴
-	MODE_CurLevelAssetName = GameInstance->InsGetCurLevelAssetName();
-	// 게임 스테이트에 스테이지 에셋 이름을 전달
-	FallState->SetPlayLevelAssetName(MODE_CurLevelAssetName);
-
-	// 게임 인스턴스에서 현재 스테이지의 이름을 가져옴
-	MODE_CurLevelName = GameInstance->InsGetCurLevelName();
-	// 게임 스테이트에 스테이지 이름을 전달
-	FallState->SetPlayLevelName(MODE_CurLevelName);
-
-	// 게임 인스턴스에서 현재 스테이지 타입을 가져옴
-	MODE_CurStageType = GameInstance->InsGetCurStageType();
-	// 게임 스테이트에 스테이지 타입을 전달
-	FallState->SetCurStageType(MODE_CurStageType);
-
-	// 게임 인스턴스에서 현재 스테이지 페이즈를 가져옴
-	MODE_CurStagePhase = GameInstance->InsGetCurStagePhase();
-	// 게임 스테이트에 스테이지 페이즈를 전달
-	FallState->SetCurStagePhase(MODE_CurStagePhase);
-
-
-	// 게임 시작을 위한 조건을 주기적으로 체크
-	GetWorldTimerManager().SetTimer(
-		GameStartConditionTimer,
-		this,
-		&APlayGameMode::CheckStartConditions,
-		1.0f,  // 1초마다 검사
-		true   // 반복 실행
-	);
-
-	// 플레이어 정보 지속 동기화용 타이머
-	GetWorldTimerManager().SetTimer(
-		SyncPlayerInfoTimer,
-		this,
-		&APlayGameMode::SyncPlayerInfo,
-		1.0f,
-		true
-	);
-
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode BeginPlay END ======= "));
-}
-#pragma endregion
-
-#pragma region PlayGameMode :: BeginPlay 에서 실행되는 함수들
-// 게임 시작을 위한 조건 체크
-void APlayGameMode::CheckStartConditions()
-{
-	// 인원이 안찼으면 리턴
-	if (pNumberOfPlayer == false) { return; }
-
-	// 현 레벨이 결과 화면인 경우 : 시네마틱, 카운트 다운 바로 종료 처리 및 종료 트리거 모두 true 세팅
-	APlayGameState* FallState = GetGameState<APlayGameState>();
-	if (bMODEIsResultLevel == true)
-	{
-		FallState->SetIsLevelCinematicEnd(true);
-		pCountDownEnd = true;
-
-		SetEndCondition_Trigger();
-		bCanMoveLevel = true;
-	}
-	else // 결과 화면이 아닐때만
-	{
-		// 시네마틱이 안끝났으면 리턴
-		if (FallState->GetIsLevelCinematicEnd() == false) { return; }
-
-		// 카운트 다운 사용할거야?
-		if (UFallConst::UseCountDown == true)
-		{
-			if (pCountDownStarted == false)
-			{
-				// 카운트 다운 핸들 활성화
-				StartCountdownTimer();
-				WidgetDelegate(TEXT("StartCount"));
-				pCountDownStarted = true;
-			}
-			// 카운트 다운이 안끝났으면 리턴
-			if (pCountDownEnd == false) return;
-		}
-		else
-		{
-			// 카운트다운을 사용하지 않으면 바로 끝난 것으로 처리
-			pCountDownEnd = true;
-		}
-	}
-
-	// 인원도 찼고, 레벨 시네마틱도 끝났고, 카운트 다운도 끝났으니까 게임 시작 가능
-	if (pNumberOfPlayer == true && FallState->GetIsLevelCinematicEnd() == true && pCountDownEnd == true)
-	{
-		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: BeginPlay :: 게임 시작 조건 충족. StartGame 호출"));
-
-		// 게임 시작
-		StartGame();
-
-		// 조건 초기화 (중복 실행 방지)
-		pNumberOfPlayer = false;
-		pCountDownEnd = false;
-
-		// 타이머 제거
-		GetWorldTimerManager().ClearTimer(GameStartConditionTimer);
-
-		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: BeginPlay :: CheckStartConditions 함수 종료"));
-	}
-}
-
 // 게임 시작전 :: 카운트다운 핸들 활성화
 void APlayGameMode::StartCountdownTimer()
 {
@@ -535,7 +539,7 @@ void APlayGameMode::UpdateCountdown()
 		GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
 
 		// 카운트 다운 완료 처리
-		pCountDownEnd = true;
+		bCountDownEnd = true;
 		FallState->SetIsCountDownOverTrue();
 
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: 카운트다운 종료"));
@@ -573,7 +577,7 @@ void APlayGameMode::SetCharacterMovePossible()
 			}
 		}, 0.2f, false); // 0.2초 뒤에 한 번 실행
 
-	pPlayerMoving = true;
+	bPlayerMoving = true;
 }
 
 // 이현정 : 25.04.02 : 동기화 함수로 수정 : 골인 인원 +1 카운팅
@@ -678,13 +682,12 @@ void APlayGameMode::SetEndCondition_Common()
 		}
 
 		// 캐릭터 멈추게
-		if (pPlayerMoving)
+		if (bPlayerMoving)
 		{
 			SetCharacterMoveImPossible();
-			pPlayerMoving = false;
+			bPlayerMoving = false;
 		}
 	}
-
 
 	// 동기화 타이머 해제
 	if (!bSyncCleared)

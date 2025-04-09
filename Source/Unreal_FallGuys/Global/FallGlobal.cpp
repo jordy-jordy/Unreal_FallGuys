@@ -333,6 +333,13 @@ bool UFallGlobal::GetGameStarted()
 	return FallState->GetGameStateGameStarted();
 }
 
+// PlayGameState : 목표 인원 세팅 완료했니?
+bool UFallGlobal::GetSettedGoalCountDone()
+{
+	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
+	return FallState->GetGameStateSettedGoalCount();
+}
+
 // 이재영 : 메인위젯을 얻는 함수
 UTitleMainWidget* UFallGlobal::GetMainWidget(UWorld* _World)
 {

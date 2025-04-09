@@ -151,11 +151,20 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
 	bool GetIsLevelCinematicEnd() { return IsLevelCinematicEnd; }
 
+	// 골인 목표 인원 수 세팅 완료 했는지
+	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
+	void SetGameStateSettedGoalCountTrue(bool _Value);
+	void SetGameStateSettedGoalCountTrue_Implementation(bool _Value);
+
+	// 골인 목표 인원 수 세팅 됐는지 확인할게
+	UFUNCTION(BlueprintCallable, Category = "LEVEL")
+	bool GetGameStateSettedGoalCount() { return bGameStateSettedGoalCount; }
+
 	// 골인 목표 인원 수 세팅 : PlayGameMode에서 호출
 	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
 	void SetGameStateFinishPlayer(int _Value);
 	void SetGameStateFinishPlayer_Implementation(int _Value);
-
+	
 	// 골인 목표 인원 수 반환
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
 	int GetGameStateFinishPlayer() { return GameStateFinishPlayer; }
@@ -209,6 +218,10 @@ protected:
 	// 레벨 시네마틱 끝났니?
 	UPROPERTY(Replicated)
 	bool IsLevelCinematicEnd = false;
+
+	// 골인 목표 인원 수 조정 했니?
+	UPROPERTY(Replicated)
+	bool bGameStateSettedGoalCount = false;
 
 	// 골인 목표 인원 수 : PlayGameMode에서 가져옴
 	UPROPERTY(Replicated)

@@ -188,6 +188,12 @@ void APlayGameState::SetIsLevelCinematicEnd_Implementation(bool _Value)
 	}
 }
 
+// 골인 목표 인원 수 세팅 완료 했는지
+void APlayGameState::SetGameStateSettedGoalCountTrue_Implementation(bool _Value)
+{
+	bGameStateSettedGoalCount = _Value;
+}
+
 // 골인 목표 인원 수 세팅 : PlayGameMode에서 호출
 void APlayGameState::SetGameStateFinishPlayer_Implementation(int _Value)
 {
@@ -305,6 +311,7 @@ void APlayGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(APlayGameState, GameStateCurFinishPlayer);
 	DOREPLIFETIME(APlayGameState, bGameStateIsResultLevel);
 	DOREPLIFETIME(APlayGameState, bGameStateGameStarted);
+	DOREPLIFETIME(APlayGameState, bGameStateSettedGoalPlayerCount);
 }
 
 void APlayGameState::PrintFailPlayersInfo()
