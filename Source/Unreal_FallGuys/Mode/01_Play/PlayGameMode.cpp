@@ -435,12 +435,15 @@ void APlayGameMode::CheckStartConditions()
 	// 인원이 안찼으면 리턴
 	if (pNumberOfPlayer == false) { return; }
 
-	// 현 레벨이 결과 화면인 경우 : 실패자 처리 하고 바로 게임 시작되게
+	// 현 레벨이 결과 화면인 경우 : 시네마틱, 카운트 다운 바로 종료 처리 및 종료 트리거 모두 true 세팅
 	APlayGameState* FallState = GetGameState<APlayGameState>();
 	if (bMODEIsResultLevel == true)
 	{
 		FallState->SetIsLevelCinematicEnd(true);
 		pCountDownEnd = true;
+
+		SetEndCondition_Trigger();
+		bCanMoveLevel = true;
 	}
 	else // 결과 화면이 아닐때만
 	{
@@ -621,17 +624,28 @@ void APlayGameMode::Tick(float DeltaSeconds)
 	// 서버만 실행
 	if (!HasAuthority()) { return; }
 
+	// 서버 트래블 활성화 됐으면 여기서 끝
+	if (StartedServerTravel) return;
+
 	// 개인전이 아니면 여기서 끝
 	if (MODE_CurStageType != EStageType::SOLO) { return; }
-
-	// 서버 트래블 활성화 됐으면 여기서 끝
-	if (StartedServerTravel) { return; }
 
 	// 모든 조건이 true 가 되었을 때 서버 트래블 활성화
 	if (IsEndGame && bPlayerStatusChanged && bPlayerInfosBackUp && bNextLevelDataSetted && bCanMoveLevel)
 	{
 		StartedServerTravel = true;
-		ServerTravelToNextMap();
+
+		// 결과 화면이 아닌 경우 결과 화면으로 이동
+		if (!bMODEIsResultLevel)
+		{
+			ServerTravelToRaceOver();
+		}
+		else
+		{
+			// 결과 화면일 경우 30초 타이머 후 호출
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: Tick :: 결과 화면이므로 30초 후 다음 레벨로 이동합니다."));
+			GetWorldTimerManager().SetTimer(ResultTravelTimerHandle, this, &APlayGameMode::ServerTravelToNextRandLevel, 30.0f, false);
+		}
 	}
 }
 #pragma endregion
@@ -653,19 +667,24 @@ void APlayGameMode::SetEndCondition_Trigger()
 // 개인전 및 팀전 공용 종료 로직
 void APlayGameMode::SetEndCondition_Common()
 {
-	// 레벨 종료 UI 띄워
-	if (!bShowedLevelEndUI)
+	// 결과 화면이 아닐때만
+	if (!bMODEIsResultLevel)
 	{
-		WidgetDelegate(TEXT("GameOver"));
-		bShowedLevelEndUI = true;
+		// 레벨 종료 UI 띄워
+		if (!bShowedLevelEndUI)
+		{
+			WidgetDelegate(TEXT("GameOver"));
+			bShowedLevelEndUI = true;
+		}
+
+		// 캐릭터 멈추게
+		if (pPlayerMoving)
+		{
+			SetCharacterMoveImPossible();
+			pPlayerMoving = false;
+		}
 	}
 
-	// 캐릭터 멈추게
-	if (pPlayerMoving)
-	{
-		SetCharacterMoveImPossible();
-		pPlayerMoving = false;
-	}
 
 	// 동기화 타이머 해제
 	if (!bSyncCleared)
@@ -706,7 +725,6 @@ void APlayGameMode::SetEndCondition_Solo()
 		{
 			// 남은 플레이어 상태 일괄 변경
 			ChangeDefaultPlayersTo();
-			bPlayerStatusChanged = true;
 		}
 
 		// 실패자에게 DropOrder 배정
@@ -717,9 +735,11 @@ void APlayGameMode::SetEndCondition_Solo()
 		{
 			// 플레이어 정보 백업
 			BackUpPlayersInfo();
-			bPlayerInfosBackUp = true;
 		}
 	}
+
+	bPlayerStatusChanged = true;
+	bPlayerInfosBackUp = true;
 
 	// 개인전 세팅을 한 이력이 없을때만
 	if (!bNextLevelDataSetted)
@@ -832,9 +852,6 @@ void APlayGameMode::SetDefaultPlayersToFail()
 	}
 	// 상태 바꾼 것을 동기화
 	SyncPlayerInfo();
-
-	// 상태 바뀌었다.
-	bPlayerStatusChanged = true;
 }
 
 // Default 상태인 플레이어를 SUCCESS 상태로 변경
@@ -861,18 +878,25 @@ void APlayGameMode::SetDefaultPlayersToSuccess()
 	}
 	// 상태 바꾼 것을 동기화
 	SyncPlayerInfo();
-
-	// 상태 바뀌었다.
-	bPlayerStatusChanged = true;
 }
 #pragma endregion
 
-void APlayGameMode::ServerTravelToNextMap()
+// 개인전용 : 중간 결과창으로 이동
+void APlayGameMode::ServerTravelToRaceOver()
 {
 	if (!HasAuthority()) { return; }
 
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 서버트래블 감지 ::"));
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 서버트래블 감지 :: %s 화면으로 이동합니다."), *NextLevel);
 
 	GetWorld()->ServerTravel(NextLevel, false);
 }
 
+// 개인전용 : 다음 스테이지로 이동
+void APlayGameMode::ServerTravelToNextRandLevel()
+{
+	if (!HasAuthority()) { return; }
+
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 서버트래블 감지 :: 다음 스테이지로 이동합니다."));
+
+	GetWorld()->ServerTravel(UFallGlobal::GetRandomLevelWithOutPawn(), false);
+}

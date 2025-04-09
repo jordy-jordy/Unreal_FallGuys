@@ -155,6 +155,9 @@ protected:
 	// 동기화 타이머 핸들
 	FTimerHandle SyncPlayerInfoTimer;
 
+	// RaceOver 레벨에서 다음 레벨로 이동하는 타이머 핸들
+	FTimerHandle ResultTravelTimerHandle;
+
 	// 카운트다운 시작 (3초 대기 후 실행)
 	void StartCountdown();
 
@@ -170,25 +173,21 @@ public:
 	void SetCanMoveLevel(bool _Value) { bCanMoveLevel = _Value; }
 
 protected:
-	// 남은 플레이어의 상태 일괄 변경
-	void ChangeDefaultPlayersTo();
-	
-	// 플레이어 정보 백업
-	void BackUpPlayersInfo();
-
-	// 개인전 다음 레벨의 정보 세팅
-	void SetNextSoloLevelData();
-
-	// 캐릭터 이동 불가능하게 세팅
-	void SetCharacterMoveImPossible();
-
 	// 게임 종료 트리거
 	void SetEndCondition_Trigger();
-
 	// 개인전 및 팀전 공용 종료 로직
 	void SetEndCondition_Common();
 	// 개인전 종료 로직
 	void SetEndCondition_Solo();
+
+	// 남은 플레이어의 상태 일괄 변경
+	void ChangeDefaultPlayersTo();
+	// 플레이어 정보 백업
+	void BackUpPlayersInfo();
+	// 개인전 다음 레벨의 정보 세팅
+	void SetNextSoloLevelData();
+	// 캐릭터 이동 불가능하게 세팅
+	void SetCharacterMoveImPossible();
 
 	// 동기화 타이머 해제 됐니
 	bool bSyncCleared = false;
@@ -229,7 +228,11 @@ protected:
 public:
 	// 개인전용 : 중간 결과창으로 이동
 	UFUNCTION(BlueprintCallable)
-	void ServerTravelToNextMap();
+	void ServerTravelToRaceOver();
+
+	// 개인전용 : 다음 스테이지로 이동
+	UFUNCTION(BlueprintCallable)
+	void ServerTravelToNextRandLevel();
 
 	// 이현정 : 25.04.02 : 동기화 함수로 수정 : 골인 인원 +1 카운팅
 	UFUNCTION(BlueprintCallable)
