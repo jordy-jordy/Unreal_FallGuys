@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Mode/01_Play/UI/PlayUserWidget.h"
+// юс╫ц
+#include "Mode/01_Play/PlayEnum.h"
 #include "PlayInGameWidget.generated.h"
 
 /**
@@ -13,5 +15,9 @@ UCLASS()
 class UNREAL_FALLGUYS_API UPlayInGameWidget : public UPlayUserWidget
 {
 	GENERATED_BODY()
-	
+
+public:
+	UFUNCTION(BlueprintCallable)
+	EStagePhase CurStagePhase();
+
 };
