@@ -3,6 +3,7 @@
 
 #include "Mode/01_Play/UI/PlayGameOverWidget.h"
 #include "Mode/01_Play/UI/PlayMainWidget.h"
+#include "Global/FallGlobal.h"
 
 // 델리게이트 테스트
 #include "Mode/01_Play/PlayGameMode.h"
@@ -27,10 +28,17 @@ void UPlayGameOverWidget::NativeConstruct()
 	// 델리게이트 테스트
 
 	PlayAnimation(GameOverAnim);
+	GameOverAnimEvent.BindUFunction(this, FName(FString(TEXT("MoveToResultLevel"))));
+	BindToAnimationFinished(GameOverAnim, GameOverAnimEvent);
 }
 
 void UPlayGameOverWidget::WidgetVisible()
 {
 	GetMainWidget()->AllWidgetHidden();
 	SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+}
+
+void UPlayGameOverWidget::MoveToResultLevel()
+{
+	UFallGlobal::SetCanMoveLevel(true);
 }

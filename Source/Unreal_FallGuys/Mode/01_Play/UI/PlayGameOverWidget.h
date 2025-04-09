@@ -24,7 +24,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void WidgetVisible();
 
+	UFUNCTION()
+	void MoveToResultLevel();
+
 private:
 	UPROPERTY(VisibleAnywhere, Transient, meta = (BindWidgetAnim), Category = "UI")
 	UWidgetAnimation* GameOverAnim;
+
+	FWidgetAnimationDynamicEvent GameOverAnimEvent;
 };
