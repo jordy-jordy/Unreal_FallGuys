@@ -36,8 +36,9 @@ protected:
 	// 플레이어 접속시 실행되는 함수 :: PreLogin 다음
 	virtual void PostLogin(APlayerController* _NewPlayer) override;
 
-	virtual void Tick(float DeltaSeconds) override;
+	virtual void HandleSeamlessTravelPlayer(AController*& _NewController) override;
 
+	virtual void Tick(float DeltaSeconds) override;
 	void BeginPlay() override;
 
 #pragma endregion
@@ -170,6 +171,8 @@ public:
 	}
 
 protected:
+	void DeferredServerTravel();
+
 	// 게임 종료 트리거
 	void SetEndCondition_Trigger();
 	// 개인전 및 팀전 공용 종료 로직
