@@ -439,9 +439,6 @@ void APlayGameMode::CheckStartConditions()
 	APlayGameState* FallState = GetGameState<APlayGameState>();
 	if (bMODEIsResultLevel == true)
 	{
-		FallState->SetDropOrder();
-		FallState->PrintFailPlayersInfo();
-
 		FallState->SetIsLevelCinematicEnd(true);
 		pCountDownEnd = true;
 	}
@@ -627,9 +624,13 @@ void APlayGameMode::Tick(float DeltaSeconds)
 	// 개인전이 아니면 여기서 끝
 	if (MODE_CurStageType != EStageType::SOLO) { return; }
 
+	// 서버 트래블 활성화 됐으면 여기서 끝
+	if (StartedServerTravel) { return; }
+
 	// 모든 조건이 true 가 되었을 때 서버 트래블 활성화
 	if (IsEndGame && bPlayerStatusChanged && bPlayerInfosBackUp && bNextLevelDataSetted && bCanMoveLevel)
 	{
+		StartedServerTravel = true;
 		ServerTravelToNextMap();
 	}
 }
@@ -695,6 +696,8 @@ void APlayGameMode::SetCharacterMoveImPossible()
 // 개인전 종료 로직
 void APlayGameMode::SetEndCondition_Solo()
 {
+	APlayGameState* FallState = GetGameState<APlayGameState>();
+	
 	// 결과 화면이 아닐때만
 	if (!bMODEIsResultLevel)
 	{
@@ -705,6 +708,9 @@ void APlayGameMode::SetEndCondition_Solo()
 			ChangeDefaultPlayersTo();
 			bPlayerStatusChanged = true;
 		}
+
+		// 실패자에게 DropOrder 배정
+		FallState->SetDropOrder();
 
 		// 플레이어 인포를 백업한 이력이 없을때만
 		if (!bPlayerInfosBackUp)

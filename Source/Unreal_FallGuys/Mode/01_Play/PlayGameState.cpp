@@ -283,6 +283,8 @@ void APlayGameState::SetDropOrder_Implementation()
 		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameState :: SetDropOrder :: 실패한 플레이어의 태그(PlayerTag) = %s, 떨어지는 순서(DropOrder) = %d"),
 			*Entry.PlayerInfo.Tag.ToString(), Entry.PlayerInfo.DropOrder);
 	}
+
+	SyncPlayerInfoFromPlayerState();
 }
 
 void APlayGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

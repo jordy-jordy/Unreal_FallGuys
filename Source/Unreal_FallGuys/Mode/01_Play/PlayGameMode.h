@@ -202,6 +202,8 @@ protected:
 	bool bNextLevelDataSetted = false;
 	// 다음 레벨로 넘어가도 되니?
 	bool bCanMoveLevel = false;
+	// 서버 트래블 활성화 됐니?
+	bool StartedServerTravel = false;
 	
 	// 스테이지 종료 기준 상태
 	EPlayerStatus MODE_CurStageResultStatus = EPlayerStatus::NONE;
