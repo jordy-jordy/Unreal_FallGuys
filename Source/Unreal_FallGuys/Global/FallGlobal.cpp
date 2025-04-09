@@ -322,8 +322,8 @@ EPlayerStatus UFallGlobal::GetStageEndCondition()
 // PlayGameMode : 레벨 이동 해도 된다는 걸 알려주는 함수
 void UFallGlobal::SetCanMoveLevel(bool _Value)
 {
-	APlayGameMode* PlayMode = GWorld->GetAuthGameMode<APlayGameMode>();
-	PlayMode->SetCanMoveLevel(_Value);
+	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
+	FallState->S_SetCanMoveLevel(_Value);
 }
 
 // PlayGameState : 게임 시작했니?

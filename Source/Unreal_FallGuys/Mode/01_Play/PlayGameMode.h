@@ -8,9 +8,6 @@
 #include <Global/GlobalEnum.h>
 #include <Mode/01_Play/PlayEnum.h>
 
-// 델리게이트 테스트
-#include <Global/FallGlobal.h>
-
 #include "PlayGameMode.generated.h"
 
 
@@ -24,14 +21,6 @@ class UNREAL_FALLGUYS_API APlayGameMode : public AGameMode
 	
 public:
 	APlayGameMode();
-
-	// 델리게이트 테스트
-	void RegisterWidgetDelegate(FName _Name, FWidgetDelegate InDelegate);
-
-	void WidgetDelegate(FName _Name);
-
-	TMap<FName, FWidgetDelegate> WidgetDelegates;
-	// 델리게이트 테스트
 
 #pragma region PlayGameMode :: 핵심 함수
 public: 
@@ -175,7 +164,10 @@ protected:
 public:
 	// 레벨 이동 해도 되~
 	UFUNCTION(Category = "PLAYGAMEMODE :: GAME")
-	void SetCanMoveLevel(bool _Value) { bCanMoveLevel = _Value; }
+	void SetCanMoveLevel(bool _Value)
+	{
+		bCanMoveLevel = _Value;
+	}
 
 protected:
 	// 게임 종료 트리거

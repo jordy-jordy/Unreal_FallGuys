@@ -9,24 +9,35 @@
 #include "Mode/01_Play/UI/PlayMainWidget.h"
 
 // 델리게이트 테스트
-#include "Mode/01_Play/PlayGameMode.h"
+//#include "Mode/01_Play/PlayGameMode.h"
+#include "Mode/01_Play/PlayGameState.h"
 
 
 void UPlayStartCountWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	// 델리게이트 테스트 : 원본
+	//APlayGameMode* PlayGameMode = Cast<APlayGameMode>(GetWorld()->GetAuthGameMode());
+	//if (nullptr == PlayGameMode)
+	//{
+	//	return;
+	//}
+	//else
+	//{
+	//	PlayGameMode->RegisterWidgetDelegate(TEXT("StartCount"), 
+	//		FWidgetDelegate::CreateUObject(this, &UPlayStartCountWidget::StartCountWidget)
+	//	);
+	//}
 	// 델리게이트 테스트
-	APlayGameMode* PlayGameMode = Cast<APlayGameMode>(GetWorld()->GetAuthGameMode());
-	if (nullptr == PlayGameMode)
+
+	// 델리게이트 테스트 : 250409 이현정 : 동기화를 위해 GameState로 이동
+	APlayGameState* FallState = GetWorld()->GetGameState<APlayGameState>();
+	if (FallState)
 	{
-		return;
-	}
-	else
-	{
-		PlayGameMode->RegisterWidgetDelegate(TEXT("StartCount"), 
-			FWidgetDelegate::CreateUObject(this, &UPlayStartCountWidget::StartCountWidget)
-		);
+		FallState->RegisterWidgetDelegate(
+			TEXT("StartCount"),
+			FWidgetDelegate::CreateUObject(this, &UPlayStartCountWidget::StartCountWidget));
 	}
 	// 델리게이트 테스트
 }

@@ -9,8 +9,25 @@
 #include <Global/GlobalEnum.h>
 #include <Global/Data/GlobalDataTable.h>
 #include <Global/BaseGameInstance.h>
-#include <Level/01_Play/Actor/ImMovable/JumpShowDown/ShowDownStage.h>
+#include <Mode/01_Play/PlayGameMode.h>
 
+
+void APlayGameState::RegisterWidgetDelegate(FName _Name, FWidgetDelegate InDelegate)
+{
+	if (WidgetDelegates.Contains(_Name))
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("GameState :: 위젯 델리게이트에 %s가 이미 있습니다."), *_Name.ToString());
+	}
+	WidgetDelegates.Add(_Name, InDelegate);
+}
+
+void APlayGameState::MCAST_WidgetDelegate_Implementation(FName _Name)
+{
+	if (WidgetDelegates.Contains(_Name))
+	{
+		WidgetDelegates[_Name].ExecuteIfBound();
+	}
+}
 
 APlayGameState::APlayGameState()
 {
@@ -291,6 +308,15 @@ void APlayGameState::SetDropOrder_Implementation()
 	}
 
 	SyncPlayerInfoFromPlayerState();
+}
+
+void APlayGameState::S_SetCanMoveLevel_Implementation(bool _b)
+{
+	APlayGameMode* PlayMode = Cast<APlayGameMode>(GetWorld()->GetAuthGameMode());
+	if (PlayMode)
+	{
+		PlayMode->SetCanMoveLevel(_b);
+	}
 }
 
 void APlayGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

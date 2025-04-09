@@ -7,8 +7,6 @@
 #include "EngineUtils.h"
 
 #include <Unreal_FallGuys.h>
-// 델리게이트 테스트
-//#include <Global/FallGlobal.h>
 #include <Global/FallConst.h>
 #include <Global/BaseGameInstance.h>
 #include <Mode/01_Play/PlayGameState.h>
@@ -19,26 +17,6 @@
 APlayGameMode::APlayGameMode()
 {
 }
-
-// 델리게이트 테스트
-void APlayGameMode::RegisterWidgetDelegate(FName _Name, FWidgetDelegate InDelegate)
-{
-	if (WidgetDelegates.Contains(_Name))
-	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: WIdgetDelegates에 %s가 이미 있습니다."), *_Name.ToString());
-	}
-
-	WidgetDelegates.Add(_Name, InDelegate);
-}
-
-void APlayGameMode::WidgetDelegate(FName _Name)
-{
-	if (WidgetDelegates.Contains(_Name))
-	{
-		WidgetDelegates[_Name].ExecuteIfBound();
-	}
-}
-// 델리게이트 테스트
 
 #pragma region PlayGameMode :: PreLogin :: 플레이어 접속시 가장 먼저 실행
 void APlayGameMode::PreLogin(
@@ -321,7 +299,7 @@ void APlayGameMode::CheckStartConditions()
 			{
 				// 카운트 다운 핸들 활성화
 				StartCountdownTimer();
-				WidgetDelegate(TEXT("StartCount"));
+				FallState->MCAST_WidgetDelegate(TEXT("StartCount"));
 				bCountDownStarted = true;
 			}
 			// 카운트 다운이 안끝났으면 리턴
@@ -677,7 +655,8 @@ void APlayGameMode::SetEndCondition_Common()
 		// 레벨 종료 UI 띄워
 		if (!bShowedLevelEndUI)
 		{
-			WidgetDelegate(TEXT("GameOver"));
+			APlayGameState* FallState = GetGameState<APlayGameState>();
+			FallState->MCAST_WidgetDelegate(TEXT("GameOver"));
 			bShowedLevelEndUI = true;
 		}
 

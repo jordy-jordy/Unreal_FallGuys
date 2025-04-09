@@ -5,6 +5,9 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameState.h"
 
+// 위젯 델리게이트 타입 포함
+#include <Global/FallGlobal.h> // FWidgetDelegate 정의된 곳
+
 #include <Mode/01_Play/PlayEnum.h>
 #include <Mode/01_Play/PlayPlayerState.h>
 
@@ -45,6 +48,15 @@ class UNREAL_FALLGUYS_API APlayGameState : public AGameState
 public:
 	APlayGameState();
 	virtual void BeginPlay() override;
+
+	// 위젯 델리게이트 맵
+	TMap<FName, FWidgetDelegate> WidgetDelegates;
+
+	// 델리게이트 등록 함수
+	void RegisterWidgetDelegate(FName _Name, FWidgetDelegate InDelegate);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MCAST_WidgetDelegate(FName _Name);
 
 #pragma region PlayGameState :: 플레이어 관련
 public:
@@ -193,6 +205,10 @@ public:
 
 	// 게임 시작했니?
 	bool GetGameStateGameStarted() { return bGameStateGameStarted; }
+
+	UFUNCTION(Server, Reliable)
+	void S_SetCanMoveLevel(bool _b);
+	void S_SetCanMoveLevel_Implementation(bool _b);
 
 protected:
 	// 랜덤 레벨 네임
