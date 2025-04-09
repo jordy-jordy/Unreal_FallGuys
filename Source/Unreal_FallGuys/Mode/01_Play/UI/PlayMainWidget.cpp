@@ -8,6 +8,9 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Mode/01_Play/PlayGameState.h"
 
+// 임시
+#include "Mode/01_Play/PlayPlayerState.h"
+#include "Mode/01_Play/PlayCharacter.h"
 
 void UPlayMainWidget::NativeConstruct()
 {
@@ -186,22 +189,22 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 			EStageType StageType = GameState->GetCurStageType();
 
 			UPlayUserWidget* ClearCount = FindWidget(EPlayUIType::PlayClearCount);
-			//UPlayUserWidget* StartCount = FindWidget(EPlayUIType::PlayStartCount);
 			UPlayUserWidget* PlayScore = FindWidget(EPlayUIType::PlayScore);
+			UPlayUserWidget* SpectatorResult = FindWidget(EPlayUIType::PlaySpectatorResult);
 
 			if (StageType == EStageType::SOLO)
 			{
 				ClearCount->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 			}
-			else if (StageType == EStageType::TEAM)
+			if (StageType == EStageType::TEAM)
 			{
 				PlayScore->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 			}
-			// 임시(나중에 주석 지우기)
-			//if (true == UFallConst::UseCountDown)
-			//{
-			//	StartCount->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			//}
+
+			if (true == IsFailPlayer() && EStagePhase::STAGE_1 != GameState->GetCurStagePhase())
+			{
+				SpectatorResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			}
 
 			break;
 		}
@@ -283,4 +286,39 @@ UPlayUserWidget* UPlayMainWidget::FindWidget(EPlayUIType _Type, int _Index/* = 0
 	}
 
 	return nullptr;
+}
+
+// 임시
+bool UPlayMainWidget::IsFailPlayer()
+{
+	APlayGameState* PlayGameState = Cast<APlayGameState>(GetWorld()->GetGameState());
+
+	if (nullptr == PlayGameState)
+	{
+		return false;
+	}
+
+	TArray<FPlayerInfoEntry> FailPlayers = PlayGameState->FailPlayerInfoArray;
+
+	if (true == FailPlayers.IsEmpty())
+	{
+		return false;
+	}
+
+	for (FPlayerInfoEntry& FailPlayer : FailPlayers)
+	{
+		//APlayCharacter* Player = Cast<APlayCharacter>(GetOwningPlayerPawn());
+
+		//APlayPlayerState* PlayPlayerState = Cast<APlayPlayerState>(Player->GetPlayerState());
+		EPlayerStatus CurPlayerStatus = FailPlayer.PlayerInfo.Status;
+
+		if (EPlayerStatus::FAIL == CurPlayerStatus)
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+	return false;
 }

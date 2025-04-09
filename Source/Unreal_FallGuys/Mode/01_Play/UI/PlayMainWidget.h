@@ -59,6 +59,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	UPlayUserWidget* FindWidget(EPlayUIType _Type, int _Index = 0);
+
+	UFUNCTION(BlueprintCallable)
+	bool IsFailPlayer();
 	
 protected:
 

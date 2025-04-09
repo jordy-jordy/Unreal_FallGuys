@@ -2,8 +2,14 @@
 
 
 #include "Mode/01_Play/UI/PlayClearCountWidget.h"
+#include "Global/FallGlobal.h"
 #include "Mode/01_Play/PlayGameState.h"
 
+
+void UPlayClearCountWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+}
 
 int UPlayClearCountWidget::GetWholePlayerNum()
 {
@@ -14,7 +20,12 @@ int UPlayClearCountWidget::GetWholePlayerNum()
 		return 0;
 	}
 
-	return PlayGameState->GetGameStateFinishPlayer();
+	if (true == UFallGlobal::GetSettedGoalCountDone())
+	{
+		return PlayGameState->GetGameStateFinishPlayer();
+	}
+
+	return 0;
 }
 
 int UPlayClearCountWidget::GetTargetPlayerNum()
@@ -29,3 +40,4 @@ int UPlayClearCountWidget::GetTargetPlayerNum()
 	// 생존게임레벨일 때는 달라질수도?
 	return PlayGameState->GetGameStateCurFinishPlayer();
 }
+
