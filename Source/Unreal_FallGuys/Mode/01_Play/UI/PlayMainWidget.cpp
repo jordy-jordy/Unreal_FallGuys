@@ -201,7 +201,7 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 				PlayScore->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 			}
 
-			if (true == IsFailPlayer())
+			if (true == IsFailPlayer() && EStagePhase::STAGE_1 != GameState->GetCurStagePhase())
 			{
 				SpectatorResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 			}
