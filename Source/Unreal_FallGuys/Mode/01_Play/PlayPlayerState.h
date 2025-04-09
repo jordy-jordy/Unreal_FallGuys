@@ -87,7 +87,7 @@ public:
     void SetTeam_Implementation(ETeamType _Team);
 
     // 플레이어 상태 설정
-    UFUNCTION(Reliable, server, BlueprintCallable, Category = "PLAYER INFO")
+    UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "PLAYER INFO")
     void SetPlayerStatus(EPlayerStatus _NewStatus);
     void SetPlayerStatus_Implementation(EPlayerStatus _NewStatus);
 
@@ -110,7 +110,7 @@ public:
 
 protected:
     // 실시간 상태 동기화를 위한 변수
-    UPROPERTY(ReplicatedUsing = OnRep_PlayerStatus)
+    UPROPERTY(Replicated)
     EPlayerStatus PlayerStatus = EPlayerStatus::NONE;
 
     // 실시간 떨어지는 순서 동기화를 위한 변수
