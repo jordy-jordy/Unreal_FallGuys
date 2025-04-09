@@ -197,6 +197,9 @@ void APlayGameMode::PostLogin(APlayerController* _NewPlayer)
 		}
 	}
 
+	// 게임 인스턴스에서 스테이지의 종료 조건을 가져옴
+	MODE_CurStageResultStatus = GameInstance->InsGetStageEndCondition();
+
 	// 게임 시작 인원 수에 따른 목표 횟수 설정
 	ControllFinishPlayer();
 
@@ -225,40 +228,66 @@ void APlayGameMode::CallLevelCinematicStart(APlayGameState* _PlayState)
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: 레벨 시네마틱이 실행됩니다."));
 }
 
-// 목표 골인 인원 수 제어
-void APlayGameMode::ControllFinishPlayer()
+// 상태가 디폴트인 플레이어 수
+int32 APlayGameMode::GetDefaultPlayerCount()
 {
-	int32 MinCount = UFallConst::MinPlayerCount;
+	APlayGameState* FallState = GetGameState<APlayGameState>();
+	if (!FallState)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: GetDefaultPlayerCount :: GameState가 nullptr 입니다."));
+		return 0;
+	}
+
+	int32 Count = 0;
+	for (APlayerState* PS : FallState->PlayerArray)
+	{
+		APlayPlayerState* PState = Cast<APlayPlayerState>(PS);
+		if (PState && PState->GetPlayerStateStatus() == EPlayerStatus::DEFAULT)
+		{
+			++Count;
+		}
+	}
+	return Count;
+}
+
+// 목표 골인 인원 수 : 레이싱
+void APlayGameMode::FinishPlayer_Race()
+{
+	int32 DefaultPlayerCount = GetDefaultPlayerCount();
 
 	switch (MODE_CurStagePhase)
 	{
 	case EStagePhase::STAGE_1:
-		if (MinCount <= 3)
+		if (DefaultPlayerCount <= 2)
+		{
+			SetFinishPlayerCount(1);
+		}
+		else if (DefaultPlayerCount == 3)
 		{
 			SetFinishPlayerCount(2);
 		}
-		else if (MinCount <= 5)
+		else if (DefaultPlayerCount <= 5)
 		{
-			SetFinishPlayerCount(2);
+			SetFinishPlayerCount(3);
 		}
 		else
 		{
-			SetFinishPlayerCount(MinCount / 2);
+			SetFinishPlayerCount(DefaultPlayerCount / 2);
 		}
 		break;
 
 	case EStagePhase::STAGE_2:
-		if (MinCount <= 2)
+		if (DefaultPlayerCount <= 2)
 		{
 			SetFinishPlayerCount(1);
 		}
-		else if (MinCount <= 5)
+		else if (DefaultPlayerCount <= 5)
 		{
 			SetFinishPlayerCount(2);
 		}
 		else
 		{
-			SetFinishPlayerCount((MinCount / 2) / 2);
+			SetFinishPlayerCount((DefaultPlayerCount / 2) / 2);
 		}
 		break;
 
@@ -269,6 +298,77 @@ void APlayGameMode::ControllFinishPlayer()
 	case EStagePhase::FINISHED:
 	default:
 		break;
+	}
+}
+
+// 목표 골인 인원 수 : 생존
+void APlayGameMode::FinishPlayer_Survive()
+{
+	int32 DefaultPlayerCount = GetDefaultPlayerCount();
+
+	switch (MODE_CurStagePhase)
+	{
+	case EStagePhase::STAGE_1:
+		if (DefaultPlayerCount <= 1)
+		{
+			SetFinishPlayerCount(0);
+		}
+		else if (DefaultPlayerCount <= 3)
+		{
+			SetFinishPlayerCount(1);
+		}
+		else if (DefaultPlayerCount <= 5)
+		{
+			SetFinishPlayerCount(2);
+		}
+		else
+		{
+			SetFinishPlayerCount(DefaultPlayerCount / 2);
+		}
+		break;
+
+	case EStagePhase::STAGE_2:
+		if (DefaultPlayerCount <= 1)
+		{
+			SetFinishPlayerCount(0);
+		}
+		else if (DefaultPlayerCount <= 2)
+		{
+			SetFinishPlayerCount(1);
+		}
+		else
+		{
+			SetFinishPlayerCount((DefaultPlayerCount / 2) / 2);
+		}
+		break;
+
+	case EStagePhase::STAGE_3:
+		if (DefaultPlayerCount <= 1)
+		{
+			SetFinishPlayerCount(0);
+		}
+		else
+		{
+			SetFinishPlayerCount(1);
+		}
+		break;
+
+	case EStagePhase::FINISHED:
+	default:
+		break;
+	}
+}
+
+// 목표 골인 인원 수 제어
+void APlayGameMode::ControllFinishPlayer()
+{
+	if (MODE_CurStageResultStatus == EPlayerStatus::SUCCESS)
+	{
+		FinishPlayer_Race();
+	}
+	else if (MODE_CurStageResultStatus == EPlayerStatus::FAIL)
+	{
+		FinishPlayer_Survive();
 	}
 }
 #pragma endregion
@@ -305,8 +405,6 @@ void APlayGameMode::BeginPlay()
 	// 게임 스테이트에 스테이지 페이즈를 전달
 	FallState->SetCurStagePhase(MODE_CurStagePhase);
 
-	// 게임 인스턴스에서 스테이지의 종료 조건을 가져옴
-	MODE_CurStageResultStatus = GameInstance->InsGetStageEndCondition();
 
 	// 게임 시작을 위한 조건을 주기적으로 체크
 	GetWorldTimerManager().SetTimer(

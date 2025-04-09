@@ -92,8 +92,17 @@ protected:
 	UFUNCTION()
 	void CallLevelCinematicStart(APlayGameState* _PlayState);
 
+	// 상태가 디폴트인 플레이어 수
+	int32 GetDefaultPlayerCount();
+
 	// 목표 골인 인원 수 제어
 	void ControllFinishPlayer();
+
+	// 목표 골인 인원 수 : 레이싱
+	void FinishPlayer_Race();
+
+	// 목표 골인 인원 수 : 생존
+	void FinishPlayer_Survive();
 
 	// 게임 시작 조건 검사 함수
 	void CheckStartConditions();
