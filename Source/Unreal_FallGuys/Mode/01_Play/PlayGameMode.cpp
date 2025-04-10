@@ -57,118 +57,33 @@ void APlayGameMode::PostLogin(APlayerController* _NewPlayer)
 	// 게임 스테이트, 플레이어 스테이트, 게임 인스턴스 세팅
 	if (!CheckEssentialObjects(_NewPlayer, FallState, PlayerState, GameInstance)) { return; }
 
-	FString PlayerUniqueID = PlayerState->GetUniqueId()->ToString(); // UniqueID 얻음
-
-	// 결과 화면인지 확인
-	bMODEIsResultLevel = GameInstance->bIsResultLevel;
-	FallState->SetGameStateIsResultLevel(bMODEIsResultLevel);
-
-	// 첫 스테이지인지 확인
-	if (GameInstance->IsMovedLevel)
-	{
-		FPlayerInfo RestoredInfo;
-		GameInstance->InsGetBackedUpPlayerInfo(PlayerUniqueID, RestoredInfo);
-		if (bMODEIsResultLevel) // 결과 화면
-		{
-			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: 결과 화면입니다. 기존 플레이어 정보를 복구 합니다."));
-			PlayerState->PlayerInfo = RestoredInfo;
-		}
-		else if (!bMODEIsResultLevel) // 게임 스테이지
-		{
-			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: 게임 스테이지 입니다. 기존 플레이어 정보를 리셋 합니다."));
-			if (RestoredInfo.Status == EPlayerStatus::SUCCESS)
-			{
-				RestoredInfo.Status = EPlayerStatus::DEFAULT;
-			}
-			PlayerState->PlayerInfo = RestoredInfo;
-		}
-		else
-		{
-			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: 있을 수 없는 조건. 로직 확인 필요"));
-		}
-
-		// 태그 복구
-		_NewPlayer->Tags.Add(RestoredInfo.Tag);
-		FString TagString = (_NewPlayer->Tags.Num() > 0) ? _NewPlayer->Tags[0].ToString() : TEXT("태그 없음");
-
-		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: PostLogin :: 플레이어 정보 로드 완료 - UniqueID = %s, Tag = %s"),
-			*RestoredInfo.UniqueID, *TagString);
-	}
-	else
-	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: 첫 스테이지 입니다. 새 플레이어 정보를 세팅합니다."));
-
-		// 태그 생성
-		FName UniqueTag = FName(*FString::Printf(TEXT("Player%d"), FallState->PlayerInfoArray.Num()));
-
-		// 중복 체크 후 추가
-		if (!_NewPlayer->Tags.Contains(UniqueTag))
-		{
-			_NewPlayer->Tags.Add(UniqueTag);
-		}
-		else
-		{
-			UE_LOG(FALL_DEV_LOG, Warning, TEXT("중복된 태그가 감지되었습니다: %s"), *UniqueTag.ToString());
-		}
-
-		// 첫 번째 태그가 있으면 사용, 없으면 기본값
-		FString TagString = (_NewPlayer->Tags.Num() > 0) ? _NewPlayer->Tags[0].ToString() : TEXT("NoTag");
-
-		// 닉네임 설정
-		FString PlayerNickname = GameInstance->InsGetNickname();
-
-		// 정보 세팅 (FName → FString 변환 후 전달)
-		PlayerState->SetPlayerInfo(UniqueTag, PlayerNickname);
-
-		// 로그 출력
-		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: PostLogin :: 신규 플레이어 정보 세팅 - UniqueID = %s, Tag = %s"),
-			*PlayerState->PlayerInfo.UniqueID, *TagString);
-	}
-
-	// 접속 여부 bool값 true로 변경
-	GameInstance->InsSetbIsConnectedTrue();
-
 	// 인원 카운팅
 	FallState->AddConnectedPlayers();
 	int ConnectingPlayer = FallState->GetConnectedPlayers();
 	UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: PostLogin :: 새로운 플레이어가 접속 했습니다. 현재 접속 인원 : %d"), ConnectingPlayer);
 
+	// 결과 레벨인지 확인
+	bMODEIsResultLevel = GameInstance->bIsResultLevel;
+	FallState->SetGameStateIsResultLevel(bMODEIsResultLevel);
+
+	// 이전 스테이지에서 넘어온 경우 복원, 아니면 초기화
+	if (GameInstance->IsMovedLevel)
+	{
+		RestorePlayerInfo(_NewPlayer, PlayerState, GameInstance);
+	}
+	else
+	{
+		InitPlayerInfo(_NewPlayer, PlayerState, FallState, GameInstance);
+	}
+
+	// 접속 여부 bool값 true로 변경
+	GameInstance->InsSetbIsConnectedTrue();
+
 	// 인원 수 체크
 	CheckNumberOfPlayer(FallState);
-	if (true == bNumberOfPlayer)
-	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: 게임 플레이를 위한 인원이 충족되었습니다."));
-
-		// 결과 화면이 아닌 경우에만 시네마틱 시작
-		if (!bMODEIsResultLevel)
-		{
-			// 인원수가 찼을 시 설정한 시간 뒤에 시네마틱 시작
-			FTimerDelegate LevelCinematicReadyTimer;
-			LevelCinematicReadyTimer.BindUFunction(this, FName("CallLevelCinematicStart"), FallState);
-
-			GetWorldTimerManager().SetTimer(
-				SetLevelCinematicStartTimer,
-				LevelCinematicReadyTimer,
-				UFallConst::LevelCinematicReady,   // 설정된 시간 뒤에 실행
-				false   // 반복 실행 false
-			);
-			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: %.0f초 뒤에 레벨 시네마틱이 실행됩니다."), UFallConst::LevelCinematicReady);
-		}
-		else
-		{
-			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: 결과 화면이므로 레벨 시네마틱이 실행되지 않습니다."));
-		}
-
-		if (true == UFallConst::UsePlayerLimit) // 인원이 찼고 인원 제한을 사용하는 경우 접속 제한 활성화
-		{
-			bInvalidConnect = true;
-			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: 접속 제한을 사용하므로 이후 접속이 제한됩니다."));
-		}
-		else
-		{
-			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: 접속 제한을 사용하지 않습니다. 플레이어의 추가 접속이 가능합니다."));
-		}
-	}
+	
+	// 시네마틱과 접속 제한 세팅 호출
+	StartCinematicIfReady(FallState);
 
 	// 게임 인스턴스에서 스테이지의 종료 조건을 가져옴
 	MODE_CurStageResultStatus = GameInstance->InsGetStageEndCondition();
@@ -205,6 +120,59 @@ bool APlayGameMode::CheckEssentialObjects(APlayerController* _NewPlayer, APlayGa
 	return true;
 }
 
+// 플레이어 태그 생성
+FName APlayGameMode::GenerateUniquePlayerTag(APlayerController* _NewPlayer, int32 _PlayerIndex)
+{
+	FName UniqueTag = FName(*FString::Printf(TEXT("Player%d"), _PlayerIndex));
+
+	if (!_NewPlayer->Tags.Contains(UniqueTag))
+	{
+		_NewPlayer->Tags.Add(UniqueTag);
+	}
+	else
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("GenerateUniquePlayerTag :: 중복된 태그 감지: %s"), *UniqueTag.ToString());
+	}
+
+	return UniqueTag;
+}
+
+// 플레이어 인포 로그
+void APlayGameMode::LogPlayerInfo(const FString& _Prefix, const FPlayerInfo& _Info, APlayerController* _Controller)
+{
+	const FString TagFromInfo = _Info.Tag.IsNone() ? TEXT("NoTag") : _Info.Tag.ToString();
+
+	FString TagFromController = TEXT("NoTag");
+	if (_Controller && _Controller->Tags.Num() > 0)
+	{
+		TagFromController = _Controller->Tags[0].ToString();
+	}
+
+	UE_LOG(FALL_DEV_LOG, Log,
+		TEXT("%s - UniqueID = %s, Tag(Info) = %s, Tag(Controller) = %s"),
+		*_Prefix,
+		*_Info.UniqueID,
+		*TagFromInfo,
+		*TagFromController);
+}
+
+// 세로운 플레이어 정보 세팅
+void APlayGameMode::InitPlayerInfo(APlayerController* _NewPlayer, APlayPlayerState* _PlayerState, APlayGameState* _FallState, UBaseGameInstance* _GameInstance)
+{
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: 첫 스테이지 - 신규 플레이어 정보 세팅"));
+
+	// 플레이어 태그 생성
+	FName UniqueTag = GenerateUniquePlayerTag(_NewPlayer, _FallState->PlayerInfoArray.Num());
+
+	// 플레이어 닉네임 가져옴
+	FString PlayerNickname = _GameInstance->InsGetNickname();
+
+	// 플레이어 정보 세팅
+	_PlayerState->SetPlayerInfo(UniqueTag, PlayerNickname);
+
+	LogPlayerInfo(TEXT("PlayGameMode :: PostLogin :: 신규 플레이어 정보 세팅"), _PlayerState->PlayerInfo, _NewPlayer);
+}
+
 // 기존 플레이어 정보 복구
 void APlayGameMode::RestorePlayerInfo(APlayerController* _NewPlayer, APlayPlayerState* _PlayerState, UBaseGameInstance* _GameInstance)
 {
@@ -215,51 +183,23 @@ void APlayGameMode::RestorePlayerInfo(APlayerController* _NewPlayer, APlayPlayer
 
 	if (bMODEIsResultLevel)
 	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PostLogin :: 결과 화면 - 기존 플레이어 정보 복구"));
-		_PlayerState->PlayerInfo = RestoredInfo;
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode:: PostLogin :: 결과 화면 - 기존 플레이어 정보 복구"));
 	}
 	else
 	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PostLogin :: 게임 스테이지 - 플레이어 정보 리셋"));
 		if (RestoredInfo.Status == EPlayerStatus::SUCCESS)
 		{
 			RestoredInfo.Status = EPlayerStatus::DEFAULT;
 		}
-		_PlayerState->PlayerInfo = RestoredInfo;
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode:: PostLogin :: 게임 스테이지 - 플레이어 정보 리셋"));
 	}
 
+	// 인포 복구
+	_PlayerState->PlayerInfo = RestoredInfo;
 	_NewPlayer->Tags.Add(RestoredInfo.Tag);
-	FString TagString = (_NewPlayer->Tags.Num() > 0) ? _NewPlayer->Tags[0].ToString() : TEXT("태그 없음");
 
-	UE_LOG(FALL_DEV_LOG, Log, TEXT("PostLogin :: 정보 복구 완료 - UniqueID = %s, Tag = %s"),
-		*RestoredInfo.UniqueID, *TagString);
+	LogPlayerInfo(TEXT("PlayGameMode :: PostLogin :: 플레이어 정보 복구 완료"), RestoredInfo, _NewPlayer);
 }
-
-// 세로운 플레이어 정보 세팅
-void APlayGameMode::InitPlayerInfo(APlayerController* _NewPlayer, APlayPlayerState* _PlayerState, APlayGameState* _FallState, UBaseGameInstance* _GameInstance)
-{
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PostLogin :: 첫 스테이지 - 신규 플레이어 정보 세팅"));
-
-	FName UniqueTag = FName(*FString::Printf(TEXT("Player%d"), _FallState->PlayerInfoArray.Num()));
-	if (!_NewPlayer->Tags.Contains(UniqueTag))
-	{
-		_NewPlayer->Tags.Add(UniqueTag);
-	}
-	else
-	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("중복된 태그 감지: %s"), *UniqueTag.ToString());
-	}
-
-	FString TagString = (_NewPlayer->Tags.Num() > 0) ? _NewPlayer->Tags[0].ToString() : TEXT("NoTag");
-	FString PlayerNickname = _GameInstance->InsGetNickname();
-
-	_PlayerState->SetPlayerInfo(UniqueTag, PlayerNickname);
-
-	UE_LOG(FALL_DEV_LOG, Log, TEXT("PostLogin :: 신규 정보 세팅 - UniqueID = %s, Tag = %s"),
-		*_PlayerState->PlayerInfo.UniqueID, *TagString);
-}
-
-
 
 // 인원 충족 했는지 체크
 void APlayGameMode::CheckNumberOfPlayer(APlayGameState* _PlayState)
@@ -271,6 +211,44 @@ void APlayGameMode::CheckNumberOfPlayer(APlayGameState* _PlayState)
 	else
 	{
 		bNumberOfPlayer = false;
+	}
+}
+
+// 시네마틱과 접속 제한 세팅 호출
+void APlayGameMode::StartCinematicIfReady(APlayGameState* _FallState)
+{
+	// 인원수가 아직 안 찼으면 리턴
+	if (bNumberOfPlayer == false) { return; }
+
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PostLogin :: 게임 플레이를 위한 인원이 충족되었습니다."));
+
+	if (!bMODEIsResultLevel)
+	{
+		FTimerDelegate LevelCinematicReadyTimer;
+		LevelCinematicReadyTimer.BindUFunction(this, FName("CallLevelCinematicStart"), _FallState);
+
+		GetWorldTimerManager().SetTimer(
+			SetLevelCinematicStartTimer,
+			LevelCinematicReadyTimer,
+			UFallConst::LevelCinematicReady,
+			false
+		);
+
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PostLogin :: %.0f초 뒤 레벨 시네마틱 실행 예정"), UFallConst::LevelCinematicReady);
+	}
+	else
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PostLogin :: 결과 화면이므로 레벨 시네마틱 실행 안함"));
+	}
+
+	if (true == UFallConst::UsePlayerLimit)
+	{
+		bInvalidConnect = true;
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PostLogin :: 접속 제한 활성화됨 - 추가 접속 불가"));
+	}
+	else
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PostLogin :: 접속 제한 비활성화 - 추가 접속 허용"));
 	}
 }
 
