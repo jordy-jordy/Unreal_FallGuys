@@ -150,11 +150,12 @@ void APlayGameMode::LogPlayerInfo(const FString& _Prefix, const FPlayerInfo& _In
 	}
 
 	UE_LOG(FALL_DEV_LOG, Log,
-		TEXT("%s - UniqueID = %s, Tag(Info) = %s, Tag(Controller) = %s"),
+		TEXT("%s - UniqueID = %s, Tag(Info) = %s, Tag(Controller) = %s, DropOrder = %d"),
 		*_Prefix,
 		*_Info.UniqueID,
 		*TagFromInfo,
-		*TagFromController);
+		*TagFromController,
+		_Info.DropOrder);
 }
 
 // 세로운 플레이어 정보 세팅

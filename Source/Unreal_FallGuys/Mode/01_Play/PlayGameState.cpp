@@ -303,7 +303,7 @@ void APlayGameState::SetDropOrder_Implementation()
 	// 디버그 로그
 	for (const FPlayerInfoEntry& Entry : FailPlayerInfoArray)
 	{
-		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameState :: SetDropOrder :: 실패한 플레이어의 태그(PlayerTag) = %s, 떨어지는 순서(DropOrder) = %d"),
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: SetDropOrder :: 실패한 플레이어의 태그(PlayerTag) = %s, 떨어지는 순서(DropOrder) = %d"),
 			*Entry.PlayerInfo.Tag.ToString(), Entry.PlayerInfo.DropOrder);
 	}
 
