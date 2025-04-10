@@ -62,6 +62,9 @@ void ATeamPlayGameMode::Tick(float DeltaSeconds)
 	// 서버만 실행
 	if (!HasAuthority()) { return; }
 
+	// 게임이 시작되지 않았다면 리턴하도록 해
+	if (!bGameStarted) { return; }
+
 	// 팀전이 아니면 여기서 끝
 	if (MODE_CurStageType != EStageType::TEAM) { return; }
 
