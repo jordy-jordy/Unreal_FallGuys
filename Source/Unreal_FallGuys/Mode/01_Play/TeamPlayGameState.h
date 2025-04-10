@@ -23,7 +23,7 @@ public:
 
 	// 블루팀 점수 : TeamPlayGameMode에서 호출됨
 	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "SCORE")
-	void SetBLUETeamScore(int32 _NumberOfEgg);
+	void SetBLUETeamScore(int32 _Score);
 	void SetBLUETeamScore_Implementation(int32 _Score);
 
 	// 레드팀 점수 반환
@@ -44,19 +44,35 @@ protected:
 
 #pragma region TeamPlayGameState :: 스테이지 제한 시간 관련
 public:
-	// Stage 제한 시간 반환
+	// 스테이지 제한 시간 반환
 	UFUNCTION(BlueprintCallable, Category = "LEVEL LIMIT TIME")
 	float GetStageLimitTime() { return STATE_StageLimitTime; }
 
-	// Stage 제한 시간 결정 함수
+	// 스테이지 제한 시간 세팅
 	UFUNCTION(BlueprintCallable, Reliable, NetMulticast, Category = "LEVEL LIMIT TIME")
 	void SetStageLimitTime(float _Time);
 	void SetStageLimitTime_Implementation(float _Time);
 
+	// 스테이지 남은 시간 반환
+	UFUNCTION(BlueprintCallable, Category = "LEVEL LIMIT TIME")
+	float GetRemainingTime() const { return STATE_RemainingTime; }
+
+	// 스테이지 남은 시간 세팅
+	UFUNCTION(BlueprintCallable, Reliable, Server, WithValidation, Category = "LEVEL LIMIT TIME")
+	void SetRemainingTime(float _Time);
+	void SetRemainingTime_Implementation(float _Time);
+
 protected:
-	// Stage 제한 시간 - 외부에서 값 가져옴
+	// 스테이지 제한 시간 - 외부에서 값 세팅
 	UPROPERTY(Replicated)
 	float STATE_StageLimitTime;
+
+	// 스테이지 남은 시간 - 외부에서 값 세팅
+	UPROPERTY(ReplicatedUsing = OnRep_RemainingTime)
+	float STATE_RemainingTime;
+
+	UFUNCTION()
+	void OnRep_RemainingTime();
 
 #pragma endregion
 
