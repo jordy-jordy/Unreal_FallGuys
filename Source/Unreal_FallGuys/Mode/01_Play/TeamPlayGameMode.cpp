@@ -162,13 +162,13 @@ void ATeamPlayGameMode::OnStageLimitTimeOver()
 // 점수에 따라 승리팀, 패배팀 구분
 void ATeamPlayGameMode::DetermineWinningAndLosingTeams()
 {
-	int32 TEAMRED = GetREDTeamScore();
-	int32 TEAMBLUE = GetBLUETeamScore();
+	ATeamPlayGameState* FallTeamState = GetGameState<ATeamPlayGameState>();
+	if (!FallTeamState) return;
 
-	APlayGameState* FallState = GetGameState<APlayGameState>();
-	if (!FallState) return;
+	int32 TEAMRED = FallTeamState->GetGameStateREDTeamScore();
+	int32 TEAMBLUE = FallTeamState->GetGameStateBLUETeamScore();
 
-	for (APlayerState* PlayerState : FallState->PlayerArray)
+	for (APlayerState* PlayerState : FallTeamState->PlayerArray)
 	{
 		APlayPlayerState* PlayPlayerState = Cast<APlayPlayerState>(PlayerState);
 		if (!PlayPlayerState) continue;
@@ -205,7 +205,7 @@ void ATeamPlayGameMode::DetermineWinningAndLosingTeams()
 	}
 
 	// 동기화
-	FallState->SyncPlayerInfoFromPlayerState();
+	FallTeamState->SyncPlayerInfoFromPlayerState();
 
 	// 로그
 	if (TEAMRED > TEAMBLUE)
