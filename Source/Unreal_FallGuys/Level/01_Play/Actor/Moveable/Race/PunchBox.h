@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Level/01_Play/Components/ObsMovementActorComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Global/Data/ResourceDataTable.h"
 #include "FallGlobal.h"
@@ -35,6 +36,10 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
+	// ActorComponent
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "ObstacleMoveComp")
+	UObsMovementActorComponent* ObstacleMoveComp;
+
 	// MeshComponent
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "PunchBox")
 	USceneComponent* RootScene;
@@ -64,23 +69,8 @@ public:
 	UStaticMeshComponent* Platform;
 
 	// Variables
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PunchBox")
-	EPunchState PunchState = EPunchState::DELAY;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PunchBox")
-	float DelayTime = 4.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PunchBox");
-	float FireSpeed;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PunchBox");
-	float RecoverSpeed;
-
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "PunchBox")
-	float LimitAngle = 700.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Physics")
-	float PhyTime = 0.0f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "PunchType")
+	EPunchState CurPunchState = EPunchState::DELAY;
 
 private:
 	// Functions
@@ -89,10 +79,4 @@ private:
 
 	UFUNCTION()
 	void SetMesh();
-
-	UFUNCTION(BlueprintCallable)
-	bool CheckFire();
-
-	UFUNCTION(BlueprintCallable)
-	bool CheckRecover();
 };
