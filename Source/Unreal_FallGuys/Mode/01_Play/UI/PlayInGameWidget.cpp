@@ -5,6 +5,10 @@
 #include "Mode/01_Play/PlayGameState.h"
 
 
+void UPlayInGameWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+}
 
 // юс╫ц
 EStagePhase UPlayInGameWidget::CurStagePhase()

@@ -10,7 +10,6 @@
 void UPlayScoreWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-
 }
 
 FString UPlayScoreWidget::GetTimeLimit_Minutes()

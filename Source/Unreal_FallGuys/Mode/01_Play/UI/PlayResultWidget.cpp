@@ -9,20 +9,17 @@ void UPlayResultWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	if ((true == GetMainWidget()->IsFailPlayer()) || (true == GetMainWidget()->IsSuccessPlayer()))
-	{
-		GetMainWidget()->AllWidgetHidden();
-	}
+	ResultAnimEvent.BindUFunction(this, FName(FString(TEXT("ResultWidget"))));
+	BindToAnimationFinished(ResultAnim, ResultAnimEvent);
 
 	PlayAnimation(ResultAnim);
-	ResultAnimEvent.BindUFunction(this, TEXT("ResultWidget"));
-	BindToAnimationFinished(ResultAnim, ResultAnimEvent);
 }
 
 void UPlayResultWidget::ResultWidget()
 {
 	GetMainWidget()->SwitchWidget(EPlayUIType::PlayInGame);
 }
+
 
 
 

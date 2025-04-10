@@ -17,6 +17,8 @@ class UNREAL_FALLGUYS_API UPlayInGameWidget : public UPlayUserWidget
 	GENERATED_BODY()
 
 public:
+	void NativeConstruct();
+
 	UFUNCTION(BlueprintCallable)
 	EStagePhase CurStagePhase();
 

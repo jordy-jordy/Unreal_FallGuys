@@ -3,3 +3,8 @@
 
 #include "Mode/01_Play/UI/PlaySpectatorResultWidget.h"
 
+
+void UPlaySpectatorResultWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+}

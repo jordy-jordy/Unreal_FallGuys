@@ -11,9 +11,12 @@
 // ¿”Ω√
 #include "Mode/01_Play/PlayPlayerState.h"
 #include "Mode/01_Play/PlayCharacter.h"
+#include "Mode/01_Play/UI/PlayResultWidget.h"
 
 void UPlayMainWidget::NativeConstruct()
 {
+	Super::NativeConstruct();
+
 	// ResultLevel¿Ã∏È ¿ß¡¨ ≤®¡ˆ∞‘
 	if (true == UFallGlobal::GetIsResultLevel())
 	{
@@ -148,7 +151,50 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 	switch (CurUIType)
 	{
 	case EPlayUIType::PlayLevelTag:
+	case EPlayUIType::PlayResult:
 		switch (EPlayUIType(_UIType))
+		{
+		case EPlayUIType::PlayInGame:
+		{
+			APlayGameState* GameState = Cast<APlayGameState>(GetWorld()->GetGameState());
+			if (nullptr == GameState)
+			{
+				return;
+			}
+
+			EStageType StageType = GameState->GetCurStageType();
+
+			UPlayUserWidget* ClearCount = FindWidget(EPlayUIType::PlayClearCount);
+			UPlayUserWidget* PlayScore = FindWidget(EPlayUIType::PlayScore);
+			UPlayUserWidget* SpectatorResult = FindWidget(EPlayUIType::PlaySpectatorResult);
+
+			if (StageType == EStageType::SOLO)
+			{
+				ClearCount->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			}
+			if (StageType == EStageType::TEAM)
+			{
+				PlayScore->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			}
+
+			if (true == IsFailPlayer() && EStagePhase::STAGE_1 != GameState->GetCurStagePhase())
+			{
+				SpectatorResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			}
+
+			if (true == IsSuccessPlayer())
+			{
+				SpectatorResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			}
+
+			break;
+		}
+		default:
+			break;
+		}
+		break;
+	//{
+		/*switch (EPlayUIType(_UIType))
 		{
 		case EPlayUIType::PlayInGame:
 		{
@@ -183,43 +229,9 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 		}
 		default:
 			break;
-		}
-		break;
-	case EPlayUIType::PlayResult:
-	{
-		switch (EPlayUIType(_UIType))
-		{
-		case EPlayUIType::PlayInGame:
-		{
-			APlayGameState* GameState = Cast<APlayGameState>(GetWorld()->GetGameState());
-			if (nullptr == GameState)
-			{
-				return;
-			}
-
-			EStageType StageType = GameState->GetCurStageType();
-
-			UPlayUserWidget* ClearCount = FindWidget(EPlayUIType::PlayClearCount);
-			UPlayUserWidget* PlayScore = FindWidget(EPlayUIType::PlayScore);
-
-			if (StageType == EStageType::SOLO)
-			{
-				ClearCount->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			}
-			if (StageType == EStageType::TEAM)
-			{
-				PlayScore->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			}
-
-			break;
-		}
-		default:
-			break;
-		}
-		break;
-	}
-	case EPlayUIType::PlayReturnHome:
-		break;
+		}*/
+	//	break;
+	//}
 	case EPlayUIType::PlayInGame:
 	{
 		switch (EPlayUIType(_UIType))
@@ -251,7 +263,6 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 
 			if (((EPlayerStatus::FAIL == CurPlayerStatus) && EStagePhase::STAGE_1 == CurStagePhase) || (EPlayerStatus::SUCCESS == CurPlayerStatus))
 			{
-				AllWidgetHidden();
 				Result->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 			}
 

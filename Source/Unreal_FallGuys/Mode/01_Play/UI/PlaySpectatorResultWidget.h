@@ -13,5 +13,8 @@ UCLASS()
 class UNREAL_FALLGUYS_API UPlaySpectatorResultWidget : public UPlayUserWidget
 {
 	GENERATED_BODY()
+
+public:
+	void NativeConstruct();
 	
 };

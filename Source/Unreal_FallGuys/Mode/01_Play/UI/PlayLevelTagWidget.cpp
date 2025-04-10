@@ -4,3 +4,7 @@
 #include "Mode/01_Play/UI/PlayLevelTagWidget.h"
 
 
+void UPlayLevelTagWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+}
