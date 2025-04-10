@@ -24,14 +24,12 @@ void ARotateSquare::BeginPlay()
 void ARotateSquare::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	MovementComponent->Spin(DeltaTime, RotateSquare);
 }
 
 void ARotateSquare::OperateMesh()
 {
 	// ActorComponent
-	MovementComponent = CreateDefaultSubobject<UMovementActorComponent>(FName("MovementComponent"));
+	ObstacleMoveComp = CreateDefaultSubobject<UObsMovementActorComponent>(FName("ObstacleMoveComp"));
 
 	// SetMesh And Location
 	RootScene = CreateDefaultSubobject<USceneComponent>(TEXT("RootScene"));

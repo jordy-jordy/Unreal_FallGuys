@@ -62,6 +62,9 @@ void ATeamPlayGameMode::Tick(float DeltaSeconds)
 	// 서버만 실행
 	if (!HasAuthority()) { return; }
 
+	// 게임이 시작되지 않았다면 리턴하도록 해
+	if (!bGameStarted) { return; }
+
 	// 팀전이 아니면 여기서 끝
 	if (MODE_CurStageType != EStageType::TEAM) { return; }
 
@@ -162,13 +165,13 @@ void ATeamPlayGameMode::OnStageLimitTimeOver()
 // 점수에 따라 승리팀, 패배팀 구분
 void ATeamPlayGameMode::DetermineWinningAndLosingTeams()
 {
-	int32 TEAMRED = GetREDTeamScore();
-	int32 TEAMBLUE = GetBLUETeamScore();
+	ATeamPlayGameState* FallTeamState = GetGameState<ATeamPlayGameState>();
+	if (!FallTeamState) return;
 
-	APlayGameState* FallState = GetGameState<APlayGameState>();
-	if (!FallState) return;
+	int32 TEAMRED = FallTeamState->GetGameStateREDTeamScore();
+	int32 TEAMBLUE = FallTeamState->GetGameStateBLUETeamScore();
 
-	for (APlayerState* PlayerState : FallState->PlayerArray)
+	for (APlayerState* PlayerState : FallTeamState->PlayerArray)
 	{
 		APlayPlayerState* PlayPlayerState = Cast<APlayPlayerState>(PlayerState);
 		if (!PlayPlayerState) continue;
@@ -205,7 +208,7 @@ void ATeamPlayGameMode::DetermineWinningAndLosingTeams()
 	}
 
 	// 동기화
-	FallState->SyncPlayerInfoFromPlayerState();
+	FallTeamState->SyncPlayerInfoFromPlayerState();
 
 	// 로그
 	if (TEAMRED > TEAMBLUE)

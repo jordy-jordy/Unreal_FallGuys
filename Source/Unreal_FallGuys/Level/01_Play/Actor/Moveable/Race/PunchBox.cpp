@@ -29,6 +29,9 @@ void APunchBox::Tick(float DeltaTime)
 
 void APunchBox::OperateMesh()
 {
+	// ActorComponent
+	ObstacleMoveComp = CreateDefaultSubobject<UObsMovementActorComponent>(FName("ObstacleMoveComp"));
+
 	// Mesh And Location
 	RootScene = CreateDefaultSubobject<USceneComponent>(TEXT("RootScene"));
 	RootComponent = RootScene;
@@ -90,14 +93,3 @@ void APunchBox::SetMesh()
 	
 	Platform->SetStaticMesh(UFallGlobal::GetResourceMesh("PunchBox_Platform"));
 }
-
-bool APunchBox::CheckFire()
-{
-	return (Punch->GetRelativeLocation().Y < 700.0f);
-}
-
-bool APunchBox::CheckRecover()
-{
-	return (Punch->GetRelativeLocation().Y > 340.0f);
-}
-
