@@ -57,6 +57,11 @@ void APlayGameMode::PostLogin(APlayerController* _NewPlayer)
 	// 게임 스테이트, 플레이어 스테이트, 게임 인스턴스 세팅
 	if (!CheckEssentialObjects(_NewPlayer, FallState, PlayerState, GameInstance)) { return; }
 
+	// 게임 인스턴스에서 현재 스테이지 타입을 가져옴
+	MODE_CurStageType = GameInstance->InsGetCurStageType();
+	// 게임 스테이트에 스테이지 타입을 전달
+	FallState->SetCurStageType(MODE_CurStageType);
+
 	// 인원 카운팅
 	FallState->AddConnectedPlayers();
 	int ConnectingPlayer = FallState->GetConnectedPlayers();
@@ -189,11 +194,23 @@ void APlayGameMode::RestorePlayerInfo(APlayerController* _NewPlayer, APlayPlayer
 	}
 	else
 	{
-		if (RestoredInfo.Status == EPlayerStatus::SUCCESS)
+		if (MODE_CurStageType == EStageType::SOLO)
+		{
+			if (RestoredInfo.Status == EPlayerStatus::SUCCESS)
+			{
+				RestoredInfo.Status = EPlayerStatus::DEFAULT;
+			}
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode:: PostLogin :: 개인전 입니다 - SUCCESS 플레이어 정보 리셋"));
+		}
+		else if (MODE_CurStageType == EStageType::TEAM)
 		{
 			RestoredInfo.Status = EPlayerStatus::DEFAULT;
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode:: PostLogin :: 팀전 입니다 - 플레이어 정보 리셋"));
 		}
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode:: PostLogin :: 게임 스테이지 - 플레이어 정보 리셋"));
+		else
+		{
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode:: PostLogin :: 게임 모드가 잘못됐습니다."));
+		}
 	}
 
 	// 인포 복구
@@ -283,11 +300,6 @@ void APlayGameMode::BeginPlay()
 	MODE_CurLevelName = GameInstance->InsGetCurLevelName();
 	// 게임 스테이트에 스테이지 이름을 전달
 	FallState->SetPlayLevelName(MODE_CurLevelName);
-
-	// 게임 인스턴스에서 현재 스테이지 타입을 가져옴
-	MODE_CurStageType = GameInstance->InsGetCurStageType();
-	// 게임 스테이트에 스테이지 타입을 전달
-	FallState->SetCurStageType(MODE_CurStageType);
 
 	// 게임 인스턴스에서 현재 스테이지 페이즈를 가져옴
 	MODE_CurStagePhase = GameInstance->InsGetCurStagePhase();
@@ -622,6 +634,13 @@ void APlayGameMode::Tick(float DeltaSeconds)
 
 	// 서버 트래블 활성화 됐으면 여기서 끝
 	if (StartedServerTravel) return;
+	
+	// 성공 조건이 0명이면 바로 성공 처리
+	if (FinishPlayer == 0 && !bSetWinbyDefault)
+	{
+		SetEndCondition_Trigger();
+		bSetWinbyDefault = true;
+	}
 
 	// 모든 조건이 true 가 되었을 때 서버 트래블 활성화
 	if (IsEndGame && bPlayerStatusChanged && bPlayerInfosBackUp && bNextLevelDataSetted && bCanMoveLevel)
@@ -633,11 +652,17 @@ void APlayGameMode::Tick(float DeltaSeconds)
 		{
 			ServerTravelToRaceOver();
 		}
-		else
+		else if (bMODEIsResultLevel && MODE_CurStagePhase != EStagePhase::STAGE_3_RESULT)
 		{
 			// 결과 화면일 경우 30초 타이머 후 호출
 			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: Tick :: 결과 화면이므로 30초 후 다음 레벨로 이동합니다."));
 			GetWorldTimerManager().SetTimer(ResultTravelTimerHandle, this, &APlayGameMode::ServerTravelToNextRandLevel, 30.0f, false);
+		}
+		else
+		{
+			// 엔드레벨로 이동
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: Tick :: 10초 후 최종 결과 화면으로 이동합니다."));
+			GetWorldTimerManager().SetTimer(ResultTravelTimerHandle, this, &APlayGameMode::ServerTravelToEndLevel, 10.0f, false);
 		}
 	}
 }
@@ -663,19 +688,22 @@ void APlayGameMode::SetEndCondition_Common()
 	// 결과 화면이 아닐때만
 	if (!bMODEIsResultLevel)
 	{
-		// 레벨 종료 UI 띄워
-		if (!bShowedLevelEndUI)
-		{
-			APlayGameState* FallState = GetGameState<APlayGameState>();
-			FallState->MCAST_WidgetDelegate(TEXT("GameOver"));
-			bShowedLevelEndUI = true;
-		}
-
 		// 캐릭터 멈추게
 		if (bPlayerMoving)
 		{
 			SetCharacterMoveImPossible();
 			bPlayerMoving = false;
+		}
+
+		if (MODE_CurStageType == EStageType::SOLO)
+		{
+			// 레벨 종료 UI 띄워
+			if (!bShowedLevelEndUI)
+			{
+				APlayGameState* FallState = GetGameState<APlayGameState>();
+				FallState->MCAST_WidgetDelegate(TEXT("GameOver"));
+				bShowedLevelEndUI = true;
+			}
 		}
 	}
 
@@ -897,4 +925,14 @@ void APlayGameMode::ServerTravelToNextRandLevel()
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 서버트래블 감지 :: 다음 스테이지로 이동합니다."));
 
 	GetWorld()->ServerTravel(UFallGlobal::GetRandomLevelWithOutPawn(), false);
+}
+
+// 개인전용 : 최종 결과창으로 이동
+void APlayGameMode::ServerTravelToEndLevel()
+{
+	if (!HasAuthority()) { return; }
+
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 서버트래블 감지 :: 최종 결과창으로 이동합니다."));
+
+	GetWorld()->ServerTravel(EndLevel, false);
 }

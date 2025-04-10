@@ -206,6 +206,8 @@ protected:
 	bool bCanMoveLevel = false;
 	// 서버 트래블 활성화 됐니?
 	bool StartedServerTravel = false;
+	// 부전승 처리 했니?
+	bool bSetWinbyDefault = false;
 	
 	// 스테이지 종료 기준 상태
 	EPlayerStatus MODE_CurStageResultStatus = EPlayerStatus::NONE;
@@ -228,6 +230,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Server", meta = (AllowPrivateAccess = "true"))
 	FString NextLevel= TEXT("LMHRaceOverMap");
 
+	// End 레벨 이름
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Server", meta = (AllowPrivateAccess = "true"))
+	FString EndLevel = TEXT("EndLevel");
+
 public:
 	// 개인전용 : 중간 결과창으로 이동
 	UFUNCTION(BlueprintCallable)
@@ -236,6 +242,10 @@ public:
 	// 개인전용 : 다음 스테이지로 이동
 	UFUNCTION(BlueprintCallable)
 	void ServerTravelToNextRandLevel();
+
+	// 개인전용 : 최종 결과창으로 이동
+	UFUNCTION(BlueprintCallable)
+	void ServerTravelToEndLevel();
 
 	// 이현정 : 25.04.02 : 동기화 함수로 수정 : 골인 인원 +1 카운팅
 	UFUNCTION(BlueprintCallable)
