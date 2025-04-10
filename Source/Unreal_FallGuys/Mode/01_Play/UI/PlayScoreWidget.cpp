@@ -5,6 +5,11 @@
 #include "Mode/01_Play/TeamPlayGameState.h"
 
 
+void UPlayScoreWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+}
+
 int UPlayScoreWidget::GetTimeLimit_Minutes()
 {
 	ATeamPlayGameState* TeamPlayGameState = GetWorld()->GetGameState<ATeamPlayGameState>();
