@@ -17,24 +17,10 @@ class UNREAL_FALLGUYS_API UPlayScoreWidget : public UPlayUserWidget
 public:
 	void NativeConstruct();
 
-	// 임시
 	UFUNCTION(BlueprintCallable)
-	int GetTimeLimit_Minutes();
+	FString GetTimeLimit_Minutes();
 
-	// 임시
 	UFUNCTION(BlueprintCallable)
-	int GetTimeLimit_Seconds();
+	FString GetTimeLimit_Seconds();
 
-	//UFUNCTION(BlueprintCallable)
-	//float GetLimitTime();
-
-	//UFUNCTION(BlueprintCallable)
-	//void LimitTimeDown();
-
-private:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI", meta = (AllowPrivateAccess = "true"))
-	float CurLimitTime = 0.0f;
-
-	//FTimerHandle TimerHandle;
-	//FTimerDynamicDelegate TimerDelegate;
 };
