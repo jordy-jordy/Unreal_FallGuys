@@ -15,6 +15,8 @@ class UNREAL_FALLGUYS_API UPlayScoreWidget : public UPlayUserWidget
 	GENERATED_BODY()
 
 public:
+	void NativeConstruct();
+
 	// юс╫ц
 	UFUNCTION(BlueprintCallable)
 	int GetTimeLimit_Minutes();
@@ -25,5 +27,4 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	float GetLimitTime();
-	
 };

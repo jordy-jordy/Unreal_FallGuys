@@ -7,6 +7,7 @@
 
 #include <Global/GlobalEnum.h>
 #include <Mode/01_Play/PlayEnum.h>
+#include <Mode/01_Play/PlayPlayerState.h>
 
 #include "PlayGameMode.generated.h"
 
@@ -77,6 +78,18 @@ public:
 	int32 GetFinishPlayerCount() const { return FinishPlayer; }
 
 protected:
+	// 필수 데이터 세팅
+	bool CheckEssentialObjects(class APlayerController* _NewPlayer, class APlayGameState*& _OutFallState, class APlayPlayerState*& _OutPlayerState, class UBaseGameInstance*& _OutGameInstance);
+	// 플레이어 태그 생성
+	FName GenerateUniquePlayerTag(APlayerController* _NewPlayer, int32 _PlayerIndex);
+	// 세로운 플레이어 정보 세팅
+	void InitPlayerInfo(class APlayerController* _NewPlayer, class APlayPlayerState* _PlayerState, class APlayGameState* _FallState, class UBaseGameInstance* _GameInstance);
+	// 기존 플레이어 정보 복구
+	void RestorePlayerInfo(class APlayerController* _NewPlayer, class APlayPlayerState* _PlayerState, class UBaseGameInstance* _GameInstance);
+	// 플레이어 인포 로그
+	void LogPlayerInfo(const FString& _Prefix, const FPlayerInfo& _Info, APlayerController* _Controller);
+	// 시네마틱과 접속 제한 세팅 호출
+	void StartCinematicIfReady(APlayGameState* _FallState);
 	// 레벨 시네마틱 시작을 호출
 	UFUNCTION()
 	void CallLevelCinematicStart(APlayGameState* _PlayState);
@@ -136,19 +149,12 @@ public:
 protected:
 	// 게임 시작 조건 검사 타이머 핸들
 	FTimerHandle GameStartConditionTimer;
-
 	// 레벨 시네마틱을 시작하도록 하는 타이머
 	FTimerHandle SetLevelCinematicStartTimer;
-
 	// 게임 시작 전 카운트 다운 핸들
 	FTimerHandle CountdownTimerHandle;
-
-	// 게임 시작 후 스테이지 제한 시간 핸들
-	FTimerHandle StageLimitTimerHandle;
-
 	// 동기화 타이머 핸들
 	FTimerHandle SyncPlayerInfoTimer;
-
 	// RaceOver 레벨에서 다음 레벨로 이동하는 타이머 핸들
 	FTimerHandle ResultTravelTimerHandle;
 
@@ -172,7 +178,7 @@ public:
 protected:
 	// 게임 종료 트리거
 	void SetEndCondition_Trigger();
-	// 개인전 및 팀전 공용 종료 로직
+	// 개인전 및 팀전 공통 종료 로직
 	void SetEndCondition_Common();
 	// 개인전 종료 로직
 	void SetEndCondition_Solo();
