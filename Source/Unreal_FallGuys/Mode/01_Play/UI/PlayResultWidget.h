@@ -19,6 +19,9 @@ public:
 
 	void ResultWidget();
 
+	//UFUNCTION(BlueprintImplementableEvent)
+	//void PlayerSuccessed();
+
 private:
 	UPROPERTY(VisibleAnywhere, Transient, meta = (BindWidgetAnim), Category = "UI")
 	UWidgetAnimation* ResultAnim;

@@ -25,6 +25,16 @@ public:
 	UFUNCTION(BlueprintCallable)
 	int GetTimeLimit_Seconds();
 
-	UFUNCTION(BlueprintCallable)
-	float GetLimitTime();
+	//UFUNCTION(BlueprintCallable)
+	//float GetLimitTime();
+
+	//UFUNCTION(BlueprintCallable)
+	//void LimitTimeDown();
+
+private:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI", meta = (AllowPrivateAccess = "true"))
+	float CurLimitTime = 0.0f;
+
+	//FTimerHandle TimerHandle;
+	//FTimerDynamicDelegate TimerDelegate;
 };

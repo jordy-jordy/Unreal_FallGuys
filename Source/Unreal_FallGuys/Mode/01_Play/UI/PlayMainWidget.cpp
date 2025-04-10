@@ -153,6 +153,11 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 		case EPlayUIType::PlayInGame:
 		{
 			APlayGameState* GameState = Cast<APlayGameState>(GetWorld()->GetGameState());
+			if (nullptr == GameState)
+			{
+				return;
+			}
+
 			EStageType StageType = GameState->GetCurStageType();
 
 			UPlayUserWidget* ClearCount = FindWidget(EPlayUIType::PlayClearCount);
@@ -187,6 +192,11 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 		case EPlayUIType::PlayInGame:
 		{
 			APlayGameState* GameState = Cast<APlayGameState>(GetWorld()->GetGameState());
+			if (nullptr == GameState)
+			{
+				return;
+			}
+
 			EStageType StageType = GameState->GetCurStageType();
 
 			UPlayUserWidget* ClearCount = FindWidget(EPlayUIType::PlayClearCount);
@@ -211,7 +221,47 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 	case EPlayUIType::PlayReturnHome:
 		break;
 	case EPlayUIType::PlayInGame:
+	{
+		switch (EPlayUIType(_UIType))
+		{
+		case EPlayUIType::PlayResult:
+		{
+			APlayCharacter* PlayCharacter = Cast<APlayCharacter>(GetOwningPlayerPawn());
+			if (nullptr == PlayCharacter)
+			{
+				return;
+			}
+
+			APlayPlayerState* PlayPlayerState = Cast<APlayPlayerState>(PlayCharacter->GetPlayerState());
+			if (nullptr == PlayPlayerState)
+			{
+				return;
+			}
+
+			APlayGameState* GameState = Cast<APlayGameState>(GetWorld()->GetGameState());
+			if (nullptr == GameState)
+			{
+				return;
+			}
+
+			EStagePhase CurStagePhase = GameState->GetCurStagePhase();
+			EPlayerStatus CurPlayerStatus = PlayPlayerState->GetPlayerStateStatus();
+
+			UPlayUserWidget* Result = FindWidget(EPlayUIType::PlayResult);
+
+			if (((EPlayerStatus::FAIL == CurPlayerStatus) && EStagePhase::STAGE_1 == CurStagePhase) || (EPlayerStatus::SUCCESS == CurPlayerStatus))
+			{
+				AllWidgetHidden();
+				Result->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			}
+
+			break;
+		}
+		default:
+			break;
+		}
 		break;
+	}
 	case EPlayUIType::PlaySpectatorResult:
 		break;
 	case EPlayUIType::PlayGameOver:
