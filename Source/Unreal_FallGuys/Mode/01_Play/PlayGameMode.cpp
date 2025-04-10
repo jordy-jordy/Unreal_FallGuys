@@ -85,8 +85,9 @@ void APlayGameMode::PostLogin(APlayerController* _NewPlayer)
 	// 시네마틱과 접속 제한 세팅 호출
 	StartCinematicIfReady(FallState);
 
-	// 게임 인스턴스에서 스테이지의 종료 조건을 가져옴
+	// 게임 인스턴스에서 스테이지의 종료 조건을 가져옴 + 게임 스테이트에 전달
 	MODE_CurStageResultStatus = GameInstance->InsGetStageEndCondition();
+	FallState->SetStageGoalType(MODE_CurStageResultStatus);
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode PostLogin END ======= "));
 }
