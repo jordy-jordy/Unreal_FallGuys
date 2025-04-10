@@ -50,18 +50,13 @@ void APlayGameMode::PostLogin(APlayerController* _NewPlayer)
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode PostLogin START ======= "));
 
-	// GameState가 없을시 리턴
-	APlayGameState* FallState = GetGameState<APlayGameState>();
-	if (!FallState) { UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: PostLogin :: GameState가 nullptr 입니다.")); return; }
+	APlayGameState* FallState = nullptr;
+	APlayPlayerState* PlayerState = nullptr;
+	UBaseGameInstance* GameInstance = nullptr;
 
-	// PlayerState가 없을시 리턴
-	APlayPlayerState* PlayerState = Cast<APlayPlayerState>(_NewPlayer->PlayerState);
-	if (!PlayerState) { UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: PostLogin :: PlayerState가 nullptr 입니다.")); return; }
+	// 게임 스테이트, 플레이어 스테이트, 게임 인스턴스 세팅
+	if (!CheckEssentialObjects(_NewPlayer, FallState, PlayerState, GameInstance)) { return; }
 
-	// GameInstance가 없을시 리턴
-	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
-	if (!GameInstance) { UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: PostLogin :: GameInstance가 nullptr 입니다.")); return; }
-	
 	FString PlayerUniqueID = PlayerState->GetUniqueId()->ToString(); // UniqueID 얻음
 
 	// 결과 화면인지 확인
@@ -183,6 +178,89 @@ void APlayGameMode::PostLogin(APlayerController* _NewPlayer)
 #pragma endregion
 
 #pragma region PlayGameMode :: PostLogin 에서 실행되는 함수들
+// 필수 데이터 세팅
+bool APlayGameMode::CheckEssentialObjects(APlayerController* _NewPlayer, APlayGameState*& _OutFallState, APlayPlayerState*& _OutPlayerState, UBaseGameInstance*& _OutGameInstance)
+{
+	_OutFallState = GetGameState<APlayGameState>();
+	if (!_OutFallState)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: CheckEssentialObjects :: GameState가 nullptr 입니다."));
+		return false;
+	}
+
+	_OutPlayerState = Cast<APlayPlayerState>(_NewPlayer->PlayerState);
+	if (!_OutPlayerState)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: CheckEssentialObjects :: PlayerState가 nullptr 입니다."));
+		return false;
+	}
+
+	_OutGameInstance = Cast<UBaseGameInstance>(GetGameInstance());
+	if (!_OutGameInstance)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: CheckEssentialObjects :: GameInstance가 nullptr 입니다."));
+		return false;
+	}
+
+	return true;
+}
+
+// 기존 플레이어 정보 복구
+void APlayGameMode::RestorePlayerInfo(APlayerController* _NewPlayer, APlayPlayerState* _PlayerState, UBaseGameInstance* _GameInstance)
+{
+	const FString PlayerUniqueID = _PlayerState->GetUniqueId()->ToString();
+
+	FPlayerInfo RestoredInfo;
+	_GameInstance->InsGetBackedUpPlayerInfo(PlayerUniqueID, RestoredInfo);
+
+	if (bMODEIsResultLevel)
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PostLogin :: 결과 화면 - 기존 플레이어 정보 복구"));
+		_PlayerState->PlayerInfo = RestoredInfo;
+	}
+	else
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PostLogin :: 게임 스테이지 - 플레이어 정보 리셋"));
+		if (RestoredInfo.Status == EPlayerStatus::SUCCESS)
+		{
+			RestoredInfo.Status = EPlayerStatus::DEFAULT;
+		}
+		_PlayerState->PlayerInfo = RestoredInfo;
+	}
+
+	_NewPlayer->Tags.Add(RestoredInfo.Tag);
+	FString TagString = (_NewPlayer->Tags.Num() > 0) ? _NewPlayer->Tags[0].ToString() : TEXT("태그 없음");
+
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("PostLogin :: 정보 복구 완료 - UniqueID = %s, Tag = %s"),
+		*RestoredInfo.UniqueID, *TagString);
+}
+
+// 세로운 플레이어 정보 세팅
+void APlayGameMode::InitPlayerInfo(APlayerController* _NewPlayer, APlayPlayerState* _PlayerState, APlayGameState* _FallState, UBaseGameInstance* _GameInstance)
+{
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PostLogin :: 첫 스테이지 - 신규 플레이어 정보 세팅"));
+
+	FName UniqueTag = FName(*FString::Printf(TEXT("Player%d"), _FallState->PlayerInfoArray.Num()));
+	if (!_NewPlayer->Tags.Contains(UniqueTag))
+	{
+		_NewPlayer->Tags.Add(UniqueTag);
+	}
+	else
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("중복된 태그 감지: %s"), *UniqueTag.ToString());
+	}
+
+	FString TagString = (_NewPlayer->Tags.Num() > 0) ? _NewPlayer->Tags[0].ToString() : TEXT("NoTag");
+	FString PlayerNickname = _GameInstance->InsGetNickname();
+
+	_PlayerState->SetPlayerInfo(UniqueTag, PlayerNickname);
+
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("PostLogin :: 신규 정보 세팅 - UniqueID = %s, Tag = %s"),
+		*_PlayerState->PlayerInfo.UniqueID, *TagString);
+}
+
+
+
 // 인원 충족 했는지 체크
 void APlayGameMode::CheckNumberOfPlayer(APlayGameState* _PlayState)
 {
@@ -372,37 +450,16 @@ void APlayGameMode::FinishPlayer_Race()
 	switch (MODE_CurStagePhase)
 	{
 	case EStagePhase::STAGE_1:
-		if (DefaultPlayerCount <= 2)
-		{
-			SetFinishPlayerCount(1);
-		}
-		else if (DefaultPlayerCount == 3)
-		{
-			SetFinishPlayerCount(2);
-		}
-		else if (DefaultPlayerCount <= 5)
-		{
-			SetFinishPlayerCount(3);
-		}
-		else
-		{
-			SetFinishPlayerCount(DefaultPlayerCount / 2);
-		}
+		if		(DefaultPlayerCount <= 2) { SetFinishPlayerCount(1); }
+		else if (DefaultPlayerCount == 3) { SetFinishPlayerCount(2); }
+		else if (DefaultPlayerCount <= 5) { SetFinishPlayerCount(3); }
+		else	{ SetFinishPlayerCount(DefaultPlayerCount / 2); }
 		break;
 
 	case EStagePhase::STAGE_2:
-		if (DefaultPlayerCount <= 2)
-		{
-			SetFinishPlayerCount(1);
-		}
-		else if (DefaultPlayerCount <= 5)
-		{
-			SetFinishPlayerCount(2);
-		}
-		else
-		{
-			SetFinishPlayerCount((DefaultPlayerCount / 2) / 2);
-		}
+		if		(DefaultPlayerCount <= 2) { SetFinishPlayerCount(1); }
+		else if (DefaultPlayerCount <= 5) { SetFinishPlayerCount(2); }
+		else	{ SetFinishPlayerCount((DefaultPlayerCount / 2) / 2); }
 		break;
 
 	case EStagePhase::STAGE_3:
@@ -421,48 +478,22 @@ void APlayGameMode::FinishPlayer_Survive()
 	switch (MODE_CurStagePhase)
 	{
 	case EStagePhase::STAGE_1:
-		if (DefaultPlayerCount <= 1)
-		{
-			SetFinishPlayerCount(0);
-		}
-		else if (DefaultPlayerCount <= 3)
-		{
-			SetFinishPlayerCount(1);
-		}
-		else if (DefaultPlayerCount <= 5)
-		{
-			SetFinishPlayerCount(2);
-		}
-		else
-		{
-			SetFinishPlayerCount(DefaultPlayerCount / 2);
-		}
+		if		(DefaultPlayerCount <= 1) { SetFinishPlayerCount(0); }
+		else if (DefaultPlayerCount <= 3) { SetFinishPlayerCount(1); }
+		else if (DefaultPlayerCount <= 5) { SetFinishPlayerCount(2); }
+		else	{ SetFinishPlayerCount(DefaultPlayerCount / 2); }
 		break;
 
 	case EStagePhase::STAGE_2:
-		if (DefaultPlayerCount <= 1)
-		{
-			SetFinishPlayerCount(0);
-		}
-		else if (DefaultPlayerCount <= 2)
-		{
-			SetFinishPlayerCount(1);
-		}
-		else
-		{
-			SetFinishPlayerCount((DefaultPlayerCount / 2) / 2);
-		}
+		if		(DefaultPlayerCount <= 1) { SetFinishPlayerCount(0); }
+		else if (DefaultPlayerCount <= 2) { SetFinishPlayerCount(1); }
+		else if (DefaultPlayerCount <= 5) { SetFinishPlayerCount(3); }
+		else	{ SetFinishPlayerCount((DefaultPlayerCount / 2) / 2); }
 		break;
 
 	case EStagePhase::STAGE_3:
-		if (DefaultPlayerCount <= 1)
-		{
-			SetFinishPlayerCount(0);
-		}
-		else
-		{
-			SetFinishPlayerCount(1);
-		}
+		if		(DefaultPlayerCount <= 1) { SetFinishPlayerCount(0); }
+		else	{ SetFinishPlayerCount(1); }
 		break;
 
 	case EStagePhase::FINISHED:
@@ -606,11 +637,11 @@ void APlayGameMode::Tick(float DeltaSeconds)
 	// 서버만 실행
 	if (!HasAuthority()) { return; }
 
-	// 서버 트래블 활성화 됐으면 여기서 끝
-	if (StartedServerTravel) return;
-
 	// 개인전이 아니면 여기서 끝
 	if (MODE_CurStageType != EStageType::SOLO) { return; }
+
+	// 서버 트래블 활성화 됐으면 여기서 끝
+	if (StartedServerTravel) return;
 
 	// 모든 조건이 true 가 되었을 때 서버 트래블 활성화
 	if (IsEndGame && bPlayerStatusChanged && bPlayerInfosBackUp && bNextLevelDataSetted && bCanMoveLevel)
@@ -646,7 +677,7 @@ void APlayGameMode::SetEndCondition_Trigger()
 	SetEndCondition_Solo();
 }
 
-// 개인전 및 팀전 공용 종료 로직
+// 개인전 및 팀전 공통 종료 로직
 void APlayGameMode::SetEndCondition_Common()
 {
 	// 결과 화면이 아닐때만

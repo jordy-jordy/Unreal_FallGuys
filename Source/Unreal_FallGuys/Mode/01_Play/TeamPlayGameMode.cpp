@@ -9,8 +9,8 @@
 #include "Global/GlobalEnum.h"
 #include "Global/BaseGameInstance.h"
 #include "Mode/01_Play/PlayEnum.h"
-#include "Mode/01_Play/PlayGameState.h"
 #include "Mode/01_Play/TeamPlayGameState.h"
+#include "Mode/01_Play/PlayPlayerState.h"
 
 
 ATeamPlayGameMode::ATeamPlayGameMode()
@@ -62,11 +62,14 @@ void ATeamPlayGameMode::Tick(float DeltaSeconds)
 	// 서버만 실행
 	if (!HasAuthority()) { return; }
 
-	// 게임이 시작되지 않았으면 리턴
+	// 팀전이 아니면 여기서 끝
+	if (MODE_CurStageType != EStageType::TEAM) { return; }
+
+	// 게임이 시작되지 않았으면 리턴 => PlayGameMode에서 세팅 되는 값임
 	if (!bGameStarted) { return; } 
 
 	// 스테이지 제한 시간 타이머가 활성화 되었다면 리턴
-	if (IsStartedLimitTimer) { return; }
+	if (bStartedLimitTimer) { return; }
 
 	// 스테이지 제한 시간 처리
 	StartStageLimitTimer();
@@ -128,7 +131,7 @@ void ATeamPlayGameMode::StartStageLimitTimer()
 {
 	if (!HasAuthority()) return;
 
-	IsStartedLimitTimer = true;
+	bStartedLimitTimer = true;
 
 	ATeamPlayGameState* FallTeamState = GetGameState<ATeamPlayGameState>();
 	if (!FallTeamState) return;
@@ -146,56 +149,129 @@ void ATeamPlayGameMode::OnStageLimitTimeOver()
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("TeamPlayGameMode :: BeginPlay :: 제한 시간 초과! 스테이지를 종료합니다."));
 
-	// 다음 맵 이동
-	ServerTravelToNextTeamMap();
+	// 팀의 승패 결정
+	DetermineWinningAndLosingTeams();
+
+	// 공통 종료 로직
+	SetEndCondition_Common();
+
+	// 팀전 종료 로직
+	SetEndCondition_Team();
+
+	// 5초 후 서버 트래블
+	GetWorldTimerManager().SetTimer(TravelDelayTimerHandle, this, &ATeamPlayGameMode::ServerTravelToNextTeamMap, 5.0f, false);
 }
 
+// 점수에 따라 승리팀, 패배팀 구분
+void ATeamPlayGameMode::DetermineWinningAndLosingTeams()
+{
+	int32 TEAMRED = GetREDTeamScore();
+	int32 TEAMBLUE = GetBLUETeamScore();
+
+	APlayGameState* FallState = GetGameState<APlayGameState>();
+	if (!FallState) return;
+
+	for (APlayerState* PlayerState : FallState->PlayerArray)
+	{
+		APlayPlayerState* PlayPlayerState = Cast<APlayPlayerState>(PlayerState);
+		if (!PlayPlayerState) continue;
+
+		ETeamType PlayerTeam = PlayPlayerState->PlayerInfo.Team;
+
+		if (TEAMRED > TEAMBLUE)
+		{
+			if (PlayerTeam == ETeamType::RED)
+			{
+				PlayPlayerState->SetPlayerStatus(EPlayerStatus::SUCCESS);
+			}
+			else if (PlayerTeam == ETeamType::BLUE)
+			{
+				PlayPlayerState->SetPlayerStatus(EPlayerStatus::FAIL);
+			}
+		}
+		else if (TEAMRED < TEAMBLUE)
+		{
+			if (PlayerTeam == ETeamType::RED)
+			{
+				PlayPlayerState->SetPlayerStatus(EPlayerStatus::FAIL);
+			}
+			else if (PlayerTeam == ETeamType::BLUE)
+			{
+				PlayPlayerState->SetPlayerStatus(EPlayerStatus::SUCCESS);
+			}
+		}
+		else
+		{
+			// 무승부는 전부 성공
+			PlayPlayerState->SetPlayerStatus(EPlayerStatus::SUCCESS);
+		}
+	}
+
+	// 동기화
+	FallState->SyncPlayerInfoFromPlayerState();
+
+	// 로그
+	if (TEAMRED > TEAMBLUE)
+	{
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("TeamPlayGameMode :: DetermineWinningAndLosingTeams :: 레드팀 승리"));
+	}
+	else if (TEAMRED < TEAMBLUE)
+	{
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("TeamPlayGameMode :: DetermineWinningAndLosingTeams :: 블루팀 승리"));
+	}
+	else
+	{
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("TeamPlayGameMode :: DetermineWinningAndLosingTeams :: 무승부, 전원 성공 처리"));
+	}
+}
+
+// 팀전 종료 로직
+void ATeamPlayGameMode::SetEndCondition_Team()
+{
+	// 플레이어 정보 백업
+	BackUpPlayersInfo();
+
+	// 다음 레벨에 대한 정보 세팅
+	SetNextTeamLevelData();
+}
+
+// 팀전 다음 레벨의 정보 세팅
+void ATeamPlayGameMode::SetNextTeamLevelData()
+{
+	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
+
+	// 팀전의 경우
+	switch (MODE_CurStagePhase)
+	{
+	case EStagePhase::STAGE_1:
+		GameInstance->InsSetCurStagePhase(EStagePhase::STAGE_2);
+		break;
+
+	case EStagePhase::STAGE_2:
+		GameInstance->InsSetCurStagePhase(EStagePhase::STAGE_3);
+		break;
+
+	case EStagePhase::STAGE_3:
+		GameInstance->InsSetCurStagePhase(EStagePhase::FINISHED);
+		break;
+
+	default:
+		break;
+	}
+
+	// 스테이지 전환 했음을 알림
+	GameInstance->IsMovedLevel = true;
+}
+
+// 다음 팀전 레벨로 이동
 void ATeamPlayGameMode::ServerTravelToNextTeamMap()
 {
 	if (!HasAuthority()) { return; }
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("TeamPlayGameMode :: 서버트래블 감지 ::"));
 
-	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
-	APlayGameState* PlayGameState = GetGameState<APlayGameState>();
-	if (GameInstance && PlayGameState)
-	{
-		// 백업하기 전에 비워주자
-		GameInstance->PlayerInfoBackup.Empty();
-
-		// 현재 게임 상태 가져오기
-		for (FPlayerInfoEntry& PlayerEntry : PlayGameState->PlayerInfoArray)
-		{
-			GameInstance->InsBackupPlayerInfo(PlayerEntry.UniqueID, PlayerEntry.PlayerInfo);
-			UE_LOG(FALL_DEV_LOG, Log, TEXT("ServerTravelToNextTeamMap :: 플레이어 정보 백업 완료 - UniqueID = %s, Tag = %s"),
-				*PlayerEntry.UniqueID, *PlayerEntry.PlayerInfo.Tag.ToString());
-		}
-
-		// 팀전의 경우
-		switch (MODE_CurStagePhase)
-		{
-		case EStagePhase::STAGE_1:
-			GameInstance->InsSetCurStagePhase(EStagePhase::STAGE_2);
-			break;
-
-		case EStagePhase::STAGE_2:
-			GameInstance->InsSetCurStagePhase(EStagePhase::STAGE_3);
-			break;
-
-		case EStagePhase::STAGE_3:
-			GameInstance->InsSetCurStagePhase(EStagePhase::FINISHED);
-			break;
-
-		default:
-			break;
-		}
-
-		// 스테이지 전환 했음을 알림
-		GameInstance->IsMovedLevel = true;
-	}
 	GetWorld()->ServerTravel(UFallGlobal::GetRandomTeamLevel(), false);
 }
-
 
 //LMH
 TMap<ETeamType, int> ATeamPlayGameMode::GetTeamFloors()

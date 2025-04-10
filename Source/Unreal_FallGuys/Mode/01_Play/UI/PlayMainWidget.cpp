@@ -291,14 +291,14 @@ UPlayUserWidget* UPlayMainWidget::FindWidget(EPlayUIType _Type, int _Index/* = 0
 // 임시
 bool UPlayMainWidget::IsFailPlayer()
 {
-	APlayCharacter* PlayCharacter = Cast<APlayCharacter>(GetOwningPlayer());
-	APlayPlayerState* PlayPlayerState = Cast<APlayPlayerState>(PlayCharacter->GetPlayerState());
-	APlayGameState* PlayGameState = Cast<APlayGameState>(GetWorld()->GetGameState());
+	//APlayCharacter* PlayCharacter = Cast<APlayCharacter>(GetOwningPlayer());
+	//APlayPlayerState* PlayPlayerState = Cast<APlayPlayerState>(PlayCharacter->GetPlayerState());
+	//APlayGameState* PlayGameState = Cast<APlayGameState>(GetWorld()->GetGameState());
 
-	if (nullptr == PlayGameState)
-	{
-		return false;
-	}
+	//if (nullptr == PlayGameState)
+	//{
+	//	return false;
+	//}
 
 	// ------------------------------------
 	// 여기여기여기야~~ 여기 해야됨~~ 플레이어스테이트 스페이터스 비교하기

@@ -18,38 +18,56 @@ class UNREAL_FALLGUYS_API ATeamPlayGameMode : public APlayGameMode
 public:
 	ATeamPlayGameMode();
 
-	// PlayGameMode의 PostLogin 다음으로 실행
-	virtual void PostLogin(APlayerController* _NewPlayer) override;
-
-	// 레드팀 점수 계산
-	UFUNCTION(BlueprintCallable, Category = "SCORE")
+	// 각 팀 점수 계산
+	UFUNCTION(BlueprintCallable, Category = "TEAM SCORE") // 레드
 	void CountREDTeamScore(int _NumberOfEgg);
-
-	// 블루팀 점수 계산
-	UFUNCTION(BlueprintCallable, Category = "SCORE")
+	UFUNCTION(BlueprintCallable, Category = "TEAM SCORE") // 블루
 	void CountBLUETeamScore(int _NumberOfEgg);
+	
+	// 각 팀 점수 반환
+	UFUNCTION(BlueprintCallable, Category = "TEAM SCORE") // 레드
+	int32 GetREDTeamScore() { return REDTeamScore; }
+	UFUNCTION(BlueprintCallable, Category = "TEAM SCORE") // 블루
+	int32 GetBLUETeamScore() { return BLUETeamScore; }
+
+	// 점수에 따라 승리팀, 패배팀 구분
+	void DetermineWinningAndLosingTeams();
 
 protected:
+	// PlayGameMode의 틱, 비긴플레이, 포스트로긴 다음에 실행됨
 	virtual void Tick(float DeltaSeconds) override;
 	void BeginPlay() override;
-
-	// 다음 팀전 맵으로 이동
-	UFUNCTION(BlueprintCallable)
-	void ServerTravelToNextTeamMap();
-
-	// 팀 배정
-	void AssignTeam(class APlayPlayerState* _PlayerState);
+	virtual void PostLogin(APlayerController* _NewPlayer) override;
 
 	// 각 팀 점수
 	UPROPERTY(BlueprintReadOnly)
 	int32 REDTeamScore = 0;
 	UPROPERTY(BlueprintReadOnly)
 	int32 BLUETeamScore = 0;
-
 	// 팀전 제한 시간
 	float MODE_StageLimitTime = 0.0f;
 	// 제한 시간 타이머 활성화 됐니?
-	bool IsStartedLimitTimer = false;
+	bool bStartedLimitTimer = false;
+	// 승패 결정 됐어?
+	bool bSettedWINLOSE = false;
+
+	// 게임 시작 후 스테이지 제한 시간 핸들
+	FTimerHandle StageLimitTimerHandle;
+	// 서버 트래블 딜레이 핸들
+	FTimerHandle TravelDelayTimerHandle;
+
+	// 플레이어 팀 배정
+	void AssignTeam(class APlayPlayerState* _PlayerState);
+
+	// 팀전 종료 로직
+	void SetEndCondition_Team();
+	// 팀전 다음 레벨의 정보 세팅
+	void SetNextTeamLevelData();
+
+	// 다음 팀전 맵으로 이동
+	UFUNCTION(BlueprintCallable)
+	void ServerTravelToNextTeamMap();
+
 
 	// 스테이지 제한 시간 타이머 활성화
 	UFUNCTION(BlueprintCallable, Category = "LEVEL LIMIT TIME")
