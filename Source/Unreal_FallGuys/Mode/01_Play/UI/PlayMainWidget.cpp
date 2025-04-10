@@ -147,39 +147,6 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 	//CurUIType 위젯 => _UIType 위젯
 	switch (CurUIType)
 	{
-	//case EPlayUIType::PlayStandby:
-	//	switch (EPlayUIType(_UIType))
-	//	{
-	//	case EPlayUIType::PlayLevelTag:
-	//		CurUserWidget->SetVisibility(ESlateVisibility::Hidden);
-	//		ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	//		break;
-	//	default:
-	//		break;
-	//	}
-	//	break;
-	//case EPlayUIType::PlayInGame:
-	//	switch (EPlayUIType(_UIType))
-	//	{
-	//	case EPlayUIType::PlayStartCount:
-	//		break;
-	//	case EPlayUIType::PlayReturnHome:
-	//		break;
-	//	case EPlayUIType::PlayResult:
-	//		break;
-	//	case EPlayUIType::PlaySpectatorResult:
-	//		break;
-	//	case EPlayUIType::PlayGameOver:
-	//		break;
-	//	case EPlayUIType::PlayClearCount:
-	//		break;
-	//	case EPlayUIType::PlayScore:
-	//		break;
-	//	default:
-	//		break;
-	//	}
-	//	break;
-	
 	case EPlayUIType::PlayLevelTag:
 		switch (EPlayUIType(_UIType))
 		{
@@ -201,6 +168,7 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 				PlayScore->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 			}
 
+			bool Value = IsFailPlayer();
 			if (true == IsFailPlayer() && EStagePhase::STAGE_1 != GameState->GetCurStagePhase())
 			{
 				SpectatorResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
@@ -212,20 +180,37 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 			break;
 		}
 		break;
-	case EPlayUIType::PlayInGame:
+	case EPlayUIType::PlayResult:
 	{
-		//UPlayUserWidget* StartCount = FindWidget(EPlayUIType::PlayStartCount);
+		switch (EPlayUIType(_UIType))
+		{
+		case EPlayUIType::PlayInGame:
+		{
+			APlayGameState* GameState = Cast<APlayGameState>(GetWorld()->GetGameState());
+			EStageType StageType = GameState->GetCurStageType();
 
-		//if (true == UFallConst::UseCountDown)
-		//{
-		//	StartCount->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-		//}
+			UPlayUserWidget* ClearCount = FindWidget(EPlayUIType::PlayClearCount);
+			UPlayUserWidget* PlayScore = FindWidget(EPlayUIType::PlayScore);
 
+			if (StageType == EStageType::SOLO)
+			{
+				ClearCount->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			}
+			if (StageType == EStageType::TEAM)
+			{
+				PlayScore->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			}
+
+			break;
+		}
+		default:
+			break;
+		}
 		break;
 	}
 	case EPlayUIType::PlayReturnHome:
 		break;
-	case EPlayUIType::PlayResult:
+	case EPlayUIType::PlayInGame:
 		break;
 	case EPlayUIType::PlaySpectatorResult:
 		break;
@@ -248,7 +233,7 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 	CurUIType = _UIType;
 }
 
-void UPlayMainWidget::WidgetHidden(EPlayUIType _Type)
+void UPlayMainWidget::TargetWidgetHidden(EPlayUIType _Type)
 {
 	for (TPair<EPlayUIType, UPlayUserWidget*> Pair : Widgets)
 	{
@@ -291,39 +276,58 @@ UPlayUserWidget* UPlayMainWidget::FindWidget(EPlayUIType _Type, int _Index/* = 0
 // 임시
 bool UPlayMainWidget::IsFailPlayer()
 {
-	//APlayCharacter* PlayCharacter = Cast<APlayCharacter>(GetOwningPlayer());
-	//APlayPlayerState* PlayPlayerState = Cast<APlayPlayerState>(PlayCharacter->GetPlayerState());
-	//APlayGameState* PlayGameState = Cast<APlayGameState>(GetWorld()->GetGameState());
+	APlayCharacter* PlayCharacter = Cast<APlayCharacter>(GetOwningPlayerPawn());
+	if (nullptr == PlayCharacter)
+	{
+		return false;
+	}
 
-	//if (nullptr == PlayGameState)
-	//{
-	//	return false;
-	//}
+	APlayPlayerState* PlayPlayerState = Cast<APlayPlayerState>(PlayCharacter->GetPlayerState());
+	if (nullptr == PlayPlayerState)
+	{
+		return false;
+	}
 
-	// ------------------------------------
-	// 여기여기여기야~~ 여기 해야됨~~ 플레이어스테이트 스페이터스 비교하기
-	//if (PlayPlayerState->)
-	// ------------------------------------
+	APlayGameState* PlayGameState = Cast<APlayGameState>(GetWorld()->GetGameState());
+	if (nullptr == PlayGameState)
+	{
+		return false;
+	}
 
-	// 임시 주석
-	//TArray<FPlayerInfoEntry> FailPlayers = PlayGameState->FailPlayerInfoArray;
+	EPlayerStatus CurPlayerStatus = PlayPlayerState->GetPlayerStateStatus();
+	if (EPlayerStatus::FAIL == PlayPlayerState->GetPlayerStateStatus())
+	{
+		return true;
+	}
 
-	//if (true == FailPlayers.IsEmpty())
-	//{
-	//	return false;
-	//}
+	return false;
+}
 
-	//for (FPlayerInfoEntry& FailPlayer : FailPlayers)
-	//{
-	//	EPlayerStatus CurPlayerStatus = FailPlayer.PlayerInfo.Status;
+bool UPlayMainWidget::IsSuccessPlayer()
+{
+	APlayCharacter* PlayCharacter = Cast<APlayCharacter>(GetOwningPlayerPawn());
+	if (nullptr == PlayCharacter)
+	{
+		return false;
+	}
 
-	//	if (EPlayerStatus::FAIL == CurPlayerStatus)
-	//	{
-	//		return true;
-	//	}
+	APlayPlayerState* PlayPlayerState = Cast<APlayPlayerState>(PlayCharacter->GetPlayerState());
+	if (nullptr == PlayPlayerState)
+	{
+		return false;
+	}
 
-	//	return false;
-	//}
+	APlayGameState* PlayGameState = Cast<APlayGameState>(GetWorld()->GetGameState());
+	if (nullptr == PlayGameState)
+	{
+		return false;
+	}
+
+	EPlayerStatus CurPlayerStatus = PlayPlayerState->GetPlayerStateStatus();
+	if (EPlayerStatus::SUCCESS == PlayPlayerState->GetPlayerStateStatus())
+	{
+		return true;
+	}
 
 	return false;
 }

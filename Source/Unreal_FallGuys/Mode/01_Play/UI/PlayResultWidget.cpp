@@ -2,41 +2,28 @@
 
 
 #include "Mode/01_Play/UI/PlayResultWidget.h"
-#include "Mode/01_Play/PlayGameState.h"
+#include "Mode/01_Play/UI/PlayMainWidget.h"
 
 
-bool UPlayResultWidget::GetGameFinished()
+void UPlayResultWidget::NativeConstruct()
 {
-	APlayGameState* PlayGameState = Cast<APlayGameState>(GetWorld()->GetGameState());
+	Super::NativeConstruct();
 
-	if (nullptr == PlayGameState)
+	if ((true == GetMainWidget()->IsFailPlayer()) || (true == GetMainWidget()->IsSuccessPlayer()))
 	{
-		return false;
+		GetMainWidget()->AllWidgetHidden();
 	}
 
-	int GoalNum = PlayGameState->GetGameStateFinishPlayer();
-	int TargetNum = PlayGameState->GetGameStateCurFinishPlayer();
-
-	if (GoalNum == TargetNum)
-	{
-		return true;
-	}
-
-	return false;
+	PlayAnimation(ResultAnim);
+	ResultAnimEvent.BindUFunction(this, TEXT("ResultWidget"));
+	BindToAnimationFinished(ResultAnim, ResultAnimEvent);
 }
 
-//void UPlayResultWidget::NativeConstruct()
-//{
-//	Super::NativeConstruct();
-//
-//	PlayAnimation(ResultAnim);
-//	BindToAnimationFinished(ResultAnim, FWidgetAnimationDynamicEvent::BindUFunction(this, &UPlayResultWidget::HiddenWidget));
-//}
-//
-//void UPlayResultWidget::HiddenWidget()
-//{
-//	SetVisibility(ESlateVisibility::Hidden);
-//}
+void UPlayResultWidget::ResultWidget()
+{
+	GetMainWidget()->SwitchWidget(EPlayUIType::PlayInGame);
+}
+
 
 
 

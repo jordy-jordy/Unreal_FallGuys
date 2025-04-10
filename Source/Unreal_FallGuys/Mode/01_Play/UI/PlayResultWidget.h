@@ -15,15 +15,13 @@ class UNREAL_FALLGUYS_API UPlayResultWidget : public UPlayUserWidget
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable)
-	bool GetGameFinished();
+	void NativeConstruct();
 
-//	void NativeConstruct();
-//
-//	// юс╫ц
-//	void HiddenWidget();
-//	
-//private:
-//	UPROPERTY(VisibleAnywhere, Transient, meta = (BindWidgetAnim), Category = "UI")
-//	UWidgetAnimation* ResultAnim;
+	void ResultWidget();
+
+private:
+	UPROPERTY(VisibleAnywhere, Transient, meta = (BindWidgetAnim), Category = "UI")
+	UWidgetAnimation* ResultAnim;
+
+	FWidgetAnimationDynamicEvent ResultAnimEvent;
 };
