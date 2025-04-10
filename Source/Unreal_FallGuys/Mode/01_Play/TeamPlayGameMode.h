@@ -65,11 +65,12 @@ protected:
 	void SetEndCondition_Team();
 	// 팀전 다음 레벨의 정보 세팅
 	void SetNextTeamLevelData();
+	// 팀전용 : 플레이어 정보 백업
+	void BackUpTeamPlayersInfo();
 
 	// 다음 팀전 맵으로 이동
 	UFUNCTION(BlueprintCallable)
 	void ServerTravelToNextTeamMap();
-
 
 	// 스테이지 제한 시간 타이머 활성화
 	UFUNCTION(BlueprintCallable, Category = "LEVEL LIMIT TIME")

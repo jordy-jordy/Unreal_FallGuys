@@ -34,7 +34,7 @@ void ATeamPlayGameMode::PostLogin(APlayerController* _NewPlayer)
 	// 팀 배정
 	AssignTeam(PlayerState);
 
-	UE_LOG(FALL_DEV_LOG, Log, TEXT("TeamPlayGameMode :: PostLogin :: 플레이어 %s 팀 배정 완료: %s"),
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("TeamPlayGameMode :: PostLogin :: 플레이어 %s 팀 배정 완료: %s"),
 		*PlayerState->PlayerInfo.Tag.ToString(),
 		*UEnum::GetValueAsString(PlayerState->PlayerInfo.Team));
 
@@ -239,11 +239,34 @@ void ATeamPlayGameMode::DetermineWinningAndLosingTeams()
 // 팀전 종료 로직
 void ATeamPlayGameMode::SetEndCondition_Team()
 {
-	// 플레이어 정보 백업
-	BackUpPlayersInfo();
+	// 팀전용 플레이어 정보 백업
+	BackUpTeamPlayersInfo();
 
 	// 다음 레벨에 대한 정보 세팅
 	SetNextTeamLevelData();
+}
+
+// 팀전용 : 플레이어 정보 백업
+void ATeamPlayGameMode::BackUpTeamPlayersInfo()
+{
+	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
+	APlayGameState* PlayGameState = GetGameState<APlayGameState>();
+
+	if (!GameInstance && !PlayGameState) { return; }
+
+	// 백업하기 전에 비워주자
+	GameInstance->PlayerInfoBackup.Empty();
+
+	// 현재 게임 상태 가져오기
+	for (FPlayerInfoEntry& PlayerEntry : PlayGameState->PlayerInfoArray)
+	{
+		// 팀 상태 초기화
+		PlayerEntry.PlayerInfo.Team = ETeamType::NONE;
+
+		GameInstance->InsBackupPlayerInfo(PlayerEntry.UniqueID, PlayerEntry.PlayerInfo);
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: BackUpPlayersInfo :: 플레이어 정보 백업 완료 - UniqueID = %s, Tag = %s"),
+			*PlayerEntry.UniqueID, *PlayerEntry.PlayerInfo.Tag.ToString());
+	}
 }
 
 // 팀전 다음 레벨의 정보 세팅
