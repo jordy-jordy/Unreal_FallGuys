@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Level/01_Play/Components/MovementActorComponent.h"
+#include "Level/01_Play/Components/ObsMovementActorComponent.h"
 #include "Global/Data/ResourceDataTable.h"
 #include "FallGlobal.h"
 #include "HorizontalSlider.generated.h"
@@ -28,8 +28,8 @@ public:
 
 public:
 	// ActorComponent
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Movement")
-	UMovementActorComponent* MovementComponent;
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "ObstacleMoveComp")
+	UObsMovementActorComponent* ObstacleMoveComp;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "RootScene")
 	USceneComponent* RootScene;
@@ -48,6 +48,4 @@ private:
 
 	UFUNCTION()
 	void SetMesh();
-	UFUNCTION()
-	void SetComponent();
 };

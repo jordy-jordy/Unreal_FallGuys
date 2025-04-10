@@ -19,8 +19,6 @@ void ADrown::BeginPlay()
 
 	SetDrownMesh();
 	SetDrownRotation();
-
-	MovementComponent->SpinSpeed = FRotator({ 0.0f, 180.0f, 0.0f });
 }
 
 // Called every frame
@@ -34,7 +32,7 @@ void ADrown::Tick(float DeltaTime)
 void ADrown::SetDrownLocation()
 {
 	// ActorComponent
-	MovementComponent = CreateDefaultSubobject<UMovementActorComponent>(FName("MovementComponent"));
+	ObstacleMoveComp = CreateDefaultSubobject<UObsMovementActorComponent>(FName("ObstacleMoveComp"));
 
 	// SetMesh And Location
 	RootScene = CreateDefaultSubobject<USceneComponent>(TEXT("RootScene"));
@@ -147,8 +145,5 @@ void ADrown::SpinPropeller(float DeltaTime)
 	float Delta_R = DeltaTime;
 
 	(IsLeft) ? Delta_R *= -1 : Delta_L *= -1;
-	
-	MovementComponent->Spin(Delta_L, DrownPropeller_Left);
-	MovementComponent->Spin(Delta_R, DrownPropeller_Right);
 }
 

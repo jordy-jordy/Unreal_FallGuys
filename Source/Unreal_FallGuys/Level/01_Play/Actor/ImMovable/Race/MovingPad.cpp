@@ -31,10 +31,6 @@ void AMovingPad::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (IsMove)
-	{
-		MovementComponent->Move_Scene(DeltaTime, Player->GetRootComponent());
-	}
 }
 
 void AMovingPad::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -57,7 +53,7 @@ void AMovingPad::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 void AMovingPad::OperateMesh()
 {
 	// ActorComponent
-	MovementComponent = CreateDefaultSubobject<UMovementActorComponent>(FName("MovementComponent"));
+	ObstacleMoveComp = CreateDefaultSubobject<UObsMovementActorComponent>(FName("ObstacleMoveComp"));
 
 	// SetMesh And Location
 	RootScene = CreateDefaultSubobject<USceneComponent>(TEXT("RootScene"));
