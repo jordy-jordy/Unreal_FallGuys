@@ -323,7 +323,7 @@ EPlayerStatus UFallGlobal::GetStageEndCondition()
 void UFallGlobal::SetCanMoveLevel(bool _Value)
 {
 	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
-	FallState->S_SetCanMoveLevel(_Value);
+	FallState->S2C_SetCanMoveLevel(_Value);
 }
 
 // PlayGameState : 게임 시작했니?
@@ -338,6 +338,13 @@ bool UFallGlobal::GetSettedGoalCountDone()
 {
 	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
 	return FallState->GetGameStateSettedGoalCount();
+}
+
+// PlayGameState : 레이싱이야 생존이야
+FString UFallGlobal::GetStageGoalType()
+{
+	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
+	return FallState->GetGSStageGoalType();
 }
 
 // 이재영 : 메인위젯을 얻는 함수

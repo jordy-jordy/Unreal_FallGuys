@@ -206,9 +206,18 @@ public:
 	// 게임 시작했니?
 	bool GetGameStateGameStarted() { return bGameStateGameStarted; }
 
-	UFUNCTION(Server, Reliable)
-	void S_SetCanMoveLevel(bool _b);
-	void S_SetCanMoveLevel_Implementation(bool _b);
+	// 다음 레벨로 이동 가능혀 : PlayGameMode에 세팅
+	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
+	void S2C_SetCanMoveLevel(bool _b);
+	void S2C_SetCanMoveLevel_Implementation(bool _b);
+
+	// 스테이지의 승리 조건을 세팅
+	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
+	void SetStageGoalType(EPlayerStatus _Status);
+	void SetStageGoalType_Implementation(EPlayerStatus _Status);
+
+	// 현 스테이지의 골 타입을 반환함
+	FString GetGSStageGoalType();
 
 protected:
 	// 랜덤 레벨 네임
@@ -226,6 +235,10 @@ protected:
 	// 현재 스테이지 페이즈
 	UPROPERTY(Replicated)
 	EStagePhase GS_CurStagePhase = EStagePhase::STAGE_1;
+
+	// 레이싱 or 생존 인지 구분
+	UPROPERTY(Replicated)
+	EPlayerStatus GS_CurStageResultStatus = EPlayerStatus::NONE;
 
 	// 레벨 시네마틱 시작해도 되니?
 	UPROPERTY(Replicated)

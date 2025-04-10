@@ -310,12 +310,36 @@ void APlayGameState::SetDropOrder_Implementation()
 	SyncPlayerInfoFromPlayerState();
 }
 
-void APlayGameState::S_SetCanMoveLevel_Implementation(bool _b)
+// 다음 레벨로 이동 가능혀 : PlayGameMode에 세팅
+void APlayGameState::S2C_SetCanMoveLevel_Implementation(bool _b)
 {
 	APlayGameMode* PlayMode = Cast<APlayGameMode>(GetWorld()->GetAuthGameMode());
 	if (PlayMode)
 	{
 		PlayMode->SetCanMoveLevel(_b);
+	}
+}
+
+// 스테이지의 승리 조건을 세팅
+void APlayGameState::SetStageGoalType_Implementation(EPlayerStatus _Status)
+{
+	GS_CurStageResultStatus = _Status;
+}
+
+// 현 스테이지의 골 타입을 반환함
+FString APlayGameState::GetGSStageGoalType()
+{
+	if (GS_CurStageResultStatus == EPlayerStatus::SUCCESS)
+	{
+		return TEXT("RACING");
+	}
+	else if (GS_CurStageResultStatus == EPlayerStatus::FAIL)
+	{
+		return TEXT("SURVIVE");
+	}
+	else
+	{
+		return TEXT("잘못됨");
 	}
 }
 
@@ -328,6 +352,7 @@ void APlayGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(APlayGameState, LevelAssetName);
 	DOREPLIFETIME(APlayGameState, GS_CurStageType);
 	DOREPLIFETIME(APlayGameState, GS_CurStagePhase);
+	DOREPLIFETIME(APlayGameState, GS_CurStageResultStatus);
 	DOREPLIFETIME(APlayGameState, CountDownTime);
 	DOREPLIFETIME(APlayGameState, ConnectedPlayers);
 	DOREPLIFETIME(APlayGameState, IsCountDownOver);

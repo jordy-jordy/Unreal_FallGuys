@@ -211,6 +211,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static bool GetSettedGoalCountDone();
 
+	// PlayGameState : 레이싱이야 생존이야
+	UFUNCTION(BlueprintCallable)
+	static FString GetStageGoalType();
+
 
 // 이재영 : 메인위젯을 얻는 함수
 public:
