@@ -200,12 +200,13 @@ void APlayGameMode::RestorePlayerInfo(APlayerController* _NewPlayer, APlayPlayer
 			{
 				RestoredInfo.Status = EPlayerStatus::DEFAULT;
 			}
-			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode:: PostLogin :: 개인전 입니다 - SUCCESS 플레이어 정보 리셋"));
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode:: PostLogin :: 개인전 입니다 - 성공한 플레이어 정보 리셋"));
 		}
 		else if (MODE_CurStageType == EStageType::TEAM)
 		{
 			RestoredInfo.Status = EPlayerStatus::DEFAULT;
-			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode:: PostLogin :: 팀전 입니다 - 플레이어 정보 리셋"));
+			RestoredInfo.Team = ETeamType::NONE;
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode:: PostLogin :: 팀전 입니다 - 플레이어 팀 정보 리셋"));
 		}
 		else
 		{

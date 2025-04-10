@@ -82,6 +82,10 @@ void ATeamPlayGameMode::AssignTeam(APlayPlayerState* _PlayerState)
 	APlayGameState* FallState = GetGameState<APlayGameState>();
 	if (!FallState) return;
 
+	// 배정 받기 전에 동기화
+	SyncPlayerInfo();
+
+	// 각 팀 인원
 	int32 RedCount = 0;
 	int32 BlueCount = 0;
 
@@ -89,11 +93,11 @@ void ATeamPlayGameMode::AssignTeam(APlayPlayerState* _PlayerState)
 	{
 		if (Entry.PlayerInfo.Team == ETeamType::RED)
 		{
-			RedCount++;
+			++RedCount;
 		}
 		else if (Entry.PlayerInfo.Team == ETeamType::BLUE)
 		{
-			BlueCount++;
+			++BlueCount;
 		}
 	}
 
@@ -105,6 +109,9 @@ void ATeamPlayGameMode::AssignTeam(APlayPlayerState* _PlayerState)
 	{
 		_PlayerState->SetTeam(ETeamType::BLUE);
 	}
+
+	// 배정 받은 후 동기화
+	SyncPlayerInfo();
 }
 
 // 레드팀 점수 계산
