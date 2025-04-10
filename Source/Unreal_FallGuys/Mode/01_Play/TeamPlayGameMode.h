@@ -53,6 +53,8 @@ protected:
 
 	// 게임 시작 후 스테이지 제한 시간 핸들
 	FTimerHandle StageLimitTimerHandle;
+	// 게임 시작 후 남은 제한 시간 핸들
+	FTimerHandle RemainingTimeUpdateHandle;
 	// 서버 트래블 딜레이 핸들
 	FTimerHandle TravelDelayTimerHandle;
 
@@ -72,6 +74,10 @@ protected:
 	// 스테이지 제한 시간 타이머 활성화
 	UFUNCTION(BlueprintCallable, Category = "LEVEL LIMIT TIME")
 	void StartStageLimitTimer();
+
+	// 스테이지 남은 제한 시간 타이머 활성화
+	UFUNCTION(BlueprintCallable, Category = "LEVEL LIMIT TIME")
+	void UpdateRemainingTime();
 
 	// 스테이지 제한 시간 오버 처리
 	UFUNCTION(BlueprintCallable, Category = "LEVEL LIMIT TIME")

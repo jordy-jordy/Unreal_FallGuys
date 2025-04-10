@@ -347,6 +347,13 @@ FString UFallGlobal::GetStageGoalType()
 	return FallState->GetGSStageGoalType();
 }
 
+// TeamPlayGameState : 남은 시간이 뭐야
+float UFallGlobal::GetRemainingTime()
+{
+	ATeamPlayGameState* FallTeamState = GWorld->GetGameState<ATeamPlayGameState>();
+	return FallTeamState->GetRemainingTime();
+}
+
 // 이재영 : 메인위젯을 얻는 함수
 UTitleMainWidget* UFallGlobal::GetMainWidget(UWorld* _World)
 {

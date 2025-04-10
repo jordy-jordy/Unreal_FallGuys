@@ -68,11 +68,12 @@ void ATeamPlayGameMode::Tick(float DeltaSeconds)
 	// 팀전이 아니면 여기서 끝
 	if (MODE_CurStageType != EStageType::TEAM) { return; }
 
-	// 스테이지 제한 시간 타이머가 활성화 되었다면 리턴
-	if (bStartedLimitTimer) { return; }
-
-	// 스테이지 제한 시간 처리
-	StartStageLimitTimer();
+	// 제한 시간 타이머 시작
+	if (bStartedLimitTimer == false)
+	{
+		StartStageLimitTimer();
+		bStartedLimitTimer = true;
+	}
 }
 
 // 팀 배정
@@ -126,28 +127,38 @@ void ATeamPlayGameMode::CountBLUETeamScore(int _NumberOfEgg)
 	TeamState->SetBLUETeamScore(BLUETeamScore);
 }
 
-// 스테이지 제한 시간 타이머 활성화
+// 스테이지 제한 시간 타이머 및 남은 제한 시간 타이머 활성화
 void ATeamPlayGameMode::StartStageLimitTimer()
 {
 	if (!HasAuthority()) return;
 
-	bStartedLimitTimer = true;
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("TeamPlayGameMode :: BeginPlay :: 스테이지 제한 시간 타이머 시작: %.2f초"), MODE_StageLimitTime);
+
+	GetWorldTimerManager().SetTimer(StageLimitTimerHandle, this, &ATeamPlayGameMode::OnStageLimitTimeOver, MODE_StageLimitTime, false);
+	GetWorldTimerManager().SetTimer(RemainingTimeUpdateHandle, this, &ATeamPlayGameMode::UpdateRemainingTime, 1.0f, true);
+}
+
+// 스테이지 남은 제한 시간 타이머 활성화
+void ATeamPlayGameMode::UpdateRemainingTime()
+{
+	float ElapsedTime = GetWorldTimerManager().GetTimerElapsed(StageLimitTimerHandle);
+	float TotalTime = MODE_StageLimitTime;
+	float RemainingTime = FMath::Clamp(TotalTime - ElapsedTime, 0.0f, TotalTime);
 
 	ATeamPlayGameState* FallTeamState = GetGameState<ATeamPlayGameState>();
-	if (!FallTeamState) return;
-
-	float Time = FallTeamState->GetStageLimitTime();
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("TeamPlayGameMode :: BeginPlay :: 스테이지 제한 시간 타이머 시작: %.2f초"), Time);
-
-	GetWorldTimerManager().SetTimer(StageLimitTimerHandle, this, &ATeamPlayGameMode::OnStageLimitTimeOver, Time, false);
+	if (FallTeamState)
+	{
+		FallTeamState->SetRemainingTime(RemainingTime);
+	}
 }
 
 // 스테이지 제한 시간 오버 처리
 void ATeamPlayGameMode::OnStageLimitTimeOver()
 {
-	if (!HasAuthority()) return;
-
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("TeamPlayGameMode :: BeginPlay :: 제한 시간 초과! 스테이지를 종료합니다."));
+
+	// 남은 시간 갱신 중단
+	GetWorldTimerManager().ClearTimer(RemainingTimeUpdateHandle);
 
 	// 팀의 승패 결정
 	DetermineWinningAndLosingTeams();

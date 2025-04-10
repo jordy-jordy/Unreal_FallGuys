@@ -215,6 +215,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static FString GetStageGoalType();
 
+	// TeamPlayGameState : 남은 시간이 뭐야
+	UFUNCTION(BlueprintCallable)
+	static float GetRemainingTime();
+
 
 // 이재영 : 메인위젯을 얻는 함수
 public:
