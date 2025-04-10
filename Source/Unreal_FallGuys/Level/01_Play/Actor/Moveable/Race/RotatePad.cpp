@@ -28,6 +28,9 @@ void ARotatePad::Tick(float DeltaTime)
 
 void ARotatePad::OperateMesh()
 {
+	// ActorComponent
+	//ObstacleMoveComp = CreateDefaultSubobject<UObsMovementActorComponent>(FName("ObstacleMoveComp"));
+
 	// Mesh And Location
 	RootScene = CreateDefaultSubobject<USceneComponent>(TEXT("RootScene"));
 	RootComponent = RootScene;
@@ -55,14 +58,4 @@ void ARotatePad::SetMesh()
 	Pad->SetStaticMesh(UFallGlobal::GetResourceMesh("RotatePad_Pad"));
 
 	Cover->SetStaticMesh(UFallGlobal::GetResourceMesh("Cube"));
-}
-
-bool ARotatePad::CheckMoveUp()
-{
-	return (Axis->GetRelativeRotation().Roll > LimitAngle);
-}
-
-bool ARotatePad::CheckMoveDown()
-{
-	return (Axis->GetRelativeRotation().Roll < 0.0f);
 }

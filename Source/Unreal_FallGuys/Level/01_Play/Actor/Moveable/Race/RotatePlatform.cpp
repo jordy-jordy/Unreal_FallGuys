@@ -49,7 +49,6 @@ void ARotatePlatform::OparateMesh()
 	LaunchComponent = CreateDefaultSubobject<ULaunchActorComponent>(FName("LaunchComponent"));
 	LaunchComponent->SetActive(false);
 
-
 	// SetMesh And Location
 	RootScene = CreateDefaultSubobject<USceneComponent>(TEXT("RootScene"));
 	RootComponent = RootScene;

@@ -115,27 +115,15 @@ void UObsMovementActorComponent::Spin(UStaticMeshComponent* Target, FRotator Rot
 	Target->SetRelativeRotation(Target->GetRelativeRotation() + RotateSpeed * DeltaTime);
 }
 
-void UObsMovementActorComponent::SpinOnce(UStaticMeshComponent* Target, FRotator RotateSpeed, FRotator LimitAngle, EObsAxis Axis, float DeltaTime)
+void UObsMovementActorComponent::SpinOnce(UStaticMeshComponent* Target, FRotator RotateSpeed, FRotator LimitAngle, float DeltaTime)
 {
-	if (false == GetOwner()->HasAuthority())
-	{
-		return;
-	}
-
 	if (LimitAngle.Roll > 0 || LimitAngle.Pitch > 0 || LimitAngle.Yaw > 0)
 	{
-		if (!CompareRotator(Target->GetRelativeRotation(), LimitAngle, Axis))
-		{
-			Target->SetRelativeRotation(Target->GetRelativeRotation() + RotateSpeed * DeltaTime);
-		}
-		
+		Target->SetRelativeRotation(Target->GetRelativeRotation() + RotateSpeed * DeltaTime);		
 	}
 	else if (LimitAngle.Roll < 0 || LimitAngle.Pitch < 0 || LimitAngle.Yaw < 0)
 	{
-		if (CompareRotator(Target->GetRelativeRotation(), LimitAngle, Axis))
-		{
 			Target->SetRelativeRotation(Target->GetRelativeRotation() + RotateSpeed * DeltaTime);
-		}
 	}
 }
 
