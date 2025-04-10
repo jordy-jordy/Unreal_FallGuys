@@ -77,6 +77,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "PLAYGAMEMODE :: GAME")
 	int32 GetFinishPlayerCount() const { return FinishPlayer; }
 
+	// 시네마틱 끝났대
+	UFUNCTION(BlueprintCallable, Category = "PLAYGAMEMODE :: GAME")
+	void SetCinematicEND(bool _Value) { bCinematicEND = _Value; }
+
+
 protected:
 	// 필수 데이터 세팅
 	bool CheckEssentialObjects(class APlayerController* _NewPlayer, class APlayGameState*& _OutFallState, class APlayPlayerState*& _OutPlayerState, class UBaseGameInstance*& _OutGameInstance);
@@ -125,6 +130,8 @@ protected:
 	bool bMODEIsResultLevel = false;
 	// 게임 시작됐니
 	bool bGameStarted = false;
+	// 시네마틱 끝났니
+	bool bCinematicEND = false;
 
 	// 현재 스테이지 이름
 	FString MODE_CurLevelName = TEXT("Unknown");

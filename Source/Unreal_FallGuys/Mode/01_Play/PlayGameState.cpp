@@ -199,6 +199,12 @@ void APlayGameState::SetIsLevelCinematicEnd_Implementation(bool _Value)
 {
 	IsLevelCinematicEnd = _Value;
 	
+	APlayGameMode* PlayMode = Cast<APlayGameMode>(GetWorld()->GetAuthGameMode());
+	if (PlayMode)
+	{
+		PlayMode->SetCinematicEND(IsLevelCinematicEnd);
+	}
+
 	if (_Value == true)
 	{
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: 레벨 시네마틱이 종료되었습니다."));

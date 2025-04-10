@@ -65,9 +65,6 @@ void ATeamPlayGameMode::Tick(float DeltaSeconds)
 	// 팀전이 아니면 여기서 끝
 	if (MODE_CurStageType != EStageType::TEAM) { return; }
 
-	// 게임이 시작되지 않았으면 리턴 => PlayGameMode에서 세팅 되는 값임
-	if (!bGameStarted) { return; } 
-
 	// 스테이지 제한 시간 타이머가 활성화 되었다면 리턴
 	if (bStartedLimitTimer) { return; }
 

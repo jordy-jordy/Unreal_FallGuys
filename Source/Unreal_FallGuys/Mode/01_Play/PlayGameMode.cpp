@@ -360,7 +360,7 @@ void APlayGameMode::CheckStartConditions()
 		}
 
 		// 시네마틱이 안끝났으면 리턴
-		if (FallState->GetIsLevelCinematicEnd() == false) { return; }
+		if (bCinematicEND == false) { return; }
 
 		// 카운트 다운 사용할거야?
 		if (UFallConst::UseCountDown == true)
@@ -383,7 +383,7 @@ void APlayGameMode::CheckStartConditions()
 	}
 
 	// 인원도 찼고, 레벨 시네마틱도 끝났고, 카운트 다운도 끝났으니까 게임 시작 가능
-	if (bNumberOfPlayer == true && FallState->GetIsLevelCinematicEnd() == true && bCountDownEnd == true)
+	if (bNumberOfPlayer == true && bCinematicEND == true && bCountDownEnd == true)
 	{
 		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: BeginPlay :: 게임 시작 조건 충족. StartGame 호출"));
 
@@ -628,6 +628,9 @@ void APlayGameMode::Tick(float DeltaSeconds)
 
 	// 서버만 실행
 	if (!HasAuthority()) { return; }
+
+	// 게임이 시작되지 않았다면 리턴하도록 해
+	if (!bGameStarted) { return; }
 
 	// 개인전이 아니면 여기서 끝
 	if (MODE_CurStageType != EStageType::SOLO) { return; }
