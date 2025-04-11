@@ -129,18 +129,27 @@ void UObsMovementActorComponent::SpinOnce(UStaticMeshComponent* Target, FRotator
 
 void UObsMovementActorComponent::SpinCycle(UStaticMeshComponent* Target, FRotator RotateSpeed, FRotator LimitAngle, EObsAxis Axis, float DeltaTime)
 {
-	if (false == GetOwner()->HasAuthority())
-	{
-		return;
-	}
-
 	if (IsLeft)
 	{
-
+		if (CompareRotator(Target->GetRelativeRotation(), (LimitAngle * -1), Axis))
+		{
+			Target->SetRelativeRotation(Target->GetRelativeRotation() + RotateSpeed * -DeltaTime);
+		}
+		else
+		{
+			IsLeft = !IsLeft;
+		}
 	}
 	else
 	{
-
+		if (CompareRotator(Target->GetRelativeRotation(), LimitAngle, Axis))
+		{
+			IsLeft = !IsLeft;
+		}
+		else
+		{
+			Target->SetRelativeRotation(Target->GetRelativeRotation() + RotateSpeed * DeltaTime);
+		}
 	}
 }
 

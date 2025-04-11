@@ -18,24 +18,18 @@ void ARotateRoller::BeginPlay()
 	Super::BeginPlay();
 
 	SetMesh();
-	
-	MovementComponent->SpinCycleSpeed = FRotator({ 0, 0, 70 });
-	MovementComponent->LimitAngle = FRotator({ 0, 0, 70 });
 }
 
 // Called every frame
 void ARotateRoller::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	MovementComponent->SpinCycle(DeltaTime, RollerBody, EMoveAxis::ROLL);
-	MovementComponent->SpinCycle(DeltaTime, RollerAxis, EMoveAxis::ROLL);
 }
 
 void ARotateRoller::OperateMesh()
 {
 	// ActorComponent
-	MovementComponent = CreateDefaultSubobject<UMovementActorComponent>(FName("MovementComponent"));
+	ObstacleMoveComp = CreateDefaultSubobject<UObsMovementActorComponent>(FName("ObstacleMoveComp"));
 
 	// SetMesh And Location
 	RootScene = CreateDefaultSubobject<USceneComponent>(TEXT("RootScene"));

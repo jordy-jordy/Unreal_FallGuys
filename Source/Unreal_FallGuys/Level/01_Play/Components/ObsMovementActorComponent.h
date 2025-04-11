@@ -57,6 +57,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SpinOnce(UStaticMeshComponent* Target, FRotator RotateSpeed, FRotator LimitAngle, float DeltaTime);
 
-	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly)
+	UFUNCTION(BlueprintCallable)
 	void SpinCycle(UStaticMeshComponent* Target, FRotator RotateSpeed, FRotator LimitAngle, EObsAxis Axis, float DeltaTime);
 };

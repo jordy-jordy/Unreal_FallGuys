@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Components/CapsuleComponent.h"
-#include "Level/01_Play/Components/MovementActorComponent.h"
+#include "Level/01_Play/Components/ObsMovementActorComponent.h"
 #include "Global/Data/ResourceDataTable.h"
 #include "FallGlobal.h"
 #include "RotateWeapon.generated.h"
@@ -37,7 +37,7 @@ public:
 public:
 	// ActorComponent
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Movement")
-	UMovementActorComponent* MovementComponent;
+	UObsMovementActorComponent* ObstacleMoveComp;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "RootScene")
 	USceneComponent* RootScene;
@@ -54,9 +54,6 @@ public:
 	// Variables
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RotateWeapon", meta = (AllowPrivateAccess = "true"))
 	EWeaponType WeaponType = EWeaponType::HAMMER;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Physics", meta = (AllowPrivateAccess = "true"))
-	float PhyTime = 0.0f;
 
 private:
 	// Functions

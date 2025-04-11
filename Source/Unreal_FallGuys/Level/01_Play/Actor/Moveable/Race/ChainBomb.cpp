@@ -19,22 +19,18 @@ void AChainBomb::BeginPlay()
 	
 	SetMesh();
 
-	MovementComponent->SpinCycleSpeed = FRotator({ 120, 0, 0 });
-	MovementComponent->LimitAngle = FRotator({ 70, 0, 0 });
 }
 
 // Called every frame
 void AChainBomb::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	MovementComponent->SpinCycle(DeltaTime, StartChain, EMoveAxis::PITCH);
 }
 
 void AChainBomb::OperateMesh()
 {
 	// ActorComponent
-	MovementComponent = CreateDefaultSubobject<UMovementActorComponent>(FName("MovementComponent"));
+	ObstacleMoveComp = CreateDefaultSubobject<UObsMovementActorComponent>(FName("ObstacleMoveComp"));
 
 	// SetMesh And Location
 	RootScene = CreateDefaultSubobject<USceneComponent>(TEXT("RootScene"));
