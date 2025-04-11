@@ -267,22 +267,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
 	FString InsGetRandomTeamLevel();
 
-	// 레벨 가이드 반환
-	UFUNCTION(BlueprintCallable, Category = "LEVEL")
-	FString InsGetPlayGuideFromAssetName(const FString& _AssetName);
-
-	// 레벨 이미지 반환
-	UFUNCTION(BlueprintCallable, Category = "LEVEL")
-	UTexture2D* InsGetLevelImageFromAssetName(const FString& _AssetName);
-
-	// 레벨 태그 이미지 반환
-	UFUNCTION(BlueprintCallable, Category = "LEVEL")
-	UTexture2D* InsGetLevelTagImage();
-
-	// 플레이 목표 반환
-	UFUNCTION(BlueprintCallable, Category = "LEVEL")
-	FString InsGetGoalGuideFromAssetName(const FString& _AssetName);
-
 	// 현재의 스테이지 단계를 세팅
 	UFUNCTION(BlueprintCallable)
 	void InsSetCurStagePhase(EStagePhase _StagePhase) { CurLevelInfo_Ins.CurStagePhase = _StagePhase; }

@@ -567,30 +567,6 @@ FString UBaseGameInstance::InsGetRandomTeamLevel()
 
 	return SelectedInfo.LevelAssetName;
 }
-
-// 레벨 가이드 반환
-FString UBaseGameInstance::InsGetPlayGuideFromAssetName(const FString& _AssetName)
-{
-	return CurLevelInfo_Ins.PlayGuide;
-}
-
-// 레벨 이미지 반환
-UTexture2D* UBaseGameInstance::InsGetLevelImageFromAssetName(const FString& _AssetName)
-{
-	return CurLevelInfo_Ins.LevelIMG;
-}
-
-// 플레이 목표 반환
-FString UBaseGameInstance::InsGetGoalGuideFromAssetName(const FString& _AssetName)
-{
-	return CurLevelInfo_Ins.GoalGuide;
-}
-
-// 레벨 태그 이미지 반환
-UTexture2D* UBaseGameInstance::InsGetLevelTagImage()
-{
-	return CurLevelInfo_Ins.LevelTagIMG;
-}
 #pragma endregion
 
 #pragma region BaseGameInstance :: 플레이어 데이터 관련
