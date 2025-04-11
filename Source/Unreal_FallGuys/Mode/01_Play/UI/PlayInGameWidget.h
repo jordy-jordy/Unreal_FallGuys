@@ -22,4 +22,16 @@ public:
 	UFUNCTION(BlueprintCallable)
 	EStagePhase CurStagePhase();
 
+	UFUNCTION(BlueprintCallable)
+	void ShowResult(bool _Value);
+
+	UFUNCTION(BlueprintCallable)
+	bool GetShowResult()
+	{
+		return IsShowResult;
+	}
+
+private:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
+	bool IsShowResult = false;
 };

@@ -8,6 +8,8 @@
 void UPlayInGameWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	IsShowResult = false;
 }
 
 // юс╫ц
@@ -18,5 +20,10 @@ EStagePhase UPlayInGameWidget::CurStagePhase()
 	EStagePhase CurStagePhase = PlayGameState->GetCurStagePhase_STATE();
 
 	return CurStagePhase;
+}
+
+void UPlayInGameWidget::ShowResult(bool _Value)
+{
+	IsShowResult = _Value;
 }
 

@@ -151,7 +151,6 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 	switch (CurUIType)
 	{
 	case EPlayUIType::PlayLevelTag:
-	case EPlayUIType::PlayResult:
 		switch (EPlayUIType(_UIType))
 		{
 		case EPlayUIType::PlayInGame:
@@ -182,19 +181,15 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 				SpectatorResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 			}
 
-			if (true == IsSuccessPlayer())
-			{
-				SpectatorResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			}
-
 			break;
 		}
 		default:
 			break;
 		}
 		break;
-	//{
-		/*switch (EPlayUIType(_UIType))
+	case EPlayUIType::PlayResult:
+	{
+		switch (EPlayUIType(_UIType))
 		{
 		case EPlayUIType::PlayInGame:
 		{
@@ -204,7 +199,7 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 				return;
 			}
 
-			EStageType StageType = GameState->GetCurStageType();
+			EStageType StageType = GameState->GetLevelType_STATE();
 
 			UPlayUserWidget* ClearCount = FindWidget(EPlayUIType::PlayClearCount);
 			UPlayUserWidget* PlayScore = FindWidget(EPlayUIType::PlayScore);
@@ -219,19 +214,18 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 				PlayScore->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 			}
 
-			bool Value = IsFailPlayer();
-			if (true == IsFailPlayer() && EStagePhase::STAGE_1 != GameState->GetCurStagePhase())
-			{
+			//if (true == IsSuccessPlayer())
+			//{
 				SpectatorResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			}
+			//}
 
 			break;
 		}
 		default:
 			break;
-		}*/
-	//	break;
-	//}
+		}
+		break;
+	}
 	case EPlayUIType::PlayInGame:
 	{
 		switch (EPlayUIType(_UIType))
@@ -273,16 +267,6 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 		}
 		break;
 	}
-	case EPlayUIType::PlaySpectatorResult:
-		break;
-	case EPlayUIType::PlayGameOver:
-		break;
-	case EPlayUIType::PlayClearCount:
-		break;
-	case EPlayUIType::PlayScore:
-		break;
-	case EPlayUIType::MAX:
-		break;
 	default:
 		break;
 	}

@@ -17,6 +17,7 @@ class UNREAL_FALLGUYS_API UPlayResultWidget : public UPlayUserWidget
 public:
 	void NativeConstruct();
 
+	UFUNCTION()
 	void ResultWidget();
 
 private:
