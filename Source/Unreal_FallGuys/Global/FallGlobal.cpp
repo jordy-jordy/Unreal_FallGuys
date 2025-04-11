@@ -207,6 +207,13 @@ UTexture2D* UFallGlobal::GetLevelImageFromAssetName(const FString& _AssetName)
 	return GameIns->InsGetLevelImageFromAssetName(_AssetName);
 }
 
+// BaseGameInstance : 레벨 태그 이미지 반환
+UTexture2D* UFallGlobal::GetLevelTagImage()
+{
+	UBaseGameInstance* GameIns = GWorld->GetGameInstance<UBaseGameInstance>();
+	return GameIns->InsGetLevelTagImage();
+}
+
 // BaseGameInstance : 플레이 목표 반환
 FString UFallGlobal::GetGoalGuideFromAssetName(const FString& _AssetName)
 {

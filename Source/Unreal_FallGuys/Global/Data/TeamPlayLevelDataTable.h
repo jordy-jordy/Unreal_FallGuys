@@ -39,6 +39,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TEAM LEVEL DATA")
 	UTexture2D* LevelIMG = nullptr;
 
+	// 전환 화면용 레벨 태그
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TEAM LEVEL DATA")
+	UTexture2D* LevelTagIMG = nullptr;
+
 	// 플레이 가이드
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TEAM LEVEL DATA")
 	FString PlayGuide;

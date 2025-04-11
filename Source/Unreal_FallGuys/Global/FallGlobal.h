@@ -135,6 +135,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static UTexture2D* GetLevelImageFromAssetName(const FString& _AssetName);
 
+	// BaseGameInstance : 레벨 태그 이미지 반환
+	UFUNCTION(BlueprintCallable)
+	static UTexture2D* GetLevelTagImage();
+
 	// BaseGameInstance : 플레이 목표 반환
 	UFUNCTION(BlueprintCallable)
 	static FString GetGoalGuideFromAssetName(const FString& _AssetName);

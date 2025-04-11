@@ -253,6 +253,29 @@ void APlayGameState::SetGameStateGameStarted_Implementation(bool _Value)
 	bGameStateGameStarted = _Value;
 }
 
+// 실패한 플레이어 정보 리스트 백업
+void APlayGameState::BackUpFailPlayersInfo_Implementation()
+{
+	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
+
+	if (!GameInstance)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameState :: BackUpFailPlayersInfo :: GameInstance가 nullptr입니다."));
+		return;
+	}
+
+	// 기존 실패자 백업 초기화
+	GameInstance->FailPlayerInfoBackup.Empty();
+
+	for (const FPlayerInfoEntry& Entry : FailPlayerInfoArray)
+	{
+		GameInstance->FailPlayerInfoBackup.Add(Entry.UniqueID, Entry.PlayerInfo);
+
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameState :: BackUpFailPlayersInfo :: UID = %s, Tag = %s → FAIL 백업됨"),
+			*Entry.UniqueID, *Entry.PlayerInfo.Tag.ToString());
+	}
+}
+
 // 실패한 유저의 떨어지는 순번을 정해줌
 void APlayGameState::SetDropOrder_Implementation()
 {
@@ -313,7 +336,35 @@ void APlayGameState::SetDropOrder_Implementation()
 			*Entry.PlayerInfo.Tag.ToString(), Entry.PlayerInfo.DropOrder);
 	}
 
+	// 실패한 유저 정보 GameInstance에 백업
+	BackUpFailPlayersInfo();
+
+	// 상태 동기화
 	SyncPlayerInfoFromPlayerState();
+}
+
+// 실패한 유저 정보 복구
+void APlayGameState::RestoreFailPlayersInfo()
+{
+	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
+	if (!GameInstance)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameState :: RestoreFailPlayersInfo :: GameInstance가 nullptr입니다."));
+		return;
+	}
+
+	FailPlayerInfoArray.Empty();
+
+	for (const TPair<FString, FPlayerInfo>& Elem : GameInstance->FailPlayerInfoBackup)
+	{
+		const FString& UID = Elem.Key;
+		const FPlayerInfo& Info = Elem.Value;
+
+		FailPlayerInfoArray.Add(FPlayerInfoEntry(UID, Info));
+
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameState :: RestoreFailPlayersInfo :: UID = %s, Tag = %s → 실패한 유저 정보 복원됨"),
+			*UID, *Info.Tag.ToString());
+	}
 }
 
 // 다음 레벨로 이동 가능혀 : PlayGameMode에 세팅
@@ -369,6 +420,8 @@ void APlayGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(APlayGameState, bGameStateIsResultLevel);
 	DOREPLIFETIME(APlayGameState, bGameStateGameStarted);
 	DOREPLIFETIME(APlayGameState, bGameStateSettedGoalCount);
+	DOREPLIFETIME(APlayGameState, FailPlayerInfoArray);
+	DOREPLIFETIME(APlayGameState, DefaultPlayerInfoArray);
 }
 
 void APlayGameState::PrintFailPlayersInfo()

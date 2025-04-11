@@ -74,7 +74,7 @@ void APlayGameMode::PostLogin(APlayerController* _NewPlayer)
 	// 이전 스테이지에서 넘어온 경우 복원, 아니면 초기화
 	if (GameInstance->IsMovedLevel)
 	{
-		RestorePlayerInfo(_NewPlayer, PlayerState, GameInstance);
+		RestorePlayerInfo(_NewPlayer, PlayerState, FallState, GameInstance);
 	}
 	else
 	{
@@ -181,7 +181,7 @@ void APlayGameMode::InitPlayerInfo(APlayerController* _NewPlayer, APlayPlayerSta
 }
 
 // 기존 플레이어 정보 복구
-void APlayGameMode::RestorePlayerInfo(APlayerController* _NewPlayer, APlayPlayerState* _PlayerState, UBaseGameInstance* _GameInstance)
+void APlayGameMode::RestorePlayerInfo(APlayerController* _NewPlayer, APlayPlayerState* _PlayerState, APlayGameState* _FallState, UBaseGameInstance* _GameInstance)
 {
 	const FString PlayerUniqueID = _PlayerState->GetUniqueId()->ToString();
 
@@ -217,6 +217,9 @@ void APlayGameMode::RestorePlayerInfo(APlayerController* _NewPlayer, APlayPlayer
 	// 인포 복구
 	_PlayerState->PlayerInfo = RestoredInfo;
 	_NewPlayer->Tags.Add(RestoredInfo.Tag);
+
+	// 이전 스테이지에서 실패한 유저 리스트 복구
+	_FallState->RestoreFailPlayersInfo();
 
 	LogPlayerInfo(TEXT("PlayGameMode :: PostLogin :: 플레이어 정보 복구 완료"), RestoredInfo, _NewPlayer);
 }
@@ -402,7 +405,7 @@ void APlayGameMode::CheckStartConditions()
 	}
 }
 
-// 상태가 디폴트인 플레이어 수
+// 상태가 디폴트인 플레이어 수 카운트 및 수집
 int32 APlayGameMode::GetDefaultPlayerCount()
 {
 	APlayGameState* FallState = GetGameState<APlayGameState>();
@@ -413,12 +416,23 @@ int32 APlayGameMode::GetDefaultPlayerCount()
 	}
 
 	int32 Count = 0;
+	FallState->DefaultPlayerInfoArray.Empty(); 
+
 	for (APlayerState* PS : FallState->PlayerArray)
 	{
 		APlayPlayerState* PState = Cast<APlayPlayerState>(PS);
 		if (PState && PState->GetPlayerStateStatus() == EPlayerStatus::DEFAULT)
 		{
 			++Count;
+
+			// 추가: 배열에도 저장
+			FPlayerInfoEntry Entry(PState->PlayerInfo.UniqueID, PState->PlayerInfo);
+			FallState->DefaultPlayerInfoArray.Add(Entry);
+
+			UE_LOG(FALL_DEV_LOG, Log,
+				TEXT("PlayGameMode :: GetDefaultPlayerCount :: UID = %s, Tag = %s → 디폴트 상태로 등록"),
+				*Entry.UniqueID,
+				*Entry.PlayerInfo.Tag.ToString());
 		}
 	}
 	return Count;
@@ -752,7 +766,7 @@ void APlayGameMode::SetEndCondition_Solo()
 			ChangeDefaultPlayersTo();
 		}
 
-		// 실패자에게 DropOrder 배정
+		// 실패자에게 DropOrder 배정 및 실패한 유저 정보 백업
 		FallState->SetDropOrder();
 
 		// 플레이어 인포를 백업한 이력이 없을때만
@@ -909,6 +923,7 @@ void APlayGameMode::SetDefaultPlayersToSuccess()
 	// 상태 바꾼 것을 동기화
 	SyncPlayerInfo();
 }
+
 #pragma endregion
 
 // 개인전용 : 중간 결과창으로 이동

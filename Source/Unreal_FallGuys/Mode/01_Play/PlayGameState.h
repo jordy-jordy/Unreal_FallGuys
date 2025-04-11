@@ -71,6 +71,10 @@ public:
 	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category = "PLAYER LIST")
 	TArray<FPlayerInfoEntry> FailPlayerInfoArray;
 
+	// 성공한 플레이어 정보 목록
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category = "PLAYER LIST")
+	TArray<FPlayerInfoEntry> DefaultPlayerInfoArray;
+
 	// `PlayerState`에서 데이터 동기화
 	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "PLAYER LIST")
 	void SyncPlayerInfoFromPlayerState();
@@ -95,10 +99,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "PLAYERS")
 	int GetConnectedPlayers() const { return ConnectedPlayers; }
 
+	// 실패한 플레이어 정보 리스트 백업
+	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "PLAYERS")
+	void BackUpFailPlayersInfo();
+	void BackUpFailPlayersInfo_Implementation();
+
 	// 실패한 유저의 떨어지는 순번을 정해줌
 	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "PLAYERS")
 	void SetDropOrder();
 	void SetDropOrder_Implementation();
+
+	UFUNCTION(BlueprintCallable, Category = "PLAYERS")
+	void RestoreFailPlayersInfo();
 
 
 protected:

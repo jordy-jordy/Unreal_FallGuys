@@ -517,10 +517,18 @@ FString UBaseGameInstance::InsGetRandomLevel()
 
 	// 선택된 맵 등록
 	PlayedMapList.Add(SelectedInfo.LevelAssetName);
+
+	// 개인전용 정보
+	StageEndCondition = SelectedInfo.EndCondition;
+
+	// 공통 정보
 	CurLevelAssetName = SelectedInfo.LevelAssetName;
 	CurLevelName = SelectedInfo.LevelName;
 	CurStageType = SelectedInfo.LevelType;
-	StageEndCondition = SelectedInfo.EndCondition;
+	PlayGuide = SelectedInfo.PlayGuide;
+	GoalGuide = SelectedInfo.GoalGuide;
+	LevelIMG = SelectedInfo.LevelIMG;
+	LevelTagIMG = SelectedInfo.LevelTagIMG;
 
 	return CurLevelAssetName;
 }
@@ -550,12 +558,19 @@ FString UBaseGameInstance::InsGetRandomTeamLevel()
 	} while (PlayedMapList.Contains(SelectedInfo.LevelAssetName));
 
 	// 선택된 맵 등록
-	FString SelectedAssetName = SelectedInfo.LevelAssetName;
-	PlayedMapList.Add(SelectedAssetName);
-	CurLevelAssetName = SelectedAssetName;
+	PlayedMapList.Add(SelectedInfo.LevelAssetName);
+
+	// 팀전용 정보
+	StageLimitTime = SelectedInfo.StageLimitTime;
+
+	// 공통 정보
+	CurLevelAssetName = SelectedInfo.LevelAssetName;
 	CurLevelName = SelectedInfo.LevelName;
 	CurStageType = SelectedInfo.LevelType;
-	StageLimitTime = SelectedInfo.StageLimitTime;
+	PlayGuide = SelectedInfo.PlayGuide;
+	GoalGuide = SelectedInfo.GoalGuide;
+	LevelIMG = SelectedInfo.LevelIMG;
+	LevelTagIMG = SelectedInfo.LevelTagIMG;
 
 	return CurLevelAssetName;
 }
@@ -563,137 +578,156 @@ FString UBaseGameInstance::InsGetRandomTeamLevel()
 // 레벨 가이드 반환
 FString UBaseGameInstance::InsGetPlayGuideFromAssetName(const FString& _AssetName)
 {
-	if (!PlayLevelDataTable && !TeamPlayLevelDataTable)
-	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("InsGetPlayGuideFromAssetName :: 데이터 테이블이 모두 nullptr입니다."));
-		return TEXT("Unknown");
-	}
+	return PlayGuide;
 
-	const FPlayLevelDataRow* Row = nullptr;
-	const FTeamPlayLevelDataRow* TeamRow = nullptr;
+#pragma region :: 이전 코드
+	//if (!PlayLevelDataTable && !TeamPlayLevelDataTable)
+	//{
+	//	UE_LOG(FALL_DEV_LOG, Error, TEXT("InsGetPlayGuideFromAssetName :: 데이터 테이블이 모두 nullptr입니다."));
+	//	return TEXT("Unknown");
+	//}
 
-	if (PlayLevelDataTable)
-	{
-		Row = UFallGlobal::FindRowByFStringField<FPlayLevelDataRow>(
-			PlayLevelDataTable,
-			_AssetName,
-			TEXT("InsGetPlayGuideFromAssetName"),
-			[](const FPlayLevelDataRow* R) { return R->Level.GetAssetName(); }
-		);
-	}
+	//const FPlayLevelDataRow* Row = nullptr;
+	//const FTeamPlayLevelDataRow* TeamRow = nullptr;
 
-	if (TeamPlayLevelDataTable)
-	{
-		TeamRow = UFallGlobal::FindRowByFStringField<FTeamPlayLevelDataRow>(
-			TeamPlayLevelDataTable,
-			_AssetName,
-			TEXT("InsGetPlayGuideFromAssetName_Team"),
-			[](const FTeamPlayLevelDataRow* R) { return R->Level.GetAssetName(); }
-		);
-	}
+	//if (PlayLevelDataTable)
+	//{
+	//	Row = UFallGlobal::FindRowByFStringField<FPlayLevelDataRow>(
+	//		PlayLevelDataTable,
+	//		_AssetName,
+	//		TEXT("InsGetPlayGuideFromAssetName"),
+	//		[](const FPlayLevelDataRow* R) { return R->Level.GetAssetName(); }
+	//	);
+	//}
 
-	if (Row && TeamRow)
-	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsGetPlayGuideFromAssetName :: AssetName(%s)가 두 개의 테이블에 모두 존재합니다."), *_AssetName);
-	}
+	//if (TeamPlayLevelDataTable)
+	//{
+	//	TeamRow = UFallGlobal::FindRowByFStringField<FTeamPlayLevelDataRow>(
+	//		TeamPlayLevelDataTable,
+	//		_AssetName,
+	//		TEXT("InsGetPlayGuideFromAssetName_Team"),
+	//		[](const FTeamPlayLevelDataRow* R) { return R->Level.GetAssetName(); }
+	//	);
+	//}
 
-	if (Row) { return Row->PlayGuide; }
-	if (TeamRow) { return TeamRow->PlayGuide; }
+	//if (Row && TeamRow)
+	//{
+	//	UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsGetPlayGuideFromAssetName :: AssetName(%s)가 두 개의 테이블에 모두 존재합니다."), *_AssetName);
+	//}
 
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsGetPlayGuideFromAssetName :: AssetName(%s)의 가이드를 찾을 수 없습니다."), *_AssetName);
-	return TEXT("Unknown");
+	//if (Row) { return Row->PlayGuide; }
+	//if (TeamRow) { return TeamRow->PlayGuide; }
+
+	//UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsGetPlayGuideFromAssetName :: AssetName(%s)의 가이드를 찾을 수 없습니다."), *_AssetName);
+	//return TEXT("Unknown");
+#pragma endregion
 }
 
 // 레벨 이미지 반환
 UTexture2D* UBaseGameInstance::InsGetLevelImageFromAssetName(const FString& _AssetName)
 {
-	if (!PlayLevelDataTable && !TeamPlayLevelDataTable)
-	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("InsGetLevelImageFromAssetName :: 데이터 테이블이 모두 nullptr입니다."));
-		return nullptr;
-	}
+	return LevelIMG;
 
-	const FPlayLevelDataRow* Row = nullptr;
-	const FTeamPlayLevelDataRow* TeamRow = nullptr;
+#pragma region :: 이전 코드
+	//if (!PlayLevelDataTable && !TeamPlayLevelDataTable)
+	//{
+	//	UE_LOG(FALL_DEV_LOG, Error, TEXT("InsGetLevelImageFromAssetName :: 데이터 테이블이 모두 nullptr입니다."));
+	//	return nullptr;
+	//}
 
-	if (PlayLevelDataTable)
-	{
-		Row = UFallGlobal::FindRowByFStringField<FPlayLevelDataRow>(
-			PlayLevelDataTable,
-			_AssetName,
-			TEXT("InsGetLevelImageFromAssetName"),
-			[](const FPlayLevelDataRow* R) { return R->Level.GetAssetName(); }
-		);
-	}
+	//const FPlayLevelDataRow* Row = nullptr;
+	//const FTeamPlayLevelDataRow* TeamRow = nullptr;
 
-	if (TeamPlayLevelDataTable)
-	{
-		TeamRow = UFallGlobal::FindRowByFStringField<FTeamPlayLevelDataRow>(
-			TeamPlayLevelDataTable,
-			_AssetName,
-			TEXT("InsGetLevelImageFromAssetName_Team"),
-			[](const FTeamPlayLevelDataRow* R) { return R->Level.GetAssetName(); }
-		);
-	}
+	//if (PlayLevelDataTable)
+	//{
+	//	Row = UFallGlobal::FindRowByFStringField<FPlayLevelDataRow>(
+	//		PlayLevelDataTable,
+	//		_AssetName,
+	//		TEXT("InsGetLevelImageFromAssetName"),
+	//		[](const FPlayLevelDataRow* R) { return R->Level.GetAssetName(); }
+	//	);
+	//}
 
-	if (Row && TeamRow)
-	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsGetLevelImageFromAssetName :: AssetName(%s)가 두 개의 테이블에 모두 존재합니다."), *_AssetName);
-	}
+	//if (TeamPlayLevelDataTable)
+	//{
+	//	TeamRow = UFallGlobal::FindRowByFStringField<FTeamPlayLevelDataRow>(
+	//		TeamPlayLevelDataTable,
+	//		_AssetName,
+	//		TEXT("InsGetLevelImageFromAssetName_Team"),
+	//		[](const FTeamPlayLevelDataRow* R) { return R->Level.GetAssetName(); }
+	//	);
+	//}
 
-	if (Row && Row->LevelIMG) { return Row->LevelIMG; }
-	if (TeamRow && TeamRow->LevelIMG) { return TeamRow->LevelIMG; }
+	//if (Row && TeamRow)
+	//{
+	//	UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsGetLevelImageFromAssetName :: AssetName(%s)가 두 개의 테이블에 모두 존재합니다."), *_AssetName);
+	//}
 
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsGetLevelImageFromAssetName :: AssetName(%s)의 이미지를 찾을 수 없습니다."), *_AssetName);
-	return nullptr;
+	//if (Row && Row->LevelIMG) { return Row->LevelIMG; }
+	//if (TeamRow && TeamRow->LevelIMG) { return TeamRow->LevelIMG; }
+
+	//UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsGetLevelImageFromAssetName :: AssetName(%s)의 이미지를 찾을 수 없습니다."), *_AssetName);
+	//return nullptr;
+#pragma endregion
 }
 
 // 플레이 목표 반환
 FString UBaseGameInstance::InsGetGoalGuideFromAssetName(const FString& _AssetName)
 {
-	if (!PlayLevelDataTable && !TeamPlayLevelDataTable)
-	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("InsGetGoalGuideFromAssetName :: 데이터 테이블이 모두 nullptr입니다."));
-		return TEXT("Unknown");
-	}
+	return GoalGuide;
 
-	const FPlayLevelDataRow* Row = nullptr;
-	const FTeamPlayLevelDataRow* TeamRow = nullptr;
+#pragma region :: 이전 코드
+	//if (!PlayLevelDataTable && !TeamPlayLevelDataTable)
+	//{
+	//	UE_LOG(FALL_DEV_LOG, Error, TEXT("InsGetGoalGuideFromAssetName :: 데이터 테이블이 모두 nullptr입니다."));
+	//	return TEXT("Unknown");
+	//}
 
-	// PlayLevelDataTable에서 검색
-	if (PlayLevelDataTable)
-	{
-		Row = UFallGlobal::FindRowByFStringField<FPlayLevelDataRow>(
-			PlayLevelDataTable,
-			_AssetName,
-			TEXT("InsGetGoalGuideFromAssetName"),
-			[](const FPlayLevelDataRow* R) { return R->Level.GetAssetName(); }
-		);
-	}
+	//const FPlayLevelDataRow* Row = nullptr;
+	//const FTeamPlayLevelDataRow* TeamRow = nullptr;
 
-	// TeamPlayLevelDataTable에서 검색
-	if (TeamPlayLevelDataTable)
-	{
-		TeamRow = UFallGlobal::FindRowByFStringField<FTeamPlayLevelDataRow>(
-			TeamPlayLevelDataTable,
-			_AssetName,
-			TEXT("InsGetGoalGuideFromAssetName_Team"),
-			[](const FTeamPlayLevelDataRow* R) { return R->Level.GetAssetName(); }
-		);
-	}
+	//// PlayLevelDataTable에서 검색
+	//if (PlayLevelDataTable)
+	//{
+	//	Row = UFallGlobal::FindRowByFStringField<FPlayLevelDataRow>(
+	//		PlayLevelDataTable,
+	//		_AssetName,
+	//		TEXT("InsGetGoalGuideFromAssetName"),
+	//		[](const FPlayLevelDataRow* R) { return R->Level.GetAssetName(); }
+	//	);
+	//}
 
-	// 둘 다 있는 경우 경고 로그 출력
-	if (Row && TeamRow)
-	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsGetGoalGuideFromAssetName :: AssetName(%s)가 두 개의 테이블에 모두 존재합니다."), *_AssetName);
-	}
+	//// TeamPlayLevelDataTable에서 검색
+	//if (TeamPlayLevelDataTable)
+	//{
+	//	TeamRow = UFallGlobal::FindRowByFStringField<FTeamPlayLevelDataRow>(
+	//		TeamPlayLevelDataTable,
+	//		_AssetName,
+	//		TEXT("InsGetGoalGuideFromAssetName_Team"),
+	//		[](const FTeamPlayLevelDataRow* R) { return R->Level.GetAssetName(); }
+	//	);
+	//}
 
-	if (Row) { return Row->GoalGuide; }
-	if (TeamRow) { return TeamRow->GoalGuide; }
+	//// 둘 다 있는 경우 경고 로그 출력
+	//if (Row && TeamRow)
+	//{
+	//	UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsGetGoalGuideFromAssetName :: AssetName(%s)가 두 개의 테이블에 모두 존재합니다."), *_AssetName);
+	//}
 
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsGetGoalGuideFromAssetName :: AssetName(%s)의 GoalGuide를 찾을 수 없습니다."), *_AssetName);
-	return TEXT("Unknown");
+	//if (Row) { return Row->GoalGuide; }
+	//if (TeamRow) { return TeamRow->GoalGuide; }
+
+	//UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsGetGoalGuideFromAssetName :: AssetName(%s)의 GoalGuide를 찾을 수 없습니다."), *_AssetName);
+	//return TEXT("Unknown");
+#pragma endregion
 }
+
+// 레벨 태그 이미지 반환
+UTexture2D* UBaseGameInstance::InsGetLevelTagImage()
+{
+	return LevelTagIMG;
+}
+
 #pragma endregion
 
 #pragma region BaseGameInstance :: 플레이어 데이터 관련

@@ -61,6 +61,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "PLAYGAMEMODE :: PLAYER")
 	void SetDefaultPlayersToSuccess();
 
+
 #pragma endregion
 
 #pragma region PlayGameMode :: 게임 시작 관련
@@ -90,7 +91,7 @@ protected:
 	// 세로운 플레이어 정보 세팅
 	void InitPlayerInfo(class APlayerController* _NewPlayer, class APlayPlayerState* _PlayerState, class APlayGameState* _FallState, class UBaseGameInstance* _GameInstance);
 	// 기존 플레이어 정보 복구
-	void RestorePlayerInfo(class APlayerController* _NewPlayer, class APlayPlayerState* _PlayerState, class UBaseGameInstance* _GameInstance);
+	void RestorePlayerInfo(class APlayerController* _NewPlayer, class APlayPlayerState* _PlayerState, class APlayGameState* _FallState, class UBaseGameInstance* _GameInstance);
 	// 플레이어 인포 로그
 	void LogPlayerInfo(const FString& _Prefix, const FPlayerInfo& _Info, APlayerController* _Controller);
 	// 시네마틱과 접속 제한 세팅 호출

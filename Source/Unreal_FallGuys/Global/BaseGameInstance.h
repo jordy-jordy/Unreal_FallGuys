@@ -37,6 +37,9 @@ struct FLevelInfo
 
 	UPROPERTY()
 	UTexture2D* LevelIMG = nullptr;
+
+	UPROPERTY()
+	UTexture2D* LevelTagIMG = nullptr;
 };
 
 USTRUCT(BlueprintType)
@@ -64,6 +67,9 @@ struct FTeamLevelInfo
 
 	UPROPERTY()
 	UTexture2D* LevelIMG = nullptr;
+
+	UPROPERTY()
+	UTexture2D* LevelTagIMG = nullptr;
 };
 
 
@@ -253,6 +259,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
 	UTexture2D* InsGetLevelImageFromAssetName(const FString& _AssetName);
 
+	// 레벨 태그 이미지 반환
+	UFUNCTION(BlueprintCallable, Category = "LEVEL")
+	UTexture2D* InsGetLevelTagImage();
+
 	// 플레이 목표 반환
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
 	FString InsGetGoalGuideFromAssetName(const FString& _AssetName);
@@ -286,8 +296,25 @@ protected:
 	UPROPERTY(BlueprintReadWrite, Category = "LEVEL")
 	EPlayerStatus StageEndCondition = EPlayerStatus::NONE;
 
+	// 스테이지 이미지
+	UPROPERTY(BlueprintReadWrite, Category = "LEVEL")
+	UTexture2D* LevelIMG = nullptr;
+
+	// 스테이지 태그 이미지
+	UPROPERTY(BlueprintReadWrite, Category = "LEVEL")
+	UTexture2D* LevelTagIMG = nullptr;
+
 	// 스테이지 제한 시간 : 팀전용
+	UPROPERTY(BlueprintReadWrite, Category = "LEVEL")
 	float StageLimitTime = 0.0f;
+
+	// 플레이 가이드
+	UPROPERTY(BlueprintReadWrite, Category = "LEVEL")
+	FString PlayGuide = TEXT("");
+
+	// 플레이 목표
+	UPROPERTY(BlueprintReadWrite, Category = "LEVEL")
+	FString GoalGuide = TEXT("");
 
 	// 레벨 이름 리스트 (AssetName 기준)
 	UPROPERTY()
@@ -337,8 +364,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "PLAYER DATA")
 	bool InsGetHasNickname() { return HasNickname; }
 
-	// 플레이어 UniqueID -> FPlayerInfo 매핑 저장소
+	// 플레이어 UniqueID -> FPlayerInfo 매핑 저장소 : 전체 플레이어
 	TMap<FString, struct FPlayerInfo> PlayerInfoBackup;
+
+	// 플레이어 UniqueID -> FPlayerInfo 매핑 저장소 : 실패 플레이어
+	TMap<FString, struct FPlayerInfo> FailPlayerInfoBackup;
 
 protected:
 	// 닉네임
