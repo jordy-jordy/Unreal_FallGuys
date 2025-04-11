@@ -18,22 +18,18 @@ void ARotateWeapon::BeginPlay()
 	Super::BeginPlay();
 	
 	SetWeaponMesh();
-
-	MovementComponent->LimitAngle = FRotator({ 0, 0, 60 });
 }
 
 // Called every frame
 void ARotateWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	MovementComponent->SpinCycle(DeltaTime, Weapon, EMoveAxis::ROLL);
 }
 
 void ARotateWeapon::OperateMesh()
 {
 	// ActorComponent
-	MovementComponent = CreateDefaultSubobject<UMovementActorComponent>(FName("MovementComponent"));
+	ObstacleMoveComp = CreateDefaultSubobject<UObsMovementActorComponent>(FName("ObstacleMoveComp"));
 
 	// SetMesh And Location
 	RootScene = CreateDefaultSubobject<USceneComponent>(TEXT("RootScene"));
