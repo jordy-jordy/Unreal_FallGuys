@@ -203,22 +203,19 @@ void UBaseGameInstance::InsSaveAvailableLevelInfos()
 		if (Row == nullptr)
 			continue;
 
-		// 강제로 로드
-		//UWorld* LoadedLevel = Row->Level.LoadSynchronous();
-		//if (!LoadedLevel)
-		//{
-		//	UE_LOG(FALL_DEV_LOG, Warning, TEXT("BaseGameInstance :: Level Load Failed: %s"), *Row->Level.ToString());
-		//	continue;
-		//}
-
 		FLevelInfo Info;
+
+		// 개인전용 정보
+		Info.EndCondition = Row->EndCondition;
+
+		// 공통 정보
 		Info.LevelAssetName = Row->Level.GetAssetName();
 		Info.LevelName = Row->Name;
 		Info.LevelType = Row->LevelType;
-		Info.EndCondition = Row->EndCondition;
 		Info.PlayGuide = Row->PlayGuide;
 		Info.GoalGuide = Row->GoalGuide;
 		Info.LevelIMG = Row->LevelIMG;
+		Info.LevelTagIMG = Row->LevelTagIMG;
 
 		UE_LOG(FALL_DEV_LOG, Log, TEXT("BaseGameInstance :: 개인전 레벨이 추가 되었습니다. - 레벨 에셋 이름 : %s, 레벨 이름 : %s"), *Info.LevelAssetName, *Info.LevelName);
 
@@ -249,29 +246,25 @@ void UBaseGameInstance::InsSaveAvailableTeamLevelInfos()
 		if (Row == nullptr)
 			continue;
 
-		// 강제로 로드
-		//UWorld* LoadedLevel = Row->Level.LoadSynchronous();
-		//if (!LoadedLevel)
-		//{
-		//	UE_LOG(FALL_DEV_LOG, Warning, TEXT("BaseGameInstance :: Level Load Failed: %s"), *Row->Level.ToString());
-		//	continue;
-		//}
-
 		FTeamLevelInfo TeamInfo;
+
+		// 팀전용 정보
+		TeamInfo.StageLimitTime = Row->StageLimitTime;
+
+		// 공통 정보
 		TeamInfo.LevelAssetName = Row->Level.GetAssetName();
 		TeamInfo.LevelName = Row->Name;
 		TeamInfo.LevelType = Row->LevelType;
-		TeamInfo.StageLimitTime = Row->StageLimitTime;
 		TeamInfo.PlayGuide = Row->PlayGuide;
 		TeamInfo.GoalGuide = Row->GoalGuide;
 		TeamInfo.LevelIMG = Row->LevelIMG;
+		TeamInfo.LevelTagIMG = Row->LevelTagIMG;
 
 		UE_LOG(FALL_DEV_LOG, Log, TEXT("BaseGameInstance :: 팀전 레벨이 추가 되었습니다. - 레벨 에셋 이름 : %s, 레벨 이름 : %s"), *TeamInfo.LevelAssetName, *TeamInfo.LevelName);
 
 		TeamPlayLevelInfos.Add(TeamInfo);
 	}
 }
-
 #pragma endregion
 
 #pragma region BaseGameInstance :: 코스튬 관련
@@ -847,6 +840,5 @@ void UBaseGameInstance::InsGetGameStateCurFinishPlayer()
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("현재 골인한 인원 : %d"), CurGoalCount));
 	}
 }
-
 #pragma endregion
 

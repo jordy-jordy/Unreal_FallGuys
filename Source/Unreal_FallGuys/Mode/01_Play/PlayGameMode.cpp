@@ -57,10 +57,6 @@ void APlayGameMode::PostLogin(APlayerController* _NewPlayer)
 	// 게임 스테이트, 플레이어 스테이트, 게임 인스턴스 세팅
 	if (!CheckEssentialObjects(_NewPlayer, FallState, PlayerState, GameInstance)) { return; }
 
-	// 인스에서 레벨 정보 가져오고 스테이트에 세팅
-	CurLevelInfo_Mode = GameInstance->CurLevelInfo_Ins;
-	FallState->CurLevelInfo_GameState = CurLevelInfo_Mode;
-
 	// 인원 카운팅
 	FallState->AddConnectedPlayers();
 	int ConnectingPlayer = FallState->GetConnectedPlayers();
@@ -289,6 +285,10 @@ void APlayGameMode::BeginPlay()
 
 	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
 	APlayGameState* FallState = GetGameState<APlayGameState>();
+
+	// 인스의 레벨 정보를 모드와 스테이트에 세팅
+	CurLevelInfo_Mode = GameInstance->CurLevelInfo_Ins;
+	FallState->CurLevelInfo_GameState = CurLevelInfo_Mode;
 
 	// 게임 시작을 위한 조건을 주기적으로 체크
 	GetWorldTimerManager().SetTimer(
