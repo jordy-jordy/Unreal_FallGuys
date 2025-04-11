@@ -4,10 +4,11 @@
 #include "Mode/00_Title/TitlePawn.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include <Global/BaseGameInstance.h>
-#include <Mode/00_Title/UI/UIInputManager.h>
-#include "Global/Data/GlobalDataTable.h"
+
 #include <Global/FallGlobal.h>
+#include <Global/BaseGameInstance.h>
+#include <Global/Data/GlobalDataTable.h>
+#include <Mode/00_Title/UI/UIInputManager.h>
 
 
 // Sets default values
