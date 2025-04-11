@@ -6,11 +6,63 @@
 #include "GameFramework/GameMode.h"
 
 #include <Global/GlobalEnum.h>
+#include <Global/BaseGameInstance.h>
 #include <Mode/01_Play/PlayEnum.h>
 #include <Mode/01_Play/PlayPlayerState.h>
 
 #include "PlayGameMode.generated.h"
 
+
+USTRUCT(BlueprintType)
+struct FCurLevelInfo_GAMEMODE
+{
+	GENERATED_BODY()
+
+	FCurLevelInfo_GAMEMODE() {}
+	FCurLevelInfo_GAMEMODE(const FCurLevelInfo_GAMEINS& _InsInfo)
+	{
+		LevelAssetName = _InsInfo.LevelAssetName;
+		LevelName = _InsInfo.LevelName;
+		LevelType = _InsInfo.LevelType;
+		EndCondition = _InsInfo.EndCondition;
+		StageLimitTime = _InsInfo.StageLimitTime;
+		PlayGuide = _InsInfo.PlayGuide;
+		GoalGuide = _InsInfo.GoalGuide;
+		LevelIMG = _InsInfo.LevelIMG;
+		LevelTagIMG = _InsInfo.LevelTagIMG;
+		CurStagePhase = _InsInfo.CurStagePhase;
+	}
+
+	UPROPERTY()
+	FString LevelAssetName = TEXT("");
+
+	UPROPERTY()
+	FString LevelName = TEXT("");
+
+	UPROPERTY()
+	EStageType LevelType = EStageType::NONE;
+
+	UPROPERTY()
+	EPlayerStatus EndCondition = EPlayerStatus::NONE;
+
+	UPROPERTY()
+	float StageLimitTime = 120.0f;
+
+	UPROPERTY()
+	FString PlayGuide = TEXT("");
+
+	UPROPERTY()
+	FString GoalGuide = TEXT("");
+
+	UPROPERTY()
+	UTexture2D* LevelIMG = nullptr;
+
+	UPROPERTY()
+	UTexture2D* LevelTagIMG = nullptr;
+
+	UPROPERTY()
+	EStagePhase CurStagePhase = EStagePhase::STAGE_1;
+};
 
 /**
  * 
@@ -22,6 +74,8 @@ class UNREAL_FALLGUYS_API APlayGameMode : public AGameMode
 	
 public:
 	APlayGameMode();
+
+	FCurLevelInfo_GAMEMODE CurLevelInfo_Mode;
 
 #pragma region PlayGameMode :: 핵심 함수
 public: 
@@ -134,15 +188,6 @@ protected:
 	// 시네마틱 끝났니
 	bool bCinematicEND = false;
 
-	// 현재 스테이지 이름
-	FString MODE_CurLevelName = TEXT("Unknown");
-	// 현재 스테이지 에셋 이름
-	FString MODE_CurLevelAssetName = TEXT("Unknown");
-	// 현재 스테이지 타입
-	EStageType MODE_CurStageType = EStageType::NONE;
-	// 현재 스테이지 단계
-	EStagePhase MODE_CurStagePhase = EStagePhase::STAGE_1;
-
 	// 디폴트 상태의 플레이어 수
 	int32 DefaultPlayerCount = 0;
 
@@ -216,9 +261,6 @@ protected:
 	bool StartedServerTravel = false;
 	// 부전승 처리 했니?
 	bool bSetWinbyDefault = false;
-	
-	// 스테이지 종료 기준 상태
-	EPlayerStatus MODE_CurStageResultStatus = EPlayerStatus::NONE;
 
 #pragma endregion
 

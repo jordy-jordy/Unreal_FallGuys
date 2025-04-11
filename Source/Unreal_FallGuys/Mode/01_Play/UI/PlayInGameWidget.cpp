@@ -15,7 +15,7 @@ EStagePhase UPlayInGameWidget::CurStagePhase()
 {
 	APlayGameState* PlayGameState = Cast<APlayGameState>(GetWorld()->GetGameState());
 
-	EStagePhase CurStagePhase = PlayGameState->GetCurStagePhase();
+	EStagePhase CurStagePhase = PlayGameState->GetCurStagePhase_STATE();
 
 	return CurStagePhase;
 }

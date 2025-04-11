@@ -66,7 +66,7 @@ void ATeamPlayGameMode::Tick(float DeltaSeconds)
 	if (!bGameStarted) { return; }
 
 	// 팀전이 아니면 여기서 끝
-	if (MODE_CurStageType != EStageType::TEAM) { return; }
+	if (CurLevelInfo_Mode.LevelType != EStageType::TEAM) { return; }
 
 	// 제한 시간 타이머 시작
 	if (bStartedLimitTimer == false)
@@ -282,7 +282,7 @@ void ATeamPlayGameMode::SetNextTeamLevelData()
 	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
 
 	// 팀전의 경우
-	switch (MODE_CurStagePhase)
+	switch (CurLevelInfo_Mode.CurStagePhase)
 	{
 	case EStagePhase::STAGE_1:
 		GameInstance->InsSetCurStagePhase(EStagePhase::STAGE_2);

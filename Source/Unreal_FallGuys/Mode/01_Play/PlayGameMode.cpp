@@ -57,10 +57,9 @@ void APlayGameMode::PostLogin(APlayerController* _NewPlayer)
 	// 게임 스테이트, 플레이어 스테이트, 게임 인스턴스 세팅
 	if (!CheckEssentialObjects(_NewPlayer, FallState, PlayerState, GameInstance)) { return; }
 
-	// 게임 인스턴스에서 현재 스테이지 타입을 가져옴
-	MODE_CurStageType = GameInstance->InsGetCurStageType();
-	// 게임 스테이트에 스테이지 타입을 전달
-	FallState->SetCurStageType(MODE_CurStageType);
+	// 인스에서 레벨 정보 가져오고 스테이트에 세팅
+	CurLevelInfo_Mode = GameInstance->CurLevelInfo_Ins;
+	FallState->CurLevelInfo_GameState = CurLevelInfo_Mode;
 
 	// 인원 카운팅
 	FallState->AddConnectedPlayers();
@@ -89,10 +88,6 @@ void APlayGameMode::PostLogin(APlayerController* _NewPlayer)
 	
 	// 시네마틱과 접속 제한 세팅 호출
 	StartCinematicIfReady(FallState);
-
-	// 게임 인스턴스에서 스테이지의 종료 조건을 가져옴 + 게임 스테이트에 전달
-	MODE_CurStageResultStatus = GameInstance->InsGetStageEndCondition();
-	FallState->SetStageGoalType(MODE_CurStageResultStatus);
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode PostLogin END ======= "));
 }
@@ -194,7 +189,7 @@ void APlayGameMode::RestorePlayerInfo(APlayerController* _NewPlayer, APlayPlayer
 	}
 	else
 	{
-		if (MODE_CurStageType == EStageType::SOLO)
+		if (CurLevelInfo_Mode.LevelType == EStageType::SOLO)
 		{
 			if (RestoredInfo.Status == EPlayerStatus::SUCCESS)
 			{
@@ -202,7 +197,7 @@ void APlayGameMode::RestorePlayerInfo(APlayerController* _NewPlayer, APlayPlayer
 			}
 			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode:: PostLogin :: 개인전 입니다 - 성공한 플레이어 정보 리셋"));
 		}
-		else if (MODE_CurStageType == EStageType::TEAM)
+		else if (CurLevelInfo_Mode.LevelType == EStageType::TEAM)
 		{
 			RestoredInfo.Status = EPlayerStatus::DEFAULT;
 			RestoredInfo.Team = ETeamType::NONE;
@@ -294,21 +289,6 @@ void APlayGameMode::BeginPlay()
 
 	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
 	APlayGameState* FallState = GetGameState<APlayGameState>();
-
-	// 게임 인스턴스에서 현재 스테이지의 에셋 이름을 가져옴
-	MODE_CurLevelAssetName = GameInstance->InsGetCurLevelAssetName();
-	// 게임 스테이트에 스테이지 에셋 이름을 전달
-	FallState->SetPlayLevelAssetName(MODE_CurLevelAssetName);
-
-	// 게임 인스턴스에서 현재 스테이지의 이름을 가져옴
-	MODE_CurLevelName = GameInstance->InsGetCurLevelName();
-	// 게임 스테이트에 스테이지 이름을 전달
-	FallState->SetPlayLevelName(MODE_CurLevelName);
-
-	// 게임 인스턴스에서 현재 스테이지 페이즈를 가져옴
-	MODE_CurStagePhase = GameInstance->InsGetCurStagePhase();
-	// 게임 스테이트에 스테이지 페이즈를 전달
-	FallState->SetCurStagePhase(MODE_CurStagePhase);
 
 	// 게임 시작을 위한 조건을 주기적으로 체크
 	GetWorldTimerManager().SetTimer(
@@ -441,11 +421,11 @@ int32 APlayGameMode::GetDefaultPlayerCount()
 // 목표 골인 인원 수 제어
 void APlayGameMode::ControllFinishPlayer()
 {
-	if (MODE_CurStageResultStatus == EPlayerStatus::SUCCESS)
+	if (CurLevelInfo_Mode.EndCondition == EPlayerStatus::SUCCESS)
 	{
 		FinishPlayer_Race();
 	}
-	else if (MODE_CurStageResultStatus == EPlayerStatus::FAIL)
+	else if (CurLevelInfo_Mode.EndCondition == EPlayerStatus::FAIL)
 	{
 		FinishPlayer_Survive();
 	}
@@ -454,7 +434,7 @@ void APlayGameMode::ControllFinishPlayer()
 // 목표 골인 인원 수 : 레이싱
 void APlayGameMode::FinishPlayer_Race()
 {
-	switch (MODE_CurStagePhase)
+	switch (CurLevelInfo_Mode.CurStagePhase)
 	{
 	case EStagePhase::STAGE_1:
 		if		(DefaultPlayerCount <= 2) { SetFinishPlayerCount(1); }
@@ -482,7 +462,7 @@ void APlayGameMode::FinishPlayer_Race()
 // 목표 골인 인원 수 : 생존
 void APlayGameMode::FinishPlayer_Survive()
 {
-	switch (MODE_CurStagePhase)
+	switch (CurLevelInfo_Mode.CurStagePhase)
 	{
 	case EStagePhase::STAGE_1:
 		if		(DefaultPlayerCount <= 1) { SetFinishPlayerCount(0); }
@@ -648,7 +628,7 @@ void APlayGameMode::Tick(float DeltaSeconds)
 	if (!bGameStarted) { return; }
 
 	// 개인전이 아니면 여기서 끝
-	if (MODE_CurStageType != EStageType::SOLO) { return; }
+	if (CurLevelInfo_Mode.LevelType != EStageType::SOLO) { return; }
 
 	// 서버 트래블 활성화 됐으면 여기서 끝
 	if (StartedServerTravel) return;
@@ -670,7 +650,7 @@ void APlayGameMode::Tick(float DeltaSeconds)
 		{
 			ServerTravelToRaceOver();
 		}
-		else if (bMODEIsResultLevel && MODE_CurStagePhase != EStagePhase::STAGE_3_RESULT)
+		else if (bMODEIsResultLevel && CurLevelInfo_Mode.CurStagePhase != EStagePhase::STAGE_3_RESULT)
 		{
 			// 결과 화면일 경우 30초 타이머 후 호출
 			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: Tick :: 결과 화면이므로 30초 후 다음 레벨로 이동합니다."));
@@ -713,7 +693,7 @@ void APlayGameMode::SetEndCondition_Common()
 			bPlayerMoving = false;
 		}
 
-		if (MODE_CurStageType == EStageType::SOLO)
+		if (CurLevelInfo_Mode.LevelType == EStageType::SOLO)
 		{
 			// 레벨 종료 UI 띄워
 			if (!bShowedLevelEndUI)
@@ -815,7 +795,7 @@ void APlayGameMode::SetNextSoloLevelData()
 	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
 
 	// 개인전인 경우
-	switch (MODE_CurStagePhase)
+	switch (CurLevelInfo_Mode.CurStagePhase)
 	{
 	case EStagePhase::STAGE_1:
 		GameInstance->InsSetCurStagePhase(EStagePhase::STAGE_1_RESULT);
@@ -858,11 +838,11 @@ void APlayGameMode::SetNextSoloLevelData()
 // 남은 플레이어의 상태 일괄 변경
 void APlayGameMode::ChangeDefaultPlayersTo()
 {
-	if (MODE_CurStageResultStatus == EPlayerStatus::SUCCESS)
+	if (CurLevelInfo_Mode.EndCondition == EPlayerStatus::SUCCESS)
 	{
 		SetDefaultPlayersToFail();
 	}
-	else if (MODE_CurStageResultStatus == EPlayerStatus::FAIL)
+	else if (CurLevelInfo_Mode.EndCondition == EPlayerStatus::FAIL)
 	{
 		SetDefaultPlayersToSuccess();
 	}

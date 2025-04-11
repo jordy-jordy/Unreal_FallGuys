@@ -42,8 +42,8 @@ void APlayGameState::BeginPlay()
 
 	if (HasAuthority())
 	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: BeginPlay :: 스테이지 모드 : %s"), *UEnum::GetValueAsString(GS_CurStageType));
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: BeginPlay :: 스테이지 페이즈 : %s"), *UEnum::GetValueAsString(GS_CurStagePhase));
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: BeginPlay :: 스테이지 모드 : %s"), *UEnum::GetValueAsString(CurLevelInfo_GameState.LevelType));
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: BeginPlay :: 스테이지 페이즈 : %s"), *UEnum::GetValueAsString(CurLevelInfo_GameState.CurStagePhase));
 	}
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameState BeginPlay END ======= "));
@@ -162,30 +162,6 @@ void APlayGameState::MulticastUpdateConnectedPlayers_Implementation(int _NewCoun
 		FString Message = FString::Printf(TEXT("PlayGameState :: 접속자 수 갱신 : %d"), ConnectedPlayers);
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, Message);
 	}
-}
-
-// 레벨 이름 세팅 : PlayGameMode에서 호출
-void APlayGameState::SetPlayLevelName_Implementation(const FString& _LevelName)
-{
-	LevelName = _LevelName;
-}
-
-// 레벨 에셋 이름 세팅 : PlayGameMode에서 호출
-void APlayGameState::SetPlayLevelAssetName_Implementation(const FString& _LevelAssetName)
-{
-	LevelAssetName = _LevelAssetName;
-}
-
-// 레벨 타입 세팅 : PlayGameMode에서 호출
-void APlayGameState::SetCurStageType_Implementation(EStageType _StageType)
-{
-	GS_CurStageType = _StageType;
-}
-
-// 레벨 페이즈 세팅 : PlayGameMode에서 호출
-void APlayGameState::SetCurStagePhase_Implementation(EStagePhase _StagePhase)
-{
-	GS_CurStagePhase = _StagePhase;
 }
 
 // 레벨 시네마틱 시작하세요
@@ -377,20 +353,14 @@ void APlayGameState::S2C_SetCanMoveLevel_Implementation(bool _b)
 	}
 }
 
-// 스테이지의 승리 조건을 세팅
-void APlayGameState::SetStageGoalType_Implementation(EPlayerStatus _Status)
-{
-	GS_CurStageResultStatus = _Status;
-}
-
 // 현 스테이지의 골 타입을 반환함
-FString APlayGameState::GetGSStageGoalType()
+FString APlayGameState::GetSTATEStageGoalType()
 {
-	if (GS_CurStageResultStatus == EPlayerStatus::SUCCESS)
+	if (CurLevelInfo_GameState.EndCondition == EPlayerStatus::SUCCESS)
 	{
 		return TEXT("RACING");
 	}
-	else if (GS_CurStageResultStatus == EPlayerStatus::FAIL)
+	else if (CurLevelInfo_GameState.EndCondition == EPlayerStatus::FAIL)
 	{
 		return TEXT("SURVIVE");
 	}
@@ -405,11 +375,6 @@ void APlayGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(APlayGameState, PlayerInfoArray);
 	DOREPLIFETIME(APlayGameState, FailPlayerInfoArray);
-	DOREPLIFETIME(APlayGameState, LevelName);
-	DOREPLIFETIME(APlayGameState, LevelAssetName);
-	DOREPLIFETIME(APlayGameState, GS_CurStageType);
-	DOREPLIFETIME(APlayGameState, GS_CurStagePhase);
-	DOREPLIFETIME(APlayGameState, GS_CurStageResultStatus);
 	DOREPLIFETIME(APlayGameState, CountDownTime);
 	DOREPLIFETIME(APlayGameState, ConnectedPlayers);
 	DOREPLIFETIME(APlayGameState, IsCountDownOver);
@@ -422,6 +387,7 @@ void APlayGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(APlayGameState, bGameStateSettedGoalCount);
 	DOREPLIFETIME(APlayGameState, FailPlayerInfoArray);
 	DOREPLIFETIME(APlayGameState, DefaultPlayerInfoArray);
+	DOREPLIFETIME(APlayGameState, CurLevelInfo_GameState);
 }
 
 void APlayGameState::PrintFailPlayersInfo()

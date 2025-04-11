@@ -6,10 +6,11 @@
 #include "GameFramework/GameState.h"
 
 // 위젯 델리게이트 타입 포함
-#include <Global/FallGlobal.h> // FWidgetDelegate 정의된 곳
+#include <Global/FallGlobal.h>
 
 #include <Mode/01_Play/PlayEnum.h>
 #include <Mode/01_Play/PlayPlayerState.h>
+#include <Mode/01_Play/PlayGameMode.h>
 
 #include "PlayGameState.generated.h"
 
@@ -35,6 +36,57 @@ struct FPlayerInfoEntry
 		: UniqueID(_InUniqueID), PlayerInfo(_InInfo)
 	{
 	}
+};
+
+USTRUCT(BlueprintType)
+struct FCurLevelInfo_GAMESTATE
+{
+	GENERATED_BODY()
+
+	FCurLevelInfo_GAMESTATE() {}
+	FCurLevelInfo_GAMESTATE(const FCurLevelInfo_GAMEMODE& _InsInfo)
+	{
+		LevelAssetName = _InsInfo.LevelAssetName;
+		LevelName = _InsInfo.LevelName;
+		LevelType = _InsInfo.LevelType;
+		EndCondition = _InsInfo.EndCondition;
+		StageLimitTime = _InsInfo.StageLimitTime;
+		PlayGuide = _InsInfo.PlayGuide;
+		GoalGuide = _InsInfo.GoalGuide;
+		LevelIMG = _InsInfo.LevelIMG;
+		LevelTagIMG = _InsInfo.LevelTagIMG;
+		CurStagePhase = _InsInfo.CurStagePhase;
+	}
+
+	UPROPERTY()
+	FString LevelAssetName = TEXT("");
+
+	UPROPERTY()
+	FString LevelName = TEXT("");
+
+	UPROPERTY()
+	EStageType LevelType = EStageType::NONE;
+
+	UPROPERTY()
+	EPlayerStatus EndCondition = EPlayerStatus::NONE;
+
+	UPROPERTY()
+	float StageLimitTime = 120.0f;
+
+	UPROPERTY()
+	FString PlayGuide = TEXT("");
+
+	UPROPERTY()
+	FString GoalGuide = TEXT("");
+
+	UPROPERTY()
+	UTexture2D* LevelIMG = nullptr;
+
+	UPROPERTY()
+	UTexture2D* LevelTagIMG = nullptr;
+
+	UPROPERTY()
+	EStagePhase CurStagePhase = EStagePhase::STAGE_1;
 };
 
 /**
@@ -122,136 +174,129 @@ protected:
 
 #pragma region PlayGameState :: 레벨 데이터 관련
 public:
-	// 레벨 이름 세팅 : PlayGameMode에서 호출
-	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
-	void SetPlayLevelName(const FString& _LevelName);
-	void SetPlayLevelName_Implementation(const FString& _LevelName);
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category = "LEVEL")
+	FCurLevelInfo_GAMESTATE CurLevelInfo_GameState;
 
-	// 레벨 에셋 이름 세팅 : PlayGameMode에서 호출
-	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
-	void SetPlayLevelAssetName(const FString& _LevelName);
-	void SetPlayLevelAssetName_Implementation(const FString& _LevelAssetName);
-
-	// 레벨 타입 세팅 : PlayGameMode에서 호출
-	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
-	void SetCurStageType(EStageType _StageType);
-	void SetCurStageType_Implementation(EStageType _StageType);
-
-	// 레벨 페이즈 세팅 : PlayGameMode에서 호출
-	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
-	void SetCurStagePhase(EStagePhase _StagePhase);
-	void SetCurStagePhase_Implementation(EStagePhase _StagePhase);
-
-	// 세팅된 레벨 이름 반환
+// 레벨 데이터들 얻는 함수
+public:
+	// 레벨 에셋 이름 반환
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
-	FString GetLevelName() const { return LevelName; }
+	FString GetLevelAssetName_STATE() const { return CurLevelInfo_GameState.LevelAssetName; }
 
-	// 세팅된 레벨 에셋 이름 반환
+	// 레벨 이름 반환
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
-	FString GetLevelAssetName() const { return LevelAssetName; }
+	FString GetLevelName_STATE() const { return CurLevelInfo_GameState.LevelName; }
 
-	// 세팅된 레벨 타입 반환
+	// 레벨 타입 반환
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
-	EStageType GetCurStageType() const { return GS_CurStageType; }
+	EStageType GetLevelType_STATE() const { return CurLevelInfo_GameState.LevelType; }
 
-	// 세팅된 레벨 단계 반환
+	// 레벨 제한 시간 반환
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
-	EStagePhase GetCurStagePhase() const { return GS_CurStagePhase; }
+	float GetStageLimitTime_STATE() const { return CurLevelInfo_GameState.StageLimitTime; }
 
+	// 레벨 플레이 가이드 반환
+	UFUNCTION(BlueprintCallable, Category = "LEVEL")
+	FString GetPlayGuide_STATE() const { return CurLevelInfo_GameState.PlayGuide; }
+
+	// 레벨 목표 가이드 반환
+	UFUNCTION(BlueprintCallable, Category = "LEVEL")
+	FString GetGoalGuide_STATE() const { return CurLevelInfo_GameState.GoalGuide; }
+
+	// 레벨 이미지 반환
+	UFUNCTION(BlueprintCallable, Category = "LEVEL")
+	UTexture2D* GetLevelIMG_STATE() const { return CurLevelInfo_GameState.LevelIMG; }
+
+	// 레벨 태그 이미지 반환
+	UFUNCTION(BlueprintCallable, Category = "LEVEL")
+	UTexture2D* GetLevelTagIMG_STATE() const { return CurLevelInfo_GameState.LevelTagIMG; }
+
+	// 레벨 페이즈 반환
+	UFUNCTION(BlueprintCallable, Category = "LEVEL")
+	EStagePhase GetCurStagePhase_STATE() const { return CurLevelInfo_GameState.CurStagePhase; }
+
+	// 레벨의 골 타입을 반환
+	UFUNCTION(BlueprintCallable, Category = "LEVEL")
+	EPlayerStatus GetEndCondition_STATE() const { return CurLevelInfo_GameState.EndCondition; }
+	
+	// 현 스테이지의 골 타입을 변환하고 반환
+	UFUNCTION(BlueprintCallable, Category = "LEVEL")
+	FString GetSTATEStageGoalType();
+
+// 시작 및 종료를 위한 데이터
+public:
+	// 레벨 시네마틱 시작해도 되나요?
+	bool GetCanStartLevelCinematic() { return CanStartLevelCinematic; }
+
+	// 레벨 시네마틱 끝났나요?
+	UFUNCTION(BlueprintCallable, Category = "LEVEL")
+	bool GetIsLevelCinematicEnd() { return IsLevelCinematicEnd; }
+
+	// 골인 목표 인원 수 세팅 됐는지 확인할게
+	UFUNCTION(BlueprintCallable, Category = "LEVEL")
+	bool GetGameStateSettedGoalCount() { return bGameStateSettedGoalCount; }
+
+	// 골인 목표 인원 수 반환
+	UFUNCTION(BlueprintCallable, Category = "LEVEL")
+	int GetGameStateFinishPlayer() { return GameStateFinishPlayer; }
+
+	// 현재 골인한 플레이어 수 반환
+	UFUNCTION(BlueprintCallable, Category = "LEVEL")
+	int GetGameStateCurFinishPlayer() { return GameStateCurFinishPlayer; }
+
+	// 결과 화면인지 반환
+	UFUNCTION(BlueprintCallable, Category = "LEVEL")
+	bool GetGameStateIsResultLevel() { return bGameStateIsResultLevel; }
+
+	// 게임 시작했니?
+	UFUNCTION(BlueprintCallable, Category = "LEVEL")
+	bool GetGameStateGameStarted() { return bGameStateGameStarted; }
+
+
+// 레벨 데이터들 세팅하는 함수
+public:
 	// 레벨 시네마틱 시작하세요
 	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
 	void SetCanStartLevelCinematic();
 	void SetCanStartLevelCinematic_Implementation();
-
-	// 레벨 시네마틱 시작해도 되나요?
-	bool GetCanStartLevelCinematic() { return CanStartLevelCinematic; }
 
 	// 레벨 시네마틱 끝났어요
 	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
 	void SetIsLevelCinematicEnd(bool _Value);
 	void SetIsLevelCinematicEnd_Implementation(bool _Value);
 
-	// 레벨 시네마틱 끝났나요?
-	UFUNCTION(BlueprintCallable, Category = "LEVEL")
-	bool GetIsLevelCinematicEnd() { return IsLevelCinematicEnd; }
-
 	// 골인 목표 인원 수 세팅 완료 했는지
 	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
 	void SetGameStateGoalCountSetted(bool _Value);
 	void SetGameStateGoalCountSetted_Implementation(bool _Value);
-
-	// 골인 목표 인원 수 세팅 됐는지 확인할게
-	UFUNCTION(BlueprintCallable, Category = "LEVEL")
-	bool GetGameStateSettedGoalCount() { return bGameStateSettedGoalCount; }
 
 	// 골인 목표 인원 수 세팅 : PlayGameMode에서 호출
 	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
 	void SetGameStateFinishPlayer(int _Value);
 	void SetGameStateFinishPlayer_Implementation(int _Value);
 	
-	// 골인 목표 인원 수 반환
-	UFUNCTION(BlueprintCallable, Category = "LEVEL")
-	int GetGameStateFinishPlayer() { return GameStateFinishPlayer; }
-
 	// 현재 골인한 플레이어 수 세팅 : PlayGameMode에서 호출
 	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
 	void SetGameStateCurFinishPlayer(int _Value);
 	void SetGameStateCurFinishPlayer_Implementation(int _Value);
-
-	// 현재 골인한 플레이어 수 반환
-	UFUNCTION(BlueprintCallable, Category = "LEVEL")
-	int GetGameStateCurFinishPlayer() { return GameStateCurFinishPlayer; }
 
 	// 결과 화면인지 세팅 : PlayGameMode에서 호출
 	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
 	void SetGameStateIsResultLevel(bool _Value);
 	void SetGameStateIsResultLevel_Implementation(bool _Value);
 
-	// 결과 화면인지 반환
-	bool GetGameStateIsResultLevel() { return bGameStateIsResultLevel; }
-
 	// 게임 시작했음을 세팅 : PlayGameMode에서 호출
 	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
 	void SetGameStateGameStarted(bool _Value);
 	void SetGameStateGameStarted_Implementation(bool _Value);
-
-	// 게임 시작했니?
-	bool GetGameStateGameStarted() { return bGameStateGameStarted; }
 
 	// 다음 레벨로 이동 가능혀 : PlayGameMode에 세팅
 	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
 	void S2C_SetCanMoveLevel(bool _b);
 	void S2C_SetCanMoveLevel_Implementation(bool _b);
 
-	// 스테이지의 승리 조건을 세팅
-	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
-	void SetStageGoalType(EPlayerStatus _Status);
-	void SetStageGoalType_Implementation(EPlayerStatus _Status);
-
-	// 현 스테이지의 골 타입을 반환함
-	FString GetGSStageGoalType();
 
 protected:
-	// 랜덤 레벨 네임
-	UPROPERTY(Replicated)
-	FString LevelName = TEXT("");
-
-	// 랜덤 레벨 에셋 네임
-	UPROPERTY(Replicated)
-	FString LevelAssetName = TEXT("");
-
-	// 현재 스테이지 타입
-	UPROPERTY(Replicated)
-	EStageType GS_CurStageType = EStageType::NONE;
-
-	// 현재 스테이지 페이즈
-	UPROPERTY(Replicated)
-	EStagePhase GS_CurStagePhase = EStagePhase::STAGE_1;
-
-	// 레이싱 or 생존 인지 구분
-	UPROPERTY(Replicated)
-	EPlayerStatus GS_CurStageResultStatus = EPlayerStatus::NONE;
-
 	// 레벨 시네마틱 시작해도 되니?
 	UPROPERTY(Replicated)
 	bool CanStartLevelCinematic = false;
@@ -316,7 +361,6 @@ protected:
 	bool IsCountDownOver = false;
 
 #pragma endregion
-
 
 #pragma region PlayGameState :: 동기화 관련
 protected:
