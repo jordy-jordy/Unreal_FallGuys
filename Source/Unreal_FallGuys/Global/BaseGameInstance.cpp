@@ -192,6 +192,7 @@ void UBaseGameInstance::InsSaveAvailableLevelInfos()
 	if (!PlayLevelDataTable)
 	{
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("BaseGameInstance :: InsSaveAvailableLevelInfos :: PlayLevelDataTable is null!"));
+		return;
 	}
 
 	static const FString ContextString(TEXT("InsSaveAvailableLevelInfos"));
@@ -200,7 +201,7 @@ void UBaseGameInstance::InsSaveAvailableLevelInfos()
 
 	for (const FPlayLevelDataRow* Row : LevelRows)
 	{
-		if (Row == nullptr)
+		if (Row == nullptr || Row->UseLevel == false)
 			continue;
 
 		FLevelInfo Info;
@@ -235,6 +236,7 @@ void UBaseGameInstance::InsSaveAvailableTeamLevelInfos()
 	if (!TeamPlayLevelDataTable)
 	{
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("BaseGameInstance :: InsSaveAvailableTeamLevelInfos :: TeamPlayLevelDataTable is null!"));
+		return;
 	}
 
 	static const FString ContextString(TEXT("InsSaveAvailableTeamLevelInfos"));
@@ -243,7 +245,7 @@ void UBaseGameInstance::InsSaveAvailableTeamLevelInfos()
 
 	for (const FTeamPlayLevelDataRow* Row : LevelRows)
 	{
-		if (Row == nullptr)
+		if (Row == nullptr || Row->UseLevel == false)
 			continue;
 
 		FTeamLevelInfo TeamInfo;

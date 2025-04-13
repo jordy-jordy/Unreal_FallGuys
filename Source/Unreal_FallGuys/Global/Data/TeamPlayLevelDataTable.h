@@ -19,6 +19,10 @@ struct FTeamPlayLevelDataRow : public FTableRowBase
 	~FTeamPlayLevelDataRow() {}
 
 public:
+	// 레벨을 사용할 것인지
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TEAM LEVEL DATA")
+	bool UseLevel = true;
+
 	// 레벨
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TEAM LEVEL DATA")
 	TSoftObjectPtr<UWorld> Level;

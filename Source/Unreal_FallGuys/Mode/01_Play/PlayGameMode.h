@@ -88,11 +88,12 @@ protected:
 		FString& _ErrorMessage
 	) override;
 
-	// 플레이어 접속시 실행되는 함수 :: PreLogin 다음
+	// 플레이어 최초 접속시 실행되는 함수 :: PreLogin 다음
 	virtual void PostLogin(APlayerController* _NewPlayer) override;
+	// 심리스 서버 트래블 이후 플레이어 처리
+	virtual void HandleSeamlessTravelPlayer(AController*& _NewController) override;
 
 	virtual void Tick(float DeltaSeconds) override;
-
 	void BeginPlay() override;
 
 #pragma endregion
@@ -126,7 +127,7 @@ public:
 
 	// 인원 충족 했는지 체크
 	UFUNCTION(BlueprintCallable, Category = "PLAYGAMEMODE :: GAME")
-	void CheckNumberOfPlayer(class APlayGameState* _PlayState);
+	void CheckPlayersCount(class APlayGameState* _PlayState);
 
 	// 목표 골인 인원 수 반환
 	UFUNCTION(BlueprintCallable, Category = "PLAYGAMEMODE :: GAME")
@@ -138,14 +139,25 @@ public:
 
 
 protected:
+	// 최초 접속시에 실행
+	void HandleFirstTimeLogin(APlayerController* _NewPlayer, APlayPlayerState* _PlayerState, APlayGameState* _FallState, UBaseGameInstance* _GameInstance);
+
 	// 필수 데이터 세팅
-	bool CheckEssentialObjects(class APlayerController* _NewPlayer, class APlayGameState*& _OutFallState, class APlayPlayerState*& _OutPlayerState, class UBaseGameInstance*& _OutGameInstance);
+	bool SetupCommonEssentialData(class APlayerController* _NewPlayer, class APlayGameState*& _OutFallState, class APlayPlayerState*& _OutPlayerState, class UBaseGameInstance*& _OutGameInstance);
+	// 플레이어 인원 플러스
+	void AddPlayerCount(APlayGameState* _FallState);
+	// 결과 화면인지 게임 인스로부터 가져옴
+	void GetIsResultLevel(APlayGameState* _FallState, UBaseGameInstance* _GameInstance);
+	// 레벨 이동 했는지 게임 인스로부터 가져옴
+	bool GetIsLevelMoved(UBaseGameInstance* _GameInstance);
 	// 플레이어 태그 생성
 	FName GenerateUniquePlayerTag(APlayerController* _NewPlayer, int32 _PlayerIndex);
 	// 세로운 플레이어 정보 세팅
 	void InitPlayerInfo(class APlayerController* _NewPlayer, class APlayPlayerState* _PlayerState, class APlayGameState* _FallState, class UBaseGameInstance* _GameInstance);
 	// 기존 플레이어 정보 복구
 	void RestorePlayerInfo(class APlayerController* _NewPlayer, class APlayPlayerState* _PlayerState, class APlayGameState* _FallState, class UBaseGameInstance* _GameInstance);
+	// 플레이어 등록이 완료 된 후 실행되는 공통로직
+	void PostInitializePlayer(APlayGameState* _FallState);
 	// 플레이어 인포 로그
 	void LogPlayerInfo(const FString& _Prefix, const FPlayerInfo& _Info, APlayerController* _Controller);
 	// 시네마틱과 접속 제한 세팅 호출
@@ -169,6 +181,8 @@ protected:
 	// 게임 시작 조건 검사 함수
 	void CheckStartConditions();
 
+	// 레벨 이동했니
+	bool bMODEIsLevelMoved = false;
 	// 접속 제한
 	bool bInvalidConnect = false;
 	// 인원 충족
