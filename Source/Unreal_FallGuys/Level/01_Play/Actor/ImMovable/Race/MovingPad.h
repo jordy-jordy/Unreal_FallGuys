@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Components/BoxComponent.h"
-#include "Level/01_Play/Components/MovementActorComponent.h"
+#include "Level/01_Play/Components/ObsMovementActorComponent.h"
 #include "Global/Data/ResourceDataTable.h"
 #include "FallGlobal.h"
 #include "MovingPad.generated.h"
@@ -29,8 +29,8 @@ public:
 
 public:
 	// ActorComponent
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Movement")
-	UMovementActorComponent* MovementComponent;
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Movement")
+	UObsMovementActorComponent* ObstacleMoveComp;
 
 	// MeshComponent
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "MovingPad")

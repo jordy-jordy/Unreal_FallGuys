@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Components/CapsuleComponent.h"
-#include "Level/01_Play/Components/MovementActorComponent.h"
+#include "Level/01_Play/Components/ObsMovementActorComponent.h"
 #include "Level/01_Play/Components/LaunchActorComponent.h"
 #include "Global/Data/ResourceDataTable.h"
 #include "FallGlobal.h"
@@ -50,8 +50,8 @@ public:
 
 public:
 	// ActorComponent
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Movement")
-	UMovementActorComponent* MovementComponent;
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "ObstacleMoveComp")
+	UObsMovementActorComponent* ObstacleMoveComp;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Launch")
 	ULaunchActorComponent* LaunchComponent;

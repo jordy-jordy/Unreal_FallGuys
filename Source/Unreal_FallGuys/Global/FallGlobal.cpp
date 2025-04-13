@@ -193,40 +193,76 @@ FString UFallGlobal::GetRandomTeamLevel()
 	return GameIns->InsGetRandomTeamLevel();
 }
 
-// BaseGameInstance : 레벨 가이드 반환
-FString UFallGlobal::GetPlayGuideFromAssetName(const FString& _AssetName)
-{
-	UBaseGameInstance* GameIns = GWorld->GetGameInstance<UBaseGameInstance>();
-	return GameIns->InsGetPlayGuideFromAssetName(_AssetName);
-}
 
-// BaseGameInstance : 레벨 이미지 반환
-UTexture2D* UFallGlobal::GetLevelImageFromAssetName(const FString& _AssetName)
-{
-	UBaseGameInstance* GameIns = GWorld->GetGameInstance<UBaseGameInstance>();
-	return GameIns->InsGetLevelImageFromAssetName(_AssetName);
-}
+/////////////////////////////////////////////////////////////////////////////////////////////////
 
-// BaseGameInstance : 플레이 목표 반환
-FString UFallGlobal::GetGoalGuideFromAssetName(const FString& _AssetName)
+
+// PlayGameState : 랜덤 레벨 함수에서 얻은 에셋 이름 반환
+FString UFallGlobal::GetLevelAssetName()
 {
-	UBaseGameInstance* GameIns = GWorld->GetGameInstance<UBaseGameInstance>();
-	return GameIns->InsGetGoalGuideFromAssetName(_AssetName);
+	APlayGameState* FallState = Cast<APlayGameState>(GWorld->GetGameState());
+	return FallState->GetLevelAssetName_STATE();
 }
 
 // PlayGameState : 랜덤 레벨 함수에서 얻은 이름 반환
 FString UFallGlobal::GetLevelName()
 {
 	APlayGameState* FallState = Cast<APlayGameState>(GWorld->GetGameState());
-	return FallState->GetLevelName();
+	return FallState->GetLevelName_STATE();
 }
 
-// PlayGameState : 랜덤 레벨 함수에서 얻은 에셋 이름 반환
-FString UFallGlobal::GetLevelAssetName()
+// PlayGameState : 현재의 스테이지 타입(개인전, 팀전)을 얻음
+EStageType UFallGlobal::GetCurStageType()
 {
 	APlayGameState* FallState = Cast<APlayGameState>(GWorld->GetGameState());
-	return FallState->GetLevelAssetName();
+	return FallState->GetLevelType_STATE();
 }
+
+// PlayGameState : 현재 스테이지의 종료를 판단하는 기준 상태
+EPlayerStatus UFallGlobal::GetStageEndCondition()
+{
+	APlayGameState* FallState = Cast<APlayGameState>(GWorld->GetGameState());
+	return FallState->GetEndCondition_STATE();
+}
+
+// PlayGameState : 플레이 가이드 반환
+FString UFallGlobal::GetPlayGuideFromAssetName(const FString& _AssetName)
+{
+	APlayGameState* FallState = Cast<APlayGameState>(GWorld->GetGameState());
+	return FallState->GetPlayGuide_STATE();
+}
+
+// PlayGameState : 골 가이드 반환
+FString UFallGlobal::GetGoalGuideFromAssetName(const FString& _AssetName)
+{
+	APlayGameState* FallState = Cast<APlayGameState>(GWorld->GetGameState());
+	return FallState->GetGoalGuide_STATE();
+}
+
+// PlayGameState : 레벨 이미지 반환
+UTexture2D* UFallGlobal::GetLevelImageFromAssetName(const FString& _AssetName)
+{
+	APlayGameState* FallState = Cast<APlayGameState>(GWorld->GetGameState());
+	return FallState->GetLevelIMG_STATE();
+}
+
+// PlayGameState : 레벨 태그 이미지 반환
+UTexture2D* UFallGlobal::GetLevelTagImage()
+{
+	APlayGameState* FallState = Cast<APlayGameState>(GWorld->GetGameState());
+	return FallState->GetLevelTagIMG_STATE();
+}
+
+// PlayGameState : 레이싱이야 생존이야
+FString UFallGlobal::GetStageGoalType()
+{
+	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
+	return FallState->GetSTATEStageGoalType();
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 // PlayGameState : 현재 접속한 플레이어 수 반환
 int UFallGlobal::GetConnectedPlayers()
@@ -298,13 +334,6 @@ void UFallGlobal::MinusConnectedPlayers()
 	FallState->MinusConnectedPlayers();
 }
 
-// BaseGameInstance : 현재의 스테이지 타입(개인전, 팀전)을 얻음
-EStageType UFallGlobal::GetCurStageType()
-{
-	UBaseGameInstance* GameIns = GWorld->GetGameInstance<UBaseGameInstance>();
-	return GameIns->InsGetCurStageType();
-}
-
 // PlayGameState : 결과 화면이니?
 bool UFallGlobal::GetIsResultLevel()
 {
@@ -312,18 +341,11 @@ bool UFallGlobal::GetIsResultLevel()
 	return FallState->GetGameStateIsResultLevel();
 }
 
-// BaseGameInstance : 현재 스테이지의 종료를 판단하는 기준 상태
-EPlayerStatus UFallGlobal::GetStageEndCondition()
-{
-	UBaseGameInstance* GameIns = GWorld->GetGameInstance<UBaseGameInstance>();
-	return GameIns->InsGetStageEndCondition();
-}
-
 // PlayGameMode : 레벨 이동 해도 된다는 걸 알려주는 함수
 void UFallGlobal::SetCanMoveLevel(bool _Value)
 {
 	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
-	FallState->S_SetCanMoveLevel(_Value);
+	FallState->S2C_SetCanMoveLevel(_Value);
 }
 
 // PlayGameState : 게임 시작했니?
@@ -338,6 +360,13 @@ bool UFallGlobal::GetSettedGoalCountDone()
 {
 	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
 	return FallState->GetGameStateSettedGoalCount();
+}
+
+// TeamPlayGameState : 남은 시간이 뭐야
+float UFallGlobal::GetRemainingTime()
+{
+	ATeamPlayGameState* FallTeamState = GWorld->GetGameState<ATeamPlayGameState>();
+	return FallTeamState->GetRemainingTime();
 }
 
 // 이재영 : 메인위젯을 얻는 함수

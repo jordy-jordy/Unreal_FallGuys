@@ -11,9 +11,7 @@
 #include "Mode/01_Play/PlayPlayerController.h"
 
 
-
 void UPlayLevelResultWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-
 }

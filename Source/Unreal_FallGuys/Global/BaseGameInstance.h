@@ -37,6 +37,9 @@ struct FLevelInfo
 
 	UPROPERTY()
 	UTexture2D* LevelIMG = nullptr;
+
+	UPROPERTY()
+	UTexture2D* LevelTagIMG = nullptr;
 };
 
 USTRUCT(BlueprintType)
@@ -64,8 +67,48 @@ struct FTeamLevelInfo
 
 	UPROPERTY()
 	UTexture2D* LevelIMG = nullptr;
+
+	UPROPERTY()
+	UTexture2D* LevelTagIMG = nullptr;
 };
 
+USTRUCT(BlueprintType)
+struct FCurLevelInfo_GAMEINS
+{
+	GENERATED_BODY()
+
+	FCurLevelInfo_GAMEINS() {}
+
+	UPROPERTY()
+	FString LevelAssetName = TEXT("");
+
+	UPROPERTY()
+	FString LevelName = TEXT("");
+
+	UPROPERTY()
+	EStageType LevelType = EStageType::NONE;
+
+	UPROPERTY()
+	EPlayerStatus EndCondition = EPlayerStatus::NONE;
+
+	UPROPERTY()
+	float StageLimitTime = 120.0f;
+
+	UPROPERTY()
+	FString PlayGuide = TEXT("");
+
+	UPROPERTY()
+	FString GoalGuide = TEXT("");
+
+	UPROPERTY()
+	UTexture2D* LevelIMG = nullptr;
+
+	UPROPERTY()
+	UTexture2D* LevelTagIMG = nullptr;
+
+	UPROPERTY()
+	EStagePhase CurStagePhase = EStagePhase::STAGE_1;
+};
 
 /**
  *
@@ -214,6 +257,8 @@ public:
 
 #pragma region BaseGameInstance :: 레벨 관련
 public: 
+	FCurLevelInfo_GAMEINS CurLevelInfo_Ins;
+
 	// 랜덤 개인전 레벨 반환 : 에셋 이름 반환
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
 	FString InsGetRandomLevel();
@@ -222,73 +267,39 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
 	FString InsGetRandomTeamLevel();
 
+	// 현재의 스테이지 단계를 세팅
+	UFUNCTION(BlueprintCallable)
+	void InsSetCurStagePhase(EStagePhase _StagePhase) { CurLevelInfo_Ins.CurStagePhase = _StagePhase; }
+
 	// 저장된 레벨의 에셋 이름 반환
-	UFUNCTION(BlueprintCallable, Category = "LEVEL")
-	FString InsGetCurLevelAssetName() const { return CurLevelAssetName; }
+	UFUNCTION(BlueprintCallable)
+	FString InsGetCurLevelAssetName() const { return CurLevelInfo_Ins.LevelAssetName; }
 
 	// 저장된 레벨의 이름 반환
-	UFUNCTION(BlueprintCallable, Category = "LEVEL")
-	FString InsGetCurLevelName() const { return CurLevelName; }
+	UFUNCTION(BlueprintCallable)
+	FString InsGetCurLevelName() const { return CurLevelInfo_Ins.LevelName; }
 
 	// 현재의 스테이지 타입을 얻음
 	UFUNCTION(BlueprintCallable)
-	EStageType InsGetCurStageType() const { return CurStageType; }
+	EStageType InsGetCurStageType() const { return CurLevelInfo_Ins.LevelType; }
 
 	// 현재의 스테이지 단계를 얻음
 	UFUNCTION(BlueprintCallable)
-	EStagePhase InsGetCurStagePhase() const { return CurStagePhase; }
+	EStagePhase InsGetCurStagePhase() const { return CurLevelInfo_Ins.CurStagePhase; }
 
 	// 현재 스테이지의 종료를 판단하는 기준 상태
 	UFUNCTION(BlueprintCallable)
-	EPlayerStatus InsGetStageEndCondition() const { return StageEndCondition; }
+	EPlayerStatus InsGetStageEndCondition() const { return CurLevelInfo_Ins.EndCondition; }
 
 	// 현재의 팀전 스테이지의 제한 시간을 얻음
-	float InsGetStageLimitTime() const { return StageLimitTime; }
-
-	// 레벨 가이드 반환
-	UFUNCTION(BlueprintCallable, Category = "LEVEL")
-	FString InsGetPlayGuideFromAssetName(const FString& _AssetName);
-
-	// 레벨 이미지 반환
-	UFUNCTION(BlueprintCallable, Category = "LEVEL")
-	UTexture2D* InsGetLevelImageFromAssetName(const FString& _AssetName);
-
-	// 플레이 목표 반환
-	UFUNCTION(BlueprintCallable, Category = "LEVEL")
-	FString InsGetGoalGuideFromAssetName(const FString& _AssetName);
-
-	// 현재의 스테이지 단계를 세팅
 	UFUNCTION(BlueprintCallable)
-	void InsSetCurStagePhase(EStagePhase _StagePhase) { CurStagePhase = _StagePhase; }
+	float InsGetStageLimitTime() const { return CurLevelInfo_Ins.StageLimitTime; }
 
 	// 스테이지 끝나고 나오는 결과창인지
-	UPROPERTY(BlueprintReadWrite, Category = "LEVEL")
+	UPROPERTY(BlueprintReadWrite)
 	bool bIsResultLevel = false;
 
 protected:
-	// 레벨 에셋 이름
-	UPROPERTY(VisibleAnywhere, Category = "LEVEL")
-	FString CurLevelAssetName = TEXT("");
-
-	// 레벨 이름
-	UPROPERTY(VisibleAnywhere, Category = "LEVEL")
-	FString CurLevelName = TEXT("");
-
-	// 스테이지(레벨) 타입
-	UPROPERTY(BlueprintReadWrite, Category = "LEVEL")
-	EStageType CurStageType = EStageType::NONE;
-
-	// 현재 스테이지 페이즈
-	UPROPERTY(BlueprintReadWrite, Category = "LEVEL")
-	EStagePhase CurStagePhase = EStagePhase::STAGE_1;
-
-	// 스테이지의 종료 조건
-	UPROPERTY(BlueprintReadWrite, Category = "LEVEL")
-	EPlayerStatus StageEndCondition = EPlayerStatus::NONE;
-
-	// 스테이지 제한 시간 : 팀전용
-	float StageLimitTime = 0.0f;
-
 	// 레벨 이름 리스트 (AssetName 기준)
 	UPROPERTY()
 	TArray<FString> MapList;
@@ -337,8 +348,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "PLAYER DATA")
 	bool InsGetHasNickname() { return HasNickname; }
 
-	// 플레이어 UniqueID -> FPlayerInfo 매핑 저장소
+	// 플레이어 UniqueID -> FPlayerInfo 매핑 저장소 : 전체 플레이어
 	TMap<FString, struct FPlayerInfo> PlayerInfoBackup;
+
+	// 플레이어 UniqueID -> FPlayerInfo 매핑 저장소 : 실패 플레이어
+	TMap<FString, struct FPlayerInfo> FailPlayerInfoBackup;
 
 protected:
 	// 닉네임

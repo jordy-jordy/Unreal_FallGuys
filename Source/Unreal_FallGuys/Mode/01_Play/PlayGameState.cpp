@@ -42,8 +42,8 @@ void APlayGameState::BeginPlay()
 
 	if (HasAuthority())
 	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: BeginPlay :: 스테이지 모드 : %s"), *UEnum::GetValueAsString(GS_CurStageType));
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: BeginPlay :: 스테이지 페이즈 : %s"), *UEnum::GetValueAsString(GS_CurStagePhase));
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: BeginPlay :: 스테이지 모드 : %s"), *UEnum::GetValueAsString(CurLevelInfo_GameState.LevelType));
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: BeginPlay :: 스테이지 페이즈 : %s"), *UEnum::GetValueAsString(CurLevelInfo_GameState.CurStagePhase));
 	}
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameState BeginPlay END ======= "));
@@ -164,30 +164,6 @@ void APlayGameState::MulticastUpdateConnectedPlayers_Implementation(int _NewCoun
 	}
 }
 
-// 레벨 이름 세팅 : PlayGameMode에서 호출
-void APlayGameState::SetPlayLevelName_Implementation(const FString& _LevelName)
-{
-	LevelName = _LevelName;
-}
-
-// 레벨 에셋 이름 세팅 : PlayGameMode에서 호출
-void APlayGameState::SetPlayLevelAssetName_Implementation(const FString& _LevelAssetName)
-{
-	LevelAssetName = _LevelAssetName;
-}
-
-// 레벨 타입 세팅 : PlayGameMode에서 호출
-void APlayGameState::SetCurStageType_Implementation(EStageType _StageType)
-{
-	GS_CurStageType = _StageType;
-}
-
-// 레벨 페이즈 세팅 : PlayGameMode에서 호출
-void APlayGameState::SetCurStagePhase_Implementation(EStagePhase _StagePhase)
-{
-	GS_CurStagePhase = _StagePhase;
-}
-
 // 레벨 시네마틱 시작하세요
 void APlayGameState::SetCanStartLevelCinematic_Implementation()
 {
@@ -199,6 +175,12 @@ void APlayGameState::SetIsLevelCinematicEnd_Implementation(bool _Value)
 {
 	IsLevelCinematicEnd = _Value;
 	
+	APlayGameMode* PlayMode = Cast<APlayGameMode>(GetWorld()->GetAuthGameMode());
+	if (PlayMode)
+	{
+		PlayMode->SetCinematicEND(IsLevelCinematicEnd);
+	}
+
 	if (_Value == true)
 	{
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: 레벨 시네마틱이 종료되었습니다."));
@@ -245,6 +227,29 @@ void APlayGameState::SetGameStateIsResultLevel_Implementation(bool _Value)
 void APlayGameState::SetGameStateGameStarted_Implementation(bool _Value)
 {
 	bGameStateGameStarted = _Value;
+}
+
+// 실패한 플레이어 정보 리스트 백업
+void APlayGameState::BackUpFailPlayersInfo_Implementation()
+{
+	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
+
+	if (!GameInstance)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameState :: BackUpFailPlayersInfo :: GameInstance가 nullptr입니다."));
+		return;
+	}
+
+	// 기존 실패자 백업 초기화
+	GameInstance->FailPlayerInfoBackup.Empty();
+
+	for (const FPlayerInfoEntry& Entry : FailPlayerInfoArray)
+	{
+		GameInstance->FailPlayerInfoBackup.Add(Entry.UniqueID, Entry.PlayerInfo);
+
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameState :: BackUpFailPlayersInfo :: UID = %s, Tag = %s → FAIL 백업됨"),
+			*Entry.UniqueID, *Entry.PlayerInfo.Tag.ToString());
+	}
 }
 
 // 실패한 유저의 떨어지는 순번을 정해줌
@@ -303,14 +308,43 @@ void APlayGameState::SetDropOrder_Implementation()
 	// 디버그 로그
 	for (const FPlayerInfoEntry& Entry : FailPlayerInfoArray)
 	{
-		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameState :: SetDropOrder :: 실패한 플레이어의 태그(PlayerTag) = %s, 떨어지는 순서(DropOrder) = %d"),
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: SetDropOrder :: 실패한 플레이어의 태그(PlayerTag) = %s, 떨어지는 순서(DropOrder) = %d"),
 			*Entry.PlayerInfo.Tag.ToString(), Entry.PlayerInfo.DropOrder);
 	}
 
+	// 실패한 유저 정보 GameInstance에 백업
+	BackUpFailPlayersInfo();
+
+	// 상태 동기화
 	SyncPlayerInfoFromPlayerState();
 }
 
-void APlayGameState::S_SetCanMoveLevel_Implementation(bool _b)
+// 실패한 유저 정보 복구
+void APlayGameState::RestoreFailPlayersInfo()
+{
+	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
+	if (!GameInstance)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameState :: RestoreFailPlayersInfo :: GameInstance가 nullptr입니다."));
+		return;
+	}
+
+	FailPlayerInfoArray.Empty();
+
+	for (const TPair<FString, FPlayerInfo>& Elem : GameInstance->FailPlayerInfoBackup)
+	{
+		const FString& UID = Elem.Key;
+		const FPlayerInfo& Info = Elem.Value;
+
+		FailPlayerInfoArray.Add(FPlayerInfoEntry(UID, Info));
+
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameState :: RestoreFailPlayersInfo :: UID = %s, Tag = %s → 실패한 유저 정보 복원됨"),
+			*UID, *Info.Tag.ToString());
+	}
+}
+
+// 다음 레벨로 이동 가능혀 : PlayGameMode에 세팅
+void APlayGameState::S2C_SetCanMoveLevel_Implementation(bool _b)
 {
 	APlayGameMode* PlayMode = Cast<APlayGameMode>(GetWorld()->GetAuthGameMode());
 	if (PlayMode)
@@ -319,15 +353,28 @@ void APlayGameState::S_SetCanMoveLevel_Implementation(bool _b)
 	}
 }
 
+// 현 스테이지의 골 타입을 반환함
+FString APlayGameState::GetSTATEStageGoalType()
+{
+	if (CurLevelInfo_GameState.EndCondition == EPlayerStatus::SUCCESS)
+	{
+		return TEXT("RACING");
+	}
+	else if (CurLevelInfo_GameState.EndCondition == EPlayerStatus::FAIL)
+	{
+		return TEXT("SURVIVE");
+	}
+	else
+	{
+		return TEXT("잘못됨");
+	}
+}
+
 void APlayGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(APlayGameState, PlayerInfoArray);
 	DOREPLIFETIME(APlayGameState, FailPlayerInfoArray);
-	DOREPLIFETIME(APlayGameState, LevelName);
-	DOREPLIFETIME(APlayGameState, LevelAssetName);
-	DOREPLIFETIME(APlayGameState, GS_CurStageType);
-	DOREPLIFETIME(APlayGameState, GS_CurStagePhase);
 	DOREPLIFETIME(APlayGameState, CountDownTime);
 	DOREPLIFETIME(APlayGameState, ConnectedPlayers);
 	DOREPLIFETIME(APlayGameState, IsCountDownOver);
@@ -338,6 +385,9 @@ void APlayGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(APlayGameState, bGameStateIsResultLevel);
 	DOREPLIFETIME(APlayGameState, bGameStateGameStarted);
 	DOREPLIFETIME(APlayGameState, bGameStateSettedGoalCount);
+	DOREPLIFETIME(APlayGameState, FailPlayerInfoArray);
+	DOREPLIFETIME(APlayGameState, DefaultPlayerInfoArray);
+	DOREPLIFETIME(APlayGameState, CurLevelInfo_GameState);
 }
 
 void APlayGameState::PrintFailPlayersInfo()

@@ -135,6 +135,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static UTexture2D* GetLevelImageFromAssetName(const FString& _AssetName);
 
+	// BaseGameInstance : 레벨 태그 이미지 반환
+	UFUNCTION(BlueprintCallable)
+	static UTexture2D* GetLevelTagImage();
+
 	// BaseGameInstance : 플레이 목표 반환
 	UFUNCTION(BlueprintCallable)
 	static FString GetGoalGuideFromAssetName(const FString& _AssetName);
@@ -210,6 +214,14 @@ public:
 	// PlayGameState : 목표 인원 세팅 완료했니?
 	UFUNCTION(BlueprintCallable)
 	static bool GetSettedGoalCountDone();
+
+	// PlayGameState : 레이싱이야 생존이야
+	UFUNCTION(BlueprintCallable)
+	static FString GetStageGoalType();
+
+	// TeamPlayGameState : 남은 시간이 뭐야
+	UFUNCTION(BlueprintCallable)
+	static float GetRemainingTime();
 
 
 // 이재영 : 메인위젯을 얻는 함수

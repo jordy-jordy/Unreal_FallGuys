@@ -32,9 +32,6 @@ void ARotatePlatform::BeginPlay()
 void ARotatePlatform::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	MovementComponent->Spin(DeltaTime, PlatformAxis);
-	MovementComponent->Spin(-DeltaTime, StickBody);
 }
 
 void ARotatePlatform::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -48,10 +45,9 @@ void ARotatePlatform::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, A
 void ARotatePlatform::OparateMesh()
 {
 	// ActorComponent
-	MovementComponent = CreateDefaultSubobject<UMovementActorComponent>(FName("MovementComponent"));
+	ObstacleMoveComp = CreateDefaultSubobject<UObsMovementActorComponent>(FName("ObstacleMoveComp"));
 	LaunchComponent = CreateDefaultSubobject<ULaunchActorComponent>(FName("LaunchComponent"));
 	LaunchComponent->SetActive(false);
-
 
 	// SetMesh And Location
 	RootScene = CreateDefaultSubobject<USceneComponent>(TEXT("RootScene"));

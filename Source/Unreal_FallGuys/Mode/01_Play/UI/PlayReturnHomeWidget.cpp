@@ -4,3 +4,7 @@
 #include "Mode/01_Play/UI/PlayReturnHomeWidget.h"
 
 
+void UPlayReturnHomeWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+}

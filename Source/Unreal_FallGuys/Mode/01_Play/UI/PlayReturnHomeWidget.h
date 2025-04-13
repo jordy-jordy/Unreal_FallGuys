@@ -14,4 +14,6 @@ class UNREAL_FALLGUYS_API UPlayReturnHomeWidget : public UPlayUserWidget
 {
 	GENERATED_BODY()
 
+public:
+	void NativeConstruct();
 };

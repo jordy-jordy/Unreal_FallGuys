@@ -11,9 +11,12 @@
 // ¿”Ω√
 #include "Mode/01_Play/PlayPlayerState.h"
 #include "Mode/01_Play/PlayCharacter.h"
+#include "Mode/01_Play/UI/PlayResultWidget.h"
 
 void UPlayMainWidget::NativeConstruct()
 {
+	Super::NativeConstruct();
+
 	// ResultLevel¿Ã∏È ¿ß¡¨ ≤®¡ˆ∞‘
 	if (true == UFallGlobal::GetIsResultLevel())
 	{
@@ -147,46 +150,18 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 	//CurUIType ¿ß¡¨ => _UIType ¿ß¡¨
 	switch (CurUIType)
 	{
-	//case EPlayUIType::PlayStandby:
-	//	switch (EPlayUIType(_UIType))
-	//	{
-	//	case EPlayUIType::PlayLevelTag:
-	//		CurUserWidget->SetVisibility(ESlateVisibility::Hidden);
-	//		ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	//		break;
-	//	default:
-	//		break;
-	//	}
-	//	break;
-	//case EPlayUIType::PlayInGame:
-	//	switch (EPlayUIType(_UIType))
-	//	{
-	//	case EPlayUIType::PlayStartCount:
-	//		break;
-	//	case EPlayUIType::PlayReturnHome:
-	//		break;
-	//	case EPlayUIType::PlayResult:
-	//		break;
-	//	case EPlayUIType::PlaySpectatorResult:
-	//		break;
-	//	case EPlayUIType::PlayGameOver:
-	//		break;
-	//	case EPlayUIType::PlayClearCount:
-	//		break;
-	//	case EPlayUIType::PlayScore:
-	//		break;
-	//	default:
-	//		break;
-	//	}
-	//	break;
-	
 	case EPlayUIType::PlayLevelTag:
 		switch (EPlayUIType(_UIType))
 		{
 		case EPlayUIType::PlayInGame:
 		{
 			APlayGameState* GameState = Cast<APlayGameState>(GetWorld()->GetGameState());
-			EStageType StageType = GameState->GetCurStageType();
+			if (nullptr == GameState)
+			{
+				return;
+			}
+
+			EStageType StageType = GameState->GetLevelType_STATE();
 
 			UPlayUserWidget* ClearCount = FindWidget(EPlayUIType::PlayClearCount);
 			UPlayUserWidget* PlayScore = FindWidget(EPlayUIType::PlayScore);
@@ -201,7 +176,7 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 				PlayScore->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 			}
 
-			if (true == IsFailPlayer())
+			if (true == IsFailPlayer() && EStagePhase::STAGE_1 != GameState->GetCurStagePhase_STATE())
 			{
 				SpectatorResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 			}
@@ -212,31 +187,86 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 			break;
 		}
 		break;
-	case EPlayUIType::PlayInGame:
+	case EPlayUIType::PlayResult:
 	{
-		//UPlayUserWidget* StartCount = FindWidget(EPlayUIType::PlayStartCount);
+		switch (EPlayUIType(_UIType))
+		{
+		case EPlayUIType::PlayInGame:
+		{
+			APlayGameState* GameState = Cast<APlayGameState>(GetWorld()->GetGameState());
+			if (nullptr == GameState)
+			{
+				return;
+			}
 
-		//if (true == UFallConst::UseCountDown)
-		//{
-		//	StartCount->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-		//}
+			EStageType StageType = GameState->GetLevelType_STATE();
 
+			UPlayUserWidget* ClearCount = FindWidget(EPlayUIType::PlayClearCount);
+			UPlayUserWidget* PlayScore = FindWidget(EPlayUIType::PlayScore);
+			UPlayUserWidget* SpectatorResult = FindWidget(EPlayUIType::PlaySpectatorResult);
+
+			if (StageType == EStageType::SOLO)
+			{
+				ClearCount->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			}
+			if (StageType == EStageType::TEAM)
+			{
+				PlayScore->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			}
+
+			//if (true == IsSuccessPlayer())
+			//{
+				SpectatorResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			//}
+
+			break;
+		}
+		default:
+			break;
+		}
 		break;
 	}
-	case EPlayUIType::PlayReturnHome:
+	case EPlayUIType::PlayInGame:
+	{
+		switch (EPlayUIType(_UIType))
+		{
+		case EPlayUIType::PlayResult:
+		{
+			APlayCharacter* PlayCharacter = Cast<APlayCharacter>(GetOwningPlayerPawn());
+			if (nullptr == PlayCharacter)
+			{
+				return;
+			}
+
+			APlayPlayerState* PlayPlayerState = Cast<APlayPlayerState>(PlayCharacter->GetPlayerState());
+			if (nullptr == PlayPlayerState)
+			{
+				return;
+			}
+
+			APlayGameState* GameState = Cast<APlayGameState>(GetWorld()->GetGameState());
+			if (nullptr == GameState)
+			{
+				return;
+			}
+
+			EStagePhase CurStagePhase = GameState->GetCurStagePhase_STATE();
+			EPlayerStatus CurPlayerStatus = PlayPlayerState->GetPlayerStateStatus();
+
+			UPlayUserWidget* Result = FindWidget(EPlayUIType::PlayResult);
+
+			if (((EPlayerStatus::FAIL == CurPlayerStatus) && EStagePhase::STAGE_1 == CurStagePhase) || (EPlayerStatus::SUCCESS == CurPlayerStatus))
+			{
+				Result->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			}
+
+			break;
+		}
+		default:
+			break;
+		}
 		break;
-	case EPlayUIType::PlayResult:
-		break;
-	case EPlayUIType::PlaySpectatorResult:
-		break;
-	case EPlayUIType::PlayGameOver:
-		break;
-	case EPlayUIType::PlayClearCount:
-		break;
-	case EPlayUIType::PlayScore:
-		break;
-	case EPlayUIType::MAX:
-		break;
+	}
 	default:
 		break;
 	}
@@ -248,7 +278,7 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 	CurUIType = _UIType;
 }
 
-void UPlayMainWidget::WidgetHidden(EPlayUIType _Type)
+void UPlayMainWidget::TargetWidgetHidden(EPlayUIType _Type)
 {
 	for (TPair<EPlayUIType, UPlayUserWidget*> Pair : Widgets)
 	{
@@ -291,33 +321,57 @@ UPlayUserWidget* UPlayMainWidget::FindWidget(EPlayUIType _Type, int _Index/* = 0
 // ¿”Ω√
 bool UPlayMainWidget::IsFailPlayer()
 {
-	APlayGameState* PlayGameState = Cast<APlayGameState>(GetWorld()->GetGameState());
+	APlayCharacter* PlayCharacter = Cast<APlayCharacter>(GetOwningPlayerPawn());
+	if (nullptr == PlayCharacter)
+	{
+		return false;
+	}
 
+	APlayPlayerState* PlayPlayerState = Cast<APlayPlayerState>(PlayCharacter->GetPlayerState());
+	if (nullptr == PlayPlayerState)
+	{
+		return false;
+	}
+
+	APlayGameState* PlayGameState = Cast<APlayGameState>(GetWorld()->GetGameState());
 	if (nullptr == PlayGameState)
 	{
 		return false;
 	}
 
-	TArray<FPlayerInfoEntry> FailPlayers = PlayGameState->FailPlayerInfoArray;
+	EPlayerStatus CurPlayerStatus = PlayPlayerState->GetPlayerStateStatus();
+	if (EPlayerStatus::FAIL == PlayPlayerState->GetPlayerStateStatus())
+	{
+		return true;
+	}
 
-	if (true == FailPlayers.IsEmpty())
+	return false;
+}
+
+bool UPlayMainWidget::IsSuccessPlayer()
+{
+	APlayCharacter* PlayCharacter = Cast<APlayCharacter>(GetOwningPlayerPawn());
+	if (nullptr == PlayCharacter)
 	{
 		return false;
 	}
 
-	for (FPlayerInfoEntry& FailPlayer : FailPlayers)
+	APlayPlayerState* PlayPlayerState = Cast<APlayPlayerState>(PlayCharacter->GetPlayerState());
+	if (nullptr == PlayPlayerState)
 	{
-		//APlayCharacter* Player = Cast<APlayCharacter>(GetOwningPlayerPawn());
-
-		//APlayPlayerState* PlayPlayerState = Cast<APlayPlayerState>(Player->GetPlayerState());
-		EPlayerStatus CurPlayerStatus = FailPlayer.PlayerInfo.Status;
-
-		if (EPlayerStatus::FAIL == CurPlayerStatus)
-		{
-			return true;
-		}
-
 		return false;
+	}
+
+	APlayGameState* PlayGameState = Cast<APlayGameState>(GetWorld()->GetGameState());
+	if (nullptr == PlayGameState)
+	{
+		return false;
+	}
+
+	EPlayerStatus CurPlayerStatus = PlayPlayerState->GetPlayerStateStatus();
+	if (EPlayerStatus::SUCCESS == PlayPlayerState->GetPlayerStateStatus())
+	{
+		return true;
 	}
 
 	return false;

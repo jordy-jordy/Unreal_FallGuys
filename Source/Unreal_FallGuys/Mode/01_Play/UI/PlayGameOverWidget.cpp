@@ -14,20 +14,6 @@ void UPlayGameOverWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	// 델리게이트 테스트 : 원본
-	//APlayGameMode* PlayGameMode = Cast<APlayGameMode>(GetWorld()->GetAuthGameMode());
-	//if (nullptr == PlayGameMode)
-	//{
-	//	return;
-	//}
-	//else
-	//{
-	//	PlayGameMode->RegisterWidgetDelegate(TEXT("GameOver"), 
-	//		FWidgetDelegate::CreateUObject(this, &UPlayGameOverWidget::WidgetVisible)
-	//	);
-	//}
-	// 델리게이트 테스트
-
 	// 델리게이트 테스트 : 250409 이현정 : 동기화를 위해 GameState로 이동
 	APlayGameState* FallState = GetWorld()->GetGameState<APlayGameState>();
 	if (FallState)

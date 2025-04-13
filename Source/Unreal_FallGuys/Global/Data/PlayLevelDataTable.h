@@ -19,6 +19,10 @@ struct FPlayLevelDataRow : public FTableRowBase
 	~FPlayLevelDataRow() {}
 
 public:
+	// 레벨을 사용할 것인지
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LEVEL DATA")
+	bool UseLevel = true;
+
 	// 레벨
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LEVEL DATA")
 	TSoftObjectPtr<UWorld> Level = nullptr;
@@ -35,6 +39,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LEVEL DATA")
 	EPlayerStatus EndCondition = EPlayerStatus::NONE;
 
+	// 전환 화면용 레벨 이미지
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LEVEL DATA")
+	UTexture2D* LevelIMG = nullptr;
+
+	// 전환 화면용 레벨 태그
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LEVEL DATA")
+	UTexture2D* LevelTagIMG = nullptr;
+
 	// 플레이 가이드
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LEVEL DATA")
 	FString PlayGuide = TEXT("");
@@ -42,10 +54,6 @@ public:
 	// 플레이 화면에서 보여주는 목표
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LEVEL DATA")
 	FString GoalGuide = TEXT("");
-
-	// 전환 화면용 레벨 이미지
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LEVEL DATA")
-	UTexture2D* LevelIMG = nullptr;
 };
 
 /**

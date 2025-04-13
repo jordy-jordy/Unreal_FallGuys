@@ -6,10 +6,63 @@
 #include "GameFramework/GameMode.h"
 
 #include <Global/GlobalEnum.h>
+#include <Global/BaseGameInstance.h>
 #include <Mode/01_Play/PlayEnum.h>
+#include <Mode/01_Play/PlayPlayerState.h>
 
 #include "PlayGameMode.generated.h"
 
+
+USTRUCT(BlueprintType)
+struct FCurLevelInfo_GAMEMODE
+{
+	GENERATED_BODY()
+
+	FCurLevelInfo_GAMEMODE() {}
+	FCurLevelInfo_GAMEMODE(const FCurLevelInfo_GAMEINS& _InsInfo)
+	{
+		LevelAssetName = _InsInfo.LevelAssetName;
+		LevelName = _InsInfo.LevelName;
+		LevelType = _InsInfo.LevelType;
+		EndCondition = _InsInfo.EndCondition;
+		StageLimitTime = _InsInfo.StageLimitTime;
+		PlayGuide = _InsInfo.PlayGuide;
+		GoalGuide = _InsInfo.GoalGuide;
+		LevelIMG = _InsInfo.LevelIMG;
+		LevelTagIMG = _InsInfo.LevelTagIMG;
+		CurStagePhase = _InsInfo.CurStagePhase;
+	}
+
+	UPROPERTY()
+	FString LevelAssetName = TEXT("");
+
+	UPROPERTY()
+	FString LevelName = TEXT("");
+
+	UPROPERTY()
+	EStageType LevelType = EStageType::NONE;
+
+	UPROPERTY()
+	EPlayerStatus EndCondition = EPlayerStatus::NONE;
+
+	UPROPERTY()
+	float StageLimitTime = 120.0f;
+
+	UPROPERTY()
+	FString PlayGuide = TEXT("");
+
+	UPROPERTY()
+	FString GoalGuide = TEXT("");
+
+	UPROPERTY()
+	UTexture2D* LevelIMG = nullptr;
+
+	UPROPERTY()
+	UTexture2D* LevelTagIMG = nullptr;
+
+	UPROPERTY()
+	EStagePhase CurStagePhase = EStagePhase::STAGE_1;
+};
 
 /**
  * 
@@ -22,6 +75,8 @@ class UNREAL_FALLGUYS_API APlayGameMode : public AGameMode
 public:
 	APlayGameMode();
 
+	FCurLevelInfo_GAMEMODE CurLevelInfo_Mode;
+
 #pragma region PlayGameMode :: 핵심 함수
 public: 
 protected:
@@ -33,9 +88,9 @@ protected:
 		FString& _ErrorMessage
 	) override;
 
-	// 플레이어 접속시 실행되는 함수 :: PreLogin 다음
+	// 플레이어 최초 접속시 실행되는 함수 :: PreLogin 다음
 	virtual void PostLogin(APlayerController* _NewPlayer) override;
-
+	// 심리스 서버 트래블 이후 플레이어 처리
 	virtual void HandleSeamlessTravelPlayer(AController*& _NewController) override;
 
 	virtual void Tick(float DeltaSeconds) override;
@@ -61,6 +116,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "PLAYGAMEMODE :: PLAYER")
 	void SetDefaultPlayersToSuccess();
 
+
 #pragma endregion
 
 #pragma region PlayGameMode :: 게임 시작 관련
@@ -71,13 +127,41 @@ public:
 
 	// 인원 충족 했는지 체크
 	UFUNCTION(BlueprintCallable, Category = "PLAYGAMEMODE :: GAME")
-	void CheckNumberOfPlayer(class APlayGameState* _PlayState);
+	void CheckPlayersCount(class APlayGameState* _PlayState);
 
 	// 목표 골인 인원 수 반환
 	UFUNCTION(BlueprintCallable, Category = "PLAYGAMEMODE :: GAME")
 	int32 GetFinishPlayerCount() const { return FinishPlayer; }
 
+	// 시네마틱 끝났대
+	UFUNCTION(BlueprintCallable, Category = "PLAYGAMEMODE :: GAME")
+	void SetCinematicEND(bool _Value) { bCinematicEND = _Value; }
+
+
 protected:
+	// 최초 접속시에 실행
+	void HandleFirstTimeLogin(APlayerController* _NewPlayer, APlayPlayerState* _PlayerState, APlayGameState* _FallState, UBaseGameInstance* _GameInstance);
+
+	// 필수 데이터 세팅
+	bool SetupCommonEssentialData(class APlayerController* _NewPlayer, class APlayGameState*& _OutFallState, class APlayPlayerState*& _OutPlayerState, class UBaseGameInstance*& _OutGameInstance);
+	// 플레이어 인원 플러스
+	void AddPlayerCount(APlayGameState* _FallState);
+	// 결과 화면인지 게임 인스로부터 가져옴
+	void GetIsResultLevel(APlayGameState* _FallState, UBaseGameInstance* _GameInstance);
+	// 레벨 이동 했는지 게임 인스로부터 가져옴
+	bool GetIsLevelMoved(UBaseGameInstance* _GameInstance);
+	// 플레이어 태그 생성
+	FName GenerateUniquePlayerTag(APlayerController* _NewPlayer, int32 _PlayerIndex);
+	// 세로운 플레이어 정보 세팅
+	void InitPlayerInfo(class APlayerController* _NewPlayer, class APlayPlayerState* _PlayerState, class APlayGameState* _FallState, class UBaseGameInstance* _GameInstance);
+	// 기존 플레이어 정보 복구
+	void RestorePlayerInfo(class APlayerController* _NewPlayer, class APlayPlayerState* _PlayerState, class APlayGameState* _FallState, class UBaseGameInstance* _GameInstance);
+	// 플레이어 등록이 완료 된 후 실행되는 공통로직
+	void PostInitializePlayer(APlayGameState* _FallState);
+	// 플레이어 인포 로그
+	void LogPlayerInfo(const FString& _Prefix, const FPlayerInfo& _Info, APlayerController* _Controller);
+	// 시네마틱과 접속 제한 세팅 호출
+	void StartCinematicIfReady(APlayGameState* _FallState);
 	// 레벨 시네마틱 시작을 호출
 	UFUNCTION()
 	void CallLevelCinematicStart(APlayGameState* _PlayState);
@@ -97,6 +181,8 @@ protected:
 	// 게임 시작 조건 검사 함수
 	void CheckStartConditions();
 
+	// 레벨 이동했니
+	bool bMODEIsLevelMoved = false;
 	// 접속 제한
 	bool bInvalidConnect = false;
 	// 인원 충족
@@ -113,15 +199,8 @@ protected:
 	bool bMODEIsResultLevel = false;
 	// 게임 시작됐니
 	bool bGameStarted = false;
-
-	// 현재 스테이지 이름
-	FString MODE_CurLevelName = TEXT("Unknown");
-	// 현재 스테이지 에셋 이름
-	FString MODE_CurLevelAssetName = TEXT("Unknown");
-	// 현재 스테이지 타입
-	EStageType MODE_CurStageType = EStageType::NONE;
-	// 현재 스테이지 단계
-	EStagePhase MODE_CurStagePhase = EStagePhase::STAGE_1;
+	// 시네마틱 끝났니
+	bool bCinematicEND = false;
 
 	// 디폴트 상태의 플레이어 수
 	int32 DefaultPlayerCount = 0;
@@ -137,19 +216,12 @@ public:
 protected:
 	// 게임 시작 조건 검사 타이머 핸들
 	FTimerHandle GameStartConditionTimer;
-
 	// 레벨 시네마틱을 시작하도록 하는 타이머
 	FTimerHandle SetLevelCinematicStartTimer;
-
 	// 게임 시작 전 카운트 다운 핸들
 	FTimerHandle CountdownTimerHandle;
-
-	// 게임 시작 후 스테이지 제한 시간 핸들
-	FTimerHandle StageLimitTimerHandle;
-
 	// 동기화 타이머 핸들
 	FTimerHandle SyncPlayerInfoTimer;
-
 	// RaceOver 레벨에서 다음 레벨로 이동하는 타이머 핸들
 	FTimerHandle ResultTravelTimerHandle;
 
@@ -171,11 +243,9 @@ public:
 	}
 
 protected:
-	void DeferredServerTravel();
-
 	// 게임 종료 트리거
 	void SetEndCondition_Trigger();
-	// 개인전 및 팀전 공용 종료 로직
+	// 개인전 및 팀전 공통 종료 로직
 	void SetEndCondition_Common();
 	// 개인전 종료 로직
 	void SetEndCondition_Solo();
@@ -203,9 +273,8 @@ protected:
 	bool bCanMoveLevel = false;
 	// 서버 트래블 활성화 됐니?
 	bool StartedServerTravel = false;
-	
-	// 스테이지 종료 기준 상태
-	EPlayerStatus MODE_CurStageResultStatus = EPlayerStatus::NONE;
+	// 부전승 처리 했니?
+	bool bSetWinbyDefault = false;
 
 #pragma endregion
 
@@ -225,6 +294,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Server", meta = (AllowPrivateAccess = "true"))
 	FString NextLevel= TEXT("LMHRaceOverMap");
 
+	// End 레벨 이름
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Server", meta = (AllowPrivateAccess = "true"))
+	FString EndLevel = TEXT("EndLevel");
+
 public:
 	// 개인전용 : 중간 결과창으로 이동
 	UFUNCTION(BlueprintCallable)
@@ -233,6 +306,10 @@ public:
 	// 개인전용 : 다음 스테이지로 이동
 	UFUNCTION(BlueprintCallable)
 	void ServerTravelToNextRandLevel();
+
+	// 개인전용 : 최종 결과창으로 이동
+	UFUNCTION(BlueprintCallable)
+	void ServerTravelToEndLevel();
 
 	// 이현정 : 25.04.02 : 동기화 함수로 수정 : 골인 인원 +1 카운팅
 	UFUNCTION(BlueprintCallable)

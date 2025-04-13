@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+
 #include <Global/GlobalEnum.h>
+
 #include "TitlePawn.generated.h"
 
 

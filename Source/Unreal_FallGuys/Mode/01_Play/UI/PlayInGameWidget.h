@@ -17,7 +17,21 @@ class UNREAL_FALLGUYS_API UPlayInGameWidget : public UPlayUserWidget
 	GENERATED_BODY()
 
 public:
+	void NativeConstruct();
+
 	UFUNCTION(BlueprintCallable)
 	EStagePhase CurStagePhase();
 
+	UFUNCTION(BlueprintCallable)
+	void ShowResult(bool _Value);
+
+	UFUNCTION(BlueprintCallable)
+	bool GetShowResult()
+	{
+		return IsShowResult;
+	}
+
+private:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
+	bool IsShowResult = false;
 };

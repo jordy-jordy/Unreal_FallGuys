@@ -9,6 +9,11 @@
 #include "Global/FallConst.h"
 
 
+void UPlayStandbyWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+}
+
 FString UPlayStandbyWidget::GetCurLevelGuide()
 {
 	UBaseGameInstance* Inst = GetWorld()->GetGameInstance<UBaseGameInstance>();

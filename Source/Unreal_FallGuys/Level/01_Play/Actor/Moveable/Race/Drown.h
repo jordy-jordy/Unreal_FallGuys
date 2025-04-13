@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Level/01_Play/Components/MovementActorComponent.h"
+#include "Level/01_Play/Components/ObsMovementActorComponent.h"
 #include "Global/Data/ResourceDataTable.h"
 #include "FallGlobal.h"
 #include "Drown.generated.h"
@@ -37,7 +37,7 @@ public:
 public:
 	// ActorComponent
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Movement")
-	UMovementActorComponent* MovementComponent;
+	UObsMovementActorComponent* ObstacleMoveComp;
 
 	// MeshComponenet
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Drown")

@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Components/SphereComponent.h"
-#include "Level/01_Play/Components/MovementActorComponent.h"
+#include "Level/01_Play/Components/ObsMovementActorComponent.h"
 #include "Global/Data/ResourceDataTable.h"
 #include "FallGlobal.h"
 #include "ChainBomb.generated.h"
@@ -30,7 +30,7 @@ public:
 public:
 	// ActorComponent
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Movement")
-	UMovementActorComponent* MovementComponent;
+	UObsMovementActorComponent* ObstacleMoveComp;
 
 	// MeshComponent
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "ChainBomb")
@@ -47,9 +47,6 @@ public:
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "ChainBomb")
 	USphereComponent* BombCollision;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ChainBomb")
-	float PhyTime = 0.0f;
 
 private:
 	UFUNCTION()

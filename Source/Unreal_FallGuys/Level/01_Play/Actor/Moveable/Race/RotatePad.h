@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Level/01_Play/Components/ObsMovementActorComponent.h"
 #include "Global/Data/ResourceDataTable.h"
 #include "FallGlobal.h"
 #include "RotatePad.generated.h"
@@ -34,6 +35,10 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
+	// ActorComponent
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "ObstacleMoveComp")
+	UObsMovementActorComponent* ObstacleMoveComp;
+
 	// MeshComponent
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "RotatePad")
 	USceneComponent* RootScene;
@@ -51,18 +56,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RotatePad")
 	ERotateState RotateState = ERotateState::DELAY;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RotatePad")
-	float DelayTime = 0.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RotatePad");
-	float RotateSpeed;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RotatePad");
-	float ReCoverSpeed;
-
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "RotatePad")
-	float LimitAngle = -65.0f;
-
 private:
 	// Functions
 	UFUNCTION()
@@ -70,10 +63,4 @@ private:
 
 	UFUNCTION()
 	void SetMesh();
-
-	UFUNCTION(BlueprintCallable)
-	bool CheckMoveUp();
-
-	UFUNCTION(BlueprintCallable)
-	bool CheckMoveDown();
 };
