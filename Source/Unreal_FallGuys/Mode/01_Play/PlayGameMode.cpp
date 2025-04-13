@@ -17,13 +17,6 @@
 APlayGameMode::APlayGameMode()
 {
 	bUseSeamlessTravel = true;
-
-#if WITH_EDITOR
-	if (GIsEditor)
-	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: APlayGameMode :: PIE 환경 → 심리스 트래블 설정 적용"));
-	}
-#endif
 }
 
 #pragma region PlayGameMode :: PreLogin :: 플레이어 접속시 가장 먼저 실행
@@ -360,6 +353,14 @@ void APlayGameMode::RestorePlayerInfo(APlayerController* _NewPlayer, APlayPlayer
 void APlayGameMode::BeginPlay()
 {
 	Super::BeginPlay();
+
+#if WITH_EDITOR
+	if (GEngine && GEngine->IsEditor())
+	{
+		GEngine->Exec(GetWorld(), TEXT("net.AllowPIESeamlessTravel 1"));
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: APlayGameMode :: PIE 환경 → 심리스 트래블 설정 적용"));
+	}
+#endif
 
 	if (!HasAuthority()) { return; } // 서버에서만 실행
 
