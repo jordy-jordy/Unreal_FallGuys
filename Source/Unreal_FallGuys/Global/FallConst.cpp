@@ -57,8 +57,9 @@ float UFallConst::LevelCinematicReady = 5.0f;
 // 각 달걀의 점수
 int32 UFallConst::EggScore = 20;
 
-// Stage 플레이 제한 시간 - 개발 중일때만 씀
-float UFallConst::FallStageLimitTime = 10.0f;
+// DEBUG : 로그 뜨게 할거야?
+bool UFallConst::PrintDebugLog = false;
+
 
 FName UFallConst::UI::TitleMainPanelName = TEXT("TitleMain");
 FName UFallConst::UI::PlayMainPanelName = TEXT("PlayMain");

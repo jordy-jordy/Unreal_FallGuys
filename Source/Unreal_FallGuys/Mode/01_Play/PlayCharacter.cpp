@@ -12,6 +12,7 @@
 #include <Net/UnrealNetwork.h>
 #include <Unreal_FallGuys.h>
 #include <Global/FallGlobal.h>
+#include <Global/FallConst.h>
 #include <Global/GlobalEnum.h>
 #include <Global/BaseGameInstance.h>
 #include <Mode/01_Play/PlayGameMode.h>
@@ -305,7 +306,7 @@ void APlayCharacter::DebugCheckDieStatus()
 		*StatusStr,
 		IsDie ? TEXT("true") : TEXT("false"));
 
-	if (GEngine)
+	if (UFallConst::PrintDebugLog && GEngine)
 	{
 		FString TagStringForScreen;
 

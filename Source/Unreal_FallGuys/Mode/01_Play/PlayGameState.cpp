@@ -157,7 +157,7 @@ void APlayGameState::MulticastUpdateConnectedPlayers_Implementation(int _NewCoun
 	// 디버그 출력
 	UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameState :: MulticastUpdateConnectedPlayers : %d"), ConnectedPlayers);
 
-	if (GEngine)
+	if (UFallConst::PrintDebugLog && GEngine)
 	{
 		FString Message = FString::Printf(TEXT("PlayGameState :: 접속자 수 갱신 : %d"), ConnectedPlayers);
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, Message);

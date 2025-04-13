@@ -66,14 +66,14 @@ public:
 	// 접속 제한 기능을 사용할 것인지 결정하는 변수
 	static bool UsePlayerLimit;
 
-	// Stage 플레이 제한 시간 - 개발 중일때만 씀
-	static float FallStageLimitTime;
-
 	// 디폴트 컬러
 	static const ECostumeColor DefaultColor = ECostumeColor::DEFAULT;
 
 	// 각 달걀의 점수
 	static int32 EggScore;
+
+	// DEBUG : 로그 뜨게 할거야?
+	static bool PrintDebugLog;
 
 private:
 

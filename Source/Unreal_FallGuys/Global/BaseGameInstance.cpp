@@ -672,7 +672,7 @@ void UBaseGameInstance::InsPrintPlayerInfo()
 	}
 
 	// 최종적으로 화면에 출력
-	if (GEngine)
+	if (UFallConst::PrintDebugLog && GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan, ScreenMessage);
 	}
@@ -685,7 +685,7 @@ void UBaseGameInstance::InsPrintConnectedPlayers()
 	if (!PlayGameState)
 	{
 		UE_LOG(FALL_DEV_LOG, Error, TEXT("InsPrintConnectedPlayers: GameState가 nullptr 입니다."));
-		if (GEngine)
+		if (UFallConst::PrintDebugLog && GEngine)
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Error: GameState가 nullptr 입니다."));
 		}
@@ -708,7 +708,7 @@ void UBaseGameInstance::InsPrintConnectedPlayers()
 	UE_LOG(FALL_DEV_LOG, Log, TEXT("현재 골인 인원 수 : %d"), CurGoalCount);
 
 	// 화면 출력
-	if (GEngine)
+	if (UFallConst::PrintDebugLog && GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("현재 접속자 수 : %d"), ConnectedCount));
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("카운트 다운 끝났니? : %s"), IsOverCount ? TEXT("true") : TEXT("false")));
@@ -725,7 +725,7 @@ void UBaseGameInstance::InsPrintLevelName()
 	if (!PlayGameState)
 	{
 		UE_LOG(FALL_DEV_LOG, Error, TEXT("InsPrintLevelName: GameState가 nullptr 입니다."));
-		if (GEngine)
+		if (UFallConst::PrintDebugLog && GEngine)
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Error: GameState가 nullptr 입니다."));
 		}
@@ -740,7 +740,7 @@ void UBaseGameInstance::InsPrintLevelName()
 	UE_LOG(FALL_DEV_LOG, Log, TEXT("현재 레벨의 에셋 이름: %s"), *LevelAssetName);
 
 	// 화면 출력
-	if (GEngine)
+	if (UFallConst::PrintDebugLog && GEngine)
 	{
 		FString ScreenMessage0 = FString::Printf(TEXT("현재 레벨의 이름: %s"), *LevelName);
 		FString ScreenMessage1 = FString::Printf(TEXT("현재 레벨의 에셋 이름: %s"), *LevelAssetName);
@@ -756,7 +756,7 @@ void UBaseGameInstance::InsetLevelCinematicEnd()
 	if (!PlayGameState)
 	{
 		UE_LOG(FALL_DEV_LOG, Error, TEXT("InsPrintLevelName: GameState가 nullptr 입니다."));
-		if (GEngine)
+		if (UFallConst::PrintDebugLog && GEngine)
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Error: GameState가 nullptr 입니다."));
 		}
@@ -770,7 +770,7 @@ void UBaseGameInstance::InsetLevelCinematicEnd()
 	UE_LOG(FALL_DEV_LOG, Log, TEXT("현재 레벨 시네마틱 상태 : %s"), ValueBefore ? TEXT("true") : TEXT("false"));
 
 	// 화면 출력
-	if (GEngine)
+	if (UFallConst::PrintDebugLog && GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("현재 레벨 시네마틱 상태 : %s"), ValueBefore ? TEXT("true") : TEXT("false")));
 	}
@@ -784,7 +784,7 @@ void UBaseGameInstance::InsetLevelCinematicEnd()
 	UE_LOG(FALL_DEV_LOG, Log, TEXT("레벨 시네마틱 끝났니? : %s"), ValueAfter ? TEXT("true") : TEXT("false"));
 
 	// 화면 출력
-	if (GEngine)
+	if (UFallConst::PrintDebugLog && GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("레벨 시네마틱 끝났니? : %s"), ValueAfter ? TEXT("true") : TEXT("false")));
 	}
@@ -797,7 +797,7 @@ void UBaseGameInstance::InsGetGameStateCurFinishPlayer()
 	if (!PlayGameState)
 	{
 		UE_LOG(FALL_DEV_LOG, Error, TEXT("InsPrintLevelName: GameState가 nullptr 입니다."));
-		if (GEngine)
+		if (UFallConst::PrintDebugLog && GEngine)
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Error: GameState가 nullptr 입니다."));
 		}
@@ -812,7 +812,7 @@ void UBaseGameInstance::InsGetGameStateCurFinishPlayer()
 	UE_LOG(FALL_DEV_LOG, Log, TEXT("현재 골인한 인원 : %d"), CurGoalCount);
 
 	// 화면 출력
-	if (GEngine)
+	if (UFallConst::PrintDebugLog && GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("목표 골인 인원 : %d"), TargetGoalCount));
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("현재 골인한 인원 : %d"), CurGoalCount));
