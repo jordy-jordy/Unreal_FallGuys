@@ -34,10 +34,6 @@ void ATeamPlayGameMode::PostLogin(APlayerController* _NewPlayer)
 	// 팀 배정
 	AssignTeam(PlayerState);
 
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("TeamPlayGameMode :: PostLogin :: 플레이어 %s 팀 배정 완료: %s"),
-		*PlayerState->PlayerInfo.Tag.ToString(),
-		*UEnum::GetValueAsString(PlayerState->PlayerInfo.Team));
-
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= TeamPlayGameMode PostLogin END ======= "));
 }
 
@@ -46,13 +42,6 @@ void ATeamPlayGameMode::BeginPlay()
 	Super::BeginPlay();
 
 	if (!HasAuthority()) { return; } // 서버에서만 실행
-
-	// 스테이지 제한 시간을 가져옴
-	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
-	MODE_StageLimitTime = GameInstance->InsGetStageLimitTime();
-	// 스테이지 제한 시간을 게임 스테이트에 세팅
-	ATeamPlayGameState* FallTeamState = GetGameState<ATeamPlayGameState>();
-	FallTeamState->SetStageLimitTime(MODE_StageLimitTime);
 }
 
 void ATeamPlayGameMode::Tick(float DeltaSeconds)
@@ -110,6 +99,10 @@ void ATeamPlayGameMode::AssignTeam(APlayPlayerState* _PlayerState)
 		_PlayerState->SetTeam(ETeamType::BLUE);
 	}
 
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("TeamPlayGameMode :: PostLogin :: 플레이어 %s 팀 배정 완료: %s"),
+		*_PlayerState->PlayerInfo.Tag.ToString(),
+		*UEnum::GetValueAsString(_PlayerState->PlayerInfo.Team));
+
 	// 배정 받은 후 동기화
 	SyncPlayerInfo();
 }
@@ -139,9 +132,9 @@ void ATeamPlayGameMode::StartStageLimitTimer()
 {
 	if (!HasAuthority()) return;
 
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("TeamPlayGameMode :: BeginPlay :: 스테이지 제한 시간 타이머 시작: %.2f초"), MODE_StageLimitTime);
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("TeamPlayGameMode :: BeginPlay :: 스테이지 제한 시간 타이머 시작: %.2f초"), CurLevelInfo_Mode.StageLimitTime);
 
-	GetWorldTimerManager().SetTimer(StageLimitTimerHandle, this, &ATeamPlayGameMode::OnStageLimitTimeOver, MODE_StageLimitTime, false);
+	GetWorldTimerManager().SetTimer(StageLimitTimerHandle, this, &ATeamPlayGameMode::OnStageLimitTimeOver, CurLevelInfo_Mode.StageLimitTime, false);
 	GetWorldTimerManager().SetTimer(RemainingTimeUpdateHandle, this, &ATeamPlayGameMode::UpdateRemainingTime, 1.0f, true);
 }
 
@@ -149,7 +142,7 @@ void ATeamPlayGameMode::StartStageLimitTimer()
 void ATeamPlayGameMode::UpdateRemainingTime()
 {
 	float ElapsedTime = GetWorldTimerManager().GetTimerElapsed(StageLimitTimerHandle);
-	float TotalTime = MODE_StageLimitTime;
+	float TotalTime = CurLevelInfo_Mode.StageLimitTime;
 	float RemainingTime = FMath::Clamp(TotalTime - ElapsedTime, 0.0f, TotalTime);
 
 	ATeamPlayGameState* FallTeamState = GetGameState<ATeamPlayGameState>();
@@ -231,15 +224,15 @@ void ATeamPlayGameMode::DetermineWinningAndLosingTeams()
 	// 로그
 	if (TEAMRED > TEAMBLUE)
 	{
-		UE_LOG(FALL_DEV_LOG, Log, TEXT("TeamPlayGameMode :: DetermineWinningAndLosingTeams :: 레드팀 승리"));
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("TeamPlayGameMode :: DetermineWinningAndLosingTeams :: 레드팀 승리"));
 	}
 	else if (TEAMRED < TEAMBLUE)
 	{
-		UE_LOG(FALL_DEV_LOG, Log, TEXT("TeamPlayGameMode :: DetermineWinningAndLosingTeams :: 블루팀 승리"));
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("TeamPlayGameMode :: DetermineWinningAndLosingTeams :: 블루팀 승리"));
 	}
 	else
 	{
-		UE_LOG(FALL_DEV_LOG, Log, TEXT("TeamPlayGameMode :: DetermineWinningAndLosingTeams :: 무승부, 전원 성공 처리"));
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("TeamPlayGameMode :: DetermineWinningAndLosingTeams :: 무승부, 전원 성공 처리"));
 	}
 }
 

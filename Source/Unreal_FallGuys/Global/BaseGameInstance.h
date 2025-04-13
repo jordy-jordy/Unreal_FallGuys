@@ -19,25 +19,18 @@ struct FLevelInfo
 
 	UPROPERTY()
 	FString LevelAssetName = TEXT("");
-
 	UPROPERTY()
 	FString LevelName = TEXT("");
-
 	UPROPERTY()
 	EStageType LevelType = EStageType::SOLO;
-
 	UPROPERTY()
 	EPlayerStatus EndCondition = EPlayerStatus::NONE;
-
 	UPROPERTY()
 	FString PlayGuide = TEXT("");
-
 	UPROPERTY()
 	FString GoalGuide = TEXT("");
-
 	UPROPERTY()
 	UTexture2D* LevelIMG = nullptr;
-
 	UPROPERTY()
 	UTexture2D* LevelTagIMG = nullptr;
 };
@@ -49,25 +42,18 @@ struct FTeamLevelInfo
 
 	UPROPERTY()
 	FString LevelAssetName = TEXT("");
-
 	UPROPERTY()
 	FString LevelName = TEXT("");
-
 	UPROPERTY()
 	EStageType LevelType = EStageType::TEAM;
-
 	UPROPERTY()
 	float StageLimitTime = 120.0f;
-
 	UPROPERTY()
 	FString PlayGuide = TEXT("");
-
 	UPROPERTY()
 	FString GoalGuide = TEXT("");
-
 	UPROPERTY()
 	UTexture2D* LevelIMG = nullptr;
-
 	UPROPERTY()
 	UTexture2D* LevelTagIMG = nullptr;
 };
@@ -81,31 +67,22 @@ struct FCurLevelInfo_GAMEINS
 
 	UPROPERTY()
 	FString LevelAssetName = TEXT("");
-
 	UPROPERTY()
 	FString LevelName = TEXT("");
-
 	UPROPERTY()
 	EStageType LevelType = EStageType::NONE;
-
 	UPROPERTY()
 	EPlayerStatus EndCondition = EPlayerStatus::NONE;
-
 	UPROPERTY()
-	float StageLimitTime = 120.0f;
-
+	float StageLimitTime = 0.0f;
 	UPROPERTY()
 	FString PlayGuide = TEXT("");
-
 	UPROPERTY()
 	FString GoalGuide = TEXT("");
-
 	UPROPERTY()
 	UTexture2D* LevelIMG = nullptr;
-
 	UPROPERTY()
 	UTexture2D* LevelTagIMG = nullptr;
-
 	UPROPERTY()
 	EStagePhase CurStagePhase = EStagePhase::STAGE_1;
 };
