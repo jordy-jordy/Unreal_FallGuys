@@ -139,6 +139,14 @@ public:
 	void C2S_Costume(const FString& _Color, const FString& _TopName = TEXT(""), const FString& _BotName = TEXT(""));
 	void C2S_Costume_Implementation(const FString& _Color, const FString& _TopName = TEXT(""), const FString& _BotName = TEXT(""));
 
+	UFUNCTION(BlueprintCallable, Reliable, NetMulticast)
+	void S2M_NickName();
+	void S2M_NickName_Implementation();
+
+	UFUNCTION(BlueprintCallable, Reliable, Server)
+	void C2S_NickName();
+	void C2S_NickName_Implementation();
+
 private: 
 	UPROPERTY(VisibleAnywhere, Category = "COSTUME")
 	UStaticMeshComponent* CostumeTOPStaticMesh;
@@ -154,6 +162,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Replicated, BlueprintReadOnly, Category = "COSTUME", meta = (AllowPrivateAccess = "true"))
 	FString CostumeBotName = TEXT("");
+
+	UPROPERTY(VisibleAnywhere, Replicated, BlueprintReadOnly, Category = "NickName", meta = (AllowPrivateAccess = "true"))
+	FString NickName = TEXT("");
 
 // 이현정 : 움직임 관련 함수 및 변수
 public:

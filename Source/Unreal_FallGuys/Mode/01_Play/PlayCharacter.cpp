@@ -229,6 +229,20 @@ void APlayCharacter::S2M_Costume_Implementation(const FString& _Color, const FSt
 	}
 }
 
+void APlayCharacter::C2S_NickName_Implementation()
+{
+
+    NickName = UFallGlobal::GetNickname(this);
+	
+	S2M_NickName();
+}
+
+void APlayCharacter::S2M_NickName_Implementation()
+{
+		NickName = UFallGlobal::GetNickname(this);
+}
+
+
 // 이현정 : 캐릭터 Moving 활성화
 void APlayCharacter::S2M_SetCanMoveTrue_Implementation()
 {
