@@ -235,6 +235,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static float GetRemainingTime();
 
+	// BaseGameInstance : 승리한 유저의 닉네임 가져오기 - EndLevel 전용
+	UFUNCTION(BlueprintCallable)
+	static FString GetWinnerNickname();
 
 // 이재영 : 메인위젯을 얻는 함수
 public:

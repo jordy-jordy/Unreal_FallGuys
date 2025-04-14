@@ -390,6 +390,13 @@ float UFallGlobal::GetRemainingTime()
 	return FallTeamState->GetRemainingTime();
 }
 
+// BaseGameInstance : 승리한 유저의 닉네임 가져오기 - EndLevel 전용
+FString UFallGlobal::GetWinnerNickname()
+{
+	UBaseGameInstance* GameIns = GWorld->GetGameInstance<UBaseGameInstance>();
+	return GameIns->InsGetWinnerNickname();
+}
+
 // 이재영 : 메인위젯을 얻는 함수
 UTitleMainWidget* UFallGlobal::GetMainWidget(UWorld* _World)
 {

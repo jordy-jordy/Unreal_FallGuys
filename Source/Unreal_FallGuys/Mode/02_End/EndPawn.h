@@ -51,18 +51,15 @@ public:
 
 protected:
 	// 닉네임
-	UPROPERTY(Replicated)
+	UPROPERTY()
 	FString NickName = TEXT("");
 	// 코스튬 컬러
-	UPROPERTY(Replicated)
+	UPROPERTY()
 	FString CostumeColor = TEXT("");
 	// 코스튬 상의
-	UPROPERTY(Replicated)
+	UPROPERTY()
 	FString CostumeTop = TEXT("");
 	// 코스튬 하의
-	UPROPERTY(Replicated)
+	UPROPERTY()
 	FString CostumeBot = TEXT("");
-
-	// Rep 관련
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };

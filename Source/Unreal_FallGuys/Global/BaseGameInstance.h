@@ -200,7 +200,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
 	void InsChangeCostumeColorWithOutSave(APawn* _Pawn, const FString& _CostumeColor);
 
-
 	// 코스튬(상, 하의) 공통 함수
 	void InsApplyStaticMesh(UStaticMeshComponent* _Comp, UStaticMesh* _Mesh, const FString& _LogContext);
 
@@ -363,6 +362,12 @@ public:
 	
 	// 승자 정보 가져오기
 	const FWinnerInfo& InsGetWinnerInfo() const;
+
+	// 승자의 닉네임 가져오기
+	const FString& InsGetWinnerNickname() const
+	{
+		return WinnerInfo.NickName;
+	}
 
 protected:
 	// 닉네임

@@ -17,9 +17,6 @@ AEndPawn::AEndPawn()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	// 복제 활성화
-	bReplicates = true;
-
 	USceneComponent* RootSceneComp = CreateDefaultSubobject<USceneComponent>(TEXT("RootComp"));
 	RootComponent = RootSceneComp;
 	UpComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Up"));
@@ -28,22 +25,12 @@ AEndPawn::AEndPawn()
 	LowComp->SetupAttachment(RootComponent);
 }
 
-
-void AEndPawn::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(AEndPawn, NickName);
-	DOREPLIFETIME(AEndPawn, CostumeColor);
-	DOREPLIFETIME(AEndPawn, CostumeTop);
-	DOREPLIFETIME(AEndPawn, CostumeBot);
-}
-
 // Called when the game starts or when spawned
 void AEndPawn::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// 최종 승리 플레이어의 정보를 가져오고 세팅
 	UBaseGameInstance* GI = GetGameInstance<UBaseGameInstance>();
 	if (GI)
 	{
