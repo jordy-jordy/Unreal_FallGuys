@@ -4,11 +4,12 @@
 #include "Mode/01_Play/PlayPlayerController.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 #include "Unreal_FallGuys.h"
 #include "Global/BaseGameInstance.h"
-#include "Kismet/GameplayStatics.h"
 #include "Mode/01_Play/PlayGameMode.h"
+#include "Mode/01_Play/PlayPlayerState.h"
 
 
 void APlayPlayerController::BeginPlay()
@@ -17,6 +18,21 @@ void APlayPlayerController::BeginPlay()
 
 	FInputModeGameOnly Mode;
 	SetInputMode(Mode);
+
+	// 클라이언트에서 자기 GameInstance 정보 → 서버 PlayerState에 전달
+	if (IsLocalController())
+	{
+		UBaseGameInstance* GI = Cast<UBaseGameInstance>(GetGameInstance());
+		if (GI)
+		{
+			Server_SetPlayerInfoFromClient(
+				GI->InsGetNickname(),
+				GI->InsGetCostumeTop(),
+				GI->InsGetCostumeBot(),
+				GI->InsGetCostumeColor()
+			);
+		}
+	}
 }
 
 void APlayPlayerController::AddMappingContext(UInputMappingContext* _MappingContext)
@@ -109,11 +125,51 @@ void APlayPlayerController::OnPrintCurFinishPlayer()
 	}
 }
 
-// EndLevel로 이동
-void APlayPlayerController::Client_TravelToEndLevel_Implementation()
+// 이현정 : EndLevel로 이동
+void APlayPlayerController::MCAST_TravelToEndLevel_Implementation()
 {
 	if (IsLocalController() && GetWorld())
 	{
 		ClientTravel("/Game/BP/Level/02_End/EndLevel", ETravelType::TRAVEL_Absolute);
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("MCAST_TravelToEndLevel :: 클라이언트 트래블 실행됨"));
+	}
+}
+
+// 이현정 : 승리한 플레이어의 정보를 전달하기 위함
+void APlayPlayerController::Server_SetPlayerInfoFromClient_Implementation(
+	const FString& _NickName,
+	const FString& _Top,
+	const FString& _Bot,
+	const FString& _Color)
+{
+	APlayPlayerState* PS = GetPlayerState<APlayPlayerState>();
+	if (!PS) return;
+
+	FPlayerInfo NewInfo = PS->PlayerInfo;
+	NewInfo.NickName = _NickName;
+	NewInfo.CostumeTOP = _Top;
+	NewInfo.CostumeBOT = _Bot;
+	NewInfo.CostumeColor = _Color;
+
+	// 서버에 직접 세팅
+	PS->PlayerInfo = NewInfo;
+
+	// 클라이언트에게도 동기화
+	PS->MCAST_ApplyPlayerInfo(NewInfo);
+}
+
+// 서버 → 클라이언트 : 승자 정보 전달용
+void APlayPlayerController::Client_ReceiveWinnerInfo_Implementation(const FWinnerInfo& _Info)
+{
+	UBaseGameInstance* GI = GetGameInstance<UBaseGameInstance>();
+	if (GI)
+	{
+		GI->InsSetWinnerInfo(_Info);
+
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayPlayerController :: Client_ReceiveWinnerInfo :: 클라이언트에 승자 정보 저장 - %s"), *_Info.NickName);
+	}
+	else
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayPlayerController :: Client_ReceiveWinnerInfo :: GameInstance가 nullptr입니다."));
 	}
 }

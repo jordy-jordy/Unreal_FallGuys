@@ -315,6 +315,29 @@ void UBaseGameInstance::InsChangeCostumeColor(APawn* _Pawn, const FString& _Cost
 	InsSaveCostumeColor(_CostumeColor);
 }
 
+// Pawn의 코스튬 컬러 변경 - 저장 안함
+void UBaseGameInstance::InsChangeCostumeColorWithOutSave(APawn* _Pawn, const FString& _CostumeColor)
+{
+	UWorld* World = _Pawn->GetWorld();
+	const FCostumeColorDataRow* CostumeColorData = UGlobalDataTable::GetCostumeColorData(World, _CostumeColor);
+
+	if (CostumeColorData && CostumeColorData->CostumeMesh)
+	{
+		if (USkeletalMeshComponent* MeshComp = _Pawn->FindComponentByClass<USkeletalMeshComponent>())
+		{
+			MeshComp->SetSkeletalMesh(CostumeColorData->CostumeMesh);
+		}
+		else
+		{
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsChangeCostumeColor :: MeshComponent가 없음"));
+		}
+	}
+	else
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsChangeCostumeColor :: 잘못된 데이터 또는 메시 없음"));
+	}
+}
+
 // 코스튬(상, 하의) 공통 함수
 void UBaseGameInstance::InsApplyStaticMesh(UStaticMeshComponent* _Comp, UStaticMesh* _Mesh, const FString& _LogContext)
 {
@@ -355,6 +378,24 @@ void UBaseGameInstance::InsChangeCostumeTop(APawn* _Pawn, UStaticMeshComponent* 
 	InsSaveCostumeTop(_CostumeTop);
 }
 
+// Pawn의 코스튬 상의 변경 - 저장 안함
+void UBaseGameInstance::InsChangeCostumeTopWithOutSave(APawn* _Pawn, UStaticMeshComponent* _UpComp, const FString& _CostumeTop)
+{
+	if (_CostumeTop == TEXT("Default") || _CostumeTop.IsEmpty())
+	{
+		InsApplyStaticMesh(_UpComp, nullptr, TEXT("InsChangeCostumeTop(Default)"));
+		InsSaveCostumeTop(_CostumeTop);
+		return;
+	}
+
+	UWorld* World = _Pawn->GetWorld();
+	const FCostumeDataRow* CostumeTopData = UGlobalDataTable::GetCostumeData(World, _CostumeTop);
+
+	InsApplyStaticMesh(_UpComp,
+		CostumeTopData ? CostumeTopData->CostumeMesh : nullptr,
+		TEXT("InsChangeCostumeTop"));
+}
+
 // Pawn의 코스튬 하의 변경
 void UBaseGameInstance::InsChangeCostumeBot(APawn* _Pawn, UStaticMeshComponent* _LowComp, const FString& _CostumeBot)
 {
@@ -373,6 +414,24 @@ void UBaseGameInstance::InsChangeCostumeBot(APawn* _Pawn, UStaticMeshComponent* 
 		TEXT("InsChangeCostumeBot"));
 
 	InsSaveCostumeBot(_CostumeBot);
+}
+
+// Pawn의 코스튬 하의 변경 - 저장 안함
+void UBaseGameInstance::InsChangeCostumeBotWithOutSave(APawn* _Pawn, UStaticMeshComponent* _LowComp, const FString& _CostumeBot)
+{
+	if (_CostumeBot == TEXT("Default") || _CostumeBot.IsEmpty())
+	{
+		InsApplyStaticMesh(_LowComp, nullptr, TEXT("InsChangeCostumeBot(Default)"));
+		InsSaveCostumeBot(_CostumeBot);
+		return;
+	}
+
+	UWorld* World = _Pawn->GetWorld();
+	const FCostumeDataRow* CostumeBotData = UGlobalDataTable::GetCostumeData(World, _CostumeBot);
+
+	InsApplyStaticMesh(_LowComp,
+		CostumeBotData ? CostumeBotData->CostumeMesh : nullptr,
+		TEXT("InsChangeCostumeBot"));
 }
 
 // 저장된 코스튬 컬러의 스켈레탈 메시 반환
@@ -615,6 +674,18 @@ void UBaseGameInstance::InsChangeNickname(const FString& _NewNickname)
 	// 닉네임 설정한 상태로 전환
 	HasNickname = true;
 }
+
+void UBaseGameInstance::InsSetWinnerInfo(const FWinnerInfo& _Info)
+{
+	WinnerInfo = _Info;
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("GameInstance :: 승리한 플레이어 정보 저장 완료: %s"), *WinnerInfo.NickName);
+}
+
+const FWinnerInfo& UBaseGameInstance::InsGetWinnerInfo() const
+{
+	return WinnerInfo;
+}
+
 #pragma endregion
 
 #pragma region BaseGameInstance :: 개발용
@@ -638,40 +709,38 @@ void UBaseGameInstance::InsPrintPlayerInfo()
 	for (const FPlayerInfoEntry& Entry : PlayGameState->PlayerInfoArray)
 	{
 		FString StatusStr = UEnum::GetValueAsString(Entry.PlayerInfo.Status);
-		FString LogMessage = FString::Printf(TEXT("UniqueID: %s, Tag: %s, Status: %s, DropOder: %d"),
+		FString LogMessage = FString::Printf(TEXT("UniqueID: %s, Tag: %s, Status: %s, DropOrder: %d"),
 			*Entry.UniqueID, *Entry.PlayerInfo.Tag.ToString(), *StatusStr, Entry.PlayerInfo.DropOrder);
 
 		UE_LOG(FALL_DEV_LOG, Log, TEXT("%s"), *LogMessage);
-
-		// 화면에 출력 (GEngine 사용)
-		if (GEngine)
-		{
-			ScreenMessage += LogMessage + TEXT("\n");
-		}
+		if (GEngine) ScreenMessage += LogMessage + TEXT("\n");
 	}
 
-	UE_LOG(FALL_DEV_LOG, Log, TEXT("======== 각 플레이어의 PlayerInfo ========"));
-	ScreenMessage += TEXT("======== 각 플레이어의 PlayerInfo ========\n");
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("======== 각 플레이어의 PlayerInfo 상세 ========"));
+	ScreenMessage += TEXT("======== 각 플레이어의 PlayerInfo 상세 ========\n");
 
 	for (APlayerState* PlayerState : PlayGameState->PlayerArray)
 	{
-		APlayPlayerState* PlayPlayerState = Cast<APlayPlayerState>(PlayerState);
-		if (PlayPlayerState)
-		{
-			FString StatusStr = UEnum::GetValueAsString(PlayPlayerState->PlayerInfo.Status);
-			FString LogMessage = FString::Printf(TEXT("UniqueID: %s, Tag: %s, Status: %s DropOder: %d"),
-				*PlayPlayerState->PlayerInfo.UniqueID, *PlayPlayerState->PlayerInfo.Tag.ToString(), *StatusStr, PlayPlayerState->PlayerInfo.DropOrder);
+		APlayPlayerState* PS = Cast<APlayPlayerState>(PlayerState);
+		if (!PS) continue;
 
-			UE_LOG(FALL_DEV_LOG, Log, TEXT("%s"), *LogMessage);
+		const FPlayerInfo& Info = PS->PlayerInfo;
+		const FString StatusStr = UEnum::GetValueAsString(Info.Status);
 
-			if (GEngine)
-			{
-				ScreenMessage += LogMessage + TEXT("\n");
-			}
-		}
+		FString LogMessage = FString::Printf(TEXT("Tag: %s | Nick: %s | Color: %s | Top: %s | Bot: %s | Status: %s | Drop: %d | Winner: %s"),
+			*Info.Tag.ToString(),
+			*Info.NickName,
+			*Info.CostumeColor,
+			*Info.CostumeTOP,
+			*Info.CostumeBOT,
+			*StatusStr,
+			Info.DropOrder,
+			PS->GetIsWinner() ? TEXT("TRUE") : TEXT("FALSE"));
+
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("%s"), *LogMessage);
+		if (GEngine) ScreenMessage += LogMessage + TEXT("\n");
 	}
 
-	// 최종적으로 화면에 출력
 	if (UFallConst::PrintDebugLog && GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan, ScreenMessage);

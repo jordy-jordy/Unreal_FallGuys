@@ -87,6 +87,18 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static void ChangeCostumeBot(APawn* _Pawn, UStaticMeshComponent* _LowComp, const FString& _CostumeBot = TEXT("Default"));
 
+	// BaseGameInstance : Pawn의 코스튬 컬러 변경 - 저장 안함
+	UFUNCTION(BlueprintCallable)
+	static void ChangeCostumeColorWithOutSave(APawn* _Pawn, const FString& _CostumeColor);
+
+	// BaseGameInstance : Pawn의 코스튬 상의 변경 - 저장 안함
+	UFUNCTION(BlueprintCallable)
+	static void ChangeCostumeTopWithOutSave(APawn* _Pawn, UStaticMeshComponent* _UpComp, const FString& _CostumeTop);
+
+	// BaseGameInstance : Pawn의 코스튬 하의 변경 - 저장 안함
+	UFUNCTION(BlueprintCallable)
+	static void ChangeCostumeBotWithOutSave(APawn* _Pawn, UStaticMeshComponent* _LowComp, const FString& _CostumeBot);
+
 	// BaseGameInstance : 저장된 코스튬 컬러의 스켈레탈 메시 반환
 	UFUNCTION(BlueprintCallable)
 	static USkeletalMesh* GetCostumeColorMesh(APawn* _Pawn, const FString& _MeshName);

@@ -78,7 +78,6 @@ void AShowDownStage::SetPlatforms()
 
 void AShowDownStage::DownPlatforms(float DeltaTime)
 {
-
 	if (nullptr == GetWorld()->GetAuthGameMode())
 	{
 		return;
@@ -88,13 +87,14 @@ void AShowDownStage::DownPlatforms(float DeltaTime)
 	{
 		return;
 	}
-
+	                             
 	CurDownTime -= DeltaTime;
 
 	if (0.0f >= CurDownTime)
 	{
 		Platforms[0]->IsLive = false;
-		Platforms.RemoveAt(0);
+		Platforms.RemoveAt(0); 
 		CurDownTime = DownTime;
+		return;
 	}
 }

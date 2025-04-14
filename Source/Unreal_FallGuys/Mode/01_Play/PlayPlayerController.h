@@ -5,7 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "InputMappingContext.h"
+
+#include <Global/BaseGameInstance.h>
+
 #include "PlayPlayerController.generated.h"
+
 
 /**
  * 
@@ -54,10 +58,26 @@ private:
 	void OnPrintLevelCinematicEnd();  // = : 레벨 시네마틱 끝나게
 	void OnPrintCurFinishPlayer();	  // \ : 골인한 인원 및 목표 골인 인원 출력
 
-// EndLevel로 이동
+// 이현정 : 승리한 플레이어의 정보를 전달하기 위함
 public:
-	UFUNCTION(Client, Reliable)
-	void Client_TravelToEndLevel();
-	void Client_TravelToEndLevel_Implementation();
+	UFUNCTION(Server, Reliable)
+	void Server_SetPlayerInfoFromClient(
+		const FString& _NickName,
+		const FString& _Top,
+		const FString& _Bot,
+		const FString& _Color);
+
+	// 서버 → 클라이언트 : 승자 정보 전달용
+	UFUNCTION(NetMulticast, Reliable)
+	void Client_ReceiveWinnerInfo(const FWinnerInfo& _Info);
+	void Client_ReceiveWinnerInfo_Implementation(const FWinnerInfo& _Info);
+
+
+// 이현정 : EndLevel로 이동
+public:
+	UFUNCTION(NetMulticast, Reliable)
+	void MCAST_TravelToEndLevel();
+	void MCAST_TravelToEndLevel_Implementation();
+
 
 };

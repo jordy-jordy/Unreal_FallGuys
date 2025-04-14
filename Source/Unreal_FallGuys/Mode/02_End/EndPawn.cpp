@@ -2,10 +2,13 @@
 
 
 #include "Mode/02_End/EndPawn.h"
+#include "Net/UnrealNetwork.h"
 
-#include <Global/BaseGameInstance.h>
-#include <Global/Data/GlobalDataTable.h>
+#include <Unreal_FallGuys.h>
 #include <Global/FallGlobal.h>
+#include <Global/Data/GlobalDataTable.h>
+#include <Global/BaseGameInstance.h>
+#include "Mode/01_Play/PlayPlayerState.h"
 
 
 // Sets default values
@@ -14,13 +17,26 @@ AEndPawn::AEndPawn()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	// 복제 활성화
+	bReplicates = true;
+
 	USceneComponent* RootSceneComp = CreateDefaultSubobject<USceneComponent>(TEXT("RootComp"));
 	RootComponent = RootSceneComp;
 	UpComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Up"));
 	UpComp->SetupAttachment(RootComponent);
 	LowComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Low"));
 	LowComp->SetupAttachment(RootComponent);
+}
 
+
+void AEndPawn::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AEndPawn, NickName);
+	DOREPLIFETIME(AEndPawn, CostumeColor);
+	DOREPLIFETIME(AEndPawn, CostumeTop);
+	DOREPLIFETIME(AEndPawn, CostumeBot);
 }
 
 // Called when the game starts or when spawned
@@ -28,15 +44,19 @@ void AEndPawn::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// 이현정 : GameInstance에 저장된 코스튬 정보를 가져옴
-	CostumeColor = UFallGlobal::GetCostumeColor(this);
-	CostumeTop = UFallGlobal::GetCostumeTop(this);
-	CostumeBot = UFallGlobal::GetCostumeBot(this);
+	UBaseGameInstance* GI = GetGameInstance<UBaseGameInstance>();
+	if (GI)
+	{
+		const FWinnerInfo& Info = GI->InsGetWinnerInfo();
 
-	// 이현정 : GameInstance에서 가져온 코스튬 정보를 바탕으로 세팅
-	UFallGlobal::ChangeCostumeColor(this, CostumeColor);
-	UFallGlobal::ChangeCostumeTop(this, UpComp, CostumeTop);
-	UFallGlobal::ChangeCostumeBot(this, LowComp, CostumeBot);
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("EndPawn :: BeginPlay :: WinnerInfo 읽음 - %s"), *Info.NickName);
+
+		InitDirectly(Info.NickName, Info.CostumeColor, Info.CostumeTop, Info.CostumeBot);
+	}
+	else
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("EndPawn :: BeginPlay :: GameInstance 없음"));
+	}
 }
 
 // Called every frame
@@ -53,3 +73,18 @@ void AEndPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
+// 게임 인스로부터 승리한 플레이어의 정보를 얻어옴
+void AEndPawn::InitDirectly(const FString& _Nick, const FString& _Color, const FString& _Top, const FString& _Bot)
+{
+	NickName = _Nick;
+	CostumeColor = _Color;
+	CostumeTop = _Top;
+	CostumeBot = _Bot;
+
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("EndPawn :: InitDirectly :: 닉네임: %s, 컬러: %s, 상의: %s, 하의: %s"),
+		*_Nick, *_Color, *_Top, *_Bot);
+
+	UFallGlobal::ChangeCostumeColorWithOutSave(this, CostumeColor);
+	UFallGlobal::ChangeCostumeTopWithOutSave(this, UpComp, CostumeTop);
+	UFallGlobal::ChangeCostumeBotWithOutSave(this, LowComp, CostumeBot);
+}
