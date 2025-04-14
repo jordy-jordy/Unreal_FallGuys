@@ -17,12 +17,17 @@ class UNREAL_FALLGUYS_API UPlayResultWidget : public UPlayUserWidget
 public:
 	void NativeConstruct();
 
+	void NativeTick(const FGeometry& MyGeometry, float InDeltaTime);
+
 	UFUNCTION()
-	void ResultWidget();
+	void FinishedResultWidget();
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void ChangeResources();
 
 private:
 	UPROPERTY(VisibleAnywhere, Transient, meta = (BindWidgetAnim), Category = "UI")
 	UWidgetAnimation* ResultAnim;
 
-	FWidgetAnimationDynamicEvent ResultAnimEvent;
+	FWidgetAnimationDynamicEvent ResultAnimFinished;
 };

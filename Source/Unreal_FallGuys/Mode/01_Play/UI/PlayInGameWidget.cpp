@@ -3,6 +3,10 @@
 
 #include "Mode/01_Play/UI/PlayInGameWidget.h"
 #include "Mode/01_Play/PlayGameState.h"
+#include "Mode/01_Play/PlayPlayerState.h"
+#include "Mode/01_Play/PlayCharacter.h"
+#include "Mode/01_Play/UI/PlayResultWidget.h"
+#include "Mode/01_Play/UI/PlayMainWidget.h"
 
 
 void UPlayInGameWidget::NativeConstruct()
@@ -10,6 +14,29 @@ void UPlayInGameWidget::NativeConstruct()
 	Super::NativeConstruct();
 
 	IsShowResult = false;
+}
+
+void UPlayInGameWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	APlayCharacter* PlayCharacter = Cast<APlayCharacter>(GetOwningPlayerPawn());
+	if (nullptr == PlayCharacter)
+	{
+		return;
+	}
+
+	APlayPlayerState* PlayPlayerState = Cast<APlayPlayerState>(PlayCharacter->GetPlayerState());
+	if (nullptr == PlayPlayerState)
+	{
+		return;
+	}
+
+	if (EPlayerStatus::SUCCESS == PlayPlayerState->GetPlayerStateStatus())
+	{
+		UPlayResultWidget* ResultWidget = Cast<UPlayResultWidget>(GetMainWidget()->FindWidget(EPlayUIType::PlayResult));
+		ResultWidget->ChangeResources();
+	}
 }
 
 // юс╫ц
