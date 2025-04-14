@@ -122,6 +122,27 @@ void UFallGlobal::ChangeCostumeBot(APawn* _Pawn, UStaticMeshComponent* _LowComp,
 	GameIns->InsChangeCostumeBot(_Pawn, _LowComp, _CostumeBot);
 }
 
+// BaseGameInstance : Pawn의 코스튬 컬러 변경 - 저장 안함
+void UFallGlobal::ChangeCostumeColorWithOutSave(APawn* _Pawn, const FString& _CostumeColor)
+{
+	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
+	GameIns->InsChangeCostumeColorWithOutSave(_Pawn, _CostumeColor);
+}
+
+// BaseGameInstance : Pawn의 코스튬 상의 변경 - 저장 안함
+void UFallGlobal::ChangeCostumeTopWithOutSave(APawn* _Pawn, UStaticMeshComponent* _UpComp, const FString& _CostumeTop)
+{
+	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
+	GameIns->InsChangeCostumeTopWithOutSave(_Pawn, _UpComp, _CostumeTop);
+}
+
+// BaseGameInstance : Pawn의 코스튬 하의 변경 - 저장 안함
+void UFallGlobal::ChangeCostumeBotWithOutSave(APawn* _Pawn, UStaticMeshComponent* _LowComp, const FString& _CostumeBot)
+{
+	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
+	GameIns->InsChangeCostumeBotWithOutSave(_Pawn, _LowComp, _CostumeBot);
+}
+
 // BaseGameInstance : 저장된 코스튬 컬러의 스켈레탈 메시 반환
 USkeletalMesh* UFallGlobal::GetCostumeColorMesh(APawn* _Pawn, const FString& _MeshName)
 {

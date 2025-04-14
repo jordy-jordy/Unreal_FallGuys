@@ -993,7 +993,25 @@ void APlayGameMode::MarkWinnersBeforeEndLevel()
 		if (PState && PState->GetPlayerStateStatus() == EPlayerStatus::SUCCESS)
 		{
 			PState->SetIsWinner(true);
+
 			UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: MarkWinnersBeforeEndLevel :: 승자 설정 완료 - %s"), *PState->PlayerInfo.Tag.ToString());
+
+			// 승자 정보를 준비
+			FWinnerInfo Info;
+			Info.NickName = PState->PlayerInfo.NickName;
+			Info.CostumeColor = PState->PlayerInfo.CostumeColor;
+			Info.CostumeTop = PState->PlayerInfo.CostumeTOP;
+			Info.CostumeBot = PState->PlayerInfo.CostumeBOT;
+
+			// 모든 컨트롤러에게 승자 정보 브로드캐스트
+			for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+			{
+				APlayPlayerController* OtherPC = Cast<APlayPlayerController>(It->Get());
+				if (OtherPC)
+				{
+					OtherPC->Client_ReceiveWinnerInfo(Info);
+				}
+			}
 		}
 	}
 }
@@ -1025,14 +1043,14 @@ void APlayGameMode::ServerTravelToEndLevel()
 {
 	if (!HasAuthority()) { return; }
 
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 클라이언트 트래블 감지 :: 최종 결과창으로 이동합니다."));
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 서버에서 클라이언트들에게 EndLevel 트래블 명령 시작"));
 
 	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
 	{
 		APlayPlayerController* PC = Cast<APlayPlayerController>(It->Get());
 		if (PC)
 		{
-			PC->Client_TravelToEndLevel(); 
+			PC->MCAST_TravelToEndLevel();
 		}
 	}
 }

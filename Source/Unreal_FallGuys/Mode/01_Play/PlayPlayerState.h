@@ -25,10 +25,13 @@ struct FPlayerInfo
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
     FString NickName;
     // 플레이어 코스튬 컬러
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
     FString CostumeColor = TEXT("");
     // 플레이어 코스튬 상의
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
     FString CostumeTOP = TEXT("");
     // 플레이어 코스튬 하의
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
     FString CostumeBOT = TEXT("");
     // 플레이어 상태 :: PlayGameMode에서 지정
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
@@ -82,7 +85,12 @@ public:
     UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category = "PLAYER INFO")
     FPlayerInfo PlayerInfo;
 
-    // 플레이어 정보 설정
+    // 클라들에게도 플레이어 인포 동기화
+    UFUNCTION(NetMulticast, Reliable)
+    void MCAST_ApplyPlayerInfo(const FPlayerInfo& _Info);
+    void MCAST_ApplyPlayerInfo_Implementation(const FPlayerInfo& _Info);
+
+    // 플레이어 태그 설정
     UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "PLAYER INFO")
     void SetPlayerTag(const FName& _Tag);
     void SetPlayerTag_Implementation(const FName& _Tag);

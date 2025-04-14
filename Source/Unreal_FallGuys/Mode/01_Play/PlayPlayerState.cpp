@@ -25,6 +25,15 @@ void APlayPlayerState::SetPlayerTag_Implementation(const FName& _Tag)
     PlayerInfo.Tag = _Tag;
 }
 
+// 클라들에게도 플레이어 인포 동기화
+void APlayPlayerState::MCAST_ApplyPlayerInfo_Implementation(const FPlayerInfo& _Info)
+{
+	PlayerInfo.NickName = _Info.NickName;
+	PlayerInfo.CostumeColor = _Info.CostumeColor;
+	PlayerInfo.CostumeTOP = _Info.CostumeTOP;
+	PlayerInfo.CostumeBOT = _Info.CostumeBOT;
+}
+
 void APlayPlayerState::SetTeam_Implementation(ETeamType _Team)
 {
     PlayerInfo.Team = _Team;

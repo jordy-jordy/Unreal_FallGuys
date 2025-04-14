@@ -87,6 +87,20 @@ struct FCurLevelInfo_GAMEINS
 	EStagePhase CurStagePhase = EStagePhase::STAGE_1;
 };
 
+USTRUCT(BlueprintType)
+struct FWinnerInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite)
+	FString NickName = TEXT("");
+	UPROPERTY(BlueprintReadWrite)
+	FString CostumeColor = TEXT("");
+	UPROPERTY(BlueprintReadWrite)
+	FString CostumeTop = TEXT("");
+	UPROPERTY(BlueprintReadWrite)
+	FString CostumeBot = TEXT("");
+};
 /**
  *
  */
@@ -182,6 +196,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
 	void InsChangeCostumeColor(APawn* _Pawn, const FString& _CostumeColor);
 
+	// Pawn의 코스튬 컬러 변경 - 저장 안함
+	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
+	void InsChangeCostumeColorWithOutSave(APawn* _Pawn, const FString& _CostumeColor);
+
+
 	// 코스튬(상, 하의) 공통 함수
 	void InsApplyStaticMesh(UStaticMeshComponent* _Comp, UStaticMesh* _Mesh, const FString& _LogContext);
 
@@ -189,9 +208,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
 	void InsChangeCostumeTop(APawn* _Pawn, UStaticMeshComponent* _UpComp, const FString& _CostumeTop);
 
+	// Pawn의 코스튬 상의 변경 - 저장 안함
+	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
+	void InsChangeCostumeTopWithOutSave(APawn* _Pawn, UStaticMeshComponent* _UpComp, const FString& _CostumeTop);
+
 	// Pawn의 코스튬 하의 변경
 	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
 	void InsChangeCostumeBot(APawn* _Pawn, UStaticMeshComponent* _LowComp, const FString& _CostumeBot);
+
+	// Pawn의 코스튬 하의 변경 - 저장 안함
+	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
+	void InsChangeCostumeBotWithOutSave(APawn* _Pawn, UStaticMeshComponent* _LowComp, const FString& _CostumeBot);
 
 	// 저장된 코스튬 컬러의 스켈레탈 메시 반환
 	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
@@ -331,6 +358,12 @@ public:
 	// 플레이어 UniqueID -> FPlayerInfo 매핑 저장소 : 실패 플레이어
 	TMap<FString, struct FPlayerInfo> FailPlayerInfoBackup;
 
+	// 승자 정보 설정
+	void InsSetWinnerInfo(const FWinnerInfo& _Info);
+	
+	// 승자 정보 가져오기
+	const FWinnerInfo& InsGetWinnerInfo() const;
+
 protected:
 	// 닉네임
 	UPROPERTY(VisibleAnywhere, Category = "PLAYER DATA")
@@ -341,6 +374,10 @@ protected:
 
 	// 서버 연결 상태 변수
 	bool bIsConnected = false;
+
+private:
+	// 최종 승자 정보
+	FWinnerInfo WinnerInfo;
 
 #pragma endregion
 

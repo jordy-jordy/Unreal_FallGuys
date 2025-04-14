@@ -45,12 +45,24 @@ public:
 	UPROPERTY()
 	class UStaticMesh* CurLowStaticMesh;
 
+public:
+	// 게임 인스로부터 승리한 플레이어의 정보를 얻어옴
+	void InitDirectly(const FString& _Nick, const FString& _Color, const FString& _Top, const FString& _Bot);
+
 protected:
+	// 닉네임
+	UPROPERTY(Replicated)
+	FString NickName = TEXT("");
 	// 코스튬 컬러
+	UPROPERTY(Replicated)
 	FString CostumeColor = TEXT("");
 	// 코스튬 상의
+	UPROPERTY(Replicated)
 	FString CostumeTop = TEXT("");
 	// 코스튬 하의
+	UPROPERTY(Replicated)
 	FString CostumeBot = TEXT("");
 
+	// Rep 관련
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };

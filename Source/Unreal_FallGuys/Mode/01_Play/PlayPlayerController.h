@@ -5,7 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "InputMappingContext.h"
+
+#include <Global/BaseGameInstance.h>
+
 #include "PlayPlayerController.generated.h"
+
 
 /**
  * 
@@ -63,11 +67,17 @@ public:
 		const FString& _Bot,
 		const FString& _Color);
 
+	// 서버 → 클라이언트 : 승자 정보 전달용
+	UFUNCTION(NetMulticast, Reliable)
+	void Client_ReceiveWinnerInfo(const FWinnerInfo& _Info);
+	void Client_ReceiveWinnerInfo_Implementation(const FWinnerInfo& _Info);
+
 
 // 이현정 : EndLevel로 이동
 public:
-	UFUNCTION(Client, Reliable)
-	void Client_TravelToEndLevel();
-	void Client_TravelToEndLevel_Implementation();
+	UFUNCTION(NetMulticast, Reliable)
+	void MCAST_TravelToEndLevel();
+	void MCAST_TravelToEndLevel_Implementation();
+
 
 };

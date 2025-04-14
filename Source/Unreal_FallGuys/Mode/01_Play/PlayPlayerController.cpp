@@ -126,11 +126,12 @@ void APlayPlayerController::OnPrintCurFinishPlayer()
 }
 
 // 이현정 : EndLevel로 이동
-void APlayPlayerController::Client_TravelToEndLevel_Implementation()
+void APlayPlayerController::MCAST_TravelToEndLevel_Implementation()
 {
 	if (IsLocalController() && GetWorld())
 	{
 		ClientTravel("/Game/BP/Level/02_End/EndLevel", ETravelType::TRAVEL_Absolute);
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("MCAST_TravelToEndLevel :: 클라이언트 트래블 실행됨"));
 	}
 }
 
@@ -144,8 +145,31 @@ void APlayPlayerController::Server_SetPlayerInfoFromClient_Implementation(
 	APlayPlayerState* PS = GetPlayerState<APlayPlayerState>();
 	if (!PS) return;
 
-	PS->PlayerInfo.NickName = _NickName;
-	PS->PlayerInfo.CostumeTOP = _Top;
-	PS->PlayerInfo.CostumeBOT = _Bot;
-	PS->PlayerInfo.CostumeColor = _Color;
+	FPlayerInfo NewInfo = PS->PlayerInfo;
+	NewInfo.NickName = _NickName;
+	NewInfo.CostumeTOP = _Top;
+	NewInfo.CostumeBOT = _Bot;
+	NewInfo.CostumeColor = _Color;
+
+	// 서버에 직접 세팅
+	PS->PlayerInfo = NewInfo;
+
+	// 클라이언트에게도 동기화
+	PS->MCAST_ApplyPlayerInfo(NewInfo);
+}
+
+// 서버 → 클라이언트 : 승자 정보 전달용
+void APlayPlayerController::Client_ReceiveWinnerInfo_Implementation(const FWinnerInfo& _Info)
+{
+	UBaseGameInstance* GI = GetGameInstance<UBaseGameInstance>();
+	if (GI)
+	{
+		GI->InsSetWinnerInfo(_Info);
+
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayPlayerController :: Client_ReceiveWinnerInfo :: 클라이언트에 승자 정보 저장 - %s"), *_Info.NickName);
+	}
+	else
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayPlayerController :: Client_ReceiveWinnerInfo :: GameInstance가 nullptr입니다."));
+	}
 }
