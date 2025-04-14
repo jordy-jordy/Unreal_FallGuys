@@ -9,7 +9,7 @@ AEggSpawnManager::AEggSpawnManager()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	TeamEggCount = TArray<int>();
 }
 
 // Called when the game starts or when spawned
@@ -30,6 +30,7 @@ void AEggSpawnManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	TeamEggCount.Empty();
 	TeamEggCount = CheckEggTeam();
 }
 

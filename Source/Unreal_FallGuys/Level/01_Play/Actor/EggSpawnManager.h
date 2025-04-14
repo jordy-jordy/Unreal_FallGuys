@@ -48,6 +48,14 @@ public:
 	TArray<int> GetTeamEggCount() const
 
 	{
+
+		if (TeamEggCount.IsEmpty())
+		{ 
+
+			
+			return TArray<int>(); // 비어 있을 경우 빈 배열 반환
+		}
+
 		return TeamEggCount;
 
 	}

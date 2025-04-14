@@ -150,6 +150,20 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 	//CurUIType À§Á¬ => _UIType À§Á¬
 	switch (CurUIType)
 	{
+	case EPlayUIType::PlayStandby:
+		switch (EPlayUIType(_UIType))
+		{
+		case EPlayUIType::PlayLevelTag:
+		{
+			CurUserWidget->SetVisibility(ESlateVisibility::Hidden);
+			ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+
+			break;
+		}
+		default:
+			break;
+		}
+		break;
 	case EPlayUIType::PlayLevelTag:
 		switch (EPlayUIType(_UIType))
 		{
@@ -176,10 +190,13 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 				PlayScore->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 			}
 
-			if (true == IsFailPlayer() && EStagePhase::STAGE_1 != GameState->GetCurStagePhase_STATE())
-			{
-				SpectatorResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			}
+			//if (true == IsFailPlayer() && EStagePhase::STAGE_1 != GameState->GetCurStagePhase_STATE())
+			//{
+			//	SpectatorResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			//}
+
+			CurUserWidget->SetVisibility(ESlateVisibility::Hidden);
+			ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 
 			break;
 		}
@@ -214,10 +231,10 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 				PlayScore->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 			}
 
-			//if (true == IsSuccessPlayer())
-			//{
-				SpectatorResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			//}
+			SpectatorResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+
+			CurUserWidget->SetVisibility(ESlateVisibility::Hidden);
+			ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 
 			break;
 		}
@@ -253,12 +270,31 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 			EStagePhase CurStagePhase = GameState->GetCurStagePhase_STATE();
 			EPlayerStatus CurPlayerStatus = PlayPlayerState->GetPlayerStateStatus();
 
-			UPlayUserWidget* Result = FindWidget(EPlayUIType::PlayResult);
+			UPlayUserWidget* SpectatorResult = FindWidget(EPlayUIType::PlaySpectatorResult);
 
-			if (((EPlayerStatus::FAIL == CurPlayerStatus) && EStagePhase::STAGE_1 == CurStagePhase) || (EPlayerStatus::SUCCESS == CurPlayerStatus))
+			if (EPlayerStatus::FAIL == CurPlayerStatus)
 			{
-				Result->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+				if (EStagePhase::STAGE_1 == CurStagePhase)
+				{
+					ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+				}
+				//else
+				//{
+				//	CurUserWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+				//	SpectatorResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+				//}
 			}
+			else if (EPlayerStatus::SUCCESS == CurPlayerStatus)
+			{
+				ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			}
+
+			break;
+		}
+		case EPlayUIType::PlaySpectatorResult:
+		{
+			CurUserWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 
 			break;
 		}
@@ -271,8 +307,7 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 		break;
 	}
 
-	CurUserWidget->SetVisibility(ESlateVisibility::Hidden);
-	ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+
 	SetCurWidget(ChangeWidget);
 	CurWidget;
 	CurUIType = _UIType;
