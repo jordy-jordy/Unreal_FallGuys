@@ -250,6 +250,8 @@ protected:
 	void SetNextSoloLevelData();
 	// 캐릭터 이동 불가능하게 세팅
 	void SetCharacterMoveImPossible();
+	// 최종 승리 플레이어를 마킹
+	void MarkWinnersBeforeEndLevel();
 
 	// 동기화 타이머 해제 됐니
 	bool bSyncCleared = false;

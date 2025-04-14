@@ -4,6 +4,7 @@
 #include "Mode/01_Play/PlayPlayerState.h"
 
 #include <Global/GlobalEnum.h>
+#include <Global/BaseGameInstance.h>
 
 #include <Net/UnrealNetwork.h>
 
@@ -12,11 +13,16 @@ APlayPlayerState::APlayPlayerState()
 {
 }
 
-void APlayPlayerState::SetPlayerInfo_Implementation(const FName& _Tag, const FString& _NickName)
+void APlayPlayerState::BeginPlay()
 {
-    PlayerInfo.UniqueID = GetUniqueId()->ToString();
+	Super::BeginPlay();
+}
+
+void APlayPlayerState::SetPlayerTag_Implementation(const FName& _Tag)
+{
+	// 유니크 아이디 설정
+	PlayerInfo.UniqueID = GetUniqueId()->ToString();
     PlayerInfo.Tag = _Tag;
-    PlayerInfo.NickName = _NickName;
 }
 
 void APlayPlayerState::SetTeam_Implementation(ETeamType _Team)
@@ -37,13 +43,6 @@ void APlayPlayerState::SetPlayerStatus_Implementation(EPlayerStatus _NewStatus)
 		// 구조체에도 반영
 		PlayerInfo.Status = _NewStatus;
 	}
-}
-
-// PlayerStatus 가 변할 때 호출되는 함수 - 동기화
-void APlayPlayerState::OnRep_PlayerStatus()
-{
-	// 구조체 동기화
-	PlayerInfo.Status = PlayerStatus;
 }
 
 // 플레이어 떨어지는 순서 설정
@@ -68,11 +67,18 @@ void APlayPlayerState::OnRep_PlayerDropOrder()
 	PlayerInfo.DropOrder = PlayerDropOrder;
 }
 
+// 승자 표시 함수
+void APlayPlayerState::SetIsWinner_Implementation(bool _bWinner)
+{
+	bIsWinner = _bWinner;
+}
+
 void APlayPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(APlayPlayerState, PlayerInfo);
 	DOREPLIFETIME(APlayPlayerState, PlayerStatus);
 	DOREPLIFETIME(APlayPlayerState, PlayerDropOrder);
+	DOREPLIFETIME(APlayPlayerState, bIsWinner);
 }
 

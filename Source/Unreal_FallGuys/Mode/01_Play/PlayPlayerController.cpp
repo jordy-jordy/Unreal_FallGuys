@@ -4,11 +4,12 @@
 #include "Mode/01_Play/PlayPlayerController.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 #include "Unreal_FallGuys.h"
 #include "Global/BaseGameInstance.h"
-#include "Kismet/GameplayStatics.h"
 #include "Mode/01_Play/PlayGameMode.h"
+#include "Mode/01_Play/PlayPlayerState.h"
 
 
 void APlayPlayerController::BeginPlay()
@@ -17,6 +18,21 @@ void APlayPlayerController::BeginPlay()
 
 	FInputModeGameOnly Mode;
 	SetInputMode(Mode);
+
+	// 클라이언트에서 자기 GameInstance 정보 → 서버 PlayerState에 전달
+	if (IsLocalController())
+	{
+		UBaseGameInstance* GI = Cast<UBaseGameInstance>(GetGameInstance());
+		if (GI)
+		{
+			Server_SetPlayerInfoFromClient(
+				GI->InsGetNickname(),
+				GI->InsGetCostumeTop(),
+				GI->InsGetCostumeBot(),
+				GI->InsGetCostumeColor()
+			);
+		}
+	}
 }
 
 void APlayPlayerController::AddMappingContext(UInputMappingContext* _MappingContext)
@@ -109,11 +125,27 @@ void APlayPlayerController::OnPrintCurFinishPlayer()
 	}
 }
 
-// EndLevel로 이동
+// 이현정 : EndLevel로 이동
 void APlayPlayerController::Client_TravelToEndLevel_Implementation()
 {
 	if (IsLocalController() && GetWorld())
 	{
 		ClientTravel("/Game/BP/Level/02_End/EndLevel", ETravelType::TRAVEL_Absolute);
 	}
+}
+
+// 이현정 : 승리한 플레이어의 정보를 전달하기 위함
+void APlayPlayerController::Server_SetPlayerInfoFromClient_Implementation(
+	const FString& _NickName,
+	const FString& _Top,
+	const FString& _Bot,
+	const FString& _Color)
+{
+	APlayPlayerState* PS = GetPlayerState<APlayPlayerState>();
+	if (!PS) return;
+
+	PS->PlayerInfo.NickName = _NickName;
+	PS->PlayerInfo.CostumeTOP = _Top;
+	PS->PlayerInfo.CostumeBOT = _Bot;
+	PS->PlayerInfo.CostumeColor = _Color;
 }

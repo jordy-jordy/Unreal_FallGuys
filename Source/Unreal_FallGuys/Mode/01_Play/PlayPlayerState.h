@@ -18,23 +18,24 @@ struct FPlayerInfo
     // 플레이어의 고유 ID :: 언리얼에서 제공하는 고유 ID
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
     FString UniqueID;
-
     // Player0, Player1 같은 태그 :: PlayGameMode에서 지정
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
     FName Tag;
-
     // 닉네임 :: BaseGameInstance에서 지정
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
     FString NickName;
-
+    // 플레이어 코스튬 컬러
+    FString CostumeColor = TEXT("");
+    // 플레이어 코스튬 상의
+    FString CostumeTOP = TEXT("");
+    // 플레이어 코스튬 하의
+    FString CostumeBOT = TEXT("");
     // 플레이어 상태 :: PlayGameMode에서 지정
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
     EPlayerStatus Status;
-
     // 팀 정보 :: TeamPlayGameMode에서 지정
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-    ETeamType Team = ETeamType::NONE;
-
+    ETeamType Team;
     // 실패했을 경우 떨어지는 순서
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
     int32 DropOrder;
@@ -43,11 +44,14 @@ struct FPlayerInfo
     bool operator==(const FPlayerInfo& Other) const
     {
         return UniqueID == Other.UniqueID &&
+			Tag == Other.Tag &&
 			NickName == Other.NickName &&
-            Tag == Other.Tag &&
-            Status == Other.Status &&
-            Team == Other.Team &&
-            DropOrder == Other.DropOrder;
+			CostumeColor == Other.CostumeColor &&
+			CostumeTOP == Other.CostumeTOP &&
+			CostumeBOT == Other.CostumeBOT &&
+			Status == Other.Status &&
+			Team == Other.Team &&
+			DropOrder == Other.DropOrder;
     }
     // 플레이어 정보가 동일하지 않을때 FALSE 반환
     bool operator!=(const FPlayerInfo& Other) const
@@ -56,7 +60,8 @@ struct FPlayerInfo
     }
 
     FPlayerInfo()
-        : Tag(TEXT("NoTag")), NickName(TEXT("")), Status(EPlayerStatus::DEFAULT), Team(ETeamType::NONE), DropOrder(-1)
+        : Tag(TEXT("NoTag")), NickName(TEXT("테스트죠르디")), CostumeColor(TEXT("")), CostumeTOP(TEXT("")), CostumeBOT(TEXT("")),
+          Status(EPlayerStatus::DEFAULT), Team(ETeamType::NONE), DropOrder(-1)
     {
     }
 };
@@ -71,6 +76,7 @@ class UNREAL_FALLGUYS_API APlayPlayerState : public APlayerState
 	
 public:
     APlayPlayerState();
+    void BeginPlay() override;
 
     // 개별 플레이어 정보
     UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category = "PLAYER INFO")
@@ -78,8 +84,8 @@ public:
 
     // 플레이어 정보 설정
     UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "PLAYER INFO")
-    void SetPlayerInfo(const FName& _Tag, const FString& _NickName);
-    void SetPlayerInfo_Implementation(const FName& _Tag, const FString& _NickName);
+    void SetPlayerTag(const FName& _Tag);
+    void SetPlayerTag_Implementation(const FName& _Tag);
     
     // 팀 세팅
     UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "PLAYER INFO")
@@ -108,7 +114,20 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "PLAYER INFO")
 	EPlayerStatus GetPlayerStateStatus() { return PlayerInfo.Status; }
 
+    // 승자 표시 함수
+    UFUNCTION(Reliable, Server, BlueprintCallable, Category = "PLAYER INFO")
+    void SetIsWinner(bool _bWinner);
+    void SetIsWinner_Implementation(bool _bWinner);
+
+    // 승자니?
+    UFUNCTION(BlueprintCallable, Category = "PLAYER INFO")
+	bool GetIsWinner() { return bIsWinner; }
+
 protected:
+    // 승자 여부
+    UPROPERTY(Replicated)
+    bool bIsWinner = false;
+
     // 실시간 상태 동기화를 위한 변수
     UPROPERTY(Replicated)
     EPlayerStatus PlayerStatus = EPlayerStatus::NONE;
@@ -116,10 +135,6 @@ protected:
     // 실시간 떨어지는 순서 동기화를 위한 변수
     UPROPERTY(ReplicatedUsing = OnRep_PlayerDropOrder)
     int32 PlayerDropOrder = -1;
-
-    // PlayerStatus 가 변할 때 호출되는 함수 - 동기화
-    UFUNCTION()
-    void OnRep_PlayerStatus();
 
 	// PlayerDropOrder 가 변할 때 호출되는 함수 - 동기화
     UFUNCTION()

@@ -638,40 +638,38 @@ void UBaseGameInstance::InsPrintPlayerInfo()
 	for (const FPlayerInfoEntry& Entry : PlayGameState->PlayerInfoArray)
 	{
 		FString StatusStr = UEnum::GetValueAsString(Entry.PlayerInfo.Status);
-		FString LogMessage = FString::Printf(TEXT("UniqueID: %s, Tag: %s, Status: %s, DropOder: %d"),
+		FString LogMessage = FString::Printf(TEXT("UniqueID: %s, Tag: %s, Status: %s, DropOrder: %d"),
 			*Entry.UniqueID, *Entry.PlayerInfo.Tag.ToString(), *StatusStr, Entry.PlayerInfo.DropOrder);
 
 		UE_LOG(FALL_DEV_LOG, Log, TEXT("%s"), *LogMessage);
-
-		// 화면에 출력 (GEngine 사용)
-		if (GEngine)
-		{
-			ScreenMessage += LogMessage + TEXT("\n");
-		}
+		if (GEngine) ScreenMessage += LogMessage + TEXT("\n");
 	}
 
-	UE_LOG(FALL_DEV_LOG, Log, TEXT("======== 각 플레이어의 PlayerInfo ========"));
-	ScreenMessage += TEXT("======== 각 플레이어의 PlayerInfo ========\n");
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("======== 각 플레이어의 PlayerInfo 상세 ========"));
+	ScreenMessage += TEXT("======== 각 플레이어의 PlayerInfo 상세 ========\n");
 
 	for (APlayerState* PlayerState : PlayGameState->PlayerArray)
 	{
-		APlayPlayerState* PlayPlayerState = Cast<APlayPlayerState>(PlayerState);
-		if (PlayPlayerState)
-		{
-			FString StatusStr = UEnum::GetValueAsString(PlayPlayerState->PlayerInfo.Status);
-			FString LogMessage = FString::Printf(TEXT("UniqueID: %s, Tag: %s, Status: %s DropOder: %d"),
-				*PlayPlayerState->PlayerInfo.UniqueID, *PlayPlayerState->PlayerInfo.Tag.ToString(), *StatusStr, PlayPlayerState->PlayerInfo.DropOrder);
+		APlayPlayerState* PS = Cast<APlayPlayerState>(PlayerState);
+		if (!PS) continue;
 
-			UE_LOG(FALL_DEV_LOG, Log, TEXT("%s"), *LogMessage);
+		const FPlayerInfo& Info = PS->PlayerInfo;
+		const FString StatusStr = UEnum::GetValueAsString(Info.Status);
 
-			if (GEngine)
-			{
-				ScreenMessage += LogMessage + TEXT("\n");
-			}
-		}
+		FString LogMessage = FString::Printf(TEXT("Tag: %s | Nick: %s | Color: %s | Top: %s | Bot: %s | Status: %s | Drop: %d | Winner: %s"),
+			*Info.Tag.ToString(),
+			*Info.NickName,
+			*Info.CostumeColor,
+			*Info.CostumeTOP,
+			*Info.CostumeBOT,
+			*StatusStr,
+			Info.DropOrder,
+			PS->GetIsWinner() ? TEXT("TRUE") : TEXT("FALSE"));
+
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("%s"), *LogMessage);
+		if (GEngine) ScreenMessage += LogMessage + TEXT("\n");
 	}
 
-	// 최종적으로 화면에 출력
 	if (UFallConst::PrintDebugLog && GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan, ScreenMessage);

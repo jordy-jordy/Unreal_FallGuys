@@ -54,7 +54,17 @@ private:
 	void OnPrintLevelCinematicEnd();  // = : 레벨 시네마틱 끝나게
 	void OnPrintCurFinishPlayer();	  // \ : 골인한 인원 및 목표 골인 인원 출력
 
-// EndLevel로 이동
+// 이현정 : 승리한 플레이어의 정보를 전달하기 위함
+public:
+	UFUNCTION(Server, Reliable)
+	void Server_SetPlayerInfoFromClient(
+		const FString& _NickName,
+		const FString& _Top,
+		const FString& _Bot,
+		const FString& _Color);
+
+
+// 이현정 : EndLevel로 이동
 public:
 	UFUNCTION(Client, Reliable)
 	void Client_TravelToEndLevel();

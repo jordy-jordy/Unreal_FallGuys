@@ -199,11 +199,8 @@ void APlayGameMode::InitPlayerInfo(APlayerController* _NewPlayer, APlayPlayerSta
 	// 플레이어 태그 생성
 	FName UniqueTag = GenerateUniquePlayerTag(_NewPlayer, _FallState->PlayerInfoArray.Num());
 
-	// 플레이어 닉네임 가져옴
-	FString PlayerNickname = _GameInstance->InsGetNickname();
-
 	// 플레이어 정보 세팅
-	_PlayerState->SetPlayerInfo(UniqueTag, PlayerNickname);
+	_PlayerState->SetPlayerTag(UniqueTag);
 
 	LogPlayerInfo(TEXT("PlayGameMode :: PostLogin :: 신규 플레이어 정보 세팅"), _PlayerState->PlayerInfo, _NewPlayer);
 }
@@ -735,6 +732,9 @@ void APlayGameMode::Tick(float DeltaSeconds)
 		}
 		else
 		{
+			// 최종 승리자 체크
+			MarkWinnersBeforeEndLevel();
+
 			// 엔드레벨로 이동
 			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: Tick :: 10초 후 최종 결과 화면으로 이동합니다."));
 			GetWorldTimerManager().SetTimer(ResultTravelTimerHandle, this, &APlayGameMode::ServerTravelToEndLevel, 10.0f, false);
@@ -981,6 +981,22 @@ void APlayGameMode::SetDefaultPlayersToSuccess()
 	SyncPlayerInfo();
 }
 
+// 최종 승리 플레이어를 마킹
+void APlayGameMode::MarkWinnersBeforeEndLevel()
+{
+	APlayGameState* FallState = GetGameState<APlayGameState>();
+	if (!FallState) return;
+
+	for (APlayerState* PS : FallState->PlayerArray)
+	{
+		APlayPlayerState* PState = Cast<APlayPlayerState>(PS);
+		if (PState && PState->GetPlayerStateStatus() == EPlayerStatus::SUCCESS)
+		{
+			PState->SetIsWinner(true);
+			UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: MarkWinnersBeforeEndLevel :: 승자 설정 완료 - %s"), *PState->PlayerInfo.Tag.ToString());
+		}
+	}
+}
 #pragma endregion
 
 #pragma region PlayGameMode :: 서버 트래블 관련 함수들
@@ -1019,9 +1035,5 @@ void APlayGameMode::ServerTravelToEndLevel()
 			PC->Client_TravelToEndLevel(); 
 		}
 	}
-
-	//UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 서버트래블 감지 :: 최종 결과창으로 이동합니다."));
-
-	//GetWorld()->ServerTravel(EndLevel, true);
 }
 #pragma endregion
