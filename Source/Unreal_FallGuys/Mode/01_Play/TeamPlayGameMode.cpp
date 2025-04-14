@@ -37,6 +37,28 @@ void ATeamPlayGameMode::PostLogin(APlayerController* _NewPlayer)
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= TeamPlayGameMode PostLogin END ======= "));
 }
 
+void ATeamPlayGameMode::HandleSeamlessTravelPlayer(AController*& _NewController)
+{
+	Super::HandleSeamlessTravelPlayer(_NewController);
+
+	// 서버장이 아닐시 리턴
+	if (!HasAuthority()) return;
+
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= TeamPlayGameMode HandleSeamlessTravelPlayer START ======= "));
+
+	APlayerController* NewPlayerController = Cast<APlayerController>(_NewController);
+	if (!NewPlayerController) return;
+
+	APlayPlayerState* PlayerState = Cast<APlayPlayerState>(NewPlayerController->PlayerState);
+	if (!PlayerState) { UE_LOG(FALL_DEV_LOG, Error, TEXT("TeamPlayGameMode :: PostLogin :: PlayerState가 nullptr입니다.")); return; }
+
+	// 팀 배정
+	AssignTeam(PlayerState);
+
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= TeamPlayGameMode HandleSeamlessTravelPlayer END ======= "));
+}
+
+
 void ATeamPlayGameMode::BeginPlay()
 {
 	Super::BeginPlay();

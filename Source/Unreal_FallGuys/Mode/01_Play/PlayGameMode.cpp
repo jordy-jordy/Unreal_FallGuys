@@ -727,8 +727,8 @@ void APlayGameMode::Tick(float DeltaSeconds)
 		else if (bMODEIsResultLevel && CurLevelInfo_Mode.CurStagePhase != EStagePhase::STAGE_3_RESULT)
 		{
 			// 결과 화면일 경우 30초 타이머 후 호출
-			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: Tick :: 결과 화면이므로 30초 후 다음 레벨로 이동합니다."));
-			GetWorldTimerManager().SetTimer(ResultTravelTimerHandle, this, &APlayGameMode::ServerTravelToNextRandLevel, 30.0f, false);
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: Tick :: 결과 화면이므로 20초 후 다음 레벨로 이동합니다."));
+			GetWorldTimerManager().SetTimer(ResultTravelTimerHandle, this, &APlayGameMode::ServerTravelToNextRandLevel, 20.0f, false);
 		}
 		else
 		{

@@ -38,6 +38,8 @@ protected:
 	virtual void Tick(float DeltaSeconds) override;
 	void BeginPlay() override;
 	virtual void PostLogin(APlayerController* _NewPlayer) override;
+	// 심리스 서버 트래블 이후 플레이어 처리
+	virtual void HandleSeamlessTravelPlayer(AController*& _NewController) override;
 
 	// 각 팀 점수
 	UPROPERTY(BlueprintReadOnly)
