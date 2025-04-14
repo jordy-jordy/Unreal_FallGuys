@@ -717,21 +717,29 @@ void APlayGameMode::Tick(float DeltaSeconds)
 	// 모든 조건이 true 가 되었을 때 서버 트래블 활성화
 	if (IsEndGame && bPlayerStatusChanged && bPlayerInfosBackUp && bNextLevelDataSetted && bCanMoveLevel)
 	{
-		StartedServerTravel = true;
 
 		// 결과 화면이 아닌 경우 결과 화면으로 이동
 		if (!bMODEIsResultLevel)
 		{
+			StartedServerTravel = true;
 			ServerTravelToRaceOver();
 		}
-		else if (bMODEIsResultLevel && CurLevelInfo_Mode.CurStagePhase != EStagePhase::STAGE_3_RESULT)
+		else if (bMODEIsResultLevel && !bPassedResultLevel && CurLevelInfo_Mode.CurStagePhase != EStagePhase::STAGE_3_RESULT)
 		{
-			// 결과 화면일 경우 30초 타이머 후 호출
-			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: Tick :: 결과 화면이므로 20초 후 다음 레벨로 이동합니다."));
-			GetWorldTimerManager().SetTimer(ResultTravelTimerHandle, this, &APlayGameMode::ServerTravelToNextRandLevel, 20.0f, false);
+			// 결과 화면에서 넘어가도 된다는 콜이 오기 전까진 리턴
+			if (!bCanMoveResultLevel) { return; }
+
+			// 결과 화면에서 넘어갔단다.
+			bPassedResultLevel = true;
+
+			// 결과 화면일 경우 20초 타이머 후 호출
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: Tick :: 레벨로부터 레벨 이동 콜을 받았습니다. 5초 후 다음 레벨로 이동합니다."));
+			GetWorldTimerManager().SetTimer(ResultTravelTimerHandle, this, &APlayGameMode::ServerTravelToNextRandLevel, 5.0f, false);
 		}
 		else
 		{
+			StartedServerTravel = true;
+
 			// 최종 승리자 체크
 			MarkWinnersBeforeEndLevel();
 

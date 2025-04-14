@@ -243,6 +243,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
 	bool GetGameStateGameStarted() { return bGameStateGameStarted; }
 
+	// 결과 화면에서 다음 스테이지로 넘어가도 되니?
+	bool GetCanMoveResultLevel() { return bCanMoveResultLevel; }
 
 // 레벨 데이터들 세팅하는 함수
 public:
@@ -286,35 +288,36 @@ public:
 	void S2C_SetCanMoveLevel(bool _b);
 	void S2C_SetCanMoveLevel_Implementation(bool _b);
 
+	// 결과 화면에서 다음 스테이지로 넘어가도록 해 + PlayGameMode에 세팅
+	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
+	void SetCanMoveResultLevelTrue();
+	void SetCanMoveResultLevelTrue_Implementation();
 
 protected:
 	// 레벨 시네마틱 시작해도 되니?
 	UPROPERTY(Replicated)
 	bool CanStartLevelCinematic = false;
-
 	// 레벨 시네마틱 끝났니?
 	UPROPERTY(Replicated)
 	bool IsLevelCinematicEnd = false;
-
 	// 골인 목표 인원 수 조정 했니?
 	UPROPERTY(Replicated)
 	bool bGameStateSettedGoalCount = false;
-
 	// 골인 목표 인원 수 : PlayGameMode에서 가져옴
 	UPROPERTY(Replicated)
 	int GameStateFinishPlayer = 99;
-
 	// 현재 골인한 플레이어 수 : PlayGameMode에서 가져옴
 	UPROPERTY(Replicated)
 	int GameStateCurFinishPlayer = 0;
-
 	// 결과 화면이니?
 	UPROPERTY(Replicated)
 	bool bGameStateIsResultLevel = false;
-
 	// 게임 시작했니?
 	UPROPERTY(Replicated)
 	bool bGameStateGameStarted = false;
+	// 결과 화면에서 넘어가도 될까?
+	UPROPERTY(Replicated)
+	bool bCanMoveResultLevel = false;
 
 #pragma endregion
 
