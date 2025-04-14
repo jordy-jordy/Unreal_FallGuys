@@ -214,7 +214,7 @@ protected:
 	FTimerHandle CountdownTimerHandle;
 	// 동기화 타이머 핸들
 	FTimerHandle SyncPlayerInfoTimer;
-	// RaceOver 레벨에서 다음 레벨로 이동하는 타이머 핸들
+	// 결과 화면 타이머 핸들
 	FTimerHandle ResultTravelTimerHandle;
 
 	// 카운트다운 시작 (3초 대기 후 실행)
@@ -232,6 +232,13 @@ public:
 	void SetCanMoveLevel(bool _Value)
 	{
 		bCanMoveLevel = _Value;
+	}
+
+	// 결과 화면에서 이동 해도 되~
+	UFUNCTION(Category = "PLAYGAMEMODE :: GAME")
+	void SetCanMoveResultLevel(bool _Value)
+	{
+		bCanMoveResultLevel = _Value;
 	}
 
 protected:
@@ -269,6 +276,10 @@ protected:
 	bool StartedServerTravel = false;
 	// 부전승 처리 했니?
 	bool bSetWinbyDefault = false;
+	// 결과 화면에서 다음으로 넘어가도 돼?
+	bool bCanMoveResultLevel = false;
+	// 결과 화면에서 다음으로 넘어감
+	bool bPassedResultLevel = false;
 
 #pragma endregion
 

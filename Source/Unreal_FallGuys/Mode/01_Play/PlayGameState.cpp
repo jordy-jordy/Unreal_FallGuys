@@ -353,6 +353,18 @@ void APlayGameState::S2C_SetCanMoveLevel_Implementation(bool _b)
 	}
 }
 
+// 결과 화면에서 다음 스테이지로 넘어가도록 해 + PlayGameMode에 세팅
+void APlayGameState::SetCanMoveResultLevelTrue_Implementation()
+{
+	bCanMoveResultLevel = true;
+
+	APlayGameMode* PlayMode = Cast<APlayGameMode>(GetWorld()->GetAuthGameMode());
+	if (PlayMode)
+	{
+		PlayMode->SetCanMoveResultLevel(bCanMoveResultLevel);
+	}
+}
+
 // 현 스테이지의 골 타입을 반환함
 FString APlayGameState::GetSTATEStageGoalType()
 {
@@ -388,6 +400,7 @@ void APlayGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(APlayGameState, FailPlayerInfoArray);
 	DOREPLIFETIME(APlayGameState, DefaultPlayerInfoArray);
 	DOREPLIFETIME(APlayGameState, CurLevelInfo_GameState);
+	DOREPLIFETIME(APlayGameState, bCanMoveResultLevel);
 }
 
 void APlayGameState::PrintFailPlayersInfo()
