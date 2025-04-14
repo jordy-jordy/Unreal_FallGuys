@@ -48,7 +48,7 @@ public:
 	TArray<int> GetTeamEggCount() const
 
 	{
-		int a = TeamEggCount.Num();
+
 		if (TeamEggCount.IsEmpty())
 		{ 
 

@@ -30,6 +30,7 @@ void AEggSpawnManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	TeamEggCount.Empty();
 	TeamEggCount = CheckEggTeam();
 }
 
