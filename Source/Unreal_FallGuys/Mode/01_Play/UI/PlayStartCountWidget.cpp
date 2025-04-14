@@ -38,13 +38,21 @@ void UPlayStartCountWidget::StartCountWidget()
 {
 	SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	PlayAnimation(CountAnim);
-	CountWidgetAnimationEvent.BindUFunction(this, FName(FString(TEXT("HiddenWidget"))));
+	CountWidgetAnimationEvent.BindUFunction(this, FName(FString(TEXT("AfterCountWidget"))));
 	BindToAnimationFinished(CountAnim, CountWidgetAnimationEvent);
 }
 
-void UPlayStartCountWidget::HiddenWidget()
+void UPlayStartCountWidget::AfterCountWidget()
 {
 	SetVisibility(ESlateVisibility::Hidden);
+
+	APlayGameState* GameState = Cast<APlayGameState>(GetWorld()->GetGameState());
+	UPlayUserWidget* SpectatorResult = GetMainWidget()->FindWidget(EPlayUIType::PlaySpectatorResult);
+
+	if (true == GetMainWidget()->IsFailPlayer() && EStagePhase::STAGE_1 != GameState->GetCurStagePhase_STATE())
+	{
+		SpectatorResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	}
 }
 
 
