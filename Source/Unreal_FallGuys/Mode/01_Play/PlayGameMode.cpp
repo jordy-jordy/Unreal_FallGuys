@@ -717,10 +717,10 @@ void APlayGameMode::Tick(float DeltaSeconds)
 	// 모든 조건이 true 가 되었을 때 서버 트래블 활성화
 	if (IsEndGame && bPlayerStatusChanged && bPlayerInfosBackUp && bNextLevelDataSetted && bCanMoveLevel)
 	{
-
 		// 결과 화면이 아닌 경우 결과 화면으로 이동
 		if (!bMODEIsResultLevel)
 		{
+			// 서버 트래블 활성화
 			StartedServerTravel = true;
 			ServerTravelToRaceOver();
 		}
@@ -729,6 +729,8 @@ void APlayGameMode::Tick(float DeltaSeconds)
 			// 결과 화면에서 넘어가도 된다는 콜이 오기 전까진 리턴
 			if (!bCanMoveResultLevel) { return; }
 
+			// 서버 트래블 활성화
+			StartedServerTravel = true;
 			// 결과 화면에서 넘어갔단다.
 			bPassedResultLevel = true;
 
@@ -738,6 +740,7 @@ void APlayGameMode::Tick(float DeltaSeconds)
 		}
 		else
 		{
+			// 서버 트래블 활성화
 			StartedServerTravel = true;
 
 			// 최종 승리자 체크
