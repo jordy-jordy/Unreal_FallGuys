@@ -25,7 +25,7 @@ public:
 	void StartCountWidget();
 
 	UFUNCTION()
-	void HiddenWidget();
+	void AfterCountWidget();
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
