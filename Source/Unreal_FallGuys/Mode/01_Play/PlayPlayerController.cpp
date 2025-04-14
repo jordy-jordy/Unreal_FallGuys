@@ -112,5 +112,8 @@ void APlayPlayerController::OnPrintCurFinishPlayer()
 // EndLevel로 이동
 void APlayPlayerController::Client_TravelToEndLevel_Implementation()
 {
-	ClientTravel("/Game/Maps/EndLevel", ETravelType::TRAVEL_Absolute);
+	if (IsLocalController() && GetWorld())
+	{
+		ClientTravel("/Game/BP/Level/02_End/EndLevel", ETravelType::TRAVEL_Absolute);
+	}
 }
