@@ -108,3 +108,9 @@ void APlayPlayerController::OnPrintCurFinishPlayer()
 		GameIns->InsGetGameStateCurFinishPlayer();
 	}
 }
+
+// EndLevel로 이동
+void APlayPlayerController::Client_TravelToEndLevel_Implementation()
+{
+	ClientTravel("/Game/Maps/EndLevel", ETravelType::TRAVEL_Absolute);
+}

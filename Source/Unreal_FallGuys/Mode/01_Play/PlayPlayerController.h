@@ -53,4 +53,11 @@ private:
 	void OnPrintLevelName();          // - : 현재 레벨의 이름 출력
 	void OnPrintLevelCinematicEnd();  // = : 레벨 시네마틱 끝나게
 	void OnPrintCurFinishPlayer();	  // \ : 골인한 인원 및 목표 골인 인원 출력
+
+// EndLevel로 이동
+public:
+	UFUNCTION(Client, Reliable)
+	void Client_TravelToEndLevel();
+	void Client_TravelToEndLevel_Implementation();
+
 };

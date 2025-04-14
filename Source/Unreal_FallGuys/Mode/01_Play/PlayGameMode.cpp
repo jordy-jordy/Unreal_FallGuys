@@ -12,6 +12,7 @@
 #include <Mode/01_Play/PlayGameState.h>
 #include <Mode/01_Play/PlayPlayerState.h>
 #include <Mode/01_Play/PlayCharacter.h>
+#include <Mode/01_Play/PlayPlayerController.h>
 
 
 APlayGameMode::APlayGameMode()
@@ -556,7 +557,7 @@ void APlayGameMode::FinishPlayer_Survive()
 
 	case EStagePhase::STAGE_3:
 		if		(DefaultPlayerCount <= 1) { SetFinishPlayerCount(0); }
-		else	{ SetFinishPlayerCount(1); }
+		else	{ SetFinishPlayerCount(DefaultPlayerCount - 1); }
 		break;
 
 	case EStagePhase::FINISHED:
@@ -1008,8 +1009,19 @@ void APlayGameMode::ServerTravelToEndLevel()
 {
 	if (!HasAuthority()) { return; }
 
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 서버트래블 감지 :: 최종 결과창으로 이동합니다."));
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 클라이언트 트래블 감지 :: 최종 결과창으로 이동합니다."));
 
-	GetWorld()->ServerTravel(EndLevel, true);
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	{
+		APlayPlayerController* PC = Cast<APlayPlayerController>(It->Get());
+		if (PC)
+		{
+			PC->Client_TravelToEndLevel(); 
+		}
+	}
+
+	//UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 서버트래블 감지 :: 최종 결과창으로 이동합니다."));
+
+	//GetWorld()->ServerTravel(EndLevel, true);
 }
 #pragma endregion
