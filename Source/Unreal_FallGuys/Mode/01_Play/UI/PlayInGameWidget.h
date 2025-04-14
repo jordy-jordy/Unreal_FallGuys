@@ -19,6 +19,8 @@ class UNREAL_FALLGUYS_API UPlayInGameWidget : public UPlayUserWidget
 public:
 	void NativeConstruct();
 
+	void NativeTick(const FGeometry& MyGeometry, float InDeltaTime);
+
 	UFUNCTION(BlueprintCallable)
 	EStagePhase CurStagePhase();
 

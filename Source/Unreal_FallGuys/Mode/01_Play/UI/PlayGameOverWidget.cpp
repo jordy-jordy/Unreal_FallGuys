@@ -2,8 +2,10 @@
 
 
 #include "Mode/01_Play/UI/PlayGameOverWidget.h"
-#include "Mode/01_Play/UI/PlayMainWidget.h"
 #include "Global/FallGlobal.h"
+#include "Mode/01_Play/UI/PlayMainWidget.h"
+#include "Mode/01_Play/UI/PlayInGameWidget.h"
+#include "Mode/01_Play/UI/PlayResultWidget.h"
 
 // 델리게이트 테스트
 //#include "Mode/01_Play/PlayGameMode.h"
@@ -37,5 +39,17 @@ void UPlayGameOverWidget::WidgetVisible()
 
 void UPlayGameOverWidget::MoveToResultLevel()
 {
-	UFallGlobal::SetCanMoveLevel(true);
+	UPlayInGameWidget* InGameWidget = Cast<UPlayInGameWidget>(GetMainWidget()->FindWidget(EPlayUIType::PlayInGame));
+	UPlayResultWidget* PlayResult = Cast<UPlayResultWidget>(GetMainWidget()->FindWidget(EPlayUIType::PlayResult));
+	bool IsShowResult = InGameWidget->GetShowResult();
+
+	if (false == IsShowResult)
+	{
+		SetVisibility(ESlateVisibility::Hidden);
+		PlayResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	}
+	else
+	{
+		UFallGlobal::SetCanMoveLevel(true);
+	}
 }
