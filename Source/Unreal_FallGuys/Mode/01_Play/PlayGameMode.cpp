@@ -650,12 +650,12 @@ void APlayGameMode::SetCharacterMovePossible()
 	bPlayerMoving = true;
 }
 
-// 이현정 : 25.04.02 : 동기화 함수로 수정 : 골인 인원 +1 카운팅
+// 이현정 : 25.04.02 : 동기화 함수로 수정 - 게임종료 트리거
 void APlayGameMode::OnPlayerFinished()
 {
 	if (!HasAuthority()) return;
 
-	CurFinishPlayer += 1;
+	// CurFinishPlayer += 1;
 
 	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
 	FallState->SetGameStateCurFinishPlayer(CurFinishPlayer);
@@ -761,6 +761,7 @@ void APlayGameMode::Tick(float DeltaSeconds)
 // 게임 종료 트리거
 void APlayGameMode::SetEndCondition_Trigger()
 {
+	// 게임 끝났으면 리턴
 	if (IsEndGame == true) { return; }
 	IsEndGame = true;
 
@@ -961,7 +962,7 @@ void APlayGameMode::SetDefaultPlayersToFail()
 		APlayPlayerState* PState = Cast<APlayPlayerState>(PS);
 		if (PState && PState->GetPlayerStateStatus() == EPlayerStatus::DEFAULT)
 		{
-			PState->SetPlayerStatus(EPlayerStatus::FAIL);
+			PState->SetPlayerStatusOnEnd(EPlayerStatus::FAIL);
 			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: SetDefaultPlayersToFail :: FAIL 처리됨 - %s"), *PState->PlayerInfo.Tag.ToString());
 		}
 	}
@@ -987,7 +988,7 @@ void APlayGameMode::SetDefaultPlayersToSuccess()
 		APlayPlayerState* PState = Cast<APlayPlayerState>(PS);
 		if (PState && PState->GetPlayerStateStatus() == EPlayerStatus::DEFAULT)
 		{
-			PState->SetPlayerStatus(EPlayerStatus::SUCCESS);
+			PState->SetPlayerStatusOnEnd(EPlayerStatus::SUCCESS);
 			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: SetDefaultPlayersToSuccess :: SUCCESS 처리됨 - %s"), *PState->PlayerInfo.Tag.ToString());
 		}
 	}

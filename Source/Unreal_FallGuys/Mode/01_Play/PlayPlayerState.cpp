@@ -5,6 +5,7 @@
 
 #include <Global/GlobalEnum.h>
 #include <Global/BaseGameInstance.h>
+#include <Mode/01_Play/PlayGameMode.h>
 
 #include <Net/UnrealNetwork.h>
 
@@ -39,8 +40,35 @@ void APlayPlayerState::SetTeam_Implementation(ETeamType _Team)
     PlayerInfo.Team = _Team;
 }
 
-// 플레이어 상태 설정
+// 플레이어 상태 설정 : 게임 끝나기 전
 void APlayPlayerState::SetPlayerStatus_Implementation(EPlayerStatus _NewStatus)
+{
+	if (!HasAuthority()) return; // 서버에서만 실행
+	
+	// 이미 실패한 플레이어면 패스
+	if (PlayerStatus == EPlayerStatus::FAIL) return;
+	if (PlayerInfo.Status == EPlayerStatus::FAIL) return;
+
+	// 게임 끝났으면 더이상 상태 전환 못하게
+	APlayGameMode* PlayMode = GWorld->GetAuthGameMode<APlayGameMode>();
+	if (!PlayMode) return;
+	if (PlayMode->GetIsEndGame()) return;
+
+	// 상태가 다르면 변경
+	if (PlayerStatus != _NewStatus)
+	{
+		PlayerStatus = _NewStatus;
+
+		// 구조체에도 반영
+		PlayerInfo.Status = _NewStatus;
+	}
+
+	// 골인 인원 카운트
+	PlayMode->AddCurFinishPlayer();
+}
+
+// 플레이어 상태 설정 : 게임 끝난 후 일괄 변경
+void APlayPlayerState::SetPlayerStatusOnEnd_Implementation(EPlayerStatus _NewStatus)
 {
 	if (!HasAuthority()) return; // 서버에서만 실행
 

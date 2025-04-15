@@ -100,10 +100,15 @@ public:
     void SetTeam(ETeamType _Team);
     void SetTeam_Implementation(ETeamType _Team);
 
-    // 플레이어 상태 설정
+    // 플레이어 상태 설정 : 게임 끝나기 전
     UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "PLAYER INFO")
     void SetPlayerStatus(EPlayerStatus _NewStatus);
     void SetPlayerStatus_Implementation(EPlayerStatus _NewStatus);
+
+    // 플레이어 상태 설정 : 게임 끝난 후 일괄 변경
+    UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "PLAYER INFO")
+    void SetPlayerStatusOnEnd(EPlayerStatus _NewStatus);
+    void SetPlayerStatusOnEnd_Implementation(EPlayerStatus _NewStatus);
 
     // 플레이어 떨어지는 순서 설정
     UFUNCTION(Reliable, server, BlueprintCallable, Category = "PLAYER INFO")

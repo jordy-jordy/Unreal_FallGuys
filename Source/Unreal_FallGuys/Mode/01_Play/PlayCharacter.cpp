@@ -355,15 +355,3 @@ void APlayCharacter::DebugCheckDieStatus()
 	}
 }
 
-// 이현정 : 디버그용 : 캐릭터 사망 처리
-void APlayCharacter::DebugCharacterDie()
-{
-	if (!HasAuthority()) { return; }
-
-	APlayPlayerState* PlayState = GetPlayerState<APlayPlayerState>();
-	PlayState->SetPlayerStatus(EPlayerStatus::FAIL);
-
-	APlayGameMode* PlayMode = Cast<APlayGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
-	PlayMode->OnPlayerFinished();
-}
-
