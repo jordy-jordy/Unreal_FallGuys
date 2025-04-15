@@ -63,6 +63,7 @@ void APlayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(APlayCharacter, CostumeColor);
 	DOREPLIFETIME(APlayCharacter, CostumeTopName);
 	DOREPLIFETIME(APlayCharacter, CostumeBotName);
+	DOREPLIFETIME(APlayCharacter, NickName);
 	DOREPLIFETIME(APlayCharacter, IsDie);
 	DOREPLIFETIME(APlayCharacter, CanMove);
 	DOREPLIFETIME(APlayCharacter, CurStatus);
@@ -85,7 +86,7 @@ void APlayCharacter::BeginPlay()
 		CostumeColor = UFallGlobal::GetCostumeColor(this);
 		CostumeTopName = UFallGlobal::GetCostumeTop(this);
 		CostumeBotName = UFallGlobal::GetCostumeBot(this);
-		NickName = UFallGlobal::GetNickname(this);
+
 
 		if (CostumeColor != TEXT(""))
 		{
@@ -102,11 +103,7 @@ void APlayCharacter::BeginPlay()
 			CostumeBOTStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, CostumeBotName));
 		}
 
-		if (NickName != TEXT(""))
-		{
-			
-		}
-
+		NickName = UFallGlobal::GetNickname(this);
 		C2S_Costume(CostumeColor, CostumeTopName, CostumeBotName);
 		C2S_NickName(NickName);
 	}
@@ -133,6 +130,12 @@ void APlayCharacter::BeginPlay()
 void APlayCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	auto Test = GetWorld()->GetAuthGameMode();
+
+	this;
+
+	NickName;
 }
 
 FVector APlayCharacter::GetControllerForward()
@@ -243,8 +246,8 @@ void APlayCharacter::C2S_NickName_Implementation(const FString& _NickName)
 {
 
 	NickName = _NickName;
-	
-	S2M_NickName(NickName);
+
+	//S2M_NickName(NickName);
 }
 
 void APlayCharacter::S2M_NickName_Implementation(const FString& _NickName)
