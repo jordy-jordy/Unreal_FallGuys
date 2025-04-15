@@ -655,10 +655,8 @@ void APlayGameMode::OnPlayerFinished()
 {
 	if (!HasAuthority()) return;
 
-	// CurFinishPlayer += 1;
-
 	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
-	FallState->SetGameStateCurFinishPlayer(CurFinishPlayer);
+	CurFinishPlayer = FallState->GetGameStateCurFinishPlayer();
 
 	if (CurFinishPlayer >= FinishPlayer && IsEndGame == false)
 	{

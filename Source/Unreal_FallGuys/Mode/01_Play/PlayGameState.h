@@ -268,10 +268,10 @@ public:
 	void SetGameStateFinishPlayer(int _Value);
 	void SetGameStateFinishPlayer_Implementation(int _Value);
 	
-	// 현재 골인한 플레이어 수 세팅 : PlayGameMode에서 호출
+	// 골인한 플레이어 수 카운팅
 	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
-	void SetGameStateCurFinishPlayer(int _Value);
-	void SetGameStateCurFinishPlayer_Implementation(int _Value);
+	void AddGameStateCurFinishPlayer();
+	void AddGameStateCurFinishPlayer_Implementation();
 
 	// 결과 화면인지 세팅 : PlayGameMode에서 호출
 	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
@@ -306,7 +306,7 @@ protected:
 	// 골인 목표 인원 수 : PlayGameMode에서 가져옴
 	UPROPERTY(Replicated)
 	int GameStateFinishPlayer = 99;
-	// 현재 골인한 플레이어 수 : PlayGameMode에서 가져옴
+	// 현재 골인한 플레이어 수
 	UPROPERTY(Replicated)
 	int GameStateCurFinishPlayer = 0;
 	// 결과 화면이니?
