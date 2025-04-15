@@ -15,11 +15,12 @@ void UPlayResultWidget::NativeConstruct()
 
 	if (nullptr != ResultAnim)
 	{
-		ResultAnimFinished.BindUFunction(this, FName(FString(TEXT("FinishedResultWidget"))));
+		ResultAnimFinished.BindDynamic(this, &UPlayResultWidget::FinishedResultWidget);
 		BindToAnimationFinished(ResultAnim, ResultAnimFinished);
-
 		PlayAnimation(ResultAnim);
 	}
+
+	IsAnimated = false;
 }
 
 void UPlayResultWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)

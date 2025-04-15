@@ -26,9 +26,12 @@ void UPlayGameOverWidget::NativeConstruct()
 	}
 	// 델리게이트 테스트
 
-	PlayAnimation(GameOverAnim);
-	GameOverAnimEvent.BindUFunction(this, FName(FString(TEXT("MoveToResultLevel"))));
-	BindToAnimationFinished(GameOverAnim, GameOverAnimEvent);
+	if (nullptr != GameOverAnim)
+	{
+		GameOverAnimEvent.BindUFunction(this, FName(FString(TEXT("MoveToResultLevel"))));
+		BindToAnimationFinished(GameOverAnim, GameOverAnimEvent);
+		PlayAnimation(GameOverAnim);
+	}
 }
 
 void UPlayGameOverWidget::WidgetVisible()
@@ -42,8 +45,9 @@ void UPlayGameOverWidget::MoveToResultLevel()
 	UPlayInGameWidget* InGameWidget = Cast<UPlayInGameWidget>(GetMainWidget()->FindWidget(EPlayUIType::PlayInGame));
 	UPlayResultWidget* PlayResult = Cast<UPlayResultWidget>(GetMainWidget()->FindWidget(EPlayUIType::PlayResult));
 	bool IsShowResult = InGameWidget->GetShowResult();
+	bool IsResultAnimated = PlayResult->GetAnimatedStatus();
 
-	if (false == IsShowResult)
+	if (false == IsShowResult && false == IsResultAnimated)
 	{
 		SetVisibility(ESlateVisibility::Hidden);
 		PlayResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
