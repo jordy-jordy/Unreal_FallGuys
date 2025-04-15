@@ -95,6 +95,6 @@ void AShowDownStage::DownPlatforms(float DeltaTime)
 		Platforms[0]->IsLive = false;
 		Platforms.RemoveAt(0); 
 		CurDownTime = DownTime;
-		return;
+		return; 
 	}
 }
