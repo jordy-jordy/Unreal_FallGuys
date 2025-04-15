@@ -20,6 +20,8 @@ protected:
 	void BeginPlay() override;
 	void Tick(float _Delta) override;
 
+	// 게임 인포 초기화
+	void ResetGameInsInfo();
 
 private:
 };

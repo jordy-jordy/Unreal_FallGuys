@@ -336,7 +336,7 @@ void ATeamPlayGameMode::ServerTravelToNextTeamMap()
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("TeamPlayGameMode :: 서버트래블 감지 ::"));
 
-	GetWorld()->ServerTravel(UFallGlobal::GetRandomTeamLevel(), false);
+	GetWorld()->ServerTravel(UFallGlobal::GetRandomTeamLevel(), true);
 }
 
 // 로비로 돌아가
