@@ -136,6 +136,11 @@ public:
     UFUNCTION(BlueprintCallable, Category = "PLAYER INFO")
 	bool GetIsWinner() { return bIsWinner; }
 
+    // 게임 끝났음을 세팅
+    UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL INFO")
+    void SetIsGameEnd(bool _Value);
+    void SetIsGameEnd_Implementation(bool _Value);
+
 protected:
     // 승자 여부
     UPROPERTY(Replicated)
@@ -148,6 +153,10 @@ protected:
     // 실시간 떨어지는 순서 동기화를 위한 변수
     UPROPERTY(ReplicatedUsing = OnRep_PlayerDropOrder)
     int32 PlayerDropOrder = -1;
+
+    // 게임 끝낫나?
+    UPROPERTY(Replicated)
+	bool bIsGameEnd = false;
 
 	// PlayerDropOrder 가 변할 때 호출되는 함수 - 동기화
     UFUNCTION()

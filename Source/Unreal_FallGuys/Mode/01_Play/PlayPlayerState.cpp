@@ -5,7 +5,7 @@
 
 #include <Global/GlobalEnum.h>
 #include <Global/BaseGameInstance.h>
-#include <Mode/01_Play/PlayGameMode.h>
+#include <Mode/01_Play/PlayGameState.h>
 
 #include <Net/UnrealNetwork.h>
 
@@ -50,9 +50,7 @@ void APlayPlayerState::SetPlayerStatus_Implementation(EPlayerStatus _NewStatus)
 	if (PlayerInfo.Status == EPlayerStatus::FAIL) return;
 
 	// 게임 끝났으면 더이상 상태 전환 못하게
-	APlayGameMode* PlayMode = GWorld->GetAuthGameMode<APlayGameMode>();
-	if (!PlayMode) return;
-	if (PlayMode->GetIsEndGame()) return;
+	if (bIsGameEnd) return;
 
 	// 상태가 다르면 변경
 	if (PlayerStatus != _NewStatus)
@@ -64,7 +62,8 @@ void APlayPlayerState::SetPlayerStatus_Implementation(EPlayerStatus _NewStatus)
 	}
 
 	// 골인 인원 카운트
-	PlayMode->AddCurFinishPlayer();
+	APlayGameState* FallState = GetWorld()->GetGameState<APlayGameState>();
+	FallState->AddGameStateCurFinishPlayer();
 }
 
 // 플레이어 상태 설정 : 게임 끝난 후 일괄 변경
@@ -108,6 +107,12 @@ void APlayPlayerState::OnRep_PlayerDropOrder()
 void APlayPlayerState::SetIsWinner_Implementation(bool _bWinner)
 {
 	bIsWinner = _bWinner;
+}
+
+// 게임 끝났음을 세팅
+void APlayPlayerState::SetIsGameEnd_Implementation(bool _Value)
+{
+	bIsGameEnd = _Value;
 }
 
 void APlayPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
