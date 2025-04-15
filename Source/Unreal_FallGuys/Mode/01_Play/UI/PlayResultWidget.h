@@ -25,9 +25,20 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void ChangeResources();
 
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void SetSpectatorView(bool _Value);
+
+	bool GetAnimatedStatus()
+	{
+		return IsAnimated;
+	}
+
 private:
 	UPROPERTY(VisibleAnywhere, Transient, meta = (BindWidgetAnim), Category = "UI")
 	UWidgetAnimation* ResultAnim;
 
 	FWidgetAnimationDynamicEvent ResultAnimFinished;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
+	bool IsAnimated = false;
 };

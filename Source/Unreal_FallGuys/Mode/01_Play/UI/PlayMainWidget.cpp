@@ -221,6 +221,7 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 			UPlayUserWidget* ClearCount = FindWidget(EPlayUIType::PlayClearCount);
 			UPlayUserWidget* PlayScore = FindWidget(EPlayUIType::PlayScore);
 			UPlayUserWidget* SpectatorResult = FindWidget(EPlayUIType::PlaySpectatorResult);
+			UPlayResultWidget* Result = Cast<UPlayResultWidget>(CurUserWidget);
 
 			if (StageType == EStageType::SOLO)
 			{
@@ -228,6 +229,7 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 				SpectatorResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 				CurUserWidget->SetVisibility(ESlateVisibility::Hidden);
 				ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+				Result->SetSpectatorView(true);
 			}
 			if (StageType == EStageType::TEAM)
 			{
@@ -276,11 +278,6 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 				{
 					ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 				}
-				//else
-				//{
-				//	CurUserWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-				//	SpectatorResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-				//}
 			}
 			else if (EPlayerStatus::SUCCESS == CurPlayerStatus)
 			{
