@@ -47,7 +47,7 @@ struct FTeamLevelInfo
 	UPROPERTY()
 	EStageType LevelType = EStageType::TEAM;
 	UPROPERTY()
-	float StageLimitTime = 120.0f;
+	float StageLimitTime = 0.0f;
 	UPROPERTY()
 	FString PlayGuide = TEXT("");
 	UPROPERTY()
@@ -66,25 +66,25 @@ struct FCurLevelInfo_GAMEINS
 	FCurLevelInfo_GAMEINS() {}
 
 	UPROPERTY()
-	FString LevelAssetName = TEXT("");
+	FString LevelAssetName = TEXT("");					// 레벨 에셋 이름
 	UPROPERTY()
-	FString LevelName = TEXT("");
+	FString LevelName = TEXT("");						// 레벨 이름
 	UPROPERTY()
-	EStageType LevelType = EStageType::NONE;
+	EStageType LevelType = EStageType::NONE;			// 레벨 타입
 	UPROPERTY()
-	EPlayerStatus EndCondition = EPlayerStatus::NONE;
+	EPlayerStatus EndCondition = EPlayerStatus::NONE;	// 레벨 종료 조건
 	UPROPERTY()
-	float StageLimitTime = 0.0f;
+	float StageLimitTime = 0.0f;						// 레벨 제한 시간
 	UPROPERTY()
-	FString PlayGuide = TEXT("");
+	FString PlayGuide = TEXT("");						// 레벨 플레이 가이드
 	UPROPERTY()
-	FString GoalGuide = TEXT("");
+	FString GoalGuide = TEXT("");						// 레벨 목표 가이드
 	UPROPERTY()
-	UTexture2D* LevelIMG = nullptr;
+	UTexture2D* LevelIMG = nullptr;						// 레벨 이미지
 	UPROPERTY()
-	UTexture2D* LevelTagIMG = nullptr;
+	UTexture2D* LevelTagIMG = nullptr;					// 레벨 태그 이미지
 	UPROPERTY()
-	EStagePhase CurStagePhase = EStagePhase::STAGE_1;
+	EStagePhase CurStagePhase = EStagePhase::STAGE_1;	// 현재 스테이지 단계
 };
 
 USTRUCT(BlueprintType)
@@ -92,14 +92,14 @@ struct FWinnerInfo
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadWrite)
-	FString NickName = TEXT("");
-	UPROPERTY(BlueprintReadWrite)
-	FString CostumeColor = TEXT("");
-	UPROPERTY(BlueprintReadWrite)
-	FString CostumeTop = TEXT("");
-	UPROPERTY(BlueprintReadWrite)
-	FString CostumeBot = TEXT("");
+	UPROPERTY()
+	FString NickName = TEXT("");		// 닉네임
+	UPROPERTY()
+	FString CostumeColor = TEXT("");	// 코스튬 컬러
+	UPROPERTY()
+	FString CostumeTop = TEXT("");		// 코스튬 상의
+	UPROPERTY()
+	FString CostumeBot = TEXT("");		// 코스튬 하의
 };
 /**
  *
