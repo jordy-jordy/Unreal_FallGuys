@@ -740,6 +740,9 @@ void APlayGameMode::Tick(float DeltaSeconds)
 		}
 		else
 		{
+			// 결과 화면에서 넘어가도 된다는 콜이 오기 전까진 리턴
+			if (!bCanMoveResultLevel) { return; }
+
 			// 서버 트래블 활성화
 			StartedServerTravel = true;
 
@@ -747,8 +750,8 @@ void APlayGameMode::Tick(float DeltaSeconds)
 			MarkWinnersBeforeEndLevel();
 
 			// 엔드레벨로 이동
-			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: Tick :: 10초 후 최종 결과 화면으로 이동합니다."));
-			GetWorldTimerManager().SetTimer(ResultTravelTimerHandle, this, &APlayGameMode::ServerTravelToEndLevel, 10.0f, false);
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: Tick :: 레벨로부터 레벨 이동 콜을 받았습니다. 5초 후 최종 결과 화면으로 이동합니다."));
+			GetWorldTimerManager().SetTimer(ResultTravelTimerHandle, this, &APlayGameMode::ServerTravelToEndLevel, 5.0f, false);
 		}
 	}
 }

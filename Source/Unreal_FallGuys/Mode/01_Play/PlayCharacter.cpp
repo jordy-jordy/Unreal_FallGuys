@@ -51,12 +51,15 @@ APlayCharacter::APlayCharacter()
 	CostumeBOTStaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	CostumeBOTStaticMesh->SetGenerateOverlapEvents(false);
 	CostumeBOTStaticMesh->CanCharacterStepUpOn = ECanBeCharacterBase::ECB_No;
+
+	bReplicates = true;
 }
 
 void APlayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
+	DOREPLIFETIME(APlayCharacter, CurAnimnation);
 	DOREPLIFETIME(APlayCharacter, CostumeColor);
 	DOREPLIFETIME(APlayCharacter, CostumeTopName);
 	DOREPLIFETIME(APlayCharacter, CostumeBotName);
@@ -82,6 +85,7 @@ void APlayCharacter::BeginPlay()
 		CostumeColor = UFallGlobal::GetCostumeColor(this);
 		CostumeTopName = UFallGlobal::GetCostumeTop(this);
 		CostumeBotName = UFallGlobal::GetCostumeBot(this);
+		NickName = UFallGlobal::GetNickname(this);
 
 		if (CostumeColor != TEXT(""))
 		{
@@ -98,7 +102,13 @@ void APlayCharacter::BeginPlay()
 			CostumeBOTStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, CostumeBotName));
 		}
 
+		if (NickName != TEXT(""))
+		{
+			
+		}
+
 		C2S_Costume(CostumeColor, CostumeTopName, CostumeBotName);
+		C2S_NickName(NickName);
 	}
 	else
 	{
@@ -229,17 +239,17 @@ void APlayCharacter::S2M_Costume_Implementation(const FString& _Color, const FSt
 	}
 }
 
-void APlayCharacter::C2S_NickName_Implementation()
+void APlayCharacter::C2S_NickName_Implementation(const FString& _NickName)
 {
 
-    NickName = UFallGlobal::GetNickname(this);
+	NickName = _NickName;
 	
-	S2M_NickName();
+	S2M_NickName(NickName);
 }
 
-void APlayCharacter::S2M_NickName_Implementation()
+void APlayCharacter::S2M_NickName_Implementation(const FString& _NickName)
 {
-		NickName = UFallGlobal::GetNickname(this);
+	NickName = _NickName;
 }
 
 
