@@ -22,9 +22,6 @@ public:
 	void NativeTick(const FGeometry& MyGeometry, float InDeltaTime);
 
 	UFUNCTION(BlueprintCallable)
-	EStagePhase CurStagePhase();
-
-	UFUNCTION(BlueprintCallable)
 	void ShowResult(bool _Value);
 
 	UFUNCTION(BlueprintCallable)

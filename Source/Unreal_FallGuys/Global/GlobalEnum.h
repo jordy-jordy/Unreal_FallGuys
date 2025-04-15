@@ -67,6 +67,7 @@ enum class ETitleUIType : uint8
 	TitleIPPort UMETA(DisplayName = "TitleIPPort"),
 	TitleName UMETA(DisplayName = "TitleName"),
 	TitleMenu UMETA(DisplayName = "TitleMenu"),
+	TitlePlayerCount UMETA(DisplayName = "TitlePlayerCount"),
 	MAX UMETA(DisplayName = "MAX"),
 };
 
