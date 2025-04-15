@@ -23,6 +23,11 @@ void AShowDownPlatform::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (nullptr == GetWorld()->GetAuthGameMode())
+	{
+		return;
+	}
+
 	if (true == IsLive)
 	{
 		OriginPos = GetActorLocation();
