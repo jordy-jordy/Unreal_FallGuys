@@ -196,12 +196,12 @@ void ATeamPlayGameMode::OnStageLimitTimeOver()
 	if (CurLevelInfo_Mode.CurStagePhase != EStagePhase::STAGE_3)
 	{
 		// 5초 후 다음 레벨로 서버 트래블
-		GetWorldTimerManager().SetTimer(TravelDelayTimerHandle, this, &ATeamPlayGameMode::ServerTravelToNextTeamMap, 5.0f, false);
+		GetWorldTimerManager().SetTimer(TravelDelayTimerHandle, this, &ATeamPlayGameMode::ServerTravelToNextTeamMap, 10.0f, false);
 	}
 	else
 	{
 		// 5초 후 타이틀로 클라이언트 트래블
-		GetWorldTimerManager().SetTimer(TravelDelayTimerHandle, this, &ATeamPlayGameMode::ClientTravelToTitle, 5.0f, false);
+		GetWorldTimerManager().SetTimer(TravelDelayTimerHandle, this, &ATeamPlayGameMode::ClientTravelToTitle, 10.0f, false);
 	}
 }
 
