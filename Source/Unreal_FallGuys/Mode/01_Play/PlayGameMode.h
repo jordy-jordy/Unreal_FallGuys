@@ -283,6 +283,12 @@ protected:
 
 #pragma endregion
 
+public:
+	// 게임 끝났는지 확인
+	bool GetIsEndGame() const { return IsEndGame; }
+	// 골인한 인원 +1
+	void AddCurFinishPlayer() { ++CurFinishPlayer; }
+
 //LMH
 protected:
 	// 골인 목표 인원 수
