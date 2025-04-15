@@ -146,7 +146,7 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 	{
 		return;
 	}
-	
+
 	//CurUIType À§Á¬ => _UIType À§Á¬
 	switch (CurUIType)
 	{
@@ -225,16 +225,14 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 			if (StageType == EStageType::SOLO)
 			{
 				ClearCount->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+				SpectatorResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+				CurUserWidget->SetVisibility(ESlateVisibility::Hidden);
+				ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 			}
 			if (StageType == EStageType::TEAM)
 			{
-				PlayScore->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+				UFallGlobal::SetCanMoveLevel(true);
 			}
-
-			SpectatorResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-
-			CurUserWidget->SetVisibility(ESlateVisibility::Hidden);
-			ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 
 			break;
 		}
@@ -306,7 +304,6 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 	default:
 		break;
 	}
-
 
 	SetCurWidget(ChangeWidget);
 	CurWidget;

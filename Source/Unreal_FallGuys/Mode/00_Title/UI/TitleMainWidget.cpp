@@ -104,6 +104,10 @@ void UTitleMainWidget::SetWidgetUIType(FString _CurWidgetName)
 	{
 		UIType = ETitleUIType::TitleMenu;
 	}
+	else if (_CurWidgetName.Contains(FString("TitlePlayerCount")))
+	{
+		UIType = ETitleUIType::TitlePlayerCount;
+	}
 }
 
 void UTitleMainWidget::SwitchWidget(ETitleUIType _UIType)
@@ -220,6 +224,13 @@ void UTitleMainWidget::SwitchWidget(ETitleUIType _UIType)
 			MenuWidget->SetVisibility(ESlateVisibility::Hidden);
 			break;
 		}
+		case ETitleUIType::TitlePlayerCount:
+		{
+			CurUserWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			MenuWidget->SetVisibility(ESlateVisibility::Hidden);
+			break;
+		}
 		default:
 			break;
 		}
@@ -249,6 +260,22 @@ void UTitleMainWidget::SwitchWidget(ETitleUIType _UIType)
 		break;
 	}
 	case ETitleUIType::TitleIPPort:
+	{
+		switch (ETitleUIType(_UIType))
+		{
+		case ETitleUIType::TitleEntrance:
+		{
+			CurUserWidget->SetVisibility(ESlateVisibility::Hidden);
+			ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			MenuWidget->SetVisibility(ESlateVisibility::Hidden);
+			break;
+		}
+		default:
+			break;
+		}
+		break;
+	}
+	case ETitleUIType::TitlePlayerCount:
 	{
 		switch (ETitleUIType(_UIType))
 		{

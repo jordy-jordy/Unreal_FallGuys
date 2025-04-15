@@ -68,7 +68,7 @@ bool APlayGameMode::SetupCommonEssentialData(APlayerController* _NewPlayer, APla
 	}
 
 	// 레벨 정보 세팅 (공통)
-	CurLevelInfo_Mode = _OutGameInstance->CurLevelInfo_Ins;
+	CurLevelInfo_Mode = _OutGameInstance->InsGetCurLevelInfo();
 	_OutFallState->CurLevelInfo_GameState = CurLevelInfo_Mode;
 
 	return true;

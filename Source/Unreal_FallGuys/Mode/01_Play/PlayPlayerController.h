@@ -72,12 +72,15 @@ public:
 	void Client_ReceiveWinnerInfo(const FWinnerInfo& _Info);
 	void Client_ReceiveWinnerInfo_Implementation(const FWinnerInfo& _Info);
 
-
 // 이현정 : EndLevel로 이동
 public:
 	UFUNCTION(NetMulticast, Reliable)
 	void MCAST_TravelToEndLevel();
 	void MCAST_TravelToEndLevel_Implementation();
 
+	// 팀전 : 타이틀로 돌아가
+	UFUNCTION(NetMulticast, Reliable)
+	void MCAST_TravelToTitle();
+	void MCAST_TravelToTitle_Implementation();
 
 };
