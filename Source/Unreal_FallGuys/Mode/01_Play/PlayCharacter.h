@@ -110,7 +110,7 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* CameraComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	EPlayerAnimation CurAnimnation = EPlayerAnimation::Idle;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
@@ -140,12 +140,12 @@ public:
 	void C2S_Costume_Implementation(const FString& _Color, const FString& _TopName = TEXT(""), const FString& _BotName = TEXT(""));
 
 	UFUNCTION(BlueprintCallable, Reliable, NetMulticast)
-	void S2M_NickName();
-	void S2M_NickName_Implementation();
+	void S2M_NickName(const FString& _NickName = TEXT(""));
+	void S2M_NickName_Implementation(const FString& _NickName = TEXT(""));
 
 	UFUNCTION(BlueprintCallable, Reliable, Server)
-	void C2S_NickName();
-	void C2S_NickName_Implementation();
+	void C2S_NickName(const FString& _NickName = TEXT(""));
+	void C2S_NickName_Implementation(const FString& _NickName = TEXT(""));
 
 private: 
 	UPROPERTY(VisibleAnywhere, Category = "COSTUME")
