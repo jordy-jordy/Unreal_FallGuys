@@ -39,16 +39,6 @@ void UPlayInGameWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTim
 	}
 }
 
-// юс╫ц
-EStagePhase UPlayInGameWidget::CurStagePhase()
-{
-	APlayGameState* PlayGameState = Cast<APlayGameState>(GetWorld()->GetGameState());
-
-	EStagePhase CurStagePhase = PlayGameState->GetCurStagePhase_STATE();
-
-	return CurStagePhase;
-}
-
 void UPlayInGameWidget::ShowResult(bool _Value)
 {
 	IsShowResult = _Value;

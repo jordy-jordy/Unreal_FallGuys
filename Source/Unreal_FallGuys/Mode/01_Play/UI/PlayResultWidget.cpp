@@ -3,6 +3,7 @@
 
 #include "Mode/01_Play/UI/PlayResultWidget.h"
 #include "Mode/01_Play/PlayGameState.h"
+#include "Global/FallGlobal.h"
 #include "Mode/01_Play/UI/PlayMainWidget.h"
 #include "Mode/01_Play/UI/PlayInGameWidget.h"
 #include "Mode/01_Play/PlayCharacter.h"
@@ -54,16 +55,32 @@ void UPlayResultWidget::FinishedResultWidget()
 	int WholePlayerNum = PlayGameState->GetGameStateFinishPlayer();
 	int TargetPlayerNum = PlayGameState->GetGameStateCurFinishPlayer();
 
-	if (WholePlayerNum <= TargetPlayerNum)
+	EStageType StageType = PlayGameState->GetLevelType_STATE();
+
+	if (StageType == EStageType::SOLO)
 	{
-		UFallGlobal::SetCanMoveLevel(true);
+		if (WholePlayerNum <= TargetPlayerNum)
+		{
+			UFallGlobal::SetCanMoveLevel(true);
+		}
+		else if (WholePlayerNum > TargetPlayerNum)
+		{
+			UPlayInGameWidget* InGameWidget = Cast<UPlayInGameWidget>(GetMainWidget()->FindWidget(EPlayUIType::PlayInGame));
+			InGameWidget->ShowResult(true);
+			GetMainWidget()->AllWidgetHidden();
+			GetMainWidget()->SwitchWidget(EPlayUIType::PlayInGame);
+		}
 	}
-	else if (WholePlayerNum > TargetPlayerNum)
+	else if (StageType == EStageType::TEAM)
 	{
-		UPlayInGameWidget* InGameWidget = Cast<UPlayInGameWidget>(GetMainWidget()->FindWidget(EPlayUIType::PlayInGame));
-		InGameWidget->ShowResult(true);
-		GetMainWidget()->AllWidgetHidden();
-		GetMainWidget()->SwitchWidget(EPlayUIType::PlayInGame);
+		int CurLimitTime = static_cast<int>(UFallGlobal::GetRemainingTime());
+		if (0.0f == CurLimitTime)
+		{
+			UPlayInGameWidget* InGameWidget = Cast<UPlayInGameWidget>(GetMainWidget()->FindWidget(EPlayUIType::PlayInGame));
+			InGameWidget->ShowResult(true);
+			GetMainWidget()->AllWidgetHidden();
+			GetMainWidget()->SwitchWidget(EPlayUIType::PlayInGame);
+		}
 	}
 }
 
