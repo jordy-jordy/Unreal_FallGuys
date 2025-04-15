@@ -749,7 +749,7 @@ void APlayGameMode::Tick(float DeltaSeconds)
 
 			// 엔드레벨로 이동
 			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: Tick :: 레벨로부터 레벨 이동 콜을 받았습니다. 5초 후 최종 결과 화면으로 이동합니다."));
-			GetWorldTimerManager().SetTimer(ResultTravelTimerHandle, this, &APlayGameMode::ServerTravelToEndLevel, 5.0f, false);
+			GetWorldTimerManager().SetTimer(ResultTravelTimerHandle, this, &APlayGameMode::ClientTravelToEndLevel, 5.0f, false);
 		}
 	}
 }
@@ -1052,19 +1052,51 @@ void APlayGameMode::ServerTravelToNextRandLevel()
 }
 
 // 개인전용 : 최종 결과창으로 이동
-void APlayGameMode::ServerTravelToEndLevel()
+void APlayGameMode::ClientTravelToEndLevel()
 {
 	if (!HasAuthority()) { return; }
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 서버에서 클라이언트들에게 EndLevel 트래블 명령 시작"));
 
-	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	int32 ControllerIndex = 0;
+
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It, ++ControllerIndex)
 	{
 		APlayPlayerController* PC = Cast<APlayPlayerController>(It->Get());
-		if (PC)
+		if (PC == nullptr) continue;
+
+		// 0번 컨트롤러는 서버장 → 트래블 제외
+		if (ControllerIndex == 0)
 		{
-			PC->MCAST_TravelToEndLevel();
+			UE_LOG(FALL_DEV_LOG, Log, TEXT("ServerTravelToEndLevel :: [0번] 서버장 트래블은 클라이언트들이 이동 된 뒤 처리됩니다."));
+			continue;
 		}
+
+		// 클라이언트 먼저 트래블
+		PC->Client_TravelToEndLevel();
 	}
+
+	// 서버장도 엔드 레벨로 가자
+	ServerTravelToEndLevel();
 }
+
+// 개인전용 : 클라이언트 최종 결과창으로 이동 - 서버
+void APlayGameMode::ServerTravelToEndLevel()
+{
+	APlayPlayerController* ServerHostPC = Cast<APlayPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	if (ServerHostPC == nullptr)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: ServerTravelToEndLevel :: 서버장 컨트롤러를 찾을 수 없습니다."));
+		return;
+	}
+
+	// 1초 후 서버장 클라이언트 트래블
+	FTimerHandle ServerHostTravelHandle;
+	GetWorldTimerManager().SetTimer(ServerHostTravelHandle, [ServerHostPC]()
+		{
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 서버장이 1초 뒤 EndLevel로 ClientTravel 시작"));
+			ServerHostPC->ClientTravel(TEXT("/Game/BP/Level/02_End/EndLevel"), ETravelType::TRAVEL_Absolute);
+		}, 1.0f, false);
+}
+
 #pragma endregion

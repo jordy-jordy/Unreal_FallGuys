@@ -74,9 +74,11 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void ServerTravelToNextTeamMap();
 
-	// 로비로 돌아가
+	// 팀전용 : 로비로 이동 - 클라이언트
 	UFUNCTION(BlueprintCallable)
-	void ClientTravelToTitle();
+	void ClientTravelToTitleLevel();
+	// 팀전용 : 로비로 이동 - 서버
+	void ServerTravelToTitleLevel();
 
 	// 스테이지 제한 시간 타이머 활성화
 	UFUNCTION(BlueprintCallable, Category = "LEVEL LIMIT TIME")
