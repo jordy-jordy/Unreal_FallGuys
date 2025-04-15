@@ -7,6 +7,7 @@
 #include "TimerManager.h"
 #include "Global/FallGlobal.h"
 #include "Mode/01_Play/UI/PlayMainWidget.h"
+#include "Mode/01_Play/UI/PlayResultWidget.h"
 
 // 델리게이트 테스트
 //#include "Mode/01_Play/PlayGameMode.h"
@@ -52,6 +53,8 @@ void UPlayStartCountWidget::AfterCountWidget()
 	if (true == GetMainWidget()->IsFailPlayer() && EStagePhase::STAGE_1 != GameState->GetCurStagePhase_STATE())
 	{
 		SpectatorResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		UPlayResultWidget* Result = Cast<UPlayResultWidget>(GetMainWidget()->FindWidget(EPlayUIType::PlayResult));
+		Result->SetSpectatorView(true);
 	}
 }
 
