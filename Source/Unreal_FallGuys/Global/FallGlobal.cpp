@@ -320,11 +320,11 @@ bool UFallGlobal::GetIsLevelCinematicEnd()
 	return PlayState->GetIsLevelCinematicEnd();
 }
 
-// BaseGameInstance : 플레이어 상태를 리셋하는 함수
+// BaseGameInstance : 플레이어 상태 및 레벨 정보를 리셋하는 함수
 void UFallGlobal::ResetPlayerCondition()
 {
 	UBaseGameInstance* GameIns = GWorld->GetGameInstance<UBaseGameInstance>();
-	return GameIns->InsResetPlayerCondition();
+	return GameIns->InsResetPlayerAndLevelCondition();
 }
 
 // BaseGameInstance : 닉네임 설정했니?

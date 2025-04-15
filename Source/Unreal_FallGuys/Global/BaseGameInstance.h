@@ -260,8 +260,6 @@ public:
 
 #pragma region BaseGameInstance :: 레벨 관련
 public: 
-	FCurLevelInfo_GAMEINS CurLevelInfo_Ins;
-
 	// 랜덤 개인전 레벨 반환 : 에셋 이름 반환
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
 	FString InsGetRandomLevel();
@@ -345,7 +343,7 @@ public:
 
 	// 플레이어 상태를 리셋하는 함수
 	UFUNCTION(BlueprintCallable, Category = "PLAYER DATA")
-	void InsResetPlayerCondition() { IsMovedLevel = false; bIsConnected = false; }
+	void InsResetPlayerAndLevelCondition();
 
 	// 닉네임 설정했니?
 	UFUNCTION(BlueprintCallable, Category = "PLAYER DATA")
@@ -356,18 +354,6 @@ public:
 
 	// 플레이어 UniqueID -> FPlayerInfo 매핑 저장소 : 실패 플레이어
 	TMap<FString, struct FPlayerInfo> FailPlayerInfoBackup;
-
-	// 승자 정보 설정
-	void InsSetWinnerInfo(const FWinnerInfo& _Info);
-	
-	// 승자 정보 가져오기
-	const FWinnerInfo& InsGetWinnerInfo() const;
-
-	// 승자의 닉네임 가져오기
-	const FString& InsGetWinnerNickname() const
-	{
-		return WinnerInfo.NickName;
-	}
 
 protected:
 	// 닉네임
@@ -380,11 +366,25 @@ protected:
 	// 서버 연결 상태 변수
 	bool bIsConnected = false;
 
-private:
+#pragma endregion
+
+// 구조체 : 레벨 정보, 승리한 플레이어 정보
+public:
+	// 최종 승리자 정보 설정
+	void InsSetWinnerInfo(const FWinnerInfo& _Info);
+	// 최종 승리자 정보 가져오기
+	const FWinnerInfo& InsGetWinnerInfo() const;
+	// 최종 승리자의 닉네임 가져오기
+	const FString& InsGetWinnerNickname() const { return WinnerInfo.NickName; }
+
+	// 현재 레벨 인포 가져오기
+	FCurLevelInfo_GAMEINS InsGetCurLevelInfo() { return CurLevelInfo_Ins; }
+
+protected:
 	// 최종 승자 정보
 	FWinnerInfo WinnerInfo;
-
-#pragma endregion
+	// 현재 레벨 인포
+	FCurLevelInfo_GAMEINS CurLevelInfo_Ins;
 
 #pragma region BaseGameInstance :: 개발용
 public: 

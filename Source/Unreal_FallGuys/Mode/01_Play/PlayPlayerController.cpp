@@ -125,16 +125,6 @@ void APlayPlayerController::OnPrintCurFinishPlayer()
 	}
 }
 
-// 이현정 : EndLevel로 이동
-void APlayPlayerController::MCAST_TravelToEndLevel_Implementation()
-{
-	if (IsLocalController() && GetWorld())
-	{
-		ClientTravel("/Game/BP/Level/02_End/EndLevel", ETravelType::TRAVEL_Absolute);
-		UE_LOG(FALL_DEV_LOG, Log, TEXT("MCAST_TravelToEndLevel :: 클라이언트 트래블 실행됨"));
-	}
-}
-
 // 이현정 : 승리한 플레이어의 정보를 전달하기 위함
 void APlayPlayerController::Server_SetPlayerInfoFromClient_Implementation(
 	const FString& _NickName,
@@ -171,5 +161,25 @@ void APlayPlayerController::Client_ReceiveWinnerInfo_Implementation(const FWinne
 	else
 	{
 		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayPlayerController :: Client_ReceiveWinnerInfo :: GameInstance가 nullptr입니다."));
+	}
+}
+
+// 이현정 : EndLevel로 이동
+void APlayPlayerController::MCAST_TravelToEndLevel_Implementation()
+{
+	if (IsLocalController() && GetWorld())
+	{
+		ClientTravel("/Game/BP/Level/02_End/EndLevel", ETravelType::TRAVEL_Absolute);
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("MCAST_TravelToEndLevel :: 클라이언트 트래블 실행됨"));
+	}
+}
+
+// 이현정 : 팀전 : 타이틀로 돌아가
+void APlayPlayerController::MCAST_TravelToTitle_Implementation()
+{
+	if (IsLocalController() && GetWorld())
+	{
+		ClientTravel("/Game/BP/Level/00_Title/TitleLevel", ETravelType::TRAVEL_Absolute);
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("MCAST_TravelToEndLevel :: 클라이언트 트래블 실행됨"));
 	}
 }

@@ -675,12 +675,35 @@ void UBaseGameInstance::InsChangeNickname(const FString& _NewNickname)
 	HasNickname = true;
 }
 
+// 플레이어 상태 및 레벨 인포를 리셋하는 함수
+void UBaseGameInstance::InsResetPlayerAndLevelCondition()
+{
+	// 플레이어 상태 초기화
+	IsMovedLevel = false; 
+	bIsConnected = false;
+	bIsResultLevel = false;
+
+	// 레벨 정보 초기화
+	CurLevelInfo_Ins.LevelAssetName = TEXT("");
+	CurLevelInfo_Ins.LevelName = TEXT("");
+	CurLevelInfo_Ins.LevelType = EStageType::NONE;
+	CurLevelInfo_Ins.EndCondition = EPlayerStatus::NONE;
+	CurLevelInfo_Ins.StageLimitTime = 0.0f;
+	CurLevelInfo_Ins.PlayGuide = TEXT("");
+	CurLevelInfo_Ins.GoalGuide = TEXT("");
+	CurLevelInfo_Ins.LevelIMG = nullptr;
+	CurLevelInfo_Ins.LevelTagIMG = nullptr;
+	CurLevelInfo_Ins.CurStagePhase = EStagePhase::STAGE_1;
+}
+
+// 최종 승리자 설정
 void UBaseGameInstance::InsSetWinnerInfo(const FWinnerInfo& _Info)
 {
 	WinnerInfo = _Info;
 	UE_LOG(FALL_DEV_LOG, Log, TEXT("GameInstance :: 승리한 플레이어 정보 저장 완료: %s"), *WinnerInfo.NickName);
 }
 
+// 최종 승리자 반환
 const FWinnerInfo& UBaseGameInstance::InsGetWinnerInfo() const
 {
 	return WinnerInfo;

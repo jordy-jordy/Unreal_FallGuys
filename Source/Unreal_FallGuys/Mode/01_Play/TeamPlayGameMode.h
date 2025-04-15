@@ -74,6 +74,10 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void ServerTravelToNextTeamMap();
 
+	// 로비로 돌아가
+	UFUNCTION(BlueprintCallable)
+	void ClientTravelToTitle();
+
 	// 스테이지 제한 시간 타이머 활성화
 	UFUNCTION(BlueprintCallable, Category = "LEVEL LIMIT TIME")
 	void StartStageLimitTimer();

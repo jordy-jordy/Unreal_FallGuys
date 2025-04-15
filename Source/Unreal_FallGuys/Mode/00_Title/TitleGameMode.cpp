@@ -3,10 +3,15 @@
 
 #include "Mode/00_Title/TitleGameMode.h"
 
+#include "Global/BaseGameInstance.h"
+
 
 void ATitleGameMode::BeginPlay()
 {
 	Super::BeginPlay();
+
+	UBaseGameInstance* GameIns = Cast<UBaseGameInstance>(GetGameInstance());
+	GameIns->InsResetPlayerAndLevelCondition();
 }
 
 void ATitleGameMode::Tick(float _Delta)

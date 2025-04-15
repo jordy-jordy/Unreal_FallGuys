@@ -11,6 +11,7 @@
 #include "Mode/01_Play/PlayEnum.h"
 #include "Mode/01_Play/TeamPlayGameState.h"
 #include "Mode/01_Play/PlayPlayerState.h"
+#include "Mode/01_Play/PlayPlayerController.h"
 
 
 ATeamPlayGameMode::ATeamPlayGameMode()
@@ -191,8 +192,17 @@ void ATeamPlayGameMode::OnStageLimitTimeOver()
 	// 팀전 종료 로직
 	SetEndCondition_Team();
 
-	// 5초 후 서버 트래블
-	GetWorldTimerManager().SetTimer(TravelDelayTimerHandle, this, &ATeamPlayGameMode::ServerTravelToNextTeamMap, 5.0f, false);
+	// 만약 3 스테이지가 아니라면
+	if (CurLevelInfo_Mode.CurStagePhase != EStagePhase::STAGE_3)
+	{
+		// 5초 후 다음 레벨로 서버 트래블
+		GetWorldTimerManager().SetTimer(TravelDelayTimerHandle, this, &ATeamPlayGameMode::ServerTravelToNextTeamMap, 5.0f, false);
+	}
+	else
+	{
+		// 5초 후 타이틀로 클라이언트 트래블
+		GetWorldTimerManager().SetTimer(TravelDelayTimerHandle, this, &ATeamPlayGameMode::ClientTravelToTitle, 5.0f, false);
+	}
 }
 
 // 점수에 따라 승리팀, 패배팀 구분
@@ -328,6 +338,22 @@ void ATeamPlayGameMode::ServerTravelToNextTeamMap()
 
 	GetWorld()->ServerTravel(UFallGlobal::GetRandomTeamLevel(), false);
 }
+
+// 로비로 돌아가
+void ATeamPlayGameMode::ClientTravelToTitle()
+{
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("TeamPlayGameMode :: 서버에서 클라이언트들에게 Title로 트래블 명령 시작"));
+
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	{
+		APlayPlayerController* PC = Cast<APlayPlayerController>(It->Get());
+		if (PC)
+		{
+			PC->MCAST_TravelToTitle();
+		}
+	}
+}
+
 
 //LMH
 TMap<ETeamType, int> ATeamPlayGameMode::GetTeamFloors()

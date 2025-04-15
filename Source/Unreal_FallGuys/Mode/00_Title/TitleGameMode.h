@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameMode.h"
+
 #include "TitleGameMode.generated.h"
+
 
 /**
  * 
@@ -17,6 +19,7 @@ class UNREAL_FALLGUYS_API ATitleGameMode : public AGameMode
 protected:
 	void BeginPlay() override;
 	void Tick(float _Delta) override;
+
 
 private:
 };
