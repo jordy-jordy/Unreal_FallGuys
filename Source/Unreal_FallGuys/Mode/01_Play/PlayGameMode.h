@@ -287,6 +287,9 @@ protected:
 #pragma endregion
 
 protected:
+	// 최대 접속자 수
+	int MaxPlayerCount = 0;
+
 	// 대기중인 플레이어 수
 	int32 WaitingPlayerCount = 0;	
 

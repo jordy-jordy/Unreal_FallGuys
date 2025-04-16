@@ -235,6 +235,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static FString GetWinnerNickname();
 
+	// PlayGameState : 최대 접속 가능한 인원이 몇명?
+	static int GetMaxPlayerCount();
+
 // 이재영 : 메인위젯을 얻는 함수
 public:
 	UFUNCTION(BlueprintCallable)

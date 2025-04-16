@@ -18,6 +18,7 @@
 APlayGameMode::APlayGameMode()
 {
 	bUseSeamlessTravel = true;
+	MaxPlayerCount = UFallConst::MinPlayerCount;
 }
 
 #pragma region PlayGameMode :: PreLogin :: 플레이어 접속시 가장 먼저 실행
@@ -35,7 +36,7 @@ void APlayGameMode::PreLogin(
 	// 대기 인원 +1
 	++WaitingPlayerCount;
 
-	if ((WaitingPlayerCount + ConnectedPlayers) > UFallConst::MinPlayerCount || true == bInvalidConnect)
+	if ((WaitingPlayerCount + ConnectedPlayers) > MaxPlayerCount || true == bInvalidConnect)
 	{
 		_ErrorMessage = TEXT("접속 제한: 게임 인원이 가득찼습니다.");
 		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: PreLogin :: 게임 인원이 가득차 접속이 거절되었습니다."));
@@ -83,6 +84,9 @@ bool APlayGameMode::SetupCommonEssentialData(APlayerController* _NewPlayer, APla
 // 플레이어 인원 플러스
 void APlayGameMode::AddPlayerCount(APlayGameState* _FallState)
 {
+	// 최대 접속자 수를 게임 스테이트에 세팅
+	_FallState->SetStateMaxPlayerCount(MaxPlayerCount);
+
 	// 플레이어 수 증가
 	++ConnectedPlayers;
 	_FallState->SetConnectedPlayers(ConnectedPlayers);
@@ -92,7 +96,7 @@ void APlayGameMode::AddPlayerCount(APlayGameState* _FallState)
 // 인원 충족 했는지 체크
 void APlayGameMode::CheckPlayersCount()
 {
-	if (ConnectedPlayers >= UFallConst::MinPlayerCount)
+	if (ConnectedPlayers >= MaxPlayerCount)
 	{
 		bNumberOfPlayer = true;
 
@@ -566,7 +570,7 @@ void APlayGameMode::FinishPlayer_Survive()
 	case EStagePhase::STAGE_2:
 		if		(DefaultPlayerCount <= 1) { SetFinishPlayerCount(0); }
 		else if (DefaultPlayerCount <= 2) { SetFinishPlayerCount(1); }
-		else if (DefaultPlayerCount <= 5) { SetFinishPlayerCount(3); }
+		else if (DefaultPlayerCount <= 5) { SetFinishPlayerCount(2); }
 		else	{ SetFinishPlayerCount((DefaultPlayerCount / 2) / 2); }
 		break;
 

@@ -365,6 +365,12 @@ void APlayGameState::SetCanMoveResultLevelTrue_Implementation()
 	}
 }
 
+// 최대 접속자 수 세팅 : PlayGameMode에서 세팅
+void APlayGameState::SetStateMaxPlayerCount_Implementation(int _Value)
+{
+	StateMaxPlayerCount = _Value;
+}
+
 // 현 스테이지의 골 타입을 반환함
 FString APlayGameState::GetSTATEStageGoalType()
 {
@@ -401,6 +407,7 @@ void APlayGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(APlayGameState, DefaultPlayerInfoArray);
 	DOREPLIFETIME(APlayGameState, CurLevelInfo_GameState);
 	DOREPLIFETIME(APlayGameState, bCanMoveResultLevel);
+	DOREPLIFETIME(APlayGameState, StateMaxPlayerCount);
 }
 
 void APlayGameState::PrintFailPlayersInfo()
