@@ -114,31 +114,52 @@ void APlayPlayerState::CheckPlayer()
 {
 	
 	if (HasAuthority()) {
-		S2M_CheckFailPlayer_Implementation();
+		S2M_CheckPlayer_Implementation();
 	}
 	else
 	{
-		C2S_CheckFailPlayer();
+		C2S_CheckPlayer();
 	}
 }
 
-void APlayPlayerState::C2S_CheckFailPlayer_Implementation()
+void APlayPlayerState::C2S_CheckPlayer_Implementation()
 {
-	S2M_CheckFailPlayer_Implementation();
+	S2M_CheckPlayer_Implementation();
 }
 
-void APlayPlayerState::S2M_CheckFailPlayer_Implementation()
+void APlayPlayerState::S2M_CheckPlayer_Implementation()
 {
 	if (Cast<APlayCharacter>(GetPawn()))
 	{
 		UBaseGameInstance* GameIns = GetPawn()->GetGameInstance<UBaseGameInstance>();
-
-
 		if (GameIns == nullptr) return;
-		if (true == GameIns->bIsResultLevel) return;
-
-		if (EPlayerStatus::FAIL != PlayerInfo.Status) return;
 	
+		if (false == GameIns->bIsResultLevel)
+		{
+			OutFailPlayer();
+		}
+		else
+		{
+			CheckFailPlayer();
+		}
+
+	}
+}
+
+void APlayPlayerState::CheckFailPlayer()
+{
+
+	if (EPlayerStatus::FAIL == PlayerInfo.Status)
+	{
+		bIsSpectar = true;
+	}
+	
+}
+
+void APlayPlayerState::OutFailPlayer()
+{
+	if (true == bIsSpectar)
+	{
 		GetPawn()->SetActorLocation({ 0,0,-1000000 });
 		GetPawn()->SetActorEnableCollision(false);
 
@@ -148,13 +169,9 @@ void APlayPlayerState::S2M_CheckFailPlayer_Implementation()
 		{
 			MeshComp->SetSimulatePhysics(false);
 			MeshComp->SetEnableGravity(false);
-
-
 		}
 
 		// 다른 캐릭터로 시점 변경
-
-
 	}
 }
 

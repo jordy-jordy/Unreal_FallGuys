@@ -143,13 +143,20 @@ public:
     UFUNCTION()
     void CheckPlayer();
 
-    UFUNCTION(Reliable, Server, BlueprintCallable, Category = "PLAYER START")
-    void C2S_CheckFailPlayer();
-    void C2S_CheckFailPlayer_Implementation();
+    UFUNCTION(Reliable, Server, Category = "PLAYER START")
+    void C2S_CheckPlayer();
+    void C2S_CheckPlayer_Implementation();
 
-    UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "PLAYER START")
-    void S2M_CheckFailPlayer();
-    void S2M_CheckFailPlayer_Implementation();
+    UFUNCTION(Reliable, NetMulticast ,Category = "PLAYER START")
+    void S2M_CheckPlayer();
+    void S2M_CheckPlayer_Implementation();
+
+    UFUNCTION( Category = "PLAYER START")
+    void CheckFailPlayer();
+
+    void OutFailPlayer();
+
+    bool bIsSpectar = false;
 
 #pragma endregion
 
