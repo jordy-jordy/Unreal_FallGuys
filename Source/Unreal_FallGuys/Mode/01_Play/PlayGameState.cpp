@@ -346,14 +346,24 @@ void APlayGameState::RestoreFailPlayersInfo()
 // 다음 레벨로 이동 가능혀 : PlayGameMode에 세팅
 void APlayGameState::STATESetCanMoveLevel(bool _b)
 {
-	// 서버장 아니면 리턴
-	if (!HasAuthority()) return;
-
-	APlayGameMode* PlayMode = Cast<APlayGameMode>(GetWorld()->GetAuthGameMode());
-	if (PlayMode)
+	if (HasAuthority())
 	{
+		// 서버장이면 직접 세팅
+		APlayGameMode* PlayMode = GWorld->GetAuthGameMode<APlayGameMode>();
 		PlayMode->SetCanMoveLevel(_b);
 	}
+	else
+	{
+		// 클라면 서버에 요청
+		Sever_STATESetCanMoveLevel(_b);
+	}
+}
+
+// 다음 레벨로 이동 하게 해주세요 : PlayGameMode에 세팅
+void APlayGameState::Sever_STATESetCanMoveLevel_Implementation(bool _b)
+{
+	APlayGameMode* PlayMode = GWorld->GetAuthGameMode<APlayGameMode>();
+	PlayMode->SetCanMoveLevel(_b);
 }
 
 // 결과 화면에서 다음 스테이지로 넘어가도록 해 + PlayGameMode에 세팅
@@ -411,6 +421,7 @@ void APlayGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(APlayGameState, CurLevelInfo_GameState);
 	DOREPLIFETIME(APlayGameState, bCanMoveResultLevel);
 	DOREPLIFETIME(APlayGameState, StateMaxPlayerCount);
+	DOREPLIFETIME(APlayGameState, STATECanMoveToResultLevel);
 }
 
 void APlayGameState::PrintFailPlayersInfo()

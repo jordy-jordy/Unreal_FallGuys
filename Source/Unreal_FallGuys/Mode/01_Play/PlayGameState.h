@@ -287,9 +287,14 @@ public:
 	void SetGameStateGameStarted(bool _Value);
 	void SetGameStateGameStarted_Implementation(bool _Value);
 
-	// 다음 레벨로 이동 가능혀 : PlayGameMode에 세팅
-	UFUNCTION(Category = "LEVEL")
+	// 다음 레벨로 이동 가능해요 : PlayGameMode에 세팅
+	UFUNCTION(BlueprintCallable, Category = "LEVEL")
 	void STATESetCanMoveLevel(bool _b);
+
+	// 다음 레벨로 이동 하게 해주세요 : PlayGameMode에 세팅
+	UFUNCTION(Reliable, Server, BlueprintCallable, Category = "LEVEL")
+	void Sever_STATESetCanMoveLevel(bool _b);
+	void Sever_STATESetCanMoveLevel_Implementation(bool _b);
 
 	// 결과 화면에서 다음 스테이지로 넘어가도록 해 + PlayGameMode에 세팅
 	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
@@ -364,6 +369,9 @@ protected:
 	// 카운트다운이 끝났는지 확인
 	UPROPERTY(Replicated)
 	bool IsCountDownOver = false;
+
+	UPROPERTY(Replicated)
+	bool STATECanMoveToResultLevel = false;
 
 #pragma endregion
 
