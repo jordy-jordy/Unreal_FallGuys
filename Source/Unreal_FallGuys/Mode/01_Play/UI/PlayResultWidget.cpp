@@ -60,7 +60,7 @@ void UPlayResultWidget::FinishedResultWidget()
 
 	if (StageType == EStageType::SOLO)
 	{
-		if (WholePlayerNum <= TargetPlayerNum)
+		if ((WholePlayerNum <= TargetPlayerNum) && true == IsAnimated)
 		{
 			UFallGlobal::SetCanMoveLevel(true);
 		}

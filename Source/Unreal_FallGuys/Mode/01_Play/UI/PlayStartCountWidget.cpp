@@ -5,6 +5,7 @@
 #include "Engine/Texture2D.h"
 #include "Components/Image.h"
 #include "TimerManager.h"
+#include "Unreal_FallGuys/Unreal_FallGuys.h"
 #include "Global/FallGlobal.h"
 #include "Mode/01_Play/UI/PlayMainWidget.h"
 #include "Mode/01_Play/UI/PlayResultWidget.h"
@@ -48,7 +49,18 @@ void UPlayStartCountWidget::AfterCountWidget()
 	SetVisibility(ESlateVisibility::Hidden);
 
 	APlayGameState* GameState = Cast<APlayGameState>(GetWorld()->GetGameState());
+	if (nullptr == GameState)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : GameState is null"), *FString(__FUNCSIG__));
+		return;
+	}
+
 	UPlayUserWidget* SpectatorResult = GetMainWidget()->FindWidget(EPlayUIType::PlaySpectatorResult);
+	if (nullptr == SpectatorResult)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : SpectatorResult is null"), *FString(__FUNCSIG__));
+		return;
+	}
 
 	if (true == GetMainWidget()->IsFailPlayer() && EStagePhase::STAGE_1 != GameState->GetCurStagePhase_STATE())
 	{
@@ -57,7 +69,4 @@ void UPlayStartCountWidget::AfterCountWidget()
 		Result->SetSpectatorView(true);
 	}
 }
-
-
-
 

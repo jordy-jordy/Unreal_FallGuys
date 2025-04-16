@@ -6,6 +6,8 @@
 #include "Mode/01_Play/UI/PlayMainWidget.h"
 #include "Mode/01_Play/UI/PlayInGameWidget.h"
 #include "Mode/01_Play/UI/PlayResultWidget.h"
+#include "Mode/01_Play/PlayCharacter.h"
+#include "Unreal_FallGuys/Unreal_FallGuys.h"
 
 // 델리게이트 테스트
 //#include "Mode/01_Play/PlayGameMode.h"
@@ -47,13 +49,68 @@ void UPlayGameOverWidget::MoveToResultLevel()
 	bool IsShowResult = InGameWidget->GetShowResult();
 	bool IsResultAnimated = PlayResult->GetAnimatedStatus();
 
-	if (false == IsShowResult && false == IsResultAnimated)
+	APlayGameState* GameState = Cast<APlayGameState>(GetWorld()->GetGameState());
+	if (nullptr == GameState)
 	{
-		SetVisibility(ESlateVisibility::Hidden);
-		PlayResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : GameState is null"), *FString(__FUNCSIG__));
+		return;
 	}
-	else
+
+	UPlayUserWidget* SpectatorResult = GetMainWidget()->FindWidget(EPlayUIType::PlaySpectatorResult);
+	if (nullptr == SpectatorResult)
 	{
-		UFallGlobal::SetCanMoveLevel(true);
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : SpectatorResult is null"), *FString(__FUNCSIG__));
+		return;
 	}
+
+	APlayCharacter* PlayCharacter = Cast<APlayCharacter>(GetOwningPlayerPawn());
+	if (nullptr == PlayCharacter)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : PlayCharacter is null"), *FString(__FUNCSIG__));
+		return;
+	}
+
+	APlayPlayerState* PlayerState = PlayCharacter->GetPlayerState<APlayPlayerState>();
+	if (nullptr == PlayerState)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : PlayerState is null"), *FString(__FUNCSIG__));
+		return;
+	}
+
+	TArray<FPlayerInfoEntry>& PrevFailPlayersInfo = GameState->PlayerInfoArray;
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("Count__PrevFailPlayers Ptr: %p"), &PrevFailPlayersInfo);
+
+	FString CurPlayerID = PlayerState->PlayerInfo.UniqueID;
+
+	for (FPlayerInfoEntry PrevFailPlayerInfo : PrevFailPlayersInfo)
+	{
+		FString PrevFailPlayerID = PrevFailPlayerInfo.PlayerInfo.UniqueID;
+
+		if (CurPlayerID == PrevFailPlayerID)
+		{
+			UFallGlobal::SetCanMoveLevel(true);
+		}
+		else
+		{
+			if (false == IsShowResult && false == IsResultAnimated)
+			{
+				SetVisibility(ESlateVisibility::Hidden);
+				PlayResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			}
+			else if (true == IsShowResult)
+			{
+				UFallGlobal::SetCanMoveLevel(true);
+			}
+		}
+	}
+
+	//if (false == IsShowResult && false == IsResultAnimated)
+	//{
+	//	SetVisibility(ESlateVisibility::Hidden);
+	//	PlayResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	//}
+	//else
+	//{
+	//	UFallGlobal::SetCanMoveLevel(true);
+	//}
 }

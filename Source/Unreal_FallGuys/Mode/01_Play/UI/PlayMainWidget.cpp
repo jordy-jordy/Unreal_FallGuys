@@ -2,6 +2,7 @@
 
 
 #include "Mode/01_Play/UI/PlayMainWidget.h"
+#include "Unreal_FallGuys/Unreal_FallGuys.h"
 #include "Global/FallConst.h"
 #include "Global/FallGlobal.h"
 #include "Components/CanvasPanelSlot.h"
@@ -270,7 +271,7 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 			EStagePhase CurStagePhase = GameState->GetCurStagePhase_STATE();
 			EPlayerStatus CurPlayerStatus = PlayPlayerState->GetPlayerStateStatus();
 
-			UPlayUserWidget* SpectatorResult = FindWidget(EPlayUIType::PlaySpectatorResult);
+			//UPlayUserWidget* SpectatorResult = FindWidget(EPlayUIType::PlaySpectatorResult);
 
 			if (EPlayerStatus::FAIL == CurPlayerStatus)
 			{
