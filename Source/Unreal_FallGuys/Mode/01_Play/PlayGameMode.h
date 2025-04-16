@@ -327,7 +327,7 @@ public:
 
 	// 이현정 : 25.04.02 : 동기화 함수로 수정 : 골인 인원 +1 카운팅
 	UFUNCTION(BlueprintCallable)
-	void OnPlayerFinished();
+	void OnPlayerFinished(class APlayCharacter* _Character);
 
 	// 이현정 : 25.04.02 : 동기화 함수로 수정 : 골인 목표 인원 수 세팅
 	UFUNCTION(BlueprintCallable)

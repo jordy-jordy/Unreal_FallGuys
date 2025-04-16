@@ -199,10 +199,10 @@ void APlayGameState::SetGameStateFinishPlayer_Implementation(int _Value)
 	GameStateFinishPlayer = _Value;
 }
 
-// 골인한 플레이어 수 카운팅
-void APlayGameState::AddGameStateCurFinishPlayer_Implementation()
+// 골인한 플레이어 수 세팅 : PlaytGameMode에서 호출
+void APlayGameState::SetGameStateCurFinishPlayer_Implementation(int _Count)
 {
-	++GameStateCurFinishPlayer;
+	GameStateCurFinishPlayer = _Count;
 }
 
 // CountDownTime 에서 Value 차감 : PlayGameMode에서 호출

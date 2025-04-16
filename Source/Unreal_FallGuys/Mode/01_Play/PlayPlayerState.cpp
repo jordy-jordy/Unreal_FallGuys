@@ -12,6 +12,7 @@
 
 APlayPlayerState::APlayPlayerState()
 {
+	PlayerStatus = PlayerInfo.Status;
 }
 
 void APlayPlayerState::BeginPlay()
@@ -44,13 +45,10 @@ void APlayPlayerState::SetTeam_Implementation(ETeamType _Team)
 void APlayPlayerState::SetPlayerStatus_Implementation(EPlayerStatus _NewStatus)
 {
 	if (!HasAuthority()) return; // 서버에서만 실행
-	
+
 	// 이미 실패한 플레이어면 패스
 	if (PlayerStatus == EPlayerStatus::FAIL) return;
 	if (PlayerInfo.Status == EPlayerStatus::FAIL) return;
-
-	// 게임 끝났으면 더이상 상태 전환 못하게
-	if (bIsGameEnd) return;
 
 	// 상태가 다르면 변경
 	if (PlayerStatus != _NewStatus)
@@ -60,10 +58,6 @@ void APlayPlayerState::SetPlayerStatus_Implementation(EPlayerStatus _NewStatus)
 		// 구조체에도 반영
 		PlayerInfo.Status = _NewStatus;
 	}
-
-	// 골인 인원 카운트
-	APlayGameState* FallState = GetWorld()->GetGameState<APlayGameState>();
-	FallState->AddGameStateCurFinishPlayer();
 }
 
 // 플레이어 상태 설정 : 게임 끝난 후 일괄 변경
@@ -107,12 +101,6 @@ void APlayPlayerState::OnRep_PlayerDropOrder()
 void APlayPlayerState::SetIsWinner_Implementation(bool _bWinner)
 {
 	bIsWinner = _bWinner;
-}
-
-// 게임 끝났음을 세팅
-void APlayPlayerState::SetIsGameEnd_Implementation(bool _Value)
-{
-	bIsGameEnd = _Value;
 }
 
 void APlayPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

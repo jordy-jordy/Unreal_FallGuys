@@ -651,12 +651,43 @@ void APlayGameMode::SetCharacterMovePossible()
 }
 
 // 이현정 : 25.04.02 : 동기화 함수로 수정 - 게임종료 트리거
-void APlayGameMode::OnPlayerFinished()
+void APlayGameMode::OnPlayerFinished(APlayCharacter* _Character)
 {
+	// 서버장이 아닐시 리턴
 	if (!HasAuthority()) return;
 
+	// 게임 끝났으면 리턴
+	if (IsEndGame) return;
+
+	// 일단 게임 스테이트를 가져오고
 	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
-	CurFinishPlayer = FallState->GetGameStateCurFinishPlayer();
+	if (!FallState) return;
+	
+	// 결승선에 닿은 캐릭터의 스테이트를 가져옴
+	APlayPlayerState* PlayerState = _Character->GetPlayerState<APlayPlayerState>();
+	if (!PlayerState) return;
+	// 이미 실패한 유저는 리턴
+	if (PlayerState->PlayerInfo.Status == EPlayerStatus::FAIL) return;
+
+	if (CurLevelInfo_Mode.EndCondition == EPlayerStatus::SUCCESS)
+	{
+		// 레이싱
+		PlayerState->SetPlayerStatus(EPlayerStatus::SUCCESS);
+	}
+	else if (CurLevelInfo_Mode.EndCondition == EPlayerStatus::FAIL)
+	{
+		// 생존
+		PlayerState->SetPlayerStatus(EPlayerStatus::FAIL);
+	}
+	else
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: OnPlayerFinished :: 뭔가 잘못됨."));
+		return;
+	}
+
+	// 결승선 or 킬존 닿은 플레이어 카운트 +1
+	++CurFinishPlayer;
+	FallState->SetGameStateCurFinishPlayer(CurFinishPlayer);
 
 	if (CurFinishPlayer >= FinishPlayer && IsEndGame == false)
 	{
