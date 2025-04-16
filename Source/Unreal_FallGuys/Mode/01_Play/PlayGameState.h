@@ -288,9 +288,8 @@ public:
 	void SetGameStateGameStarted_Implementation(bool _Value);
 
 	// 다음 레벨로 이동 가능혀 : PlayGameMode에 세팅
-	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
-	void S2C_SetCanMoveLevel(bool _b);
-	void S2C_SetCanMoveLevel_Implementation(bool _b);
+	UFUNCTION(Category = "LEVEL")
+	void STATESetCanMoveLevel(bool _b);
 
 	// 결과 화면에서 다음 스테이지로 넘어가도록 해 + PlayGameMode에 세팅
 	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")

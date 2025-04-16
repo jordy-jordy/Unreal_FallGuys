@@ -344,8 +344,11 @@ void APlayGameState::RestoreFailPlayersInfo()
 }
 
 // 다음 레벨로 이동 가능혀 : PlayGameMode에 세팅
-void APlayGameState::S2C_SetCanMoveLevel_Implementation(bool _b)
+void APlayGameState::STATESetCanMoveLevel(bool _b)
 {
+	// 서버장 아니면 리턴
+	if (!HasAuthority()) return;
+
 	APlayGameMode* PlayMode = Cast<APlayGameMode>(GetWorld()->GetAuthGameMode());
 	if (PlayMode)
 	{

@@ -662,7 +662,7 @@ void APlayGameMode::SetCharacterMovePossible()
 			for (TActorIterator<APlayCharacter> It(GetWorld()); It; ++It)
 			{
 				APlayCharacter* PlayerCharacter = *It;
-				if (PlayerCharacter)
+				if (PlayerCharacter && PlayerCharacter->GetPlayerState<APlayPlayerState>()->PlayerInfo.Status == EPlayerStatus::DEFAULT)
 				{
 					PlayerCharacter->S2M_SetCanMoveTrue();
 				}

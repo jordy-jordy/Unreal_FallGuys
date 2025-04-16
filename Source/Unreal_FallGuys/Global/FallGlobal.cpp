@@ -366,7 +366,7 @@ bool UFallGlobal::GetIsResultLevel()
 void UFallGlobal::SetCanMoveLevel(bool _Value)
 {
 	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
-	FallState->S2C_SetCanMoveLevel(_Value);
+	FallState->STATESetCanMoveLevel(_Value);
 }
 
 // PlayGameState : 게임 시작했니?
