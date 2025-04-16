@@ -6,7 +6,8 @@
 #include <Global/GlobalEnum.h>
 #include <Global/BaseGameInstance.h>
 #include <Mode/01_Play/PlayGameState.h>
-
+#include "Mode/01_Play/PlayCharacter.h"
+#include "GameFramework/PawnMovementComponent.h"
 #include <Net/UnrealNetwork.h>
 
 
@@ -18,6 +19,8 @@ APlayPlayerState::APlayPlayerState()
 void APlayPlayerState::BeginPlay()
 {
 	Super::BeginPlay();
+
+	//CheckPlayer();
 }
 
 void APlayPlayerState::SetPlayerTag_Implementation(const FName& _Tag)
@@ -101,6 +104,58 @@ void APlayPlayerState::OnRep_PlayerDropOrder()
 void APlayPlayerState::SetIsWinner_Implementation(bool _bWinner)
 {
 	bIsWinner = _bWinner;
+}
+
+
+
+//LMH
+// 실패한 플레이어 콜리전 처리
+void APlayPlayerState::CheckPlayer()
+{
+	
+	if (HasAuthority()) {
+		S2M_CheckFailPlayer_Implementation();
+	}
+	else
+	{
+		C2S_CheckFailPlayer();
+	}
+}
+
+void APlayPlayerState::C2S_CheckFailPlayer_Implementation()
+{
+	S2M_CheckFailPlayer_Implementation();
+}
+
+void APlayPlayerState::S2M_CheckFailPlayer_Implementation()
+{
+	if (Cast<APlayCharacter>(GetPawn()))
+	{
+		UBaseGameInstance* GameIns = GetPawn()->GetGameInstance<UBaseGameInstance>();
+
+
+		if (GameIns == nullptr) return;
+		if (true == GameIns->bIsResultLevel) return;
+
+		if (EPlayerStatus::FAIL != PlayerInfo.Status) return;
+	
+		GetPawn()->SetActorLocation({ 0,0,-1000000 });
+		GetPawn()->SetActorEnableCollision(false);
+
+		USkeletalMeshComponent* MeshComp = GetPawn()->FindComponentByClass<USkeletalMeshComponent>();
+
+		if (MeshComp)
+		{
+			MeshComp->SetSimulatePhysics(false);
+			MeshComp->SetEnableGravity(false);
+
+
+		}
+
+		// 다른 캐릭터로 시점 변경
+
+
+	}
 }
 
 void APlayPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

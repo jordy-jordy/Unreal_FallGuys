@@ -136,6 +136,23 @@ public:
     UFUNCTION(BlueprintCallable, Category = "PLAYER INFO")
 	bool GetIsWinner() { return bIsWinner; }
 
+
+#pragma region LeeMinha > 레벨 시작 > 실패 플레이어 처리
+
+public:
+    UFUNCTION()
+    void CheckPlayer();
+
+    UFUNCTION(Reliable, Server, BlueprintCallable, Category = "PLAYER START")
+    void C2S_CheckFailPlayer();
+    void C2S_CheckFailPlayer_Implementation();
+
+    UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "PLAYER START")
+    void S2M_CheckFailPlayer();
+    void S2M_CheckFailPlayer_Implementation();
+
+#pragma endregion
+
 protected:
     // 승자 여부
     UPROPERTY(Replicated)
