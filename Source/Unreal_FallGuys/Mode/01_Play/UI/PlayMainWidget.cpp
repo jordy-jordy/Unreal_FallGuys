@@ -152,6 +152,7 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 	switch (CurUIType)
 	{
 	case EPlayUIType::PlayStandby:
+	{
 		switch (EPlayUIType(_UIType))
 		{
 		case EPlayUIType::PlayLevelTag:
@@ -165,7 +166,9 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 			break;
 		}
 		break;
+	}
 	case EPlayUIType::PlayLevelTag:
+	{
 		switch (EPlayUIType(_UIType))
 		{
 		case EPlayUIType::PlayInGame:
@@ -173,6 +176,7 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 			APlayGameState* GameState = Cast<APlayGameState>(GetWorld()->GetGameState());
 			if (nullptr == GameState)
 			{
+				UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : PlayLevelTag->PlayInGame >> GameState is null"), *FString(__FUNCSIG__));
 				return;
 			}
 
@@ -199,6 +203,60 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 			break;
 		}
 		break;
+	}
+	case EPlayUIType::PlayInGame:
+	{
+		switch (EPlayUIType(_UIType))
+		{
+		case EPlayUIType::PlayResult:
+		{
+			APlayGameState* GameState = Cast<APlayGameState>(GetWorld()->GetGameState());
+			if (nullptr == GameState)
+			{
+				UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : PlayInGame->PlayResult >> GameState is null"), *FString(__FUNCSIG__));
+				return;
+			}
+
+			APlayCharacter* PlayCharacter = Cast<APlayCharacter>(GetOwningPlayerPawn());
+			if (nullptr == PlayCharacter)
+			{
+				UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : PlayResult->PlayInGame >> PlayCharacter is null"), *FString(__FUNCSIG__));
+				return;
+			}
+
+			APlayPlayerState* PlayPlayerState = Cast<APlayPlayerState>(PlayCharacter->GetPlayerState());
+			if (nullptr == PlayPlayerState)
+			{
+				UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : PlayResult->PlayInGame >> PlayPlayerState is null"), *FString(__FUNCSIG__));
+				return;
+			}
+
+			EStagePhase CurStagePhase = GameState->GetCurStagePhase_STATE();
+			EPlayerStatus CurPlayerStatus = PlayPlayerState->GetPlayerStateStatus();
+
+			if (EPlayerStatus::FAIL == CurPlayerStatus)
+			{
+				if (EStagePhase::STAGE_1 == CurStagePhase)
+				{
+					//AllWidgetHidden();
+					ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+				}
+			}
+			else if (EPlayerStatus::SUCCESS == CurPlayerStatus)
+			{
+				//AllWidgetHidden();
+				//UPlayResultWidget* ResultWidget = Cast<UPlayResultWidget>(FindWidget(EPlayUIType::PlayResult));
+				//ResultWidget->ChangeResources();
+				ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			}
+
+			break;
+		}
+		default:
+			break;
+		}
+		break;
+	}
 	case EPlayUIType::PlayResult:
 	{
 		switch (EPlayUIType(_UIType))
@@ -208,6 +266,21 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 			APlayGameState* GameState = Cast<APlayGameState>(GetWorld()->GetGameState());
 			if (nullptr == GameState)
 			{
+				UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : PlayResult->PlayInGame >> GameState is null"), *FString(__FUNCSIG__));
+				return;
+			}
+
+			APlayCharacter* PlayCharacter = Cast<APlayCharacter>(GetOwningPlayerPawn());
+			if (nullptr == PlayCharacter)
+			{
+				UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : PlayResult->PlayInGame >> PlayCharacter is null"), *FString(__FUNCSIG__));
+				return;
+			}
+
+			APlayPlayerState* PlayPlayerState = Cast<APlayPlayerState>(PlayCharacter->GetPlayerState());
+			if (nullptr == PlayPlayerState)
+			{
+				UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : PlayResult->PlayInGame >> PlayPlayerState is null"), *FString(__FUNCSIG__));
 				return;
 			}
 
@@ -220,63 +293,15 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 
 			if (StageType == EStageType::SOLO)
 			{
-				ClearCount->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-				SpectatorResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 				CurUserWidget->SetVisibility(ESlateVisibility::Hidden);
 				ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+				ClearCount->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+				SpectatorResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 				Result->SetSpectatorView(true);
 			}
-			if (StageType == EStageType::TEAM)
+			else if (StageType == EStageType::TEAM)
 			{
 				UFallGlobal::SetCanMoveLevel(true);
-			}
-
-			break;
-		}
-		default:
-			break;
-		}
-		break;
-	}
-	case EPlayUIType::PlayInGame:
-	{
-		switch (EPlayUIType(_UIType))
-		{
-		case EPlayUIType::PlayResult:
-		{
-			APlayCharacter* PlayCharacter = Cast<APlayCharacter>(GetOwningPlayerPawn());
-			if (nullptr == PlayCharacter)
-			{
-				return;
-			}
-
-			APlayPlayerState* PlayPlayerState = Cast<APlayPlayerState>(PlayCharacter->GetPlayerState());
-			if (nullptr == PlayPlayerState)
-			{
-				return;
-			}
-
-			APlayGameState* GameState = Cast<APlayGameState>(GetWorld()->GetGameState());
-			if (nullptr == GameState)
-			{
-				return;
-			}
-
-			EStagePhase CurStagePhase = GameState->GetCurStagePhase_STATE();
-			EPlayerStatus CurPlayerStatus = PlayPlayerState->GetPlayerStateStatus();
-
-			//UPlayUserWidget* SpectatorResult = FindWidget(EPlayUIType::PlaySpectatorResult);
-
-			if (EPlayerStatus::FAIL == CurPlayerStatus)
-			{
-				if (EStagePhase::STAGE_1 == CurStagePhase)
-				{
-					ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-				}
-			}
-			else if (EPlayerStatus::SUCCESS == CurPlayerStatus)
-			{
-				ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 			}
 
 			break;
