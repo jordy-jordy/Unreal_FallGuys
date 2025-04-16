@@ -199,10 +199,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static int32 GetBLUETeamScore();
 
-	// PlayGameState : 접속자 수를 1씩 감소
-	UFUNCTION(BlueprintCallable)
-	static void MinusConnectedPlayers();
-
 	// BaseGameInstance : 현재의 스테이지 타입(개인전, 팀전)을 얻음
 	UFUNCTION(BlueprintCallable)
 	static EStageType GetCurStageType();

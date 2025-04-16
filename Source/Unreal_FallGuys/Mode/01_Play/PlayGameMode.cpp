@@ -32,11 +32,17 @@ void APlayGameMode::PreLogin(
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode PreLogin START ======= "));
 
-	if (true == bInvalidConnect)
+	// 대기 인원 +1
+	++WaitingPlayerCount;
+
+	if ((WaitingPlayerCount + ConnectedPlayers) > UFallConst::MinPlayerCount || true == bInvalidConnect)
 	{
 		_ErrorMessage = TEXT("접속 제한: 게임 인원이 가득찼습니다.");
 		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: PreLogin :: 게임 인원이 가득차 접속이 거절되었습니다."));
 	}
+
+	// 대기 인원 -1
+	--WaitingPlayerCount;
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode PreLogin END ======= "));
 }
@@ -78,25 +84,20 @@ bool APlayGameMode::SetupCommonEssentialData(APlayerController* _NewPlayer, APla
 void APlayGameMode::AddPlayerCount(APlayGameState* _FallState)
 {
 	// 플레이어 수 증가
-	_FallState->AddConnectedPlayers();
-	int ConnectingPlayer = _FallState->GetConnectedPlayers();
-	UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: PostLogin :: 새로운 플레이어가 접속 했습니다. 현재 접속 인원 : %d"), ConnectingPlayer);
-}
-
-// 플레이어 등록이 완료 된 후 실행되는 공통로직
-void APlayGameMode::PostInitializePlayer(APlayGameState* _FallState)
-{
-	// 인원 체크 및 시네마틱 세팅
-	CheckPlayersCount(_FallState);
-	StartCinematicIfReady(_FallState);
+	++ConnectedPlayers;
+	_FallState->SetConnectedPlayers(ConnectedPlayers);
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: PostLogin :: 새로운 플레이어가 접속 했습니다. 현재 접속 인원 : %d"), ConnectedPlayers);
 }
 
 // 인원 충족 했는지 체크
-void APlayGameMode::CheckPlayersCount(APlayGameState* _PlayState)
+void APlayGameMode::CheckPlayersCount()
 {
-	if (_PlayState->GetConnectedPlayers() >= UFallConst::MinPlayerCount)
+	if (ConnectedPlayers >= UFallConst::MinPlayerCount)
 	{
 		bNumberOfPlayer = true;
+
+		// 인원수 찼으니 접속제한 할건지 세팅
+		SetPlayerAccessInvalid();
 	}
 	else
 	{
@@ -104,7 +105,28 @@ void APlayGameMode::CheckPlayersCount(APlayGameState* _PlayState)
 	}
 }
 
-// 시네마틱과 접속 제한 세팅 호출
+// 접속 제한 세팅
+void APlayGameMode::SetPlayerAccessInvalid()
+{
+	if (true == UFallConst::UsePlayerLimit)
+	{
+		bInvalidConnect = true;
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PostLogin :: 접속 제한 활성화됨 - 추가 접속 불가"));
+	}
+	else
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PostLogin :: 접속 제한 비활성화 - 추가 접속 허용"));
+	}
+}
+
+// 플레이어 등록이 완료 된 후 실행되는 공통로직
+void APlayGameMode::PostInitializePlayer(APlayGameState* _FallState)
+{
+	// 시네마틱 세팅
+	StartCinematicIfReady(_FallState);
+}
+
+// 시네마틱 호출
 void APlayGameMode::StartCinematicIfReady(APlayGameState* _FallState)
 {
 	// 인원수가 아직 안 찼으면 리턴
@@ -129,16 +151,6 @@ void APlayGameMode::StartCinematicIfReady(APlayGameState* _FallState)
 	else
 	{
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PostLogin :: 결과 화면이므로 레벨 시네마틱 실행 안함"));
-	}
-
-	if (true == UFallConst::UsePlayerLimit)
-	{
-		bInvalidConnect = true;
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PostLogin :: 접속 제한 활성화됨 - 추가 접속 불가"));
-	}
-	else
-	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PostLogin :: 접속 제한 비활성화 - 추가 접속 허용"));
 	}
 }
 
@@ -170,10 +182,13 @@ void APlayGameMode::PostLogin(APlayerController* _NewPlayer)
 	// 인원 카운팅
 	AddPlayerCount(FallState);
 
+	// 인원 수 체크 + 접속 제한 설정
+	CheckPlayersCount();
+
 	// 최초 접속 로직
 	HandleFirstTimeLogin(_NewPlayer, PlayerState, FallState, GameInstance);
 
-	// 인원 체크 및 시네마틱 호출
+	// 시네마틱 시작 호출
 	PostInitializePlayer(FallState);
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode PostLogin END ======= "));
@@ -267,6 +282,9 @@ void APlayGameMode::HandleSeamlessTravelPlayer(AController*& _NewController)
 	// 인원 카운팅
 	AddPlayerCount(FallState);
 
+	// 인원 수 체크 + 접속 제한 설정
+	CheckPlayersCount();
+
 	// 결과 레벨인지 세팅
 	GetIsResultLevel(FallState, GameInstance);
 
@@ -280,7 +298,7 @@ void APlayGameMode::HandleSeamlessTravelPlayer(AController*& _NewController)
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("뭔가 잘못됐습니다."));
 	}
 
-	// 인원 체크 및 시네마틱 호출
+	// 시네마틱 시작 호출
 	PostInitializePlayer(FallState);
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode HandleSeamlessTravelPlayer END ======= "));

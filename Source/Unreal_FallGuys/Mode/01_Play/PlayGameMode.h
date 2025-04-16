@@ -119,7 +119,10 @@ public:
 
 	// 인원 충족 했는지 체크
 	UFUNCTION(BlueprintCallable, Category = "PLAYGAMEMODE :: GAME")
-	void CheckPlayersCount(class APlayGameState* _PlayState);
+	void CheckPlayersCount();
+
+	// 접속 제한 세팅
+	void SetPlayerAccessInvalid();
 
 	// 목표 골인 인원 수 반환
 	UFUNCTION(BlueprintCallable, Category = "PLAYGAMEMODE :: GAME")
@@ -152,7 +155,7 @@ protected:
 	void PostInitializePlayer(APlayGameState* _FallState);
 	// 플레이어 인포 로그
 	void LogPlayerInfo(const FString& _Prefix, const FPlayerInfo& _Info, APlayerController* _Controller);
-	// 시네마틱과 접속 제한 세팅 호출
+	// 시네마틱 호출
 	void StartCinematicIfReady(APlayGameState* _FallState);
 	// 레벨 시네마틱 시작을 호출
 	UFUNCTION()
@@ -283,11 +286,16 @@ protected:
 
 #pragma endregion
 
+protected:
+	// 대기중인 플레이어 수
+	int32 WaitingPlayerCount = 0;	
+
+	// 접속한 플레이어 수 (확정)
+	int ConnectedPlayers = 0;
+
 public:
 	// 게임 끝났는지 확인
 	bool GetIsEndGame() const { return IsEndGame; }
-	// 골인한 인원 +1
-	void AddCurFinishPlayer() { ++CurFinishPlayer; }
 
 //LMH
 protected:
