@@ -65,64 +65,64 @@ void UPlayGameOverWidget::MoveToResultLevel()
 
 	// ---------------------------- 巩力何盒 ----------------------------------------------
 	
-	APlayCharacter* PlayCharacter = Cast<APlayCharacter>(GetOwningPlayerPawn());
-	if (nullptr == PlayCharacter)
-	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : PlayCharacter is null"), *FString(__FUNCSIG__));
-		return;
-	}
+	//APlayCharacter* PlayCharacter = Cast<APlayCharacter>(GetOwningPlayerPawn());
+	//if (nullptr == PlayCharacter)
+	//{
+	//	UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : PlayCharacter is null"), *FString(__FUNCSIG__));
+	//	return;
+	//}
 
-	APlayPlayerState* PlayerState = PlayCharacter->GetPlayerState<APlayPlayerState>();
-	if (nullptr == PlayerState)
-	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : PlayerState is null"), *FString(__FUNCSIG__));
-		return;
-	}
+	//APlayPlayerState* PlayerState = PlayCharacter->GetPlayerState<APlayPlayerState>();
+	//if (nullptr == PlayerState)
+	//{
+	//	UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : PlayerState is null"), *FString(__FUNCSIG__));
+	//	return;
+	//}
 
-	TArray<FPlayerInfoEntry>& PrevFailPlayersInfo = GameState->FailPlayerInfoArray;
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PrevFailPlayers Ptr: %p"), &PrevFailPlayersInfo);
+	//TArray<FPlayerInfoEntry>& PrevFailPlayersInfo = GameState->FailPlayerInfoArray;
+	//UE_LOG(FALL_DEV_LOG, Warning, TEXT("PrevFailPlayers Ptr: %p"), &PrevFailPlayersInfo);
 
-	FName CurPlayerID = PlayerState->PlayerInfo.Tag;
+	//FName CurPlayerID = PlayerState->PlayerInfo.Tag;
 
-	for (FPlayerInfoEntry PrevFailPlayerInfo : PrevFailPlayersInfo)
-	{
-		FName PrevFailPlayerID = PrevFailPlayerInfo.PlayerInfo.Tag;
+	//for (FPlayerInfoEntry PrevFailPlayerInfo : PrevFailPlayersInfo)
+	//{
+	//	FName PrevFailPlayerID = PrevFailPlayerInfo.PlayerInfo.Tag;
 
-		if ((CurPlayerID != PrevFailPlayerID))
-		{
-			if (false == IsShowResult && false == IsResultAnimated)
-			{
-				SetVisibility(ESlateVisibility::Hidden);
-				PlayResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			}
-		}
-		else if ((CurPlayerID == PrevFailPlayerID) && (EStagePhase::STAGE_1 == GameState->GetCurStagePhase_STATE()))
-		{
-			if (false == IsShowResult && false == IsResultAnimated)
-			{
-				SetVisibility(ESlateVisibility::Hidden);
-				PlayResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			}
-			else if (true == IsShowResult)
-			{
-				UFallGlobal::SetCanMoveLevel(true);
-			}
-		}
-		else if ((CurPlayerID == PrevFailPlayerID) && (EStagePhase::STAGE_1 != GameState->GetCurStagePhase_STATE()))
-		{
-			UFallGlobal::SetCanMoveLevel(true);
-		}
-	}
+	//	if ((CurPlayerID != PrevFailPlayerID))
+	//	{
+	//		if (false == IsShowResult && false == IsResultAnimated)
+	//		{
+	//			SetVisibility(ESlateVisibility::Hidden);
+	//			PlayResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	//		}
+	//	}
+	//	else if ((CurPlayerID == PrevFailPlayerID) && (EStagePhase::STAGE_1 == GameState->GetCurStagePhase_STATE()))
+	//	{
+	//		if (false == IsShowResult && false == IsResultAnimated)
+	//		{
+	//			SetVisibility(ESlateVisibility::Hidden);
+	//			PlayResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	//		}
+	//		else if (true == IsShowResult)
+	//		{
+	//			UFallGlobal::SetCanMoveLevel(true);
+	//		}
+	//	}
+	//	else if ((CurPlayerID == PrevFailPlayerID) && (EStagePhase::STAGE_1 != GameState->GetCurStagePhase_STATE()))
+	//	{
+	//		UFallGlobal::SetCanMoveLevel(true);
+	//	}
+	//}
 
 	// ---------------------------- 巩力何盒 ----------------------------------------------
 
-	//if (false == IsShowResult && false == IsResultAnimated)
-	//{
-	//	SetVisibility(ESlateVisibility::Hidden);
-	//	PlayResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	//}
-	//else
-	//{
-	//	UFallGlobal::SetCanMoveLevel(true);
-	//}
+	if (false == IsShowResult && false == IsResultAnimated)
+	{
+		SetVisibility(ESlateVisibility::Hidden);
+		PlayResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	}
+	else
+	{
+		UFallGlobal::SetCanMoveLevel(true);
+	}
 }

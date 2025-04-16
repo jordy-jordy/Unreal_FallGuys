@@ -238,15 +238,15 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 			{
 				if (EStagePhase::STAGE_1 == CurStagePhase)
 				{
-					AllWidgetHidden();
+					//AllWidgetHidden();
 					ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 				}
 			}
 			else if (EPlayerStatus::SUCCESS == CurPlayerStatus)
 			{
-				AllWidgetHidden();
-				UPlayResultWidget* ResultWidget = Cast<UPlayResultWidget>(FindWidget(EPlayUIType::PlayResult));
-				ResultWidget->ChangeResources();
+				//AllWidgetHidden();
+				//UPlayResultWidget* ResultWidget = Cast<UPlayResultWidget>(FindWidget(EPlayUIType::PlayResult));
+				//ResultWidget->ChangeResources();
 				ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 			}
 
@@ -293,13 +293,13 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 
 			if (StageType == EStageType::SOLO)
 			{
-				ClearCount->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-				SpectatorResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 				CurUserWidget->SetVisibility(ESlateVisibility::Hidden);
 				ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+				ClearCount->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+				SpectatorResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 				Result->SetSpectatorView(true);
 			}
-			if (StageType == EStageType::TEAM)
+			else if (StageType == EStageType::TEAM)
 			{
 				UFallGlobal::SetCanMoveLevel(true);
 			}
