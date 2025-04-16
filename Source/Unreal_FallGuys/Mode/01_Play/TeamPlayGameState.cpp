@@ -55,7 +55,7 @@ void ATeamPlayGameState::SpawnEggManager()
 {
 	if (HasAuthority())
 	{
-		Spawnner = GetWorld()->SpawnActor<AEggSpawnManager>(SpawnManagerFactory, FVector(0, 0, 400.0f), FRotator(0, 0, 0));
+		Spawnner = GetWorld()->SpawnActor<AEggSpawnManager>(SpawnManagerFactory, FVector(0, 0, 300.0f), FRotator(0, 0, 0));
 		if (Spawnner == nullptr) return;
 		Spawnner->SetOwner(this);
 	}
