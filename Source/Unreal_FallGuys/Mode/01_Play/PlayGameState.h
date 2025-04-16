@@ -123,10 +123,10 @@ public:
 	void SyncPlayerInfoFromPlayerState();
 	void SyncPlayerInfoFromPlayerState_Implementation();
 
-	// 접속자 수 증가
+	// 접속자 수 세팅 : PlayGameMode에서 호출
 	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "PLAYERS")
-	void AddConnectedPlayers();
-	void AddConnectedPlayers_Implementation();
+	void SetConnectedPlayers(int _Count);
+	void SetConnectedPlayers_Implementation(int _Count);
 
 	// 접속자 수 감소
 	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "PLAYERS")

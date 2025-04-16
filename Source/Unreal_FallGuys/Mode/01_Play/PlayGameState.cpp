@@ -132,9 +132,9 @@ void APlayGameState::SyncPlayerInfoFromPlayerState_Implementation()
 }
 
 // 접속자 수 증가
-void APlayGameState::AddConnectedPlayers_Implementation()
+void APlayGameState::SetConnectedPlayers_Implementation(int _Count)
 {
-	ConnectedPlayers++;
+	ConnectedPlayers = _Count;
 
 	// 모든 클라이언트에게 현재 접속자 수를 알려줌
 	MulticastUpdateConnectedPlayers(ConnectedPlayers);

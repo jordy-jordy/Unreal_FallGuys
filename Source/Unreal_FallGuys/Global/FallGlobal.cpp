@@ -348,13 +348,6 @@ int32 UFallGlobal::GetBLUETeamScore()
 	return TeamState->GetGameStateBLUETeamScore();
 }
 
-// PlayGameState : 접속자 수를 1씩 감소
-void UFallGlobal::MinusConnectedPlayers()
-{
-	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
-	FallState->MinusConnectedPlayers();
-}
-
 // PlayGameState : 결과 화면이니?
 bool UFallGlobal::GetIsResultLevel()
 {
