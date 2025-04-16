@@ -63,6 +63,8 @@ void UPlayGameOverWidget::MoveToResultLevel()
 		return;
 	}
 
+	// ---------------------------- 巩力何盒 ----------------------------------------------
+	
 	APlayCharacter* PlayCharacter = Cast<APlayCharacter>(GetOwningPlayerPawn());
 	if (nullptr == PlayCharacter)
 	{
@@ -77,20 +79,24 @@ void UPlayGameOverWidget::MoveToResultLevel()
 		return;
 	}
 
-	TArray<FPlayerInfoEntry>& PrevFailPlayersInfo = GameState->PlayerInfoArray;
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("Count__PrevFailPlayers Ptr: %p"), &PrevFailPlayersInfo);
+	TArray<FPlayerInfoEntry>& PrevFailPlayersInfo = GameState->FailPlayerInfoArray;
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PrevFailPlayers Ptr: %p"), &PrevFailPlayersInfo);
 
-	FString CurPlayerID = PlayerState->PlayerInfo.UniqueID;
+	FName CurPlayerID = PlayerState->PlayerInfo.Tag;
 
 	for (FPlayerInfoEntry PrevFailPlayerInfo : PrevFailPlayersInfo)
 	{
-		FString PrevFailPlayerID = PrevFailPlayerInfo.PlayerInfo.UniqueID;
+		FName PrevFailPlayerID = PrevFailPlayerInfo.PlayerInfo.Tag;
 
-		if (CurPlayerID == PrevFailPlayerID)
+		if ((CurPlayerID != PrevFailPlayerID))
 		{
-			UFallGlobal::SetCanMoveLevel(true);
+			if (false == IsShowResult && false == IsResultAnimated)
+			{
+				SetVisibility(ESlateVisibility::Hidden);
+				PlayResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			}
 		}
-		else
+		else if ((CurPlayerID == PrevFailPlayerID) && (EStagePhase::STAGE_1 == GameState->GetCurStagePhase_STATE()))
 		{
 			if (false == IsShowResult && false == IsResultAnimated)
 			{
@@ -102,7 +108,13 @@ void UPlayGameOverWidget::MoveToResultLevel()
 				UFallGlobal::SetCanMoveLevel(true);
 			}
 		}
+		else if ((CurPlayerID == PrevFailPlayerID) && (EStagePhase::STAGE_1 != GameState->GetCurStagePhase_STATE()))
+		{
+			UFallGlobal::SetCanMoveLevel(true);
+		}
 	}
+
+	// ---------------------------- 巩力何盒 ----------------------------------------------
 
 	//if (false == IsShowResult && false == IsResultAnimated)
 	//{

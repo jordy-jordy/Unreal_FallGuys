@@ -6,7 +6,7 @@
 #include "Unreal_FallGuys.h"
 #include "Global/Data/GlobalDataTable.h"
 #include "Global/BaseGameInstance.h"
-#include "Global/FallConst.h"
+#include "Global/FallGlobal.h"
 
 
 void UPlayStandbyWidget::NativeConstruct()
@@ -31,5 +31,5 @@ FString UPlayStandbyWidget::GetCurLevelGuide()
 
 int UPlayStandbyWidget::GetMinPlayerNum()
 {
-	return UFallConst::MinPlayerCount;
+	return UFallGlobal::GetMaxPlayerCount();
 }
