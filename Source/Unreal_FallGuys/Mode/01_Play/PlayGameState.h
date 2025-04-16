@@ -246,6 +246,10 @@ public:
 	// 결과 화면에서 다음 스테이지로 넘어가도 되니?
 	bool GetCanMoveResultLevel() { return bCanMoveResultLevel; }
 
+	// 최대 접속자 수를 반환
+	UFUNCTION(BlueprintCallable, Category = "LEVEL")
+	int GetStateMaxPlayerCount() const { return StateMaxPlayerCount; }
+
 // 레벨 데이터들 세팅하는 함수
 public:
 	// 레벨 시네마틱 시작하세요
@@ -292,6 +296,11 @@ public:
 	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
 	void SetCanMoveResultLevelTrue();
 	void SetCanMoveResultLevelTrue_Implementation();
+	
+	// 최대 접속자 수 세팅 : PlayGameMode에서 세팅
+	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
+	void SetStateMaxPlayerCount(int _Value);
+	void SetStateMaxPlayerCount_Implementation(int _Value);
 
 protected:
 	// 레벨 시네마틱 시작해도 되니?
@@ -318,6 +327,9 @@ protected:
 	// 결과 화면에서 넘어가도 될까?
 	UPROPERTY(Replicated)
 	bool bCanMoveResultLevel = false;
+	// 최대 접속자 수 : PlayGameMode에서 가져옴
+	UPROPERTY(Replicated)
+	int StateMaxPlayerCount = 0;
 
 #pragma endregion
 

@@ -281,6 +281,13 @@ FString UFallGlobal::GetStageGoalType()
 	return FallState->GetSTATEStageGoalType();
 }
 
+// PlayGameState : 최대 접속 가능한 인원이 몇명?
+int UFallGlobal::GetMaxPlayerCount()
+{
+	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
+	return FallState->GetStateMaxPlayerCount();
+}
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
