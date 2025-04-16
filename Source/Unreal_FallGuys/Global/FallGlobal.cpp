@@ -222,6 +222,7 @@ FString UFallGlobal::GetRandomTeamLevel()
 FString UFallGlobal::GetLevelAssetName()
 {
 	APlayGameState* FallState = Cast<APlayGameState>(GWorld->GetGameState());
+	if (!FallState) return TEXT("PlayGameState is Null");
 	return FallState->GetLevelAssetName_STATE();
 }
 
@@ -229,6 +230,7 @@ FString UFallGlobal::GetLevelAssetName()
 FString UFallGlobal::GetLevelName()
 {
 	APlayGameState* FallState = Cast<APlayGameState>(GWorld->GetGameState());
+	if (!FallState) return TEXT("PlayGameState is Null");
 	return FallState->GetLevelName_STATE();
 }
 
@@ -236,6 +238,7 @@ FString UFallGlobal::GetLevelName()
 EStageType UFallGlobal::GetCurStageType()
 {
 	APlayGameState* FallState = Cast<APlayGameState>(GWorld->GetGameState());
+	if (!FallState) return EStageType::NONE;
 	return FallState->GetLevelType_STATE();
 }
 
@@ -243,6 +246,7 @@ EStageType UFallGlobal::GetCurStageType()
 EPlayerStatus UFallGlobal::GetStageEndCondition()
 {
 	APlayGameState* FallState = Cast<APlayGameState>(GWorld->GetGameState());
+	if (!FallState) return EPlayerStatus::NONE;
 	return FallState->GetEndCondition_STATE();
 }
 
@@ -250,6 +254,7 @@ EPlayerStatus UFallGlobal::GetStageEndCondition()
 FString UFallGlobal::GetPlayGuideFromAssetName(const FString& _AssetName)
 {
 	APlayGameState* FallState = Cast<APlayGameState>(GWorld->GetGameState());
+	if (!FallState) return TEXT("PlayGameState is Null");
 	return FallState->GetPlayGuide_STATE();
 }
 
@@ -257,6 +262,7 @@ FString UFallGlobal::GetPlayGuideFromAssetName(const FString& _AssetName)
 FString UFallGlobal::GetGoalGuideFromAssetName(const FString& _AssetName)
 {
 	APlayGameState* FallState = Cast<APlayGameState>(GWorld->GetGameState());
+	if (!FallState) return TEXT("PlayGameState is Null");
 	return FallState->GetGoalGuide_STATE();
 }
 
@@ -264,6 +270,7 @@ FString UFallGlobal::GetGoalGuideFromAssetName(const FString& _AssetName)
 UTexture2D* UFallGlobal::GetLevelImageFromAssetName(const FString& _AssetName)
 {
 	APlayGameState* FallState = Cast<APlayGameState>(GWorld->GetGameState());
+	if (!FallState) return nullptr;
 	return FallState->GetLevelIMG_STATE();
 }
 
@@ -271,6 +278,7 @@ UTexture2D* UFallGlobal::GetLevelImageFromAssetName(const FString& _AssetName)
 UTexture2D* UFallGlobal::GetLevelTagImage()
 {
 	APlayGameState* FallState = Cast<APlayGameState>(GWorld->GetGameState());
+	if (!FallState) return nullptr;
 	return FallState->GetLevelTagIMG_STATE();
 }
 
@@ -278,6 +286,7 @@ UTexture2D* UFallGlobal::GetLevelTagImage()
 FString UFallGlobal::GetStageGoalType()
 {
 	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
+	if (!FallState) return TEXT("PlayGameState is Null");
 	return FallState->GetSTATEStageGoalType();
 }
 
@@ -285,6 +294,7 @@ FString UFallGlobal::GetStageGoalType()
 int UFallGlobal::GetMaxPlayerCount()
 {
 	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
+	if (!FallState) return 0;
 	return FallState->GetStateMaxPlayerCount();
 }
 
@@ -295,36 +305,41 @@ int UFallGlobal::GetMaxPlayerCount()
 // PlayGameState : 현재 접속한 플레이어 수 반환
 int UFallGlobal::GetConnectedPlayers()
 {
-	APlayGameState* PlayState = Cast<APlayGameState>(GWorld->GetGameState());
-	return PlayState->GetConnectedPlayers();
+	APlayGameState* FallState = Cast<APlayGameState>(GWorld->GetGameState());
+	if (!FallState) return 0;
+	return FallState->GetConnectedPlayers();
 }
 
 // PlayGameState : Count Down Time 반환 - 실시간으로 줄어드는 시간
 float UFallGlobal::GetCountDownTime()
 {
-	APlayGameState* PlayState = Cast<APlayGameState>(GWorld->GetGameState());
-	return PlayState->GetCountDownTime();
+	APlayGameState* FallState = Cast<APlayGameState>(GWorld->GetGameState());
+	if (!FallState) return 0;
+	return FallState->GetCountDownTime();
 }
 
 // PlayGameState : Is Count Down Over 반환 - 카운트 다운 끝났어?
 bool UFallGlobal::GetIsCountDownOver()
 {
-	APlayGameState* PlayState = Cast<APlayGameState>(GWorld->GetGameState());
-	return PlayState->GetIsCountDownOver();
+	APlayGameState* FallState = Cast<APlayGameState>(GWorld->GetGameState());
+	if (!FallState) return false;
+	return FallState->GetIsCountDownOver();
 }
 
 // PlayGameState : 레벨 시네마틱 시작해도 돼?
 bool UFallGlobal::GetCanStartLevelCinematic()
 {
-	APlayGameState* PlayState = GWorld->GetGameState<APlayGameState>();
-	return PlayState->GetCanStartLevelCinematic();
+	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
+	if (!FallState) return false;
+	return FallState->GetCanStartLevelCinematic();
 }
 
 // PlayGameState : 레벨 시네마틱 끝났어?
 bool UFallGlobal::GetIsLevelCinematicEnd()
 {
-	APlayGameState* PlayState = GWorld->GetGameState<APlayGameState>();
-	return PlayState->GetIsLevelCinematicEnd();
+	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
+	if (!FallState) return false;
+	return FallState->GetIsLevelCinematicEnd();
 }
 
 // BaseGameInstance : 플레이어 상태 및 레벨 정보를 리셋하는 함수
@@ -338,6 +353,7 @@ void UFallGlobal::ResetPlayerCondition()
 bool UFallGlobal::GetHasNickname()
 {
 	UBaseGameInstance* GameIns = GWorld->GetGameInstance<UBaseGameInstance>();
+	if (!GameIns) return false;
 	return GameIns->InsGetHasNickname();
 }
 
@@ -345,6 +361,7 @@ bool UFallGlobal::GetHasNickname()
 int32 UFallGlobal::GetREDTeamScore()
 {
 	ATeamPlayGameState* TeamState = GWorld->GetGameState<ATeamPlayGameState>();
+	if (!TeamState) return 0;
 	return TeamState->GetGameStateREDTeamScore();
 }
 
@@ -352,6 +369,7 @@ int32 UFallGlobal::GetREDTeamScore()
 int32 UFallGlobal::GetBLUETeamScore()
 {
 	ATeamPlayGameState* TeamState = GWorld->GetGameState<ATeamPlayGameState>();
+	if (!TeamState) return 0;
 	return TeamState->GetGameStateBLUETeamScore();
 }
 
@@ -359,6 +377,7 @@ int32 UFallGlobal::GetBLUETeamScore()
 bool UFallGlobal::GetIsResultLevel()
 {
 	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
+	if (!FallState) return false;
 	return FallState->GetGameStateIsResultLevel();
 }
 
@@ -366,6 +385,7 @@ bool UFallGlobal::GetIsResultLevel()
 void UFallGlobal::SetCanMoveLevel(bool _Value)
 {
 	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
+	if (!FallState) return;
 	FallState->STATESetCanMoveLevel(_Value);
 }
 
@@ -373,6 +393,7 @@ void UFallGlobal::SetCanMoveLevel(bool _Value)
 bool UFallGlobal::GetGameStarted()
 {
 	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
+	if (!FallState) return false;
 	return FallState->GetGameStateGameStarted();
 }
 
@@ -380,6 +401,7 @@ bool UFallGlobal::GetGameStarted()
 bool UFallGlobal::GetSettedGoalCountDone()
 {
 	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
+	if (!FallState) return false;
 	return FallState->GetGameStateSettedGoalCount();
 }
 
@@ -387,6 +409,7 @@ bool UFallGlobal::GetSettedGoalCountDone()
 float UFallGlobal::GetRemainingTime()
 {
 	ATeamPlayGameState* FallTeamState = GWorld->GetGameState<ATeamPlayGameState>();
+	if (!FallTeamState) return 0;
 	return FallTeamState->GetRemainingTime();
 }
 
@@ -394,6 +417,7 @@ float UFallGlobal::GetRemainingTime()
 FString UFallGlobal::GetWinnerNickname()
 {
 	UBaseGameInstance* GameIns = GWorld->GetGameInstance<UBaseGameInstance>();
+	if (!GameIns) return TEXT("GameIns is Null");
 	return GameIns->InsGetWinnerNickname();
 }
 

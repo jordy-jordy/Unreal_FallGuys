@@ -183,3 +183,13 @@ void APlayPlayerController::Client_TravelToTitleLevel_Implementation()
 		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayPlayerController :: Client_TravelToTitleLevel :: 클라이언트가 TitleLevel로 이동합니다."));
 	}
 }
+
+// 다음 레벨로 이동하게 해주세요 (서버에게 요청)
+void APlayPlayerController::Server_RequestSetCanMoveLevel_Implementation(bool _b)
+{
+	APlayGameMode* PlayMode = Cast<APlayGameMode>(GetWorld()->GetAuthGameMode());
+	if (PlayMode)
+	{
+		PlayMode->SetCanMoveLevel(_b);
+	}
+}

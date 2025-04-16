@@ -83,4 +83,11 @@ public:
 	void Client_TravelToTitleLevel();
 	void Client_TravelToTitleLevel_Implementation();
 
+// 이현정 : 레벨 이동
+public:
+	// 다음 레벨로 이동하게 해주세요 (서버에게 요청)
+	UFUNCTION(Server, Reliable)
+	void Server_RequestSetCanMoveLevel(bool _b);
+	void Server_RequestSetCanMoveLevel_Implementation(bool _b);
+
 };
