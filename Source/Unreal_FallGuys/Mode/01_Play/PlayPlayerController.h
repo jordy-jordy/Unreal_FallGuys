@@ -74,13 +74,13 @@ public:
 
 // 이현정 : EndLevel로 이동
 public:
-	UFUNCTION(NetMulticast, Reliable)
-	void MCAST_TravelToEndLevel();
-	void MCAST_TravelToEndLevel_Implementation();
+	UFUNCTION(Client, Reliable)
+	void Client_TravelToEndLevel();
+	void Client_TravelToEndLevel_Implementation();
 
 	// 팀전 : 타이틀로 돌아가
-	UFUNCTION(NetMulticast, Reliable)
-	void MCAST_TravelToTitle();
-	void MCAST_TravelToTitle_Implementation();
+	UFUNCTION(Client, Reliable)
+	void Client_TravelToTitleLevel();
+	void Client_TravelToTitleLevel_Implementation();
 
 };

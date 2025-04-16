@@ -2,6 +2,7 @@
 
 
 #include "Mode/01_Play/TeamPlayGameMode.h"
+#include "Kismet/GameplayStatics.h" 
 
 #include "Unreal_FallGuys.h"
 #include "Global/FallConst.h"
@@ -201,7 +202,7 @@ void ATeamPlayGameMode::OnStageLimitTimeOver()
 	else
 	{
 		// 5초 후 타이틀로 클라이언트 트래블
-		GetWorldTimerManager().SetTimer(TravelDelayTimerHandle, this, &ATeamPlayGameMode::ClientTravelToTitle, 10.0f, false);
+		GetWorldTimerManager().SetTimer(TravelDelayTimerHandle, this, &ATeamPlayGameMode::ClientTravelToTitleLevel, 10.0f, false);
 	}
 }
 
@@ -339,21 +340,53 @@ void ATeamPlayGameMode::ServerTravelToNextTeamMap()
 	GetWorld()->ServerTravel(UFallGlobal::GetRandomTeamLevel(), true);
 }
 
-// 로비로 돌아가
-void ATeamPlayGameMode::ClientTravelToTitle()
+// 팀전용 : 로비로 이동 - 클라이언트
+void ATeamPlayGameMode::ClientTravelToTitleLevel()
 {
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("TeamPlayGameMode :: 서버에서 클라이언트들에게 Title로 트래블 명령 시작"));
+	if (!HasAuthority()) { return; }
 
-	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("TeamPlayGameMode :: 서버에서 클라이언트들에게 EndLevel 트래블 명령 시작"));
+
+	int32 ControllerIndex = 0;
+
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It, ++ControllerIndex)
 	{
 		APlayPlayerController* PC = Cast<APlayPlayerController>(It->Get());
-		if (PC)
+		if (PC == nullptr) continue;
+
+		// 0번 컨트롤러는 서버장 → 트래블 제외
+		if (ControllerIndex == 0)
 		{
-			PC->MCAST_TravelToTitle();
+			UE_LOG(FALL_DEV_LOG, Log, TEXT("ClientTravelToTitleLevel :: [0번] 서버장 트래블은 클라이언트들이 이동 된 뒤 처리됩니다."));
+			continue;
 		}
+
+		// 클라이언트 먼저 트래블
+		PC->Client_TravelToTitleLevel();
 	}
+
+	// 서버장도 엔드 레벨로 가자
+	ServerTravelToTitleLevel();
 }
 
+// 팀전용 : 로비로 이동 - 서버
+void ATeamPlayGameMode::ServerTravelToTitleLevel()
+{
+	APlayPlayerController* ServerHostPC = Cast<APlayPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	if (ServerHostPC == nullptr)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("TeamPlayGameMode :: ServerTravelToTitleLevel :: 서버장 컨트롤러를 찾을 수 없습니다."));
+		return;
+	}
+
+	// 1초 후 서버장 클라이언트 트래블
+	FTimerHandle ServerHostTravelHandle;
+	GetWorldTimerManager().SetTimer(ServerHostTravelHandle, [ServerHostPC]()
+		{
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("TeamPlayGameMode :: 서버장이 1초 뒤 TitleLevel로 ClientTravel 시작"));
+			ServerHostPC->ClientTravel(TEXT("/Game/BP/Level/00_Title/TitleLevel"), ETravelType::TRAVEL_Absolute);
+		}, 1.0f, false);
+}
 
 //LMH
 TMap<ETeamType, int> ATeamPlayGameMode::GetTeamFloors()

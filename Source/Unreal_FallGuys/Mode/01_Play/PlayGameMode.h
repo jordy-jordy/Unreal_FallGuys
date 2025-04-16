@@ -318,7 +318,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ServerTravelToNextRandLevel();
 
-	// 개인전용 : 최종 결과창으로 이동
+	// 개인전용 : 클라이언트 최종 결과창으로 이동 - 클라이언트
+	UFUNCTION(BlueprintCallable)
+	void ClientTravelToEndLevel();
+	// 개인전용 : 클라이언트 최종 결과창으로 이동 - 서버
 	UFUNCTION(BlueprintCallable)
 	void ServerTravelToEndLevel();
 
