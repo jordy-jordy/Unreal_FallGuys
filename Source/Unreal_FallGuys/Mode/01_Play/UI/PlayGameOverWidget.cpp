@@ -28,18 +28,51 @@ void UPlayGameOverWidget::NativeConstruct()
 	}
 	// 델리게이트 테스트
 
-	if (nullptr != GameOverAnim)
-	{
-		GameOverAnimEvent.BindUFunction(this, FName(FString(TEXT("MoveToResultLevel"))));
-		BindToAnimationFinished(GameOverAnim, GameOverAnimEvent);
-		PlayAnimation(GameOverAnim);
-	}
+	//if (nullptr != GameOverAnim)
+	//{
+	//	GameOverAnimEvent.BindUFunction(this, FName(FString(TEXT("MoveToResultLevel"))));
+	//	BindToAnimationFinished(GameOverAnim, GameOverAnimEvent);
+	//	PlayAnimation(GameOverAnim);
+	//}
+
+	//if (nullptr != GameOverAnim_Clear)
+	//{
+	//	GameOverAnim_ClearEvent.BindUFunction(this, FName(FString(TEXT("MoveToResultLevel"))));
+	//	BindToAnimationFinished(GameOverAnim_Clear, GameOverAnim_ClearEvent);
+	//	PlayAnimation(GameOverAnim_Clear);
+	//}
 }
 
 void UPlayGameOverWidget::WidgetVisible()
 {
 	GetMainWidget()->AllWidgetHidden();
 	SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+
+	UPlayInGameWidget* InGameWidget = Cast<UPlayInGameWidget>(GetMainWidget()->FindWidget(EPlayUIType::PlayInGame));
+	UPlayResultWidget* PlayResult = Cast<UPlayResultWidget>(GetMainWidget()->FindWidget(EPlayUIType::PlayResult));
+	bool IsShowResult = InGameWidget->GetShowResult();
+	bool IsResultAnimated = PlayResult->GetAnimatedStatus();
+
+	if (false == IsShowResult && false == IsResultAnimated)
+	{
+		if (nullptr != GameOverAnim)
+		{
+			GameOverAnimEvent.BindUFunction(this, FName(FString(TEXT("MoveToResultLevel"))));
+			UnbindAllFromAnimationFinished(GameOverAnim_Clear);
+			BindToAnimationFinished(GameOverAnim, GameOverAnimEvent);
+			PlayAnimation(GameOverAnim);
+		}
+	}
+	else
+	{
+		if (nullptr != GameOverAnim_Clear)
+		{
+			GameOverAnim_ClearEvent.BindUFunction(this, FName(FString(TEXT("MoveToResultLevel"))));
+			UnbindAllFromAnimationFinished(GameOverAnim);
+			BindToAnimationFinished(GameOverAnim_Clear, GameOverAnim_ClearEvent);
+			PlayAnimation(GameOverAnim_Clear);
+		}
+	}
 }
 
 void UPlayGameOverWidget::MoveToResultLevel()
@@ -123,6 +156,6 @@ void UPlayGameOverWidget::MoveToResultLevel()
 	}
 	else
 	{
-		UFallGlobal::SetCanMoveLevel(true);
+		//UFallGlobal::SetCanMoveLevel(true);
 	}
 }

@@ -31,5 +31,9 @@ private:
 	UPROPERTY(VisibleAnywhere, Transient, meta = (BindWidgetAnim), Category = "UI")
 	UWidgetAnimation* GameOverAnim;
 
+	UPROPERTY(VisibleAnywhere, Transient, meta = (BindWidgetAnim), Category = "UI")
+	UWidgetAnimation* GameOverAnim_Clear;
+
 	FWidgetAnimationDynamicEvent GameOverAnimEvent;
+	FWidgetAnimationDynamicEvent GameOverAnim_ClearEvent;
 };
