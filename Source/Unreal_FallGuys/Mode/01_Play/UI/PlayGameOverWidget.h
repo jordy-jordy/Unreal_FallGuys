@@ -27,6 +27,8 @@ public:
 	UFUNCTION()
 	void AfterGameOverAnim();
 
+	bool IsPrevFailure();
+
 private:
 	UPROPERTY(VisibleAnywhere, Transient, meta = (BindWidgetAnim), Category = "UI")
 	UWidgetAnimation* GameOverAnim;

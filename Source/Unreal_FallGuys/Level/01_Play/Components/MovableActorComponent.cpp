@@ -26,15 +26,15 @@ void UMovableActorComponent::BeginPlay()
 
 	switch (AxisType)
 	{
-	case EAxisType::Roll:
+	case EActorAxisType::Roll:
 		CurrentPivot = GetOwner()->GetActorRotation().Roll;
 
 		break;
-	case EAxisType::Pitch:
+	case EActorAxisType::Pitch:
 		CurrentPivot = GetOwner()->GetActorRotation().Pitch;
 
 		break;
-	case EAxisType::Yaw:
+	case EActorAxisType::Yaw:
 		CurrentPivot = GetOwner()->GetActorRotation().Yaw;
 
 		break;
@@ -62,13 +62,13 @@ void UMovableActorComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 
 	switch (AxisType)
 	{
-	case EAxisType::Roll:
+	case EActorAxisType::Roll:
 		NewRotation = FRotator(0.0f, 0.0f, CurrentPivot);
 		break;
-	case EAxisType::Pitch:
+	case EActorAxisType::Pitch:
 		NewRotation = FRotator(CurrentPivot, 0.0f, 0.0f);
 		break;
-	case EAxisType::Yaw:
+	case EActorAxisType::Yaw:
 		NewRotation = FRotator(0.0f, CurrentPivot, 0.0f);
 		break;
 	default:

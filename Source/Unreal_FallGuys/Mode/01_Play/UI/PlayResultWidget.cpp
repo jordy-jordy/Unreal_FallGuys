@@ -79,8 +79,8 @@ void UPlayResultWidget::FinishedResultWidget()
 		{
 			UPlayInGameWidget* InGameWidget = Cast<UPlayInGameWidget>(GetMainWidget()->FindWidget(EPlayUIType::PlayInGame));
 			InGameWidget->ShowResult(true);
-			GetMainWidget()->AllWidgetHidden();
-			GetMainWidget()->SwitchWidget(EPlayUIType::PlayInGame);
+			//GetMainWidget()->AllWidgetHidden();
+			//GetMainWidget()->SwitchWidget(EPlayUIType::PlayInGame);
 		}
 	}
 }
