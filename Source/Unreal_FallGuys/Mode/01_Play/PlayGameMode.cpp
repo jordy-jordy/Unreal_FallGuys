@@ -541,7 +541,8 @@ void APlayGameMode::FinishPlayer_Race()
 
 	case EStagePhase::STAGE_2:
 		if		(DefaultPlayerCount <= 2) { SetFinishPlayerCount(1); }
-		else if (DefaultPlayerCount <= 5) { SetFinishPlayerCount(2); }
+		else if (DefaultPlayerCount == 3) { SetFinishPlayerCount(2); }
+		else if (DefaultPlayerCount <= 5) { SetFinishPlayerCount(3); }
 		else	{ SetFinishPlayerCount((DefaultPlayerCount / 2) / 2); }
 		break;
 
@@ -569,7 +570,7 @@ void APlayGameMode::FinishPlayer_Survive()
 
 	case EStagePhase::STAGE_2:
 		if		(DefaultPlayerCount <= 1) { SetFinishPlayerCount(0); }
-		else if (DefaultPlayerCount <= 2) { SetFinishPlayerCount(1); }
+		else if (DefaultPlayerCount <= 3) { SetFinishPlayerCount(1); }
 		else if (DefaultPlayerCount <= 5) { SetFinishPlayerCount(2); }
 		else	{ SetFinishPlayerCount((DefaultPlayerCount / 2) / 2); }
 		break;
@@ -836,15 +837,12 @@ void APlayGameMode::SetEndCondition_Common()
 			bPlayerMoving = false;
 		}
 
-		if (CurLevelInfo_Mode.LevelType == EStageType::SOLO)
+		// 레벨 종료 UI 띄워
+		if (!bShowedLevelEndUI)
 		{
-			// 레벨 종료 UI 띄워
-			if (!bShowedLevelEndUI)
-			{
-				APlayGameState* FallState = GetGameState<APlayGameState>();
-				FallState->MCAST_WidgetDelegate(TEXT("GameOver"));
-				bShowedLevelEndUI = true;
-			}
+			APlayGameState* FallState = GetGameState<APlayGameState>();
+			FallState->MCAST_WidgetDelegate(TEXT("GameOver"));
+			bShowedLevelEndUI = true;
 		}
 	}
 
