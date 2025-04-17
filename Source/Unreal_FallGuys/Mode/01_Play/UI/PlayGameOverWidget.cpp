@@ -112,21 +112,9 @@ void UPlayGameOverWidget::AfterGameOverAnim()
 
 	if (EPlayerStatus::FAIL == PlayerState->PlayerInfo.Status)
 	{
-		//TArray<FPlayerInfoEntry>* PrevFailPlayers = GetMainWidget()->GetPrevFailPlayers();
-		//for (FPlayerInfoEntry PrevFailPlayer : *PrevFailPlayers)
-		//{
-		//	FString PrevFailPlayerID = PrevFailPlayer.PlayerInfo.UniqueID;
-		//	FString CurPlayerID = PlayerState->PlayerInfo.UniqueID;
-
-		//	if (CurPlayerID == PrevFailPlayerID)
-		//	{
-		//		int a = 0;
-		//		SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-		//	}
-		//}
-
 		if (true == IsPrevFailure())
 		{
+			// 테스트 중단점용
 			int a = 0;
 		}
 		else
@@ -178,8 +166,6 @@ bool UPlayGameOverWidget::IsPrevFailure()
 		{
 			return true;
 		}
-
-		return false;
 	}
 
 	return false;
