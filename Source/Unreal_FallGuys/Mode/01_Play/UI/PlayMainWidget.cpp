@@ -304,7 +304,7 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 			}
 			else if (StageType == EStageType::TEAM)
 			{
-				UFallGlobal::SetCanMoveLevel(true);
+				//UFallGlobal::SetCanMoveLevel(true);
 			}
 
 			break;
