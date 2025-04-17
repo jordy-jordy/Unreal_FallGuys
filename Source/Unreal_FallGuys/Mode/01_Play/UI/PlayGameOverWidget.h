@@ -25,7 +25,7 @@ public:
 	void WidgetVisible();
 
 	UFUNCTION()
-	void MoveToResultLevel();
+	void AfterGameOverAnim();
 
 private:
 	UPROPERTY(VisibleAnywhere, Transient, meta = (BindWidgetAnim), Category = "UI")

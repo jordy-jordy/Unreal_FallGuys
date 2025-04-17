@@ -24,6 +24,9 @@ void UPlayMainWidget::NativeConstruct()
 		UPlayUserWidget* StandbyWIdget = FindWidget(EPlayUIType::PlayStandby);
 		StandbyWIdget->SetVisibility(ESlateVisibility::Hidden);
 	}
+
+	// 이전 실패 플레이어 가져오기
+	GetPrevFailPlayers();
 }
 
 void UPlayMainWidget::MainWidgetInit()
@@ -360,7 +363,6 @@ UPlayUserWidget* UPlayMainWidget::FindWidget(EPlayUIType _Type, int _Index/* = 0
 	return nullptr;
 }
 
-// 임시
 bool UPlayMainWidget::IsFailPlayer()
 {
 	APlayCharacter* PlayCharacter = Cast<APlayCharacter>(GetOwningPlayerPawn());
@@ -417,4 +419,32 @@ bool UPlayMainWidget::IsSuccessPlayer()
 	}
 
 	return false;
+}
+
+TArray<FPlayerInfoEntry>* UPlayMainWidget::GetPrevFailPlayers()
+{
+	APlayGameState* GameState = Cast<APlayGameState>(GetWorld()->GetGameState());
+	if (nullptr == GameState)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : GameState is null"), *FString(__FUNCSIG__));
+		return nullptr;
+	}
+
+	APlayCharacter* PlayCharacter = Cast<APlayCharacter>(GetOwningPlayerPawn());
+	if (nullptr == PlayCharacter)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : PlayCharacter is null"), *FString(__FUNCSIG__));
+		return nullptr;
+	}
+
+	APlayPlayerState* PlayerState = PlayCharacter->GetPlayerState<APlayPlayerState>();
+	if (nullptr == PlayerState)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : PlayerState is null"), *FString(__FUNCSIG__));
+		return nullptr;
+	}
+
+	PrevFailPlayers = GameState->FailPlayerInfoArray;
+
+	return &PrevFailPlayers;
 }

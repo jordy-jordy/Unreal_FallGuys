@@ -27,20 +27,6 @@ void UPlayGameOverWidget::NativeConstruct()
 			FWidgetDelegate::CreateUObject(this, &UPlayGameOverWidget::WidgetVisible));
 	}
 	// 델리게이트 테스트
-
-	//if (nullptr != GameOverAnim)
-	//{
-	//	GameOverAnimEvent.BindUFunction(this, FName(FString(TEXT("MoveToResultLevel"))));
-	//	BindToAnimationFinished(GameOverAnim, GameOverAnimEvent);
-	//	PlayAnimation(GameOverAnim);
-	//}
-
-	//if (nullptr != GameOverAnim_Clear)
-	//{
-	//	GameOverAnim_ClearEvent.BindUFunction(this, FName(FString(TEXT("MoveToResultLevel"))));
-	//	BindToAnimationFinished(GameOverAnim_Clear, GameOverAnim_ClearEvent);
-	//	PlayAnimation(GameOverAnim_Clear);
-	//}
 }
 
 void UPlayGameOverWidget::WidgetVisible()
@@ -57,7 +43,7 @@ void UPlayGameOverWidget::WidgetVisible()
 	{
 		if (nullptr != GameOverAnim)
 		{
-			GameOverAnimEvent.BindUFunction(this, FName(FString(TEXT("MoveToResultLevel"))));
+			GameOverAnimEvent.BindUFunction(this, FName(FString(TEXT("AfterGameOverAnim"))));
 			UnbindAllFromAnimationFinished(GameOverAnim_Clear);
 			BindToAnimationFinished(GameOverAnim, GameOverAnimEvent);
 			PlayAnimation(GameOverAnim);
@@ -67,7 +53,7 @@ void UPlayGameOverWidget::WidgetVisible()
 	{
 		if (nullptr != GameOverAnim_Clear)
 		{
-			GameOverAnim_ClearEvent.BindUFunction(this, FName(FString(TEXT("MoveToResultLevel"))));
+			GameOverAnim_ClearEvent.BindUFunction(this, FName(FString(TEXT("AfterGameOverAnim"))));
 			UnbindAllFromAnimationFinished(GameOverAnim);
 			BindToAnimationFinished(GameOverAnim_Clear, GameOverAnim_ClearEvent);
 			PlayAnimation(GameOverAnim_Clear);
@@ -75,7 +61,7 @@ void UPlayGameOverWidget::WidgetVisible()
 	}
 }
 
-void UPlayGameOverWidget::MoveToResultLevel()
+void UPlayGameOverWidget::AfterGameOverAnim()
 {
 	UPlayInGameWidget* InGameWidget = Cast<UPlayInGameWidget>(GetMainWidget()->FindWidget(EPlayUIType::PlayInGame));
 	UPlayResultWidget* PlayResult = Cast<UPlayResultWidget>(GetMainWidget()->FindWidget(EPlayUIType::PlayResult));
@@ -98,54 +84,31 @@ void UPlayGameOverWidget::MoveToResultLevel()
 
 	// ---------------------------- 문제부분 ----------------------------------------------
 	
-	//APlayCharacter* PlayCharacter = Cast<APlayCharacter>(GetOwningPlayerPawn());
-	//if (nullptr == PlayCharacter)
-	//{
-	//	UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : PlayCharacter is null"), *FString(__FUNCSIG__));
-	//	return;
-	//}
+	APlayCharacter* PlayCharacter = Cast<APlayCharacter>(GetOwningPlayerPawn());
+	if (nullptr == PlayCharacter)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : PlayCharacter is null"), *FString(__FUNCSIG__));
+		return;
+	}
 
-	//APlayPlayerState* PlayerState = PlayCharacter->GetPlayerState<APlayPlayerState>();
-	//if (nullptr == PlayerState)
-	//{
-	//	UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : PlayerState is null"), *FString(__FUNCSIG__));
-	//	return;
-	//}
+	APlayPlayerState* PlayerState = PlayCharacter->GetPlayerState<APlayPlayerState>();
+	if (nullptr == PlayerState)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : PlayerState is null"), *FString(__FUNCSIG__));
+		return;
+	}
 
-	//TArray<FPlayerInfoEntry>& PrevFailPlayersInfo = GameState->FailPlayerInfoArray;
-	//UE_LOG(FALL_DEV_LOG, Warning, TEXT("PrevFailPlayers Ptr: %p"), &PrevFailPlayersInfo);
+	TArray<FPlayerInfoEntry> PrevFailPlayers = *GetMainWidget()->GetPrevFailPlayers();
+	for (FPlayerInfoEntry PrevFailPlayer : PrevFailPlayers)
+	{
+		FString PrevFailPlayerID = PrevFailPlayer.PlayerInfo.UniqueID;
+		FString CurPlayerID = PlayerState->PlayerInfo.UniqueID;
 
-	//FName CurPlayerID = PlayerState->PlayerInfo.Tag;
-
-	//for (FPlayerInfoEntry PrevFailPlayerInfo : PrevFailPlayersInfo)
-	//{
-	//	FName PrevFailPlayerID = PrevFailPlayerInfo.PlayerInfo.Tag;
-
-	//	if ((CurPlayerID != PrevFailPlayerID))
-	//	{
-	//		if (false == IsShowResult && false == IsResultAnimated)
-	//		{
-	//			SetVisibility(ESlateVisibility::Hidden);
-	//			PlayResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	//		}
-	//	}
-	//	else if ((CurPlayerID == PrevFailPlayerID) && (EStagePhase::STAGE_1 == GameState->GetCurStagePhase_STATE()))
-	//	{
-	//		if (false == IsShowResult && false == IsResultAnimated)
-	//		{
-	//			SetVisibility(ESlateVisibility::Hidden);
-	//			PlayResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	//		}
-	//		else if (true == IsShowResult)
-	//		{
-	//			UFallGlobal::SetCanMoveLevel(true);
-	//		}
-	//	}
-	//	else if ((CurPlayerID == PrevFailPlayerID) && (EStagePhase::STAGE_1 != GameState->GetCurStagePhase_STATE()))
-	//	{
-	//		UFallGlobal::SetCanMoveLevel(true);
-	//	}
-	//}
+		if (CurPlayerID == PrevFailPlayerID)
+		{
+			int a = 0;
+		}
+	}
 
 	// ---------------------------- 문제부분 ----------------------------------------------
 

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Mode/01_Play/UI/PlayUserWidget.h"
+#include "Mode/01_Play/PlayGameState.h"
 #include "PlayMainWidget.generated.h"
 
 /**
@@ -65,6 +66,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	bool IsSuccessPlayer();
+
+	TArray<FPlayerInfoEntry>* GetPrevFailPlayers();
 	
 protected:
 
@@ -74,4 +77,5 @@ private:
 	EPlayUIType CurUIType;
 	UPlayUserWidget* CurWidget;
 	TMultiMap<EPlayUIType, UPlayUserWidget*> Widgets;
+	TArray<FPlayerInfoEntry> PrevFailPlayers;
 };
