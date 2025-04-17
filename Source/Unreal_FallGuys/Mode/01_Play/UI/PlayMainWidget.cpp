@@ -26,7 +26,7 @@ void UPlayMainWidget::NativeConstruct()
 	}
 
 	// 이전 실패 플레이어 가져오기
-	GetPrevFailPlayers();
+	SetPrevFailPlayers();
 }
 
 void UPlayMainWidget::MainWidgetInit()
@@ -421,30 +421,14 @@ bool UPlayMainWidget::IsSuccessPlayer()
 	return false;
 }
 
-TArray<FPlayerInfoEntry>* UPlayMainWidget::GetPrevFailPlayers()
+void UPlayMainWidget::SetPrevFailPlayers()
 {
 	APlayGameState* GameState = Cast<APlayGameState>(GetWorld()->GetGameState());
 	if (nullptr == GameState)
 	{
 		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : GameState is null"), *FString(__FUNCSIG__));
-		return nullptr;
-	}
-
-	APlayCharacter* PlayCharacter = Cast<APlayCharacter>(GetOwningPlayerPawn());
-	if (nullptr == PlayCharacter)
-	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : PlayCharacter is null"), *FString(__FUNCSIG__));
-		return nullptr;
-	}
-
-	APlayPlayerState* PlayerState = PlayCharacter->GetPlayerState<APlayPlayerState>();
-	if (nullptr == PlayerState)
-	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : PlayerState is null"), *FString(__FUNCSIG__));
-		return nullptr;
+		return;
 	}
 
 	PrevFailPlayers = GameState->FailPlayerInfoArray;
-
-	return &PrevFailPlayers;
 }

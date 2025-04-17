@@ -67,7 +67,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool IsSuccessPlayer();
 
-	TArray<FPlayerInfoEntry>* GetPrevFailPlayers();
+	void SetPrevFailPlayers();
+
+	TArray<FPlayerInfoEntry>* GetPrevFailPlayers()
+	{
+		return &PrevFailPlayers;
+	}
 	
 protected:
 

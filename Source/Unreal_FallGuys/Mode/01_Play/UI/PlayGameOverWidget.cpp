@@ -39,7 +39,19 @@ void UPlayGameOverWidget::WidgetVisible()
 	bool IsShowResult = InGameWidget->GetShowResult();
 	bool IsResultAnimated = PlayResult->GetAnimatedStatus();
 
-	if (false == IsShowResult && false == IsResultAnimated)
+	if (true == IsPrevFailure())
+	{
+		if (nullptr != GameOverAnim_Clear)
+		{
+			GameOverAnim_ClearEvent.BindUFunction(this, FName(FString(TEXT("AfterGameOverAnim"))));
+			UnbindAllFromAnimationFinished(GameOverAnim);
+			BindToAnimationFinished(GameOverAnim_Clear, GameOverAnim_ClearEvent);
+			PlayAnimation(GameOverAnim_Clear);
+			return;
+		}
+	}
+
+	if ((false == IsShowResult && false == IsResultAnimated))
 	{
 		if (nullptr != GameOverAnim)
 		{
@@ -47,6 +59,7 @@ void UPlayGameOverWidget::WidgetVisible()
 			UnbindAllFromAnimationFinished(GameOverAnim_Clear);
 			BindToAnimationFinished(GameOverAnim, GameOverAnimEvent);
 			PlayAnimation(GameOverAnim);
+			return;
 		}
 	}
 	else
@@ -57,6 +70,7 @@ void UPlayGameOverWidget::WidgetVisible()
 			UnbindAllFromAnimationFinished(GameOverAnim);
 			BindToAnimationFinished(GameOverAnim_Clear, GameOverAnim_ClearEvent);
 			PlayAnimation(GameOverAnim_Clear);
+			return;
 		}
 	}
 }
@@ -82,8 +96,6 @@ void UPlayGameOverWidget::AfterGameOverAnim()
 		return;
 	}
 
-	// ---------------------------- 巩力何盒 ----------------------------------------------
-	
 	APlayCharacter* PlayCharacter = Cast<APlayCharacter>(GetOwningPlayerPawn());
 	if (nullptr == PlayCharacter)
 	{
@@ -98,27 +110,77 @@ void UPlayGameOverWidget::AfterGameOverAnim()
 		return;
 	}
 
-	TArray<FPlayerInfoEntry> PrevFailPlayers = *GetMainWidget()->GetPrevFailPlayers();
-	for (FPlayerInfoEntry PrevFailPlayer : PrevFailPlayers)
+	if (EPlayerStatus::FAIL == PlayerState->PlayerInfo.Status)
+	{
+		//TArray<FPlayerInfoEntry>* PrevFailPlayers = GetMainWidget()->GetPrevFailPlayers();
+		//for (FPlayerInfoEntry PrevFailPlayer : *PrevFailPlayers)
+		//{
+		//	FString PrevFailPlayerID = PrevFailPlayer.PlayerInfo.UniqueID;
+		//	FString CurPlayerID = PlayerState->PlayerInfo.UniqueID;
+
+		//	if (CurPlayerID == PrevFailPlayerID)
+		//	{
+		//		int a = 0;
+		//		SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		//	}
+		//}
+
+		if (true == IsPrevFailure())
+		{
+			int a = 0;
+		}
+		else
+		{
+			if (false == IsShowResult && false == IsResultAnimated)
+			{
+				SetVisibility(ESlateVisibility::Hidden);
+				PlayResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			}
+		}
+	}
+	else if (EPlayerStatus::SUCCESS == PlayerState->PlayerInfo.Status)
+	{
+		if (false == IsShowResult && false == IsResultAnimated)
+		{
+			SetVisibility(ESlateVisibility::Hidden);
+			PlayResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		}
+		//else
+		//{
+		//	//UFallGlobal::SetCanMoveLevel(true);
+		//}
+	}
+}
+
+bool UPlayGameOverWidget::IsPrevFailure()
+{
+	APlayCharacter* PlayCharacter = Cast<APlayCharacter>(GetOwningPlayerPawn());
+	if (nullptr == PlayCharacter)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : PlayCharacter is null"), *FString(__FUNCSIG__));
+		return false;
+	}
+
+	APlayPlayerState* PlayerState = PlayCharacter->GetPlayerState<APlayPlayerState>();
+	if (nullptr == PlayerState)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : PlayerState is null"), *FString(__FUNCSIG__));
+		return false;
+	}
+
+	TArray<FPlayerInfoEntry>* PrevFailPlayers = GetMainWidget()->GetPrevFailPlayers();
+	for (FPlayerInfoEntry PrevFailPlayer : *PrevFailPlayers)
 	{
 		FString PrevFailPlayerID = PrevFailPlayer.PlayerInfo.UniqueID;
 		FString CurPlayerID = PlayerState->PlayerInfo.UniqueID;
 
 		if (CurPlayerID == PrevFailPlayerID)
 		{
-			int a = 0;
+			return true;
 		}
+
+		return false;
 	}
 
-	// ---------------------------- 巩力何盒 ----------------------------------------------
-
-	if (false == IsShowResult && false == IsResultAnimated)
-	{
-		SetVisibility(ESlateVisibility::Hidden);
-		PlayResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	}
-	else
-	{
-		//UFallGlobal::SetCanMoveLevel(true);
-	}
+	return false;
 }
