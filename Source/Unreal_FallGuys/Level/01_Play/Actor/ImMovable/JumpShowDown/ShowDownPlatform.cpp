@@ -42,7 +42,7 @@ void AShowDownPlatform::Tick(float DeltaTime)
 		return;
 	}
 	
-	AddActorLocalOffset(FVector::DownVector * 500.0f * DeltaTime);
+	AddActorLocalOffset(FVector::DownVector * 800.0f * DeltaTime);
 
 }
 

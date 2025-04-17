@@ -39,7 +39,7 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Platform")
 	bool IsLive = true;
 
-	float ShakeTime = 5.0f;
+	float ShakeTime = 3.2f;
 	FVector OriginPos = FVector::ZeroVector;
 
 	UFUNCTION()
