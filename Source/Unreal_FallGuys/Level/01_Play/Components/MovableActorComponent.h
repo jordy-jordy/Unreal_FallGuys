@@ -7,7 +7,7 @@
 #include "MovableActorComponent.generated.h"
 
 UENUM(BlueprintType)
-enum class EAxisType : uint8
+enum class EActorAxisType : uint8
 {
 	Roll UMETA(DisplayName = "X축 회전"),
 	Pitch UMETA(DisplayName = "Y축 회전"),
@@ -42,5 +42,5 @@ private:
 	float RotationSpeed;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LMH", meta = (AllowPrivateAccess = "true"))
-	EAxisType AxisType = EAxisType::Yaw;
+	EActorAxisType AxisType = EActorAxisType::Yaw;
 };

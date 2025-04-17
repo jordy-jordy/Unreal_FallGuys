@@ -132,9 +132,10 @@ void APlayPlayerState::S2M_CheckPlayer_Implementation()
 	if (Cast<APlayCharacter>(GetPawn()))
 	{
 		UBaseGameInstance* GameIns = GetPawn()->GetGameInstance<UBaseGameInstance>();
+
 		if (GameIns == nullptr) return;
 	
-		if (false == GameIns->bIsResultLevel)
+ 		if (false == GameIns->bIsResultLevel)
 		{
 			OutFailPlayer();
 		}
@@ -148,17 +149,27 @@ void APlayPlayerState::S2M_CheckPlayer_Implementation()
 
 void APlayPlayerState::CheckFailPlayer()
 {
+	UBaseGameInstance* GameIns = GetPawn()->GetGameInstance<UBaseGameInstance>();
+
+	if (GameIns == nullptr) return;
+
+	if (true == GameIns->bIsSpectar)
+	{
+		OutFailPlayer();
+	}
 
 	if (EPlayerStatus::FAIL == PlayerInfo.Status)
-	{
-		bIsSpectar = true;
+	{	
+		GameIns->bIsSpectar = true;
 	}
-	
 }
 
 void APlayPlayerState::OutFailPlayer()
 {
-	if (true == bIsSpectar)
+	UBaseGameInstance* GameIns = GetPawn()->GetGameInstance<UBaseGameInstance>();
+
+	if (GameIns == nullptr) return;
+	if (true == GameIns->bIsSpectar)
 	{
 		GetPawn()->SetActorLocation({ 0,0,-1000000 });
 		GetPawn()->SetActorEnableCollision(false);
