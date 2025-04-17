@@ -533,16 +533,14 @@ void APlayGameMode::FinishPlayer_Race()
 	switch (CurLevelInfo_Mode.CurStagePhase)
 	{
 	case EStagePhase::STAGE_1:
-		if		(DefaultPlayerCount <= 2) { SetFinishPlayerCount(1); }
-		else if (DefaultPlayerCount == 3) { SetFinishPlayerCount(2); }
+		if		(DefaultPlayerCount <= 4) { SetFinishPlayerCount(DefaultPlayerCount - 1); }
 		else if (DefaultPlayerCount <= 5) { SetFinishPlayerCount(3); }
 		else	{ SetFinishPlayerCount(DefaultPlayerCount / 2); }
 		break;
 
 	case EStagePhase::STAGE_2:
 		if		(DefaultPlayerCount <= 2) { SetFinishPlayerCount(1); }
-		else if (DefaultPlayerCount == 3) { SetFinishPlayerCount(2); }
-		else if (DefaultPlayerCount <= 5) { SetFinishPlayerCount(3); }
+		else if (DefaultPlayerCount <= 5) { SetFinishPlayerCount(DefaultPlayerCount - 1); }
 		else	{ SetFinishPlayerCount((DefaultPlayerCount / 2) / 2); }
 		break;
 
@@ -563,14 +561,14 @@ void APlayGameMode::FinishPlayer_Survive()
 	{
 	case EStagePhase::STAGE_1:
 		if		(DefaultPlayerCount <= 1) { SetFinishPlayerCount(0); }
-		else if (DefaultPlayerCount <= 3) { SetFinishPlayerCount(1); }
+		else if (DefaultPlayerCount <= 4) { SetFinishPlayerCount(1); }
 		else if (DefaultPlayerCount <= 5) { SetFinishPlayerCount(2); }
 		else	{ SetFinishPlayerCount(DefaultPlayerCount / 2); }
 		break;
 
 	case EStagePhase::STAGE_2:
 		if		(DefaultPlayerCount <= 1) { SetFinishPlayerCount(0); }
-		else if (DefaultPlayerCount <= 3) { SetFinishPlayerCount(1); }
+		else if (DefaultPlayerCount <= 4) { SetFinishPlayerCount(1); }
 		else if (DefaultPlayerCount <= 5) { SetFinishPlayerCount(2); }
 		else	{ SetFinishPlayerCount((DefaultPlayerCount / 2) / 2); }
 		break;

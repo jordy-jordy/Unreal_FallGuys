@@ -123,10 +123,10 @@ void UFallGlobal::ChangeCostumeBot(APawn* _Pawn, UStaticMeshComponent* _LowComp,
 }
 
 // BaseGameInstance : Pawn의 코스튬 컬러 변경 - 저장 안함
-void UFallGlobal::ChangeCostumeColorWithOutSave(APawn* _Pawn, const FString& _CostumeColor)
+void UFallGlobal::ChangeCostumeColorWithOutSave(APawn* _Pawn, USkeletalMeshComponent* _SkeletalMesh, const FString& _CostumeColor)
 {
 	UBaseGameInstance* GameIns = _Pawn->GetGameInstance<UBaseGameInstance>();
-	GameIns->InsChangeCostumeColorWithOutSave(_Pawn, _CostumeColor);
+	GameIns->InsChangeCostumeColorWithOutSave(_Pawn, _SkeletalMesh, _CostumeColor);
 }
 
 // BaseGameInstance : Pawn의 코스튬 상의 변경 - 저장 안함

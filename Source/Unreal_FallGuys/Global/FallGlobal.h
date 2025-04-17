@@ -89,7 +89,7 @@ public:
 
 	// BaseGameInstance : Pawn의 코스튬 컬러 변경 - 저장 안함
 	UFUNCTION(BlueprintCallable)
-	static void ChangeCostumeColorWithOutSave(APawn* _Pawn, const FString& _CostumeColor);
+	static void ChangeCostumeColorWithOutSave(APawn* _Pawn, USkeletalMeshComponent* _SkeletalMesh, const FString& _CostumeColor);
 
 	// BaseGameInstance : Pawn의 코스튬 상의 변경 - 저장 안함
 	UFUNCTION(BlueprintCallable)

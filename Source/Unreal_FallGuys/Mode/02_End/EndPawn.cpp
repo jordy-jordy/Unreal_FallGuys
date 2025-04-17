@@ -17,12 +17,14 @@ AEndPawn::AEndPawn()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	USceneComponent* RootSceneComp = CreateDefaultSubobject<USceneComponent>(TEXT("RootComp"));
-	RootComponent = RootSceneComp;
+	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+
+	BaseMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("BaseMesh"));
+	BaseMesh->SetupAttachment(RootComponent);
+	BaseMesh->SetAnimationMode(EAnimationMode::AnimationSingleNode);
+
 	UpComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Up"));
-	UpComp->SetupAttachment(RootComponent);
 	LowComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Low"));
-	LowComp->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -71,7 +73,23 @@ void AEndPawn::InitDirectly(const FString& _Nick, const FString& _Color, const F
 	UE_LOG(FALL_DEV_LOG, Log, TEXT("EndPawn :: InitDirectly :: 닉네임: %s, 컬러: %s, 상의: %s, 하의: %s"),
 		*_Nick, *_Color, *_Top, *_Bot);
 
-	UFallGlobal::ChangeCostumeColorWithOutSave(this, CostumeColor);
-	UFallGlobal::ChangeCostumeTopWithOutSave(this, UpComp, CostumeTop);
-	UFallGlobal::ChangeCostumeBotWithOutSave(this, LowComp, CostumeBot);
+	UpComp->AttachToComponent(BaseMesh, FAttachmentTransformRules::KeepRelativeTransform, TEXT("HeadSocket"));
+	LowComp->AttachToComponent(BaseMesh, FAttachmentTransformRules::KeepRelativeTransform, TEXT("CustomSocket"));
+
+	UBaseGameInstance* GI = GetGameInstance<UBaseGameInstance>();
+	if (GI)
+	{
+		if (CostumeColor != TEXT(""))
+		{
+			BaseMesh->SetSkeletalMesh(UFallGlobal::GetCostumeColorMesh(this, CostumeColor));
+		}
+		if (CostumeTop != TEXT(""))
+		{
+			UpComp->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, CostumeTop));
+		}
+		if (CostumeBot != TEXT(""))
+		{
+			LowComp->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, CostumeBot));
+		}
+	}
 }

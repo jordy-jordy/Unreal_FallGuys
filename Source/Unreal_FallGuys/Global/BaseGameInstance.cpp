@@ -316,25 +316,27 @@ void UBaseGameInstance::InsChangeCostumeColor(APawn* _Pawn, const FString& _Cost
 }
 
 // Pawn의 코스튬 컬러 변경 - 저장 안함
-void UBaseGameInstance::InsChangeCostumeColorWithOutSave(APawn* _Pawn, const FString& _CostumeColor)
+void UBaseGameInstance::InsChangeCostumeColorWithOutSave(APawn* _Pawn, USkeletalMeshComponent* _SkeletalMesh, const FString& _CostumeColor)
 {
 	UWorld* World = _Pawn->GetWorld();
 	const FCostumeColorDataRow* CostumeColorData = UGlobalDataTable::GetCostumeColorData(World, _CostumeColor);
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsChangeCostumeColorWithOutSave :: 설정할 메시 이름 = %s"), *CostumeColorData->CostumeMesh->GetName());
 
 	if (CostumeColorData && CostumeColorData->CostumeMesh)
 	{
-		if (USkeletalMeshComponent* MeshComp = _Pawn->FindComponentByClass<USkeletalMeshComponent>())
+		if (_SkeletalMesh)
 		{
-			MeshComp->SetSkeletalMesh(CostumeColorData->CostumeMesh);
+			_SkeletalMesh->SetSkeletalMesh(CostumeColorData->CostumeMesh);
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsChangeCostumeColorWithOutSave :: SetSkeletalMesh 성공"));
 		}
 		else
 		{
-			UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsChangeCostumeColor :: MeshComponent가 없음"));
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsChangeCostumeColorWithOutSave :: MeshComponent가 없음"));
 		}
 	}
 	else
 	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsChangeCostumeColor :: 잘못된 데이터 또는 메시 없음"));
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsChangeCostumeColorWithOutSave :: 잘못된 데이터 또는 메시 없음"));
 	}
 }
 
@@ -384,12 +386,15 @@ void UBaseGameInstance::InsChangeCostumeTopWithOutSave(APawn* _Pawn, UStaticMesh
 	if (_CostumeTop == TEXT("Default") || _CostumeTop.IsEmpty())
 	{
 		InsApplyStaticMesh(_UpComp, nullptr, TEXT("InsChangeCostumeTop(Default)"));
-		InsSaveCostumeTop(_CostumeTop);
 		return;
 	}
 
 	UWorld* World = _Pawn->GetWorld();
 	const FCostumeDataRow* CostumeTopData = UGlobalDataTable::GetCostumeData(World, _CostumeTop);
+	if (CostumeTopData->CostumeMesh)
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsChangeCostumeTopWithOutSave :: 설정할 상의 메시 이름 = %s"), *CostumeTopData->CostumeMesh->GetName());
+	}
 
 	InsApplyStaticMesh(_UpComp,
 		CostumeTopData ? CostumeTopData->CostumeMesh : nullptr,
@@ -422,12 +427,15 @@ void UBaseGameInstance::InsChangeCostumeBotWithOutSave(APawn* _Pawn, UStaticMesh
 	if (_CostumeBot == TEXT("Default") || _CostumeBot.IsEmpty())
 	{
 		InsApplyStaticMesh(_LowComp, nullptr, TEXT("InsChangeCostumeBot(Default)"));
-		InsSaveCostumeBot(_CostumeBot);
 		return;
 	}
 
 	UWorld* World = _Pawn->GetWorld();
 	const FCostumeDataRow* CostumeBotData = UGlobalDataTable::GetCostumeData(World, _CostumeBot);
+	if (CostumeBotData->CostumeMesh)
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("InsChangeCostumeBotWithOutSave :: 설정할 하의 메시 이름 = %s"), *CostumeBotData->CostumeMesh->GetName());
+	}
 
 	InsApplyStaticMesh(_LowComp,
 		CostumeBotData ? CostumeBotData->CostumeMesh : nullptr,

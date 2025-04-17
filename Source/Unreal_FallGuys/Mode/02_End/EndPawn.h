@@ -33,6 +33,9 @@ public:
 
 // 이현정 : 코스튬 세팅
 public:
+	UPROPERTY(EditAnywhere)
+	USkeletalMeshComponent* BaseMesh; // 애니메이션 담당할 스켈레탈 메시
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	class UStaticMeshComponent* UpComp;
 

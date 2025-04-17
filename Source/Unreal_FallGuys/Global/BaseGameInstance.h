@@ -198,7 +198,7 @@ public:
 
 	// Pawn의 코스튬 컬러 변경 - 저장 안함
 	UFUNCTION(BlueprintCallable, Category = "PLAYER COSTUME")
-	void InsChangeCostumeColorWithOutSave(APawn* _Pawn, const FString& _CostumeColor);
+	void InsChangeCostumeColorWithOutSave(APawn* _Pawn, USkeletalMeshComponent* _SkeletalMesh, const FString& _CostumeColor);
 
 	// 코스튬(상, 하의) 공통 함수
 	void InsApplyStaticMesh(UStaticMeshComponent* _Comp, UStaticMesh* _Mesh, const FString& _LogContext);
