@@ -28,11 +28,6 @@ void ATeamPlayGameState::SetBLUETeamScore_Implementation(int32 _Score)
 	GameStateBLUETeamScore = _Score;
 }
 
-void ATeamPlayGameState::SetStageLimitTime_Implementation(float _Time)
-{
-	STATE_StageLimitTime = _Time;
-}
-
 void ATeamPlayGameState::SetRemainingTime_Implementation(float _Time)
 {
 	STATE_RemainingTime = _Time;

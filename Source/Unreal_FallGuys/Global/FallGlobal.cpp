@@ -306,6 +306,14 @@ bool UFallGlobal::GetIsEndGame()
 	return FallState->GetStateIsEndGame();
 }
 
+// PlayGameState : 제한 시간이 몇분이야?
+float UFallGlobal::GetStageLimitTime()
+{
+	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
+	if (!FallState) return false;
+	return FallState->GetStageLimitTime_STATE();
+}
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 

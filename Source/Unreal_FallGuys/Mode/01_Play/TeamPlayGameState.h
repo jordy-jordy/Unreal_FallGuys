@@ -44,15 +44,6 @@ protected:
 
 #pragma region TeamPlayGameState :: 스테이지 제한 시간 관련
 public:
-	// 스테이지 제한 시간 반환
-	UFUNCTION(BlueprintCallable, Category = "LEVEL LIMIT TIME")
-	float GetStageLimitTime() { return STATE_StageLimitTime; }
-
-	// 스테이지 제한 시간 세팅
-	UFUNCTION(BlueprintCallable, Reliable, NetMulticast, Category = "LEVEL LIMIT TIME")
-	void SetStageLimitTime(float _Time);
-	void SetStageLimitTime_Implementation(float _Time);
-
 	// 스테이지 남은 시간 반환
 	UFUNCTION(BlueprintCallable, Category = "LEVEL LIMIT TIME")
 	float GetRemainingTime() const { return STATE_RemainingTime; }

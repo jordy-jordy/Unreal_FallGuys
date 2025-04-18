@@ -243,6 +243,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static bool GetIsEndGame();
 
+	// PlayGameState : 제한 시간이 몇분이야?
+	UFUNCTION(BlueprintCallable)
+	static float GetStageLimitTime();
+
+
 // 이재영 : 메인위젯을 얻는 함수
 public:
 	UFUNCTION(BlueprintCallable)
