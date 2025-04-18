@@ -9,6 +9,7 @@
 #include "Mode/01_Play/PlayCharacter.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include <Net/UnrealNetwork.h>
+#include <Kismet/GameplayStatics.h>
 
 
 APlayPlayerState::APlayPlayerState()
@@ -163,7 +164,7 @@ void APlayPlayerState::CheckFailPlayer()
 		OutFailPlayer();
 	}
 
-	if (EPlayerStatus::FAIL == PlayerInfo.Status)
+	if (EPlayerStatus::FAIL == PlayerInfo.Status && UGameplayStatics::GetPlayerController(GetWorld(), 0) == GetPawn()->GetController())
 	{	
 		GameIns->bIsSpectar = true;
 	}
