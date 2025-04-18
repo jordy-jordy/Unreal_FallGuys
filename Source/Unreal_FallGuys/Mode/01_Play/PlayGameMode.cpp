@@ -382,7 +382,7 @@ void APlayGameMode::BeginPlay()
 	}
 #endif
 
-	if (!HasAuthority()) { return; } // 서버에서만 실행
+	if (!HasAuthority()) return; // 서버에서만 실행
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode BeginPlay START ======= "));
 
@@ -413,7 +413,7 @@ void APlayGameMode::BeginPlay()
 void APlayGameMode::CheckStartConditions()
 {
 	// 인원이 안찼으면 리턴
-	if (bNumberOfPlayer == false) { return; }
+	if (bNumberOfPlayer == false) return;
 
 	APlayGameState* FallState = GetGameState<APlayGameState>();
 
@@ -440,7 +440,7 @@ void APlayGameMode::CheckStartConditions()
 		}
 
 		// 시네마틱이 안끝났으면 리턴
-		if (bCinematicEND == false) { return; }
+		if (bCinematicEND == false) return;
 
 		// 카운트 다운 사용할거야?
 		if (UFallConst::UseCountDown == true)
@@ -746,13 +746,13 @@ void APlayGameMode::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 
 	// 서버만 실행
-	if (!HasAuthority()) { return; }
+	if (!HasAuthority()) return;
 
 	// 게임이 시작되지 않았다면 리턴하도록 해
-	if (!bGameStarted) { return; }
+	if (!bGameStarted) return;
 
 	// 개인전이 아니면 여기서 끝
-	if (CurLevelInfo_Mode.LevelType != EStageType::SOLO) { return; }
+	if (CurLevelInfo_Mode.LevelType != EStageType::SOLO) return;
 
 	// 서버 트래블 활성화 됐으면 여기서 끝
 	if (StartedServerTravel) return;
@@ -777,7 +777,7 @@ void APlayGameMode::Tick(float DeltaSeconds)
 		else if (bMODEIsResultLevel && !bPassedResultLevel && CurLevelInfo_Mode.CurStagePhase != EStagePhase::STAGE_3_RESULT)
 		{
 			// 결과 화면에서 넘어가도 된다는 콜이 오기 전까진 리턴
-			if (!bCanMoveResultLevel) { return; }
+			if (!bCanMoveResultLevel) return;
 
 			// 서버 트래블 활성화
 			StartedServerTravel = true;
@@ -791,7 +791,7 @@ void APlayGameMode::Tick(float DeltaSeconds)
 		else
 		{
 			// 결과 화면에서 넘어가도 된다는 콜이 오기 전까진 리턴
-			if (!bCanMoveResultLevel) { return; }
+			if (!bCanMoveResultLevel) return;
 
 			// 서버 트래블 활성화
 			StartedServerTravel = true;
@@ -812,7 +812,7 @@ void APlayGameMode::Tick(float DeltaSeconds)
 void APlayGameMode::SetEndCondition_Trigger()
 {
 	// 게임 끝났으면 리턴
-	if (IsEndGame == true) { return; }
+	if (IsEndGame == true) return;
 	IsEndGame = true;
 
 	// 공통 종료 로직
@@ -914,7 +914,7 @@ void APlayGameMode::BackUpPlayersInfo()
 	UBaseGameInstance* GameInstance = Cast<UBaseGameInstance>(GetGameInstance());
 	APlayGameState* PlayGameState = GetGameState<APlayGameState>();
 
-	if (!GameInstance && !PlayGameState) { return; }
+	if (!GameInstance && !PlayGameState) return;
 
 	// 백업하기 전에 비워주자
 	GameInstance->PlayerInfoBackup.Empty();
@@ -1083,7 +1083,7 @@ void APlayGameMode::MarkWinnersBeforeEndLevel()
 // 개인전용 : 중간 결과창으로 이동
 void APlayGameMode::ServerTravelToRaceOver()
 {
-	if (!HasAuthority()) { return; }
+	if (!HasAuthority()) return;
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 서버트래블 감지 :: %s 화면으로 이동합니다."), *NextLevel);
 
@@ -1093,7 +1093,7 @@ void APlayGameMode::ServerTravelToRaceOver()
 // 개인전용 : 다음 스테이지로 이동
 void APlayGameMode::ServerTravelToNextRandLevel()
 {
-	if (!HasAuthority()) { return; }
+	if (!HasAuthority()) return;
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 서버트래블 감지 :: 다음 스테이지로 이동합니다."));
 
@@ -1103,7 +1103,7 @@ void APlayGameMode::ServerTravelToNextRandLevel()
 // 개인전용 : 최종 결과창으로 이동
 void APlayGameMode::ClientTravelToEndLevel()
 {
-	if (!HasAuthority()) { return; }
+	if (!HasAuthority()) return;
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 서버에서 클라이언트들에게 EndLevel 트래블 명령 시작"));
 
