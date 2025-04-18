@@ -775,8 +775,21 @@ void APlayGameMode::Tick(float DeltaSeconds)
 	}
 
 	// 모든 조건이 true 가 되었을 때 서버 트래블 활성화
-	if (IsEndGame && bPlayerStatusChanged && bPlayerInfosBackUp && bNextLevelDataSetted && bCanMoveLevel && AreAllClientsReady())
+	if (IsEndGame && bPlayerStatusChanged && bPlayerInfosBackUp && bNextLevelDataSetted && bCanMoveLevel)
 	{
+		// 모든 플레이어가 서버트래블 준비되기 전까진 리턴
+		if (!bIsAllPlayersReady)
+		{
+			if (AreAllClientsReady())
+			{
+				bIsAllPlayersReady = true;
+			}
+			else
+			{
+				return;
+			}
+		}
+
 		// 결과 화면이 아닌 경우 결과 화면으로 이동
 		if (!bMODEIsResultLevel)
 		{

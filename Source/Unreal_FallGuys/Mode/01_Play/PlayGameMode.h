@@ -285,6 +285,8 @@ protected:
 	bool bCanMoveResultLevel = false;
 	// 결과 화면에서 다음으로 넘어감
 	bool bPassedResultLevel = false;
+	// 플레이어들 모두 준비 됐니?
+	bool bIsAllPlayersReady = false;
 
 #pragma endregion
 
