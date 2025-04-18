@@ -187,6 +187,11 @@ void ATeamPlayGameMode::OnStageLimitTimeOver()
 {
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("TeamPlayGameMode :: BeginPlay :: 제한 시간 초과! 스테이지를 종료합니다."));
 
+	// 게임 종료 설정
+	IsEndGame = true;
+	ATeamPlayGameState* TeamFallState = GWorld->GetGameState<ATeamPlayGameState>();
+	TeamFallState->SetStateIsEndGameTrue();
+
 	// 남은 시간 갱신 중단
 	GetWorldTimerManager().ClearTimer(RemainingTimeUpdateHandle);
 
@@ -194,7 +199,6 @@ void ATeamPlayGameMode::OnStageLimitTimeOver()
 	DetermineWinningAndLosingTeams();
 
 	// 공통 종료 로직
-	ATeamPlayGameState* TeamFallState = GWorld->GetGameState<ATeamPlayGameState>();
 	SetEndCondition_Common(TeamFallState);
 
 	// 팀전 종료 로직
