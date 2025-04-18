@@ -533,7 +533,7 @@ void APlayGameMode::FinishPlayer_Race()
 	switch (CurLevelInfo_Mode.CurStagePhase)
 	{
 	case EStagePhase::STAGE_1:
-		if (DefaultPlayerCount <= 1) { SetFinishPlayerCount(1); }
+		if		(DefaultPlayerCount <= 2) { SetFinishPlayerCount(1); }
 		else if (DefaultPlayerCount <= 4) { SetFinishPlayerCount(DefaultPlayerCount - 1); }
 		else if (DefaultPlayerCount <= 5) { SetFinishPlayerCount(3); }
 		else	{ SetFinishPlayerCount(DefaultPlayerCount / 2); }
