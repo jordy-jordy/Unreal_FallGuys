@@ -1139,13 +1139,13 @@ void APlayGameMode::ServerTravelToEndLevel()
 		return;
 	}
 
-	// 1초 후 서버장 클라이언트 트래블
+	// 0.2초 후 서버장 클라이언트 트래블
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 서버장이 0.2초 뒤 EndLevel로 ClientTravel 시작"));
 	FTimerHandle ServerHostTravelHandle;
 	GetWorldTimerManager().SetTimer(ServerHostTravelHandle, [ServerHostPC]()
 		{
-			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 서버장이 1초 뒤 EndLevel로 ClientTravel 시작"));
 			ServerHostPC->ClientTravel(TEXT("/Game/BP/Level/02_End/EndLevel"), ETravelType::TRAVEL_Absolute);
-		}, 1.0f, false);
+		}, 0.2f, false);
 }
 
 #pragma endregion
