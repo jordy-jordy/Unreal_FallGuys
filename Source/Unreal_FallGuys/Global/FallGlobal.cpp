@@ -302,7 +302,7 @@ int UFallGlobal::GetMaxPlayerCount()
 bool UFallGlobal::GetIsEndGame()
 {
 	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
-	if (!FallState) return 0;
+	if (!FallState) return false;
 	return FallState->GetStateIsEndGame();
 }
 
