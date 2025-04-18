@@ -250,6 +250,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "LEVEL")
 	int GetStateMaxPlayerCount() const { return StateMaxPlayerCount; }
 
+	// 게임 끝났니?
+	UFUNCTION(BlueprintCallable, Category = "LEVEL")
+	bool GetStateIsEndGame() const { return StateIsEndGame; }
+
 // 레벨 데이터들 세팅하는 함수
 public:
 	// 레벨 시네마틱 시작하세요
@@ -301,6 +305,11 @@ public:
 	void SetStateMaxPlayerCount(int _Value);
 	void SetStateMaxPlayerCount_Implementation(int _Value);
 
+	// 게임 끝났음 : PlayGameMode에서 세팅
+	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "LEVEL")
+	void SetStateIsEndGameTrue();
+	void SetStateIsEndGameTrue_Implementation();
+
 protected:
 	// 레벨 시네마틱 시작해도 되니?
 	UPROPERTY(Replicated)
@@ -329,6 +338,9 @@ protected:
 	// 최대 접속자 수 : PlayGameMode에서 가져옴
 	UPROPERTY(Replicated)
 	int StateMaxPlayerCount = 0;
+	// 게임 끝났음
+	UPROPERTY(Replicated)
+	bool StateIsEndGame = false;
 
 #pragma endregion
 

@@ -298,6 +298,14 @@ int UFallGlobal::GetMaxPlayerCount()
 	return FallState->GetStateMaxPlayerCount();
 }
 
+// PlayGameState : 게임 끝났니?
+bool UFallGlobal::GetIsEndGame()
+{
+	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
+	if (!FallState) return 0;
+	return FallState->GetStateIsEndGame();
+}
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 

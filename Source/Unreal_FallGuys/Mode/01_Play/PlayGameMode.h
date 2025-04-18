@@ -246,11 +246,11 @@ public:
 
 protected:
 	// 게임 종료 트리거
-	void SetEndCondition_Trigger();
+	void SetEndCondition_Trigger(APlayGameState* _FallState);
 	// 개인전 및 팀전 공통 종료 로직
-	void SetEndCondition_Common();
+	void SetEndCondition_Common(APlayGameState* _FallState);
 	// 개인전 종료 로직
-	void SetEndCondition_Solo();
+	void SetEndCondition_Solo(APlayGameState* _FallState);
 
 	// 남은 플레이어의 상태 일괄 변경
 	void ChangeDefaultPlayersTo();

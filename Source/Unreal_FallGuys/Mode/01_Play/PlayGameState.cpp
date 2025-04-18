@@ -383,6 +383,12 @@ void APlayGameState::SetStateMaxPlayerCount_Implementation(int _Value)
 	StateMaxPlayerCount = _Value;
 }
 
+// 게임 끝났음 : PlayGameMode에서 세팅
+void APlayGameState::SetStateIsEndGameTrue_Implementation()
+{
+	StateIsEndGame = true;
+}
+
 // 현 스테이지의 골 타입을 반환함
 FString APlayGameState::GetSTATEStageGoalType()
 {

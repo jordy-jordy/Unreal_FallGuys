@@ -194,7 +194,8 @@ void ATeamPlayGameMode::OnStageLimitTimeOver()
 	DetermineWinningAndLosingTeams();
 
 	// 공통 종료 로직
-	SetEndCondition_Common();
+	ATeamPlayGameState* TeamFallState = GWorld->GetGameState<ATeamPlayGameState>();
+	SetEndCondition_Common(TeamFallState);
 
 	// 팀전 종료 로직
 	SetEndCondition_Team();

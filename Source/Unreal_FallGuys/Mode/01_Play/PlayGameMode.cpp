@@ -423,7 +423,7 @@ void APlayGameMode::CheckStartConditions()
 		FallState->SetIsLevelCinematicEnd(true);
 		bCountDownEnd = true;
 
-		SetEndCondition_Trigger();
+		SetEndCondition_Trigger(FallState);
 		bCanMoveLevel = true;
 	}
 	else
@@ -533,7 +533,8 @@ void APlayGameMode::FinishPlayer_Race()
 	switch (CurLevelInfo_Mode.CurStagePhase)
 	{
 	case EStagePhase::STAGE_1:
-		if		(DefaultPlayerCount <= 4) { SetFinishPlayerCount(DefaultPlayerCount - 1); }
+		if (DefaultPlayerCount <= 1) { SetFinishPlayerCount(1); }
+		else if (DefaultPlayerCount <= 4) { SetFinishPlayerCount(DefaultPlayerCount - 1); }
 		else if (DefaultPlayerCount <= 5) { SetFinishPlayerCount(3); }
 		else	{ SetFinishPlayerCount(DefaultPlayerCount / 2); }
 		break;
@@ -712,7 +713,7 @@ void APlayGameMode::OnPlayerFinished(APlayCharacter* _Character)
 
 	if (CurFinishPlayer >= FinishPlayer && IsEndGame == false)
 	{
-		SetEndCondition_Trigger();
+		SetEndCondition_Trigger(FallState);
 	}
 }
 
@@ -760,7 +761,8 @@ void APlayGameMode::Tick(float DeltaSeconds)
 	// 성공 조건이 0명이면 바로 성공 처리
 	if (FinishPlayer == 0 && !bSetWinbyDefault)
 	{
-		SetEndCondition_Trigger();
+		APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
+		SetEndCondition_Trigger(FallState);
 		bSetWinbyDefault = true;
 	}
 
@@ -809,21 +811,24 @@ void APlayGameMode::Tick(float DeltaSeconds)
 
 #pragma region PlayGameMode :: Tick 에서 실행되는 함수들
 // 게임 종료 트리거
-void APlayGameMode::SetEndCondition_Trigger()
+void APlayGameMode::SetEndCondition_Trigger(APlayGameState* _FallState)
 {
 	// 게임 끝났으면 리턴
 	if (IsEndGame == true) return;
+
+	// 게임 종료 설정
 	IsEndGame = true;
+	_FallState->SetStateIsEndGameTrue();
 
 	// 공통 종료 로직
-	SetEndCondition_Common();
+	SetEndCondition_Common(_FallState);
 
 	// 개인전 종료 로직
-	SetEndCondition_Solo();
+	SetEndCondition_Solo(_FallState);
 }
 
 // 개인전 및 팀전 공통 종료 로직
-void APlayGameMode::SetEndCondition_Common()
+void APlayGameMode::SetEndCondition_Common(APlayGameState* _FallState)
 {
 	// 결과 화면이 아닐때만
 	if (!bMODEIsResultLevel)
@@ -838,8 +843,7 @@ void APlayGameMode::SetEndCondition_Common()
 		// 레벨 종료 UI 띄워
 		if (!bShowedLevelEndUI)
 		{
-			APlayGameState* FallState = GetGameState<APlayGameState>();
-			FallState->MCAST_WidgetDelegate(TEXT("GameOver"));
+			_FallState->MCAST_WidgetDelegate(TEXT("GameOver"));
 			bShowedLevelEndUI = true;
 		}
 	}
@@ -871,10 +875,8 @@ void APlayGameMode::SetCharacterMoveImPossible()
 }
 
 // 개인전 종료 로직
-void APlayGameMode::SetEndCondition_Solo()
+void APlayGameMode::SetEndCondition_Solo(APlayGameState* _FallState)
 {
-	APlayGameState* FallState = GetGameState<APlayGameState>();
-	
 	// 결과 화면이 아닐때만
 	if (!bMODEIsResultLevel)
 	{
@@ -886,7 +888,7 @@ void APlayGameMode::SetEndCondition_Solo()
 		}
 
 		// 실패자에게 DropOrder 배정 및 실패한 유저 정보 백업
-		FallState->SetDropOrder();
+		_FallState->SetDropOrder();
 
 		// 플레이어 인포를 백업한 이력이 없을때만
 		if (!bPlayerInfosBackUp)
