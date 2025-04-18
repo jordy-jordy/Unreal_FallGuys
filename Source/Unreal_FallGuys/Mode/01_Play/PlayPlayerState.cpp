@@ -21,7 +21,7 @@ void APlayPlayerState::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//CheckPlayer();
+	CheckPlayer();
 }
 
 void APlayPlayerState::SetPlayerTag_Implementation(const FName& _Tag)
@@ -118,14 +118,70 @@ void APlayPlayerState::SetbReadyToTravelTrue()
 // 실패한 플레이어 콜리전 처리
 void APlayPlayerState::CheckPlayer()
 {
-	
-	if (HasAuthority()) {
-		S2M_CheckPlayer_Implementation();
+
+
+	{
+		if (HasAuthority())
+		{
+			int a = 0;
+
+			
+		}
+		else
+		{
+			int b = 0;
+
+		}
+
+		UBaseGameInstance* GameIns = GetPawn()->GetGameInstance<UBaseGameInstance>();
+
+		if (GameIns != nullptr)
+		{
+			GetPawn()->SetActorLocation({ 0,0,-100000 });
+			GetPawn()->SetActorEnableCollision(false);
+
+			USkeletalMeshComponent* MeshComp = GetPawn()->FindComponentByClass<USkeletalMeshComponent>();
+
+			if (MeshComp)
+			{
+				MeshComp->SetSimulatePhysics(false);
+				MeshComp->SetEnableGravity(false);
+			}
+				
+		}
+	}
+		
+
+	/*{
+		UBaseGameInstance* GameIns = GetPawn()->GetGameInstance<UBaseGameInstance>();
+
+		if (GameIns != nullptr)
+		{
+			C2S_SetIsSpectar(GameIns);
+		}
+	}
+
+	if (false == bIsResultLevel)
+	{
+		OutFailPlayer();
 	}
 	else
 	{
-		C2S_CheckPlayer();
+		CheckFailPlayer();
 	}
+
+	{
+		UBaseGameInstance* GameIns = GetPawn()->GetGameInstance<UBaseGameInstance>();
+
+		if (GameIns != nullptr)
+		{
+			if (true == bIsSpectar)
+			{
+				GameIns->bIsSpectar = true;
+			}
+		}
+	}*/
+	
 }
 
 void APlayPlayerState::C2S_CheckPlayer_Implementation()
@@ -135,49 +191,38 @@ void APlayPlayerState::C2S_CheckPlayer_Implementation()
 
 void APlayPlayerState::S2M_CheckPlayer_Implementation()
 {
-	if (Cast<APlayCharacter>(GetPawn()))
-	{
-		UBaseGameInstance* GameIns = GetPawn()->GetGameInstance<UBaseGameInstance>();
-
-		if (GameIns == nullptr) return;
 	
- 		if (false == GameIns->bIsResultLevel)
-		{
-			OutFailPlayer();
-		}
-		else
-		{
-			CheckFailPlayer();
-		}
+}
 
-	}
+void APlayPlayerState::C2S_SetIsSpectar_Implementation(class UBaseGameInstance* GameIns)
+{
+	S2M_SetIsSpectar_Implementation(GameIns);
+}
+
+void APlayPlayerState::S2M_SetIsSpectar_Implementation(class UBaseGameInstance* GameIns)
+{
+	bIsSpectar = GameIns->bIsSpectar;
+	bIsResultLevel = GameIns->bIsResultLevel;
 }
 
 void APlayPlayerState::CheckFailPlayer()
 {
-	UBaseGameInstance* GameIns = GetPawn()->GetGameInstance<UBaseGameInstance>();
-
-	if (GameIns == nullptr) return;
-
-	if (true == GameIns->bIsSpectar)
+	if (true == bIsSpectar)
 	{
 		OutFailPlayer();
 	}
 
-	if (EPlayerStatus::FAIL == PlayerInfo.Status && UGameplayStatics::GetPlayerController(GetWorld(), 0) == GetPawn()->GetController())
+	if (EPlayerStatus::FAIL == PlayerInfo.Status)
 	{	
-		GameIns->bIsSpectar = true;
+		bIsSpectar = true;
 	}
 }
 
 void APlayPlayerState::OutFailPlayer()
 {
-	UBaseGameInstance* GameIns = GetPawn()->GetGameInstance<UBaseGameInstance>();
-
-	if (GameIns == nullptr) return;
-	if (true == GameIns->bIsSpectar)
+	if (true == bIsSpectar)
 	{
-		GetPawn()->SetActorLocation({ 0,0,-1000000 });
+		GetPawn()->SetActorLocation({ 0,0,-100000 });
 		GetPawn()->SetActorEnableCollision(false);
 
 		USkeletalMeshComponent* MeshComp = GetPawn()->FindComponentByClass<USkeletalMeshComponent>();
@@ -199,5 +244,7 @@ void APlayPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(APlayPlayerState, PlayerStatus);
 	DOREPLIFETIME(APlayPlayerState, PlayerDropOrder);
 	DOREPLIFETIME(APlayPlayerState, bIsWinner);
+	DOREPLIFETIME(APlayPlayerState, bIsSpectar);
+	DOREPLIFETIME(APlayPlayerState, bIsResultLevel);
 }
 

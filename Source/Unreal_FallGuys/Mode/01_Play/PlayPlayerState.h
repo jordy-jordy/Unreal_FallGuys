@@ -181,12 +181,23 @@ public:
     void S2M_CheckPlayer();
     void S2M_CheckPlayer_Implementation();
 
-    UFUNCTION(Category = "PLAYER START")
+    UFUNCTION(Reliable, Server, Category = "PLAYER START")
+    void C2S_SetIsSpectar(class UBaseGameInstance* GameIns);
+    void C2S_SetIsSpectar_Implementation(class UBaseGameInstance* GameIns);
+
+    UFUNCTION(Reliable, NetMulticast, Category = "PLAYER START")
+    void S2M_SetIsSpectar(class UBaseGameInstance* GameIns);
+    void S2M_SetIsSpectar_Implementation(class UBaseGameInstance* GameIns);
+
+    UFUNCTION( Category = "PLAYER START")
     void CheckFailPlayer();
 
     void OutFailPlayer();
 
+    UPROPERTY(Replicated, BlueprintReadWrite, Category = "PLAYER START")
     bool bIsSpectar = false;
+    UPROPERTY(Replicated, BlueprintReadWrite, Category = "PLAYER START")
+    bool bIsResultLevel = false;
 
 #pragma endregion
 
