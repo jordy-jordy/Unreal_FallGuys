@@ -98,7 +98,7 @@ void ATeamPlayGameMode::AssignTeam(APlayPlayerState* _PlayerState)
 	// 배정 받기 전에 동기화
 	SyncPlayerInfo();
 
-	// 각 팀 인원
+	// 각 팀 인원 수 계산
 	int32 RedCount = 0;
 	int32 BlueCount = 0;
 
@@ -114,16 +114,22 @@ void ATeamPlayGameMode::AssignTeam(APlayPlayerState* _PlayerState)
 		}
 	}
 
-	if (RedCount <= BlueCount)
+	ETeamType AssignedTeam;
+
+	if (FMath::Abs(RedCount - BlueCount) >= 1)
 	{
-		_PlayerState->SetTeam(ETeamType::RED);
+		// 인원 수 차이가 1 이상이면 적은 팀에 배정
+		AssignedTeam = (RedCount < BlueCount) ? ETeamType::RED : ETeamType::BLUE;
 	}
 	else
 	{
-		_PlayerState->SetTeam(ETeamType::BLUE);
+		// 인원 수 같으면 랜덤 배정
+		AssignedTeam = FMath::RandBool() ? ETeamType::RED : ETeamType::BLUE;
 	}
 
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("TeamPlayGameMode :: PostLogin :: 플레이어 %s 팀 배정 완료: %s"),
+	_PlayerState->SetTeam(AssignedTeam);
+
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("TeamPlayGameMode :: AssignTeam :: 플레이어 %s 팀 배정 완료: %s"),
 		*_PlayerState->PlayerInfo.Tag.ToString(),
 		*UEnum::GetValueAsString(_PlayerState->PlayerInfo.Team));
 
