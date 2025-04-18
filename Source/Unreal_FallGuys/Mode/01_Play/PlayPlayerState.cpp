@@ -106,6 +106,11 @@ void APlayPlayerState::SetIsWinner_Implementation(bool _bWinner)
 	bIsWinner = _bWinner;
 }
 
+// 서버 트래블 할 준비 됐어
+void APlayPlayerState::SetbReadyToTravelTrue()
+{
+	bReadyToTravel = true;
+}
 
 
 //LMH

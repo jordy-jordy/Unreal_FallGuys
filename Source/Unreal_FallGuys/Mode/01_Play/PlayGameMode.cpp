@@ -276,6 +276,13 @@ void APlayGameMode::HandleSeamlessTravelPlayer(AController*& _NewController)
 	APlayerController* NewPlayerController = Cast<APlayerController>(_NewController);
 	if (!NewPlayerController) return;
 
+	APlayPlayerController* NewPlayPlayerController = Cast<APlayPlayerController>(_NewController);
+	if (!NewPlayPlayerController) return;
+	if (NewPlayPlayerController)
+	{
+		NewPlayPlayerController->Client_CallReadyAfterTravel();
+	}
+
 	APlayGameState* FallState = nullptr;
 	APlayPlayerState* PlayerState = nullptr;
 	UBaseGameInstance* GameInstance = nullptr;
@@ -767,7 +774,7 @@ void APlayGameMode::Tick(float DeltaSeconds)
 	}
 
 	// 모든 조건이 true 가 되었을 때 서버 트래블 활성화
-	if (IsEndGame && bPlayerStatusChanged && bPlayerInfosBackUp && bNextLevelDataSetted && bCanMoveLevel)
+	if (IsEndGame && bPlayerStatusChanged && bPlayerInfosBackUp && bNextLevelDataSetted && bCanMoveLevel && AreAllClientsReady())
 	{
 		// 결과 화면이 아닌 경우 결과 화면으로 이동
 		if (!bMODEIsResultLevel)
@@ -1078,6 +1085,45 @@ void APlayGameMode::MarkWinnersBeforeEndLevel()
 			}
 		}
 	}
+}
+
+// 모든 클라이언트가 서버 트래블 준비됐는지 체크
+bool APlayGameMode::AreAllClientsReady()
+{
+	APlayGameState* FallState = GetGameState<APlayGameState>();
+	if (!FallState)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: AreAllClientsReady :: GameState가 nullptr입니다."));
+		return false;
+	}
+
+	bool bAllReady = true;
+
+	for (APlayerState* PS : FallState->PlayerArray)
+	{
+		APlayPlayerState* MyState = Cast<APlayPlayerState>(PS);
+		if (!MyState)
+		{
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: AreAllClientsReady :: 캐스팅 실패된 PlayerState 존재"));
+			bAllReady = false;
+			continue;
+		}
+
+		const bool bReady = MyState->GetbReadyToTravel();
+		const FString PlayerTag = MyState->PlayerInfo.Tag.ToString();
+
+		UE_LOG(FALL_DEV_LOG, Log,
+			TEXT("PlayGameMode :: AreAllClientsReady :: 플레이어: %s, 준비 상태: %s"),
+			*PlayerTag,
+			bReady ? TEXT("true") : TEXT("false"));
+
+		if (!bReady)
+		{
+			bAllReady = false;
+		}
+	}
+
+	return bAllReady;
 }
 #pragma endregion
 

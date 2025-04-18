@@ -136,29 +136,12 @@ public:
     UFUNCTION(BlueprintCallable, Category = "PLAYER INFO")
 	bool GetIsWinner() { return bIsWinner; }
 
+    // 서버 트래블 할 준비
+    UFUNCTION(BlueprintCallable, Category = "PLAYER INFO")
+    void SetbReadyToTravelTrue();
 
-#pragma region LeeMinha > 레벨 시작 > 실패 플레이어 처리
-
-public:
-    UFUNCTION()
-    void CheckPlayer();
-
-    UFUNCTION(Reliable, Server, Category = "PLAYER START")
-    void C2S_CheckPlayer();
-    void C2S_CheckPlayer_Implementation();
-
-    UFUNCTION(Reliable, NetMulticast ,Category = "PLAYER START")
-    void S2M_CheckPlayer();
-    void S2M_CheckPlayer_Implementation();
-
-    UFUNCTION( Category = "PLAYER START")
-    void CheckFailPlayer();
-
-    void OutFailPlayer();
-
-    bool bIsSpectar = false;
-
-#pragma endregion
+	// 서버 트래블 할 준비 됐어?
+	bool GetbReadyToTravel() { return bReadyToTravel; }
 
 protected:
     // 승자 여부
@@ -173,11 +156,39 @@ protected:
     UPROPERTY(ReplicatedUsing = OnRep_PlayerDropOrder)
     int32 PlayerDropOrder = -1;
 
+    // 서버트래블 할 준비가 됨
+    UPROPERTY(BlueprintReadOnly)
+    bool bReadyToTravel = false;
+
 	// PlayerDropOrder 가 변할 때 호출되는 함수 - 동기화
     UFUNCTION()
     void OnRep_PlayerDropOrder();
 
     // 동기화 관련
     void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+
+#pragma region LeeMinha > 레벨 시작 > 실패 플레이어 처리
+public:
+    UFUNCTION()
+    void CheckPlayer();
+
+    UFUNCTION(Reliable, Server, Category = "PLAYER START")
+    void C2S_CheckPlayer();
+    void C2S_CheckPlayer_Implementation();
+
+    UFUNCTION(Reliable, NetMulticast, Category = "PLAYER START")
+    void S2M_CheckPlayer();
+    void S2M_CheckPlayer_Implementation();
+
+    UFUNCTION(Category = "PLAYER START")
+    void CheckFailPlayer();
+
+    void OutFailPlayer();
+
+    bool bIsSpectar = false;
+
+#pragma endregion
+
 };
 

@@ -90,4 +90,17 @@ public:
 	void Server_RequestSetCanMoveLevel(bool _b);
 	void Server_RequestSetCanMoveLevel_Implementation(bool _b);
 
+	// 이현정 : 서버에 준비 완료 알림
+	void CallReady();
+
+	// 이현정 : 서버에 준비 완료 알림
+	UFUNCTION(Server, Reliable)
+	void Server_NotifyReadyForTravel();
+	void Server_NotifyReadyForTravel_Implementation();
+
+	UFUNCTION(Client, Reliable)
+	void Client_CallReadyAfterTravel();
+	void Client_CallReadyAfterTravel_Implementation();
+
+
 };

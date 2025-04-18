@@ -262,6 +262,8 @@ protected:
 	void SetCharacterMoveImPossible();
 	// 최종 승리 플레이어를 마킹
 	void MarkWinnersBeforeEndLevel();
+	// 서버 트래블 할 준비 됐는지 체크
+	bool AreAllClientsReady();
 
 	// 동기화 타이머 해제 됐니
 	bool bSyncCleared = false;
