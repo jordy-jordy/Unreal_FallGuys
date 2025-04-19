@@ -138,6 +138,9 @@ public:
 	void C2S_NickName(const FString& _NickName = TEXT(""));
 	void C2S_NickName_Implementation(const FString& _NickName = TEXT(""));
 
+	UFUNCTION(BlueprintCallable)
+	FString GetNickName() const { return NickName; }
+
 private:
 	UPROPERTY(VisibleAnywhere, Replicated, BlueprintReadOnly, Category = "NickName", meta = (AllowPrivateAccess = "true"))
 	FString NickName = TEXT("");
