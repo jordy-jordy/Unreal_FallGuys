@@ -18,9 +18,18 @@ public:
 	void NativeConstruct();
 
 	UFUNCTION(BlueprintCallable)
-	FString GetTimeLimit_Minutes();
+	FString GetTimeLimit_Minutes(FString _Purpose);
 
 	UFUNCTION(BlueprintCallable)
-	FString GetTimeLimit_Seconds();
+	FString GetTimeLimit_Seconds(FString _Purpose);
 
+	UFUNCTION(BlueprintCallable)
+	FString GetLimitTrigger_Minutes(int _Value);
+
+	UFUNCTION(BlueprintCallable)
+	FString GetLimitTrigger_Seconds(int _Value);
+
+private:
+	FString MText;
+	FString SText;
 };
