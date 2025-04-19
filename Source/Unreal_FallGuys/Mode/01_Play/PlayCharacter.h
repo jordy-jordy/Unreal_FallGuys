@@ -128,17 +128,8 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	float GetUpTime = 0.0f;
 
-
-// 이현정 : 코스튬 관련 함수 및 변수
+// 김창수 : 닉네임 관련 함수 및 변수
 public:
-	UFUNCTION(BlueprintCallable, Reliable, NetMulticast)
-	void S2M_Costume(const FString& _Color, const FString& _TopName = TEXT(""), const FString& _BotName = TEXT(""));
-	void S2M_Costume_Implementation(const FString& _Color, const FString& _TopName = TEXT(""), const FString& _BotName = TEXT(""));
-
-	UFUNCTION(BlueprintCallable, Reliable, Server)
-	void C2S_Costume(const FString& _Color, const FString& _TopName = TEXT(""), const FString& _BotName = TEXT(""));
-	void C2S_Costume_Implementation(const FString& _Color, const FString& _TopName = TEXT(""), const FString& _BotName = TEXT(""));
-
 	UFUNCTION(BlueprintCallable, Reliable, NetMulticast)
 	void S2M_NickName(const FString& _NickName = TEXT(""));
 	void S2M_NickName_Implementation(const FString& _NickName = TEXT(""));
@@ -146,6 +137,23 @@ public:
 	UFUNCTION(BlueprintCallable, Reliable, Server)
 	void C2S_NickName(const FString& _NickName = TEXT(""));
 	void C2S_NickName_Implementation(const FString& _NickName = TEXT(""));
+
+private:
+	UPROPERTY(VisibleAnywhere, Replicated, BlueprintReadOnly, Category = "NickName", meta = (AllowPrivateAccess = "true"))
+	FString NickName = TEXT("");
+
+
+// 이현정 : 코스튬 관련 함수 및 변수
+public:
+	void SetCharacterCostume(FString _Color, FString _Top, FString _Bot);
+
+	UFUNCTION(BlueprintCallable, Reliable, Server)
+	void C2S_Costume(const FString& _Color, const FString& _TopName = TEXT(""), const FString& _BotName = TEXT(""));
+	void C2S_Costume_Implementation(const FString& _Color, const FString& _TopName = TEXT(""), const FString& _BotName = TEXT(""));
+
+	UFUNCTION(BlueprintCallable, Reliable, NetMulticast)
+	void S2M_Costume(const FString& _Color, const FString& _TopName = TEXT(""), const FString& _BotName = TEXT(""));
+	void S2M_Costume_Implementation(const FString& _Color, const FString& _TopName = TEXT(""), const FString& _BotName = TEXT(""));
 
 private: 
 	UPROPERTY(VisibleAnywhere, Category = "COSTUME")
@@ -163,9 +171,6 @@ private:
 	UPROPERTY(VisibleAnywhere, Replicated, BlueprintReadOnly, Category = "COSTUME", meta = (AllowPrivateAccess = "true"))
 	FString CostumeBotName = TEXT("");
 
-	UPROPERTY(VisibleAnywhere, Replicated, BlueprintReadOnly, Category = "NickName", meta = (AllowPrivateAccess = "true"))
-	FString NickName = TEXT("");
-
 // 이현정 : 움직임 관련 함수 및 변수
 public:
 	UFUNCTION(BlueprintCallable, Reliable, NetMulticast)
@@ -180,17 +185,11 @@ private:
 	UPROPERTY(VisibleAnywhere, Replicated, BlueprintReadOnly, Category = "GAME START", meta = (AllowPrivateAccess = "true"))
 	bool CanMove = false;
 
-//LMH
-public:
-	UPROPERTY(VisibleAnywhere, Replicated, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	bool IsDie = true;
-
-
 // 이현정 : 캐릭터 상태 동기화
 public:
 	UPROPERTY(VisibleAnywhere, Replicated, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	EPlayerStatus CurStatus = EPlayerStatus::NONE;
-	
+
 	// 디버그용 : 캐릭터 상태 확인
 	UFUNCTION(BlueprintCallable)
 	void DebugCheckDieStatus();
@@ -200,4 +199,9 @@ protected:
 	virtual void PossessedBy(AController* _NewController) override;
 	// 클라이언트의 캐릭터 상태를 세팅
 	virtual void OnRep_PlayerState() override;
+
+//LMH
+public:
+	UPROPERTY(VisibleAnywhere, Replicated, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	bool IsDie = true;
 };

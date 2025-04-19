@@ -83,46 +83,21 @@ void APlayCharacter::BeginPlay()
 
 	if (UGameplayStatics::GetPlayerController(GetWorld(), 0) == GetController())
 	{
+		// 코스튬 세팅
 		CostumeColor = UFallGlobal::GetCostumeColor(this);
 		CostumeTopName = UFallGlobal::GetCostumeTop(this);
 		CostumeBotName = UFallGlobal::GetCostumeBot(this);
-
-
-		if (CostumeColor != TEXT(""))
-		{
-			GetMesh()->SetSkeletalMesh(UFallGlobal::GetCostumeColorMesh(this, CostumeColor));
-		}
-
-		if (CostumeTopName != TEXT(""))
-		{
-			CostumeTOPStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, CostumeTopName));
-		}
-
-		if (CostumeBotName != TEXT(""))
-		{
-			CostumeBOTStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, CostumeBotName));
-		}
-
-		NickName = UFallGlobal::GetNickname(this);
+		SetCharacterCostume(CostumeColor, CostumeTopName, CostumeBotName);
 		C2S_Costume(CostumeColor, CostumeTopName, CostumeBotName);
+
+		// 닉네임 세팅
+		NickName = UFallGlobal::GetNickname(this);
 		C2S_NickName(NickName);
 	}
 	else
 	{
-		if (CostumeColor != TEXT(""))
-		{
-			GetMesh()->SetSkeletalMesh(UFallGlobal::GetCostumeColorMesh(this, CostumeColor));
-		}
-
-		if (CostumeTopName != TEXT(""))
-		{
-			CostumeTOPStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, CostumeTopName));
-		}
-
-		if (CostumeBotName != TEXT(""))
-		{
-			CostumeBOTStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, CostumeBotName));
-		}
+		// 코스튬 세팅
+		SetCharacterCostume(CostumeColor, CostumeTopName, CostumeBotName);
 	}
 }
 
@@ -130,12 +105,6 @@ void APlayCharacter::BeginPlay()
 void APlayCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	auto Test = GetWorld()->GetAuthGameMode();
-
-	this;
-
-	NickName;
 }
 
 FVector APlayCharacter::GetControllerForward()
@@ -194,6 +163,25 @@ void APlayCharacter::PlayerAMove()
 	AddMovementInput(-GetControllerRight());
 }
 
+// 이현정 : 캐릭터 코스튬 설정 - 로컬
+void APlayCharacter::SetCharacterCostume(FString _Color, FString _Top, FString _Bot)
+{
+	if (_Color != TEXT(""))
+	{
+		GetMesh()->SetSkeletalMesh(UFallGlobal::GetCostumeColorMesh(this, _Color));
+	}
+
+	if (_Top != TEXT(""))
+	{
+		CostumeTOPStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, _Top));
+	}
+
+	if (_Bot != TEXT(""))
+	{
+		CostumeBOTStaticMesh->SetStaticMesh(UFallGlobal::GetCostumeMesh(this, _Bot));
+	}
+}
+
 // 이현정 : 캐릭터 코스튬 설정 - 클라 > 서버
 void APlayCharacter::C2S_Costume_Implementation(const FString& _Color, const FString& _TopName, const FString& _BotName)
 {
@@ -242,20 +230,6 @@ void APlayCharacter::S2M_Costume_Implementation(const FString& _Color, const FSt
 	}
 }
 
-void APlayCharacter::C2S_NickName_Implementation(const FString& _NickName)
-{
-
-	NickName = _NickName;
-
-	//S2M_NickName(NickName);
-}
-
-void APlayCharacter::S2M_NickName_Implementation(const FString& _NickName)
-{
-	NickName = _NickName;
-}
-
-
 // 이현정 : 캐릭터 Moving 활성화
 void APlayCharacter::S2M_SetCanMoveTrue_Implementation()
 {
@@ -267,6 +241,7 @@ void APlayCharacter::S2M_SetCanMoveFalse_Implementation()
 {
 	CanMove = false;
 }
+
 // 이현정 : 서버장의 캐릭터 상태를 세팅
 void APlayCharacter::PossessedBy(AController* _NewController)
 {
@@ -356,5 +331,16 @@ void APlayCharacter::DebugCheckDieStatus()
 
 		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Green, ScreenMsg);
 	}
+}
+
+void APlayCharacter::C2S_NickName_Implementation(const FString& _NickName)
+{
+	NickName = _NickName;
+	//S2M_NickName(NickName);
+}
+
+void APlayCharacter::S2M_NickName_Implementation(const FString& _NickName)
+{
+	NickName = _NickName;
 }
 
