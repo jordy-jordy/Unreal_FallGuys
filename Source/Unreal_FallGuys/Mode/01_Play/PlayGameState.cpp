@@ -427,6 +427,7 @@ void APlayGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(APlayGameState, bCanMoveResultLevel);
 	DOREPLIFETIME(APlayGameState, StateMaxPlayerCount);
 	DOREPLIFETIME(APlayGameState, STATECanMoveToResultLevel);
+	DOREPLIFETIME(APlayGameState, StateIsEndGame);
 }
 
 void APlayGameState::PrintFailPlayersInfo()

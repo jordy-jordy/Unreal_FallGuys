@@ -2,14 +2,15 @@
 
 
 #include "Mode/01_Play/PlayPlayerState.h"
+#include <GameFramework/PawnMovementComponent.h>
+#include <Kismet/GameplayStatics.h>
+#include <Net/UnrealNetwork.h>
 
+#include <Unreal_FallGuys.h>
 #include <Global/GlobalEnum.h>
 #include <Global/BaseGameInstance.h>
 #include <Mode/01_Play/PlayGameState.h>
-#include "Mode/01_Play/PlayCharacter.h"
-#include "GameFramework/PawnMovementComponent.h"
-#include <Net/UnrealNetwork.h>
-#include <Kismet/GameplayStatics.h>
+#include <Mode/01_Play/PlayCharacter.h>
 
 
 APlayPlayerState::APlayPlayerState()
@@ -21,14 +22,16 @@ void APlayPlayerState::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CheckPlayer();
+	//CheckPlayer();
 }
 
 void APlayPlayerState::SetPlayerTag_Implementation(const FName& _Tag)
 {
+	// 플레이어 태그 설정
+    PlayerInfo.Tag = _Tag;
+
 	// 유니크 아이디 설정
 	PlayerInfo.UniqueID = GetUniqueId()->ToString();
-    PlayerInfo.Tag = _Tag;
 }
 
 // 클라들에게도 플레이어 인포 동기화

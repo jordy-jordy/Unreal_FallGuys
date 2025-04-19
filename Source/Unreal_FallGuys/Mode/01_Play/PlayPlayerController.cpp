@@ -27,18 +27,34 @@ void APlayPlayerController::BeginPlay()
 	}
 
 	// 클라이언트에서 자기 GameInstance 정보 → 서버 PlayerState에 전달
-	if (IsLocalController())
+	if (IsLocalController() && !HasAuthority())
 	{
-		UBaseGameInstance* GI = Cast<UBaseGameInstance>(GetGameInstance());
-		if (GI)
-		{
-			Server_SetPlayerInfoFromClient(
-				GI->InsGetNickname(),
-				GI->InsGetCostumeTop(),
-				GI->InsGetCostumeBot(),
-				GI->InsGetCostumeColor()
-			);
-		}
+		UBaseGameInstance* ClientGameIns = Cast<UBaseGameInstance>(GetGameInstance());
+		if (!ClientGameIns) return;
+	
+		FString NickName = ClientGameIns->InsGetNickname();
+		FString CostumeTop = ClientGameIns->InsGetCostumeTop();
+		FString CostumeBot = ClientGameIns->InsGetCostumeBot();
+		FString CostumeColor = ClientGameIns->InsGetCostumeColor();
+
+		Server_SetClientPlayerInfo(NickName, CostumeTop, CostumeBot, CostumeColor);
+	}
+	else if (IsLocalController() && HasAuthority())
+	{
+		UBaseGameInstance* ServerGameIns = Cast<UBaseGameInstance>(GetGameInstance());
+		if (!ServerGameIns) return;
+		APlayPlayerState* ServerState = GetPlayerState<APlayPlayerState>();
+		if (!ServerState) return;
+
+		FString NickName = ServerGameIns->InsGetNickname();
+		FString CostumeTop = ServerGameIns->InsGetCostumeTop();
+		FString CostumeBot = ServerGameIns->InsGetCostumeBot();
+		FString CostumeColor = ServerGameIns->InsGetCostumeColor();
+
+		ServerState->PlayerInfo.NickName = NickName;
+		ServerState->PlayerInfo.CostumeTOP = CostumeTop;
+		ServerState->PlayerInfo.CostumeBOT = CostumeBot;
+		ServerState->PlayerInfo.CostumeColor = CostumeColor;
 	}
 }
 
@@ -167,27 +183,23 @@ void APlayPlayerController::OnPrintCurFinishPlayer()
 	}
 }
 
-// 이현정 : 승리한 플레이어의 정보를 전달하기 위함
-void APlayPlayerController::Server_SetPlayerInfoFromClient_Implementation(
-	const FString& _NickName,
-	const FString& _Top,
-	const FString& _Bot,
-	const FString& _Color)
+// 이현정 : 클라이언트의 정보 세팅 및 동기화
+void APlayPlayerController::Server_SetClientPlayerInfo_Implementation(const FString& _NickName,	const FString& _Top, const FString& _Bot, const FString& _Color)
 {
-	APlayPlayerState* PS = GetPlayerState<APlayPlayerState>();
-	if (!PS) return;
+	APlayPlayerState* ClientPlayerState = GetPlayerState<APlayPlayerState>();
+	if (!ClientPlayerState) return;
 
-	FPlayerInfo NewInfo = PS->PlayerInfo;
+	FPlayerInfo NewInfo = ClientPlayerState->PlayerInfo;
 	NewInfo.NickName = _NickName;
 	NewInfo.CostumeTOP = _Top;
 	NewInfo.CostumeBOT = _Bot;
 	NewInfo.CostumeColor = _Color;
 
 	// 서버에 직접 세팅
-	PS->PlayerInfo = NewInfo;
+	ClientPlayerState->PlayerInfo = NewInfo;
 
 	// 클라이언트에게도 동기화
-	PS->MCAST_ApplyPlayerInfo(NewInfo);
+	ClientPlayerState->MCAST_ApplyPlayerInfo(NewInfo);
 }
 
 // 서버 → 클라이언트 : 승자 정보 전달용

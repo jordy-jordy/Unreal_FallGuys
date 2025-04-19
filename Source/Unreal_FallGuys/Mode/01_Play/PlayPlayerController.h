@@ -58,14 +58,11 @@ private:
 	void OnPrintLevelCinematicEnd();  // = : 레벨 시네마틱 끝나게
 	void OnPrintCurFinishPlayer();	  // \ : 골인한 인원 및 목표 골인 인원 출력
 
-// 이현정 : 승리한 플레이어의 정보를 전달하기 위함
+	// 이현정 : 클라이언트의 정보 세팅 및 동기화
 public:
 	UFUNCTION(Server, Reliable)
-	void Server_SetPlayerInfoFromClient(
-		const FString& _NickName,
-		const FString& _Top,
-		const FString& _Bot,
-		const FString& _Color);
+	void Server_SetClientPlayerInfo(const FString& _NickName, const FString& _Top, const FString& _Bot, const FString& _Color);
+	void Server_SetClientPlayerInfo_Implementation(const FString& _NickName, const FString& _Top, const FString& _Bot, const FString& _Color);
 
 	// 서버 → 클라이언트 : 승자 정보 전달용
 	UFUNCTION(NetMulticast, Reliable)
