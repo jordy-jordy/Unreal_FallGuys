@@ -140,6 +140,8 @@ void ATeamPlayGameMode::AssignTeam(APlayPlayerState* _PlayerState)
 // 레드팀 점수 계산
 void ATeamPlayGameMode::CountREDTeamScore(int _NumberOfEgg)
 {
+	if (!HasAuthority()) return;
+	
 	REDTeamScore = _NumberOfEgg * UFallConst::EggScore;
 
 	// 점수 동기화
@@ -150,6 +152,8 @@ void ATeamPlayGameMode::CountREDTeamScore(int _NumberOfEgg)
 // 블루팀 점수 계산
 void ATeamPlayGameMode::CountBLUETeamScore(int _NumberOfEgg)
 {
+	if (!HasAuthority()) return;
+
 	BLUETeamScore = _NumberOfEgg * UFallConst::EggScore;
 
 	// 점수 동기화

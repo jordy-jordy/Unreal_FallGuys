@@ -20,11 +20,15 @@ void ATeamPlayGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 
 void ATeamPlayGameState::SetREDTeamScore_Implementation(int32 _Score)
 {
+	if (!HasAuthority()) return;
+
 	GameStateREDTeamScore = _Score;
 }
 
 void ATeamPlayGameState::SetBLUETeamScore_Implementation(int32 _Score)
 {
+	if (!HasAuthority()) return;
+
 	GameStateBLUETeamScore = _Score;
 }
 
