@@ -167,39 +167,5 @@ protected:
     // 동기화 관련
     void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-
-#pragma region LeeMinha > 레벨 시작 > 실패 플레이어 처리
-public:
-    UFUNCTION()
-    void CheckPlayer();
-
-    UFUNCTION(Reliable, Server, Category = "PLAYER START")
-    void C2S_CheckPlayer();
-    void C2S_CheckPlayer_Implementation();
-
-    UFUNCTION(Reliable, NetMulticast, Category = "PLAYER START")
-    void S2M_CheckPlayer();
-    void S2M_CheckPlayer_Implementation();
-
-    UFUNCTION(Reliable, Server, Category = "PLAYER START")
-    void C2S_SetIsSpectar(class UBaseGameInstance* GameIns);
-    void C2S_SetIsSpectar_Implementation(class UBaseGameInstance* GameIns);
-
-    UFUNCTION(Reliable, NetMulticast, Category = "PLAYER START")
-    void S2M_SetIsSpectar(class UBaseGameInstance* GameIns);
-    void S2M_SetIsSpectar_Implementation(class UBaseGameInstance* GameIns);
-
-    UFUNCTION( Category = "PLAYER START")
-    void CheckFailPlayer();
-
-    void OutFailPlayer();
-
-    UPROPERTY(Replicated, BlueprintReadWrite, Category = "PLAYER START")
-    bool bIsSpectar = false;
-    UPROPERTY(Replicated, BlueprintReadWrite, Category = "PLAYER START")
-    bool bIsResultLevel = false;
-
-#pragma endregion
-
 };
 

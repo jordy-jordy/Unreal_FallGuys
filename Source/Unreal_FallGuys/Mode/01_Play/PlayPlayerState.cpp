@@ -116,130 +116,6 @@ void APlayPlayerState::SetbReadyToTravelTrue()
 	bReadyToTravel = true;
 }
 
-
-//LMH
-// 실패한 플레이어 콜리전 처리
-void APlayPlayerState::CheckPlayer()
-{
-
-
-	{
-		if (HasAuthority())
-		{
-			int a = 0;
-
-			
-		}
-		else
-		{
-			int b = 0;
-
-		}
-
-		UBaseGameInstance* GameIns = GetPawn()->GetGameInstance<UBaseGameInstance>();
-
-		if (GameIns != nullptr)
-		{
-			GetPawn()->SetActorLocation({ 0,0,-100000 });
-			GetPawn()->SetActorEnableCollision(false);
-
-			USkeletalMeshComponent* MeshComp = GetPawn()->FindComponentByClass<USkeletalMeshComponent>();
-
-			if (MeshComp)
-			{
-				MeshComp->SetSimulatePhysics(false);
-				MeshComp->SetEnableGravity(false);
-			}
-				
-		}
-	}
-		
-
-	/*{
-		UBaseGameInstance* GameIns = GetPawn()->GetGameInstance<UBaseGameInstance>();
-
-		if (GameIns != nullptr)
-		{
-			C2S_SetIsSpectar(GameIns);
-		}
-	}
-
-	if (false == bIsResultLevel)
-	{
-		OutFailPlayer();
-	}
-	else
-	{
-		CheckFailPlayer();
-	}
-
-	{
-		UBaseGameInstance* GameIns = GetPawn()->GetGameInstance<UBaseGameInstance>();
-
-		if (GameIns != nullptr)
-		{
-			if (true == bIsSpectar)
-			{
-				GameIns->bIsSpectar = true;
-			}
-		}
-	}*/
-	
-}
-
-void APlayPlayerState::C2S_CheckPlayer_Implementation()
-{
-	S2M_CheckPlayer_Implementation();
-}
-
-void APlayPlayerState::S2M_CheckPlayer_Implementation()
-{
-	
-}
-
-void APlayPlayerState::C2S_SetIsSpectar_Implementation(class UBaseGameInstance* GameIns)
-{
-	S2M_SetIsSpectar_Implementation(GameIns);
-}
-
-void APlayPlayerState::S2M_SetIsSpectar_Implementation(class UBaseGameInstance* GameIns)
-{
-	bIsSpectar = GameIns->bIsSpectar;
-	bIsResultLevel = GameIns->bIsResultLevel;
-}
-
-void APlayPlayerState::CheckFailPlayer()
-{
-	if (true == bIsSpectar)
-	{
-		OutFailPlayer();
-	}
-
-	if (EPlayerStatus::FAIL == PlayerInfo.Status)
-	{	
-		bIsSpectar = true;
-	}
-}
-
-void APlayPlayerState::OutFailPlayer()
-{
-	if (true == bIsSpectar)
-	{
-		GetPawn()->SetActorLocation({ 0,0,-100000 });
-		GetPawn()->SetActorEnableCollision(false);
-
-		USkeletalMeshComponent* MeshComp = GetPawn()->FindComponentByClass<USkeletalMeshComponent>();
-
-		if (MeshComp)
-		{
-			MeshComp->SetSimulatePhysics(false);
-			MeshComp->SetEnableGravity(false);
-		}
-
-		// 다른 캐릭터로 시점 변경
-	}
-}
-
 void APlayPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -247,7 +123,6 @@ void APlayPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(APlayPlayerState, PlayerStatus);
 	DOREPLIFETIME(APlayPlayerState, PlayerDropOrder);
 	DOREPLIFETIME(APlayPlayerState, bIsWinner);
-	DOREPLIFETIME(APlayPlayerState, bIsSpectar);
-	DOREPLIFETIME(APlayPlayerState, bIsResultLevel);
+
 }
 

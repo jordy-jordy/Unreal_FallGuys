@@ -67,6 +67,8 @@ void APlayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(APlayCharacter, IsDie);
 	DOREPLIFETIME(APlayCharacter, CanMove);
 	DOREPLIFETIME(APlayCharacter, CurStatus);
+	DOREPLIFETIME(APlayCharacter, bIsSpectar);
+	DOREPLIFETIME(APlayCharacter, bIsResultLevel);
 }
 
 // Called when the game starts or when spawned
@@ -99,6 +101,8 @@ void APlayCharacter::BeginPlay()
 		// 코스튬 세팅
 		SetCharacterCostume(CostumeColor, CostumeTopName, CostumeBotName);
 	}
+
+	CheckPlayer();
 }
 
 // Called every frame
@@ -344,3 +348,86 @@ void APlayCharacter::S2M_NickName_Implementation(const FString& _NickName)
 	NickName = _NickName;
 }
 
+//LMH
+// 실패한 플레이어 콜리전 처리
+void APlayCharacter::CheckPlayer()
+{
+
+	if (HasAuthority())
+	{
+		int a = 0;
+	}
+	else
+	{
+		int b = 0;
+	}
+
+	UBaseGameInstance* GameIns = GetGameInstance<UBaseGameInstance>();
+	bIsResultLevel = GameIns->bIsResultLevel;
+	bIsSpectar = GameIns->bIsSpectar;
+
+	if (UGameplayStatics::GetPlayerController(GetWorld(), 0) == GetController())
+	{
+		if (false == bIsResultLevel)
+		{
+			OutFailPlayer();
+		}
+		else
+		{
+			CheckFailPlayer();
+		}
+	}
+}
+
+
+
+void APlayCharacter::C2S_SpectarLoc_Implementation()
+{
+	S2M_SpectarLoc_Implementation();
+}
+
+void APlayCharacter::S2M_SpectarLoc_Implementation()
+{
+
+		SetActorLocation({ 0,0,-100000 });
+		SetActorEnableCollision(false);
+
+		if (GetMesh())
+		{
+			GetMesh()->SetSimulatePhysics(false);
+			GetMesh()->SetEnableGravity(false);
+		}
+
+		// 다른 캐릭터로 시점 변경
+	
+}
+
+void APlayCharacter::CheckFailPlayer()
+{
+
+	 OutFailPlayer();
+	
+	APlayPlayerState* PlayState = GetPlayerState<APlayPlayerState>();
+	if (nullptr == PlayState) return;
+
+	if (EPlayerStatus::FAIL == PlayState->PlayerInfo.Status)
+	{
+		bIsSpectar = true;
+
+
+		UBaseGameInstance* GameIns = GetGameInstance<UBaseGameInstance>();
+
+		GameIns->bIsSpectar = bIsSpectar;
+
+	}
+	
+}
+
+void APlayCharacter::OutFailPlayer()
+{
+	if (true == bIsSpectar)
+	{
+		C2S_SpectarLoc();
+	}
+	
+}

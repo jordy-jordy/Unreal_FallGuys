@@ -203,8 +203,32 @@ protected:
 	// 클라이언트의 캐릭터 상태를 세팅
 	virtual void OnRep_PlayerState() override;
 
-//LMH
+#pragma region LeeMinha > 레벨 시작 > 실패 플레이어 처리
+public:
+	UFUNCTION()
+	void CheckPlayer();
+
+	UFUNCTION(Reliable, Server, Category = "PLAYER START")
+	void C2S_SpectarLoc();
+	void C2S_SpectarLoc_Implementation();
+
+	UFUNCTION(Reliable, NetMulticast, Category = "PLAYER START")
+	void S2M_SpectarLoc();
+	void S2M_SpectarLoc_Implementation();
+
+	UFUNCTION(Category = "PLAYER START")
+	void CheckFailPlayer();
+
+	void OutFailPlayer();
+
+	UPROPERTY(Replicated, BlueprintReadWrite, Category = "PLAYER START")
+	bool bIsSpectar = false;
+	UPROPERTY(Replicated, BlueprintReadWrite, Category = "PLAYER START")
+	bool bIsResultLevel = false;
+
 public:
 	UPROPERTY(VisibleAnywhere, Replicated, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	bool IsDie = true;
+#pragma endregion
+
 };
