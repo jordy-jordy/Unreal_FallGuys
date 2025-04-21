@@ -755,7 +755,7 @@ void UBaseGameInstance::InsPrintPlayerInfo()
 	UE_LOG(FALL_DEV_LOG, Log, TEXT("======== PlayerInfoArray 목록 ========"));
 	FString ScreenMessage = TEXT("======== PlayerInfoArray 목록 ========\n");
 
-	for (const FPlayerInfoEntry& Entry : PlayGameState->PlayerInfoArray)
+	for (const FPlayerInfoEntry& Entry : PlayGameState->GetPlayerInfoArray())
 	{
 		FString StatusStr = UEnum::GetValueAsString(Entry.PlayerInfo.Status);
 		FString LogMessage = FString::Printf(TEXT("UniqueID: %s, Tag: %s, Status: %s, DropOrder: %d"),

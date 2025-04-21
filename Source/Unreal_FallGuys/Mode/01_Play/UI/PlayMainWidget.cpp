@@ -430,5 +430,5 @@ void UPlayMainWidget::SetPrevFailPlayers()
 		return;
 	}
 
-	PrevFailPlayers = GameState->FailPlayerInfoArray;
+	PrevFailPlayers = GameState->GetFailPlayerInfoArray();
 }

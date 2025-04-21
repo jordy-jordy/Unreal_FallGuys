@@ -216,7 +216,7 @@ void APlayGameMode::InitPlayerInfo(APlayerController* _NewPlayer, APlayPlayerSta
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PostLogin :: 첫 스테이지 - 신규 플레이어 정보 세팅"));
 
 	// 플레이어 태그 생성
-	FName UniqueTag = GenerateUniquePlayerTag(_NewPlayer, _FallState->PlayerInfoArray.Num());
+	FName UniqueTag = GenerateUniquePlayerTag(_NewPlayer, _FallState->GetPlayerInfoArray().Num());
 
 	// 플레이어 정보 세팅
 	_PlayerState->SetPlayerTag(UniqueTag);
@@ -500,7 +500,7 @@ int32 APlayGameMode::GetDefaultPlayerCount()
 	}
 
 	int32 Count = 0;
-	FallState->DefaultPlayerInfoArray.Empty(); 
+	FallState->GetDefaultPlayerInfoArray().Empty();
 
 	for (APlayerState* PS : FallState->PlayerArray)
 	{
@@ -511,7 +511,7 @@ int32 APlayGameMode::GetDefaultPlayerCount()
 
 			// 추가: 배열에도 저장
 			FPlayerInfoEntry Entry(PState->PlayerInfo.UniqueID, PState->PlayerInfo);
-			FallState->DefaultPlayerInfoArray.Add(Entry);
+			FallState->GetDefaultPlayerInfoArray().Add(Entry);
 
 			UE_LOG(FALL_DEV_LOG, Log,
 				TEXT("PlayGameMode :: GetDefaultPlayerCount :: UID = %s, Tag = %s → 디폴트 상태로 등록"),
@@ -943,7 +943,7 @@ void APlayGameMode::BackUpPlayersInfo()
 	GameInstance->PlayerInfoBackup.Empty();
 
 	// 현재 게임 상태 가져오기
-	for (FPlayerInfoEntry& PlayerEntry : PlayGameState->PlayerInfoArray)
+	for (FPlayerInfoEntry& PlayerEntry : PlayGameState->GetPlayerInfoArray())
 	{
 		GameInstance->InsBackupPlayerInfo(PlayerEntry.UniqueID, PlayerEntry.PlayerInfo);
 		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: BackUpPlayersInfo :: 플레이어 정보 백업 완료 - UniqueID = %s, Tag = %s"),

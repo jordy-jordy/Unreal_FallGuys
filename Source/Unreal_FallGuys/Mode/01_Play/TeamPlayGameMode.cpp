@@ -102,7 +102,7 @@ void ATeamPlayGameMode::AssignTeam(APlayPlayerState* _PlayerState)
 	int32 RedCount = 0;
 	int32 BlueCount = 0;
 
-	for (const FPlayerInfoEntry& Entry : FallState->PlayerInfoArray)
+	for (const FPlayerInfoEntry& Entry : FallState->GetPlayerInfoArray())
 	{
 		if (Entry.PlayerInfo.Team == ETeamType::RED)
 		{
@@ -306,7 +306,7 @@ void ATeamPlayGameMode::BackUpTeamPlayersInfo()
 	GameInstance->PlayerInfoBackup.Empty();
 
 	// 현재 게임 상태 가져오기
-	for (FPlayerInfoEntry& PlayerEntry : PlayGameState->PlayerInfoArray)
+	for (FPlayerInfoEntry& PlayerEntry : PlayGameState->GetPlayerInfoArray())
 	{
 		// 팀 상태 초기화
 		PlayerEntry.PlayerInfo.Team = ETeamType::NONE;
