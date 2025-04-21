@@ -103,20 +103,17 @@ public:
 
 #pragma region PlayGameState :: 플레이어 관련
 public:
-	// 전체 플레이어 정보 목록
-	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category = "PLAYER LIST")
-	TArray<FPlayerInfoEntry> PlayerInfoArray;
+	// 전체 플레이어 리스트 반환
+	UFUNCTION(BlueprintCallable, Category = "PLAYER LIST")
+	TArray<FPlayerInfoEntry> GetPlayerInfoArray() { return PlayerInfoArray; }
 
-	// 플레이어 정보 캐싱용 맵 (UID → PlayerInfo)
-	TMap<FString, FPlayerInfo> CachedPlayerInfoMap;
+	// 실패한 플레이어 리스트 반환
+	UFUNCTION(BlueprintCallable, Category = "PLAYER LIST")
+	TArray<FPlayerInfoEntry> GetFailPlayerInfoArray() { return FailPlayerInfoArray; }
 
-	// 실패한 플레이어 정보 목록
-	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category = "PLAYER LIST")
-	TArray<FPlayerInfoEntry> FailPlayerInfoArray;
-
-	// 성공한 플레이어 정보 목록
-	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category = "PLAYER LIST")
-	TArray<FPlayerInfoEntry> DefaultPlayerInfoArray;
+	// 디폴트 플레이어 리스트 반환
+	UFUNCTION(BlueprintCallable, Category = "PLAYER LIST")
+	TArray<FPlayerInfoEntry> GetDefaultPlayerInfoArray() { return DefaultPlayerInfoArray; }
 
 	// `PlayerState`에서 데이터 동기화
 	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "PLAYER LIST")
@@ -157,6 +154,21 @@ public:
 
 
 protected:
+	// 전체 플레이어 정보 목록
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category = "PLAYER LIST")
+	TArray<FPlayerInfoEntry> PlayerInfoArray;
+
+	// 플레이어 정보 캐싱용 맵 (UID → PlayerInfo)
+	TMap<FString, FPlayerInfo> CachedPlayerInfoMap;
+
+	// 실패한 플레이어 정보 목록
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category = "PLAYER LIST")
+	TArray<FPlayerInfoEntry> FailPlayerInfoArray;
+
+	// 성공한 플레이어 정보 목록
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category = "PLAYER LIST")
+	TArray<FPlayerInfoEntry> DefaultPlayerInfoArray;
+
 	// 접속한 플레이어의 수
 	UPROPERTY(Replicated)
 	int ConnectedPlayers = 0;
