@@ -709,6 +709,9 @@ void UBaseGameInstance::InsResetPlayerAndLevelCondition()
 	bIsConnected = false;
 	bIsResultLevel = false;
 
+	// 플레이 했던 레벨 초기화
+	PlayedMapList.Empty();
+
 	// 레벨 정보 초기화
 	CurLevelInfo_Ins.LevelAssetName = TEXT("");
 	CurLevelInfo_Ins.LevelName = TEXT("");
