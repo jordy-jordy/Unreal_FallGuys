@@ -116,6 +116,12 @@ void APlayPlayerState::SetbReadyToTravelTrue()
 	bReadyToTravel = true;
 }
 
+// 결과 화면인지 세팅 : PlayGameMode에서 호출
+void APlayPlayerState::SetIsResultLevel_Implementation(bool _Value)
+{
+	bIsResultLevel = _Value;
+}
+
 void APlayPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -123,6 +129,7 @@ void APlayPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(APlayPlayerState, PlayerStatus);
 	DOREPLIFETIME(APlayPlayerState, PlayerDropOrder);
 	DOREPLIFETIME(APlayPlayerState, bIsWinner);
+	DOREPLIFETIME(APlayPlayerState, bIsResultLevel);
 
 }
 

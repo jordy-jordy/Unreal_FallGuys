@@ -142,7 +142,7 @@ protected:
 	// 플레이어 인원 플러스
 	void AddPlayerCount(APlayGameState* _FallState);
 	// 결과 화면인지 게임 인스로부터 가져옴
-	void GetIsResultLevel(APlayGameState* _FallState, UBaseGameInstance* _GameInstance);
+	void GetIsResultLevel(APlayPlayerState* _PlayerState, APlayGameState* _FallState, UBaseGameInstance* _GameInstance);
 	// 레벨 이동 했는지 게임 인스로부터 가져옴
 	bool GetIsLevelMoved(UBaseGameInstance* _GameInstance);
 	// 플레이어 태그 생성

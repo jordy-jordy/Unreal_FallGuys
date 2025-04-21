@@ -297,7 +297,7 @@ void APlayGameMode::HandleSeamlessTravelPlayer(AController*& _NewController)
 	CheckPlayersCount();
 
 	// 결과 레벨인지 세팅
-	GetIsResultLevel(FallState, GameInstance);
+	GetIsResultLevel(PlayerState, FallState, GameInstance);
 
 	// 이전 스테이지에서 넘어온 경우 복원, 아니면 초기화
 	if (GetIsLevelMoved(GameInstance))
@@ -318,10 +318,11 @@ void APlayGameMode::HandleSeamlessTravelPlayer(AController*& _NewController)
 
 #pragma region PlayGameMode :: HandleSeamlessTravelPlayer 에서 실행되는 함수들
 // 결과 화면인지 게임 인스로부터 가져옴
-void APlayGameMode::GetIsResultLevel(APlayGameState* _FallState, UBaseGameInstance* _GameInstance)
+void APlayGameMode::GetIsResultLevel(APlayPlayerState* _PlayerState, APlayGameState* _FallState, UBaseGameInstance* _GameInstance)
 {
 	bMODEIsResultLevel = _GameInstance->bIsResultLevel;
 	_FallState->SetGameStateIsResultLevel(bMODEIsResultLevel);
+	_PlayerState->SetIsResultLevel(bMODEIsResultLevel);
 }
 
 // 레벨 이동 했는지 게임 인스로부터 가져옴

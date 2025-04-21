@@ -111,7 +111,7 @@ public:
     void SetPlayerStatusOnEnd_Implementation(EPlayerStatus _NewStatus);
 
     // 플레이어 떨어지는 순서 설정
-    UFUNCTION(Reliable, server, BlueprintCallable, Category = "PLAYER INFO")
+    UFUNCTION(Reliable, Server, BlueprintCallable, Category = "PLAYER INFO")
     void SetPlayerDropOrder(int32 _Order);
     void SetPlayerDropOrder_Implementation(int32 _Order);
 
@@ -143,6 +143,15 @@ public:
 	// 서버 트래블 할 준비 됐어?
 	bool GetbReadyToTravel() { return bReadyToTravel; }
 
+	// 결과 화면인지 세팅 : PlayGameMode에서 호출
+    UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "PLAYER INFO")
+    void SetIsResultLevel(bool _Value);
+    void SetIsResultLevel_Implementation(bool _Value);
+
+    // 결과 화면이야?
+    UFUNCTION(BlueprintCallable, Category = "GAME INFO")
+	bool GetIsResultLevel() { return bIsResultLevel; }
+
 protected:
     // 승자 여부
     UPROPERTY(Replicated)
@@ -167,5 +176,8 @@ protected:
     // 동기화 관련
     void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+    // 결과화면 여부
+    UPROPERTY(Replicated)
+    bool bIsResultLevel = false;
 };
 
