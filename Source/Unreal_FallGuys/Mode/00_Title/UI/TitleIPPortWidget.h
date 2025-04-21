@@ -16,6 +16,8 @@ class UNREAL_FALLGUYS_API UTitleIPPortWidget : public UTitleUserWidget
 	GENERATED_BODY()
 
 public:
+	void NativeConstruct();
+
 	UFUNCTION(BlueprintCallable)
 	void SetIP(FString _IP)
 	{

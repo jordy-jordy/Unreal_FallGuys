@@ -4,6 +4,14 @@
 #include "Mode/00_Title/UI/TitleNameSetWidget.h"
 
 
+void UTitleNameSetWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	bIsFocusable = true;
+	SetKeyboardFocus();
+}
+
 bool UTitleNameSetWidget::IsPlayerSetName(FString _Name)
 {
 	if (_Name == TEXT(""))

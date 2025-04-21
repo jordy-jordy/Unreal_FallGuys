@@ -4,11 +4,13 @@
 #include "Mode/00_Title/TitlePawn.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Kismet/GameplayStatics.h"
 
 #include <Global/FallGlobal.h>
 #include <Global/BaseGameInstance.h>
 #include <Global/Data/GlobalDataTable.h>
 #include <Mode/00_Title/UI/UIInputManager.h>
+#include "Mode/00_Title/TitlePlayerController.h"
 
 
 // Sets default values
@@ -57,7 +59,11 @@ void ATitlePawn::SetupPlayerInputComponent(UInputComponent* _PlayerInputComponen
 
 	UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(_PlayerInputComponent);
 
-	EnhancedInputComponent->BindActionValueLambda(PawnRotate, ETriggerEvent::Triggered,
+	ATitlePlayerController* PlayerController = Cast<ATitlePlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+
+	const UInputAction* PawnRotateInputAction = PlayerController->GetInputAction(TEXT("IA_PawnRotate"));
+
+	EnhancedInputComponent->BindActionValueLambda(PawnRotateInputAction, ETriggerEvent::Triggered,
 		[this](const FInputActionValue& _Value)
 		{
 			// input is a Vector2D
@@ -69,9 +75,18 @@ void ATitlePawn::SetupPlayerInputComponent(UInputComponent* _PlayerInputComponen
 				AddControllerYawInput(LookAxisVector.X);
 				AddControllerPitchInput(LookAxisVector.Y);
 			}
+
+			this->GetComponents<UStaticMeshComponent>(MeshComponents);
+			for (UStaticMeshComponent* MeshComponent : MeshComponents)
+			{
+				if (nullptr != MeshComponent && TEXT("Plinth") == MeshComponent->GetName())
+				{
+					PawnRotation(MeshComponent, LookAxisVector);
+				}
+			}
 		});
 
-	UIInputManager->SetupPlayerInputComponent(_PlayerInputComponent);
+	//UIInputManager->SetupPlayerInputComponent(_PlayerInputComponent);
 }
 
 void ATitlePawn::PawnRotation(UStaticMeshComponent* _Target, const FVector2D& _Value)
@@ -88,6 +103,7 @@ void ATitlePawn::PawnRotation(UStaticMeshComponent* _Target, const FVector2D& _V
 		_Target->AddLocalRotation(FRotator(0.0f, -1.0f, 0.0f));
 	}
 }
+
 void ATitlePawn::AttachCustomStaticMesh(ECostumeType Type, FString& _ImgName)
 {
 	// _ImgName 에 해당하는 리소스 가져오기
@@ -151,4 +167,3 @@ void ATitlePawn::DeAttachCustomStaticMesh(ECostumeType Type, FString& _ImgName)
 		}
 
 }
-

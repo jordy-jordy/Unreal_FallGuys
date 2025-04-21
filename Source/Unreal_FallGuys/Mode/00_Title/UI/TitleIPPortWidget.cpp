@@ -3,3 +3,10 @@
 
 #include "Mode/00_Title/UI/TitleIPPortWidget.h"
 
+
+void UTitleIPPortWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	bIsFocusable = false;
+}

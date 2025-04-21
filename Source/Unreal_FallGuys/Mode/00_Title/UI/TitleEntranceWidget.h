@@ -15,6 +15,8 @@ class UNREAL_FALLGUYS_API UTitleEntranceWidget : public UTitleUserWidget
 	GENERATED_BODY()
 
 public:
+	void NativeConstruct();
+
 	UFUNCTION(BlueprintCallable)
 	void SetTargetStageType(EStageType _TargetStage)
 	{

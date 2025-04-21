@@ -9,6 +9,8 @@
 
 void UTitleMainWidget::NativeConstruct()
 {
+	Super::NativeConstruct();
+
 	// 게임 나가기 후 플레이어 상태 리셋 및 TitleNameWidget 안해도 되게
 	bool HasName = UFallGlobal::GetHasNickname();
 
@@ -145,7 +147,9 @@ void UTitleMainWidget::SwitchWidget(ETitleUIType _UIType)
 		case ETitleUIType::TitleCustom:
 		{
 			CurUserWidget->SetVisibility(ESlateVisibility::Hidden);
+			CurUserWidget->bIsFocusable = false;
 			ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			ChangeWidget->bIsFocusable = true;
 			MenuWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 
 			for (TPair<ETitleUIType, UTitleUserWidget*> Pair : Widgets)
@@ -176,7 +180,9 @@ void UTitleMainWidget::SwitchWidget(ETitleUIType _UIType)
 		case ETitleUIType::TitleHome:
 		{
 			CurUserWidget->SetVisibility(ESlateVisibility::Hidden);
+			CurUserWidget->bIsFocusable = false;
 			ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			ChangeWidget->bIsFocusable = true;
 			MenuWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 			for (TPair<ETitleUIType, UTitleUserWidget*> Pair : Widgets)
 			{
@@ -298,7 +304,9 @@ void UTitleMainWidget::SwitchWidget(ETitleUIType _UIType)
 		case ETitleUIType::TitleHome:
 		{
 			CurUserWidget->SetVisibility(ESlateVisibility::Hidden);
+			CurUserWidget->bIsFocusable = false;
 			ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			ChangeWidget->bIsFocusable = true;
 			MenuWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 			break;
 		}

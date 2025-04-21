@@ -19,7 +19,7 @@ public:
 
 	void SetupPlayerInputComponent(UInputComponent* _PlayerInputComponent);
 
-	void SwitchMenuWidget(const FInputActionValue& _Value);
+	//void SwitchMenuWidget(const FInputActionValue& _Value);
 
 protected:
 	// Called when the game starts

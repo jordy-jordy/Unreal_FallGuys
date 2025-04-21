@@ -3,3 +3,10 @@
 
 #include "Mode/00_Title/UI/TitlePlayerCountWidget.h"
 
+
+void UTitlePlayerCountWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	bIsFocusable = false;
+}
