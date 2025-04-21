@@ -102,7 +102,7 @@ void APlayCharacter::BeginPlay()
 		SetCharacterCostume(CostumeColor, CostumeTopName, CostumeBotName);
 	}
 
-	//CheckPlayer();
+	CheckPlayer();
 }
 
 // Called every frame
@@ -370,31 +370,20 @@ void APlayCharacter::CheckPlayer()
 
 	
 	bIsSpectar = GameIns->bIsSpectar;
-
+	bIsResultLevel;
 	bIsSpectar;
 
-	if (UGameplayStatics::GetPlayerController(GetWorld(), 0) == GetController())
-	{
-		if (false == bIsResultLevel)
-		{
-			OutFailPlayer();
-		}
-		else
-		{
-			CheckFailPlayer();
-		}
-	}
-	else
-	{
-		if (false == bIsResultLevel)
-		{
-			OutFailPlayer();
-		}
-		else
-		{
-			CheckFailPlayer();
-		}
-	}
+	FTimerDelegate CurStatusReadyTimer;
+	CurStatusReadyTimer.BindUFunction(this, FName("CurStatusReadTimerFuc"));
+
+	GetWorldTimerManager().SetTimer(
+		PlayOutStartTimer,
+		CurStatusReadyTimer,
+		0.7f,
+		false
+	);
+
+
 }
 
 
@@ -421,22 +410,25 @@ void APlayCharacter::S2M_SpectarLoc_Implementation()
 }
 void APlayCharacter::CurStatusReadTimerFuc()
 {
+	if (UGameplayStatics::GetPlayerController(GetWorld(), 0) == GetController())
+	{
+		if (false == bIsResultLevel)
+		{
+			OutFailPlayer();
+		}
+		else
+		{
+			CheckFailPlayer();
+		}
+	}
 
 }
 void APlayCharacter::CheckFailPlayer()
 {
 
 	 OutFailPlayer();
-	
-	/* FTimerDelegate CurStatusReadyTimer;
-	 CurStatusReadyTimer.BindUFunction(this, FName("CurStatusReadTimerFuc"));
 
-	 GetWorldTimerManager().SetTimer(
-		 PlayOutStartTimer,
-		 CurStatusReadyTimer,
-		 1.0f,
-		 false
-	 );*/
+	 
 
 	 APlayPlayerState* PlayState = GetPlayerState<APlayPlayerState>();
 	 if (nullptr == PlayState) return;
