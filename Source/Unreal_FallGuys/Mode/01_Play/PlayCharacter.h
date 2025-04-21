@@ -205,6 +205,9 @@ protected:
 
 #pragma region LeeMinha > 레벨 시작 > 실패 플레이어 처리
 public:
+
+	FTimerHandle PlayOutStartTimer;
+
 	UFUNCTION()
 	void CheckPlayer();
 
@@ -215,6 +218,9 @@ public:
 	UFUNCTION(Reliable, NetMulticast, Category = "PLAYER START")
 	void S2M_SpectarLoc();
 	void S2M_SpectarLoc_Implementation();
+
+	UFUNCTION()
+	void CurStatusReadTimerFuc();
 
 	UFUNCTION(Category = "PLAYER START")
 	void CheckFailPlayer();

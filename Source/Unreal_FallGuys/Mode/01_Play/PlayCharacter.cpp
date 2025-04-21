@@ -102,7 +102,7 @@ void APlayCharacter::BeginPlay()
 		SetCharacterCostume(CostumeColor, CostumeTopName, CostumeBotName);
 	}
 
-	CheckPlayer();
+	//CheckPlayer();
 }
 
 // Called every frame
@@ -353,20 +353,38 @@ void APlayCharacter::S2M_NickName_Implementation(const FString& _NickName)
 void APlayCharacter::CheckPlayer()
 {
 
+	UBaseGameInstance* GameIns = GetGameInstance<UBaseGameInstance>();
+	
 	if (HasAuthority())
 	{
-		int a = 0;
+		bIsResultLevel= GameIns->bIsResultLevel;
 	}
 	else
 	{
 		int b = 0;
 	}
 
-	UBaseGameInstance* GameIns = GetGameInstance<UBaseGameInstance>();
-	bIsResultLevel = GameIns->bIsResultLevel;
+	
+
+	/*void APlayGameMode::GetIsResultLevel(APlayPlayerState * _PlayerState, APlayGameState * _FallState, UBaseGameInstance * _GameInstance)*/
+
+	
 	bIsSpectar = GameIns->bIsSpectar;
 
+	bIsSpectar;
+
 	if (UGameplayStatics::GetPlayerController(GetWorld(), 0) == GetController())
+	{
+		if (false == bIsResultLevel)
+		{
+			OutFailPlayer();
+		}
+		else
+		{
+			CheckFailPlayer();
+		}
+	}
+	else
 	{
 		if (false == bIsResultLevel)
 		{
@@ -401,26 +419,38 @@ void APlayCharacter::S2M_SpectarLoc_Implementation()
 		// 다른 캐릭터로 시점 변경
 	
 }
+void APlayCharacter::CurStatusReadTimerFuc()
+{
 
+}
 void APlayCharacter::CheckFailPlayer()
 {
 
 	 OutFailPlayer();
 	
-	APlayPlayerState* PlayState = GetPlayerState<APlayPlayerState>();
-	if (nullptr == PlayState) return;
+	/* FTimerDelegate CurStatusReadyTimer;
+	 CurStatusReadyTimer.BindUFunction(this, FName("CurStatusReadTimerFuc"));
 
-	if (EPlayerStatus::FAIL == PlayState->PlayerInfo.Status)
-	{
-		bIsSpectar = true;
+	 GetWorldTimerManager().SetTimer(
+		 PlayOutStartTimer,
+		 CurStatusReadyTimer,
+		 1.0f,
+		 false
+	 );*/
+
+	 APlayPlayerState* PlayState = GetPlayerState<APlayPlayerState>();
+	 if (nullptr == PlayState) return;
+
+	 if (EPlayerStatus::FAIL == PlayState->PlayerInfo.Status)
+	 {
+		 bIsSpectar = true;
 
 
-		UBaseGameInstance* GameIns = GetGameInstance<UBaseGameInstance>();
+		 UBaseGameInstance* GameIns = GetGameInstance<UBaseGameInstance>();
 
-		GameIns->bIsSpectar = bIsSpectar;
+		 GameIns->bIsSpectar = bIsSpectar;
 
-	}
-	
+	 }
 }
 
 void APlayCharacter::OutFailPlayer()
