@@ -113,6 +113,7 @@ class UNREAL_FALLGUYS_API UBaseGameInstance : public UGameInstance
 
 public:
 	UBaseGameInstance();
+	virtual void Init() override;
 
 #pragma region BaseGameInstance :: 서버 관련
 protected:
