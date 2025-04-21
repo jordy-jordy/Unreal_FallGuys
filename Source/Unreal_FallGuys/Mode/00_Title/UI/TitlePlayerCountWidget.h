@@ -16,6 +16,8 @@ class UNREAL_FALLGUYS_API UTitlePlayerCountWidget : public UTitleUserWidget
 	GENERATED_BODY()
 	
 public:
+	void NativeConstruct();
+
 	UFUNCTION(BlueprintCallable)
 	void SetPlayerCount(int _PlayerCount)
 	{

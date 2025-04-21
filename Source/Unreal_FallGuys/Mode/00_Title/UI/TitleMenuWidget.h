@@ -14,4 +14,6 @@ class UNREAL_FALLGUYS_API UTitleMenuWidget : public UTitleUserWidget
 {
 	GENERATED_BODY()
 
+public:
+	void NativeConstruct();
 };

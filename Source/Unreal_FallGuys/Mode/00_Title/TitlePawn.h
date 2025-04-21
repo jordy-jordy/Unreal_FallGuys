@@ -22,6 +22,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void PawnRotation(UStaticMeshComponent* _Target, const FVector2D& _Value);
 
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void SwitchHomeWidgetStart();
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void SwitchCustomWidgetStart();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -35,6 +41,8 @@ protected:
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* PawnRotate = nullptr;
+
+	TArray<class UStaticMeshComponent*> MeshComponents;
 
 //LMH
 public:

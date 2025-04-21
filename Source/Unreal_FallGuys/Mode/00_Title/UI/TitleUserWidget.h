@@ -19,6 +19,8 @@ class UNREAL_FALLGUYS_API UTitleUserWidget : public UUserWidget
 public:
 	UTitleUserWidget(const FObjectInitializer& ObjectInitializer);
 
+	void NativeConstruct();
+
 	void SetMainWidget(class UTitleMainWidget* _MainWidget)
 	{
 		MainWidget = _MainWidget;

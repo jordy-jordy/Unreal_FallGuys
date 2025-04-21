@@ -4,3 +4,9 @@
 #include "Mode/00_Title/UI/TitleEntranceWidget.h"
 
 
+void UTitleEntranceWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	bIsFocusable = false;
+}
