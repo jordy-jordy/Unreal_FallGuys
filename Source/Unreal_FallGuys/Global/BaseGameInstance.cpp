@@ -4,6 +4,8 @@
 #include "Global/BaseGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 
+#include "Engine/Engine.h"
+#include "GameFramework/GameUserSettings.h"
 #include <Net/UnrealNetwork.h>
 #include <Sockets.h>
 #include <SocketSubsystem.h>
@@ -72,6 +74,22 @@ UBaseGameInstance::UBaseGameInstance()
 		}
 	}
 	UE_LOG(FALL_DEV_LOG, Log, TEXT("%S(%u)> DataTableLoading End"), __FUNCTION__, __LINE__);
+}
+
+void UBaseGameInstance::Init()
+{
+	Super::Init();
+
+	// 패키징 때 창모드로 설정
+	UGameUserSettings* Settings = GEngine->GetGameUserSettings();
+	if (Settings != nullptr)
+	{
+		Settings->SetFullscreenMode(EWindowMode::Windowed);
+		Settings->SetScreenResolution(FIntPoint(1650, 850));
+		Settings->ApplySettings(true);
+
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("폴가이즈 :: 초기 해상도 설정 : 창모드 1650 x 850"));
+	}
 }
 
 #pragma region BaseGameInstance :: 서버 관련
