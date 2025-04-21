@@ -50,14 +50,16 @@ public:
 		return CurIndex;
 	}
 
-	UFUNCTION(BlueprintCallable)
-	void ChangeButtonImage(class UButton* _CurButton, class UObject* InResourceObject);
+	class UButton* GetCurButton()
+	{
+		return CurButton;
+	}
 
 	UFUNCTION(BlueprintCallable)
-	void SetButtonImage(class UImage* _ButtonImage)
-	{
-		ButtonImage = _ButtonImage;
-	}
+	void ChangeButtonImage(FString _ButtonState);
+
+	void ChangeButtonImage_Base();
+	void ChangeButtonImage_Select();
 
 private:
 	EStageType TagetStage;
@@ -71,14 +73,20 @@ private:
 	UPROPERTY(VisibleAnywhere, Transient, meta = (BindWidgetAnim), Category = "UI")
 	UWidgetAnimation* ConnectButton;
 
+	FWidgetAnimationDynamicEvent EntAnimStarted;
+	FWidgetAnimationDynamicEvent EntAnimFinished;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
 	TArray<class UButton*> ArrButtons;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
-	class UButton* CurButton;
+	TArray<class UObject*> ArrBase;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
-	class UImage* ButtonImage;
+	TArray<class UObject*> ArrSelect;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
+	class UButton* CurButton;
 
 	int CurIndex = 0;
 

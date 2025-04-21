@@ -4,6 +4,7 @@
 #include "Mode/00_Title/UI/TitleEntranceWidget.h"
 #include "Components/Button.h"
 #include "Styling/SlateBrush.h"
+#include "Unreal_FallGuys/Unreal_FallGuys.h"
 #include "Mode/00_Title/UI/TitleMainWidget.h"
 
 
@@ -16,6 +17,22 @@ void UTitleEntranceWidget::NativeConstruct()
 	if (false == ArrButtons.IsEmpty())
 	{
 		CurButton = ArrButtons[0];
+	}
+
+	if (nullptr != StartServerButton)
+	{
+		EntAnimStarted.BindUFunction(this, FName(TEXT("ChangeButtonImage_Select")));
+		//EntAnimFinished.BindDynamic(this, &UTitleEntranceWidget::ChangeButtonImage_Base);
+	}
+	if (nullptr != CompeteButton)
+	{
+		EntAnimStarted.BindUFunction(this, FName(TEXT("ChangeButtonImage_Select")));
+		//EntAnimFinished.BindDynamic(this, &UTitleEntranceWidget::ChangeButtonImage_Base);
+	}
+	if (nullptr != ConnectButton)
+	{
+		EntAnimStarted.BindUFunction(this, FName(TEXT("ChangeButtonImage_Select")));
+		//EntAnimFinished.BindDynamic(this, &UTitleEntranceWidget::ChangeButtonImage_Base);
 	}
 }
 
@@ -68,16 +85,22 @@ void UTitleEntranceWidget::PlayButtonAnim(int _CurIndex)
 	{
 	case 0:
 	{
+		BindToAnimationStarted(StartServerButton, EntAnimStarted);
+		//BindToAnimationFinished(StartServerButton, EntAnimFinished);
 		PlayAnimation(StartServerButton);
 		break;
 	}
 	case 1:
 	{
+		BindToAnimationStarted(CompeteButton, EntAnimStarted);
+		//BindToAnimationFinished(CompeteButton, EntAnimFinished);
 		PlayAnimation(CompeteButton);
 		break;
 	}
 	case 2:
 	{
+		BindToAnimationStarted(ConnectButton, EntAnimStarted);
+		//BindToAnimationFinished(ConnectButton, EntAnimFinished);
 		PlayAnimation(ConnectButton);
 		break;
 	}
@@ -88,10 +111,53 @@ void UTitleEntranceWidget::PlayButtonAnim(int _CurIndex)
 	IsInput = false;
 }
 
-void UTitleEntranceWidget::ChangeButtonImage(UButton* _CurButton, class UObject* InResourceObject)
+void UTitleEntranceWidget::ChangeButtonImage(FString _ButtonState)
 {
-	FButtonStyle ButtonStyle = _CurButton->WidgetStyle;
-	FSlateBrush NormalBrush = _CurButton->WidgetStyle.Normal;
-	NormalBrush.SetResourceObject(InResourceObject);
+	if (nullptr == CurButton)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : CurButton is null"), *FString(__FUNCSIG__));
+		return;
+	}
+	if (true == ArrBase.IsEmpty())
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : ArrBase is Empty"), *FString(__FUNCSIG__));
+		return;
+	}
+	if (true == ArrSelect.IsEmpty())
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : ArrSelect is Empty"), *FString(__FUNCSIG__));
+		return;
+	}
+
+	UObject* ResourceObject = nullptr;
+	if (true == _ButtonState.Equals(TEXT("Base"), ESearchCase::IgnoreCase))
+	{
+		ResourceObject = ArrBase[CurIndex];
+	}
+	else if (true == _ButtonState.Equals(TEXT("Select"), ESearchCase::IgnoreCase))
+	{
+		ResourceObject = ArrSelect[CurIndex];
+	}
+
+	if (nullptr == ResourceObject)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : ResourceObject is null"), *FString(__FUNCSIG__));
+		return;
+	}
+
+	FButtonStyle ButtonStyle = CurButton->WidgetStyle;
+	FSlateBrush NormalBrush = CurButton->WidgetStyle.Normal;
+	NormalBrush.SetResourceObject(ResourceObject);
 	ButtonStyle.SetNormal(NormalBrush);
+	CurButton->SetStyle(ButtonStyle);
+}
+
+void UTitleEntranceWidget::ChangeButtonImage_Base()
+{
+	ChangeButtonImage(TEXT("Base"));
+}
+
+void UTitleEntranceWidget::ChangeButtonImage_Select()
+{
+	ChangeButtonImage(TEXT("Select"));
 }
