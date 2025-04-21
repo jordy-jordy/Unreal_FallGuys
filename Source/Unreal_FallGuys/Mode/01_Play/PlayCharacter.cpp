@@ -102,6 +102,7 @@ void APlayCharacter::BeginPlay()
 		SetCharacterCostume(CostumeColor, CostumeTopName, CostumeBotName);
 	}
 
+	// 시작시 전 라운드 실패한 캐릭터 처리 함수
 	CheckPlayer();
 }
 
@@ -348,8 +349,8 @@ void APlayCharacter::S2M_NickName_Implementation(const FString& _NickName)
 	NickName = _NickName;
 }
 
-//LMH
-// 실패한 플레이어 콜리전 처리
+//이민하
+// 전 라운드에서 실패한 캐릭터를 레이스에서 아웃 시키는 기능
 void APlayCharacter::CheckPlayer()
 {
 
@@ -359,35 +360,20 @@ void APlayCharacter::CheckPlayer()
 	{
 		bIsResultLevel= GameIns->bIsResultLevel;
 	}
-	else
-	{
-		int b = 0;
-	}
 
-	
-
-	/*void APlayGameMode::GetIsResultLevel(APlayPlayerState * _PlayerState, APlayGameState * _FallState, UBaseGameInstance * _GameInstance)*/
-
-	
 	bIsSpectar = GameIns->bIsSpectar;
-	bIsResultLevel;
-	bIsSpectar;
 
+	// PlayerInfo 세팅할 시간 딜레이
 	FTimerDelegate CurStatusReadyTimer;
-	CurStatusReadyTimer.BindUFunction(this, FName("CurStatusReadTimerFuc"));
+	CurStatusReadyTimer.BindUFunction(this, FName("CurStatusReadTimerFuc")); // 실행 함수
 
 	GetWorldTimerManager().SetTimer(
 		PlayOutStartTimer,
-		CurStatusReadyTimer,
+		CurStatusReadyTimer, 
 		0.7f,
 		false
 	);
-
-
 }
-
-
-
 void APlayCharacter::C2S_SpectarLoc_Implementation()
 {
 	S2M_SpectarLoc_Implementation();
@@ -395,7 +381,7 @@ void APlayCharacter::C2S_SpectarLoc_Implementation()
 
 void APlayCharacter::S2M_SpectarLoc_Implementation()
 {
-
+		//위치 동기화
 		SetActorLocation({ 0,0,-100000 });
 		SetActorEnableCollision(false);
 
@@ -408,6 +394,8 @@ void APlayCharacter::S2M_SpectarLoc_Implementation()
 		// 다른 캐릭터로 시점 변경
 	
 }
+
+// 이민하 : 결과 레벨 / 게임 레벨 구분해서 캐릭터 아웃 처리
 void APlayCharacter::CurStatusReadTimerFuc()
 {
 	if (UGameplayStatics::GetPlayerController(GetWorld(), 0) == GetController())
@@ -421,14 +409,12 @@ void APlayCharacter::CurStatusReadTimerFuc()
 			CheckFailPlayer();
 		}
 	}
-
 }
+
+// 이민하 : 경기에서 실패한 캐릭터 관전자로 저장
 void APlayCharacter::CheckFailPlayer()
 {
-
 	 OutFailPlayer();
-
-	 
 
 	 APlayPlayerState* PlayState = GetPlayerState<APlayPlayerState>();
 	 if (nullptr == PlayState) return;
@@ -445,6 +431,7 @@ void APlayCharacter::CheckFailPlayer()
 	 }
 }
 
+// 이민하 : 탈락자 아웃시키기 ( 위치 -10000.. 바닥으로 이동)
 void APlayCharacter::OutFailPlayer()
 {
 	if (true == bIsSpectar)
