@@ -88,7 +88,7 @@ void APlayCharacter::BeginPlay()
 	// 캐릭터 무브먼트 :: 걷기 : 감속 걷기 제동
 	GetCharacterMovement()->BrakingDecelerationWalking = 3500.0f;
 	// 캐릭터 무브먼트 :: 점프/낙하 : 대기 컨트롤
-	GetCharacterMovement()->AirControl = 0.45f;
+	GetCharacterMovement()->AirControl = 0.4f;
 
 	// 스켈레탈 메시 소켓에 어태치
 	if (CostumeTOPStaticMesh && CostumeBOTStaticMesh)
