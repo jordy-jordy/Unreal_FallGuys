@@ -82,9 +82,9 @@ void APlayCharacter::BeginPlay()
 	// 캐릭터 무브먼트 :: 일반 세팅 : 최대 가속
 	GetCharacterMovement()->MaxAcceleration = 2500.0f;
 	// 캐릭터 무브먼트 :: 걷기 : 지면 마찰
-	GetCharacterMovement()->GroundFriction = 1.2f;
+	GetCharacterMovement()->GroundFriction = 0.8f;
 	// 캐릭터 무브먼트 :: 걷기 : 최대 걷기 속도
-	GetCharacterMovement()->MaxWalkSpeed = 565.0f;
+	GetCharacterMovement()->MaxWalkSpeed = 510.0f;
 	// 캐릭터 무브먼트 :: 걷기 : 감속 걷기 제동
 	GetCharacterMovement()->BrakingDecelerationWalking = 3500.0f;
 	// 캐릭터 무브먼트 :: 점프/낙하 : 대기 컨트롤
