@@ -76,6 +76,20 @@ void APlayCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// 이현정 : 캐릭터 무브먼트 컴포넌트 세팅
+	// 캐릭터 무브먼트 :: 일반 세팅 : 마찰 인수 제동
+	GetCharacterMovement()->BrakingFrictionFactor = 2.0f;
+	// 캐릭터 무브먼트 :: 일반 세팅 : 최대 가속
+	GetCharacterMovement()->MaxAcceleration = 2500.0f;
+	// 캐릭터 무브먼트 :: 걷기 : 지면 마찰
+	GetCharacterMovement()->GroundFriction = 1.2f;
+	// 캐릭터 무브먼트 :: 걷기 : 최대 걷기 속도
+	GetCharacterMovement()->MaxWalkSpeed = 565.0f;
+	// 캐릭터 무브먼트 :: 걷기 : 감속 걷기 제동
+	GetCharacterMovement()->BrakingDecelerationWalking = 3500.0f;
+	// 캐릭터 무브먼트 :: 점프/낙하 : 대기 컨트롤
+	GetCharacterMovement()->AirControl = 0.4f;
+
 	// 스켈레탈 메시 소켓에 어태치
 	if (CostumeTOPStaticMesh && CostumeBOTStaticMesh)
 	{
