@@ -18,8 +18,8 @@ public:
 	void NativeConstruct();
 
 	UFUNCTION(BlueprintCallable)
-	void WIdgetMenuInputAction(const FVector2D& _Value);
+	void WIdgetMenuInputAction(const FVector2D& _Value) override;
 
 	UFUNCTION(BlueprintCallable)
-	void WIdgetSelectInputAction(const FVector2D& _Value);
+	void WIdgetSelectInputAction(const FVector2D& _Value) override;
 };

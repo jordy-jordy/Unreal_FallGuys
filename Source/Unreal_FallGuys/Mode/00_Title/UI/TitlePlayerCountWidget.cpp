@@ -2,6 +2,7 @@
 
 
 #include "Mode/00_Title/UI/TitlePlayerCountWidget.h"
+#include "Mode/00_Title/UI/TitleMainWidget.h"
 
 
 void UTitlePlayerCountWidget::NativeConstruct()
@@ -9,4 +10,23 @@ void UTitlePlayerCountWidget::NativeConstruct()
 	Super::NativeConstruct();
 
 	bIsFocusable = false;
+}
+
+void UTitlePlayerCountWidget::WIdgetSelectInputAction(const FVector2D& _Value)
+{
+	Super::WIdgetSelectInputAction(_Value);
+
+	if (GetMainWidget()->GetCurUIType() == ETitleUIType::TitlePlayerCount)
+	{
+		if ((_Value.X < 0.0f && _Value.Y == 0.0f)/* && true == IsEscInput*/)
+		{
+			GetMainWidget()->SwitchWidget(ETitleUIType::TitleEntrance);
+			return;
+		}
+
+		if (_Value.X > 0.0f && _Value.Y == 0.0f)
+		{
+			return;
+		}
+	}
 }

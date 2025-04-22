@@ -30,18 +30,30 @@ public:
 	}
 
 	UFUNCTION(BlueprintCallable)
-	void WIdgetSelectInputAction(const FVector2D& _Value);
+	void WIdgetSelectInputAction(const FVector2D& _Value) override;
 
 	UFUNCTION(BlueprintCallable)
-	void WIdgetMoveInputAction(const FVector2D& _Value);
+	void WIdgetMoveInputAction(const FVector2D& _Value) override;
 
 	UFUNCTION(BlueprintCallable)
 	void PlayButtonAnim(int _CurIndex);
 
 	UFUNCTION(BlueprintCallable)
-	void SetInputState(bool _Value)
+	void SetMoveInputState(bool _Value)
 	{
-		IsInput = _Value;
+		IsMoveInput = _Value;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	bool GetSelectInputState()
+	{
+		return IsSelectInput;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	void SetSelectInputState(bool _Value)
+	{
+		IsSelectInput = _Value;
 	}
 
 	UFUNCTION(BlueprintCallable)
@@ -50,16 +62,21 @@ public:
 		return CurIndex;
 	}
 
+	UFUNCTION(BlueprintCallable)
 	class UButton* GetCurButton()
 	{
 		return CurButton;
 	}
 
 	UFUNCTION(BlueprintCallable)
-	void ChangeButtonImage(FString _ButtonState);
+	void SetCurButton(int _Index)
+	{
+		CurIndex = _Index;
+		CurButton = ArrButtons[_Index];
+	}
 
-	void ChangeButtonImage_Base();
-	void ChangeButtonImage_Select();
+	UFUNCTION(BlueprintCallable)
+	void ChangeButtonImage();
 
 private:
 	EStageType TagetStage;
@@ -90,5 +107,7 @@ private:
 
 	int CurIndex = 0;
 
-	bool IsInput = false;
+	bool IsMoveInput = false;
+	bool IsSelectInput = false;
+	bool bInputReady = true;
 };

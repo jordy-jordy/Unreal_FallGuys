@@ -164,7 +164,9 @@ void UTitleMainWidget::SwitchWidget(ETitleUIType _UIType)
 		case ETitleUIType::TitleEntrance:
 		{
 			CurUserWidget->SetVisibility(ESlateVisibility::Hidden);
+			CurUserWidget->bIsFocusable = false;
 			ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			ChangeWidget->bIsFocusable = true;
 			MenuWidget->SetVisibility(ESlateVisibility::Hidden);
 			break;
 		}
@@ -196,7 +198,9 @@ void UTitleMainWidget::SwitchWidget(ETitleUIType _UIType)
 		case ETitleUIType::CustomeInven:
 		{
 			CurUserWidget->SetVisibility(ESlateVisibility::Hidden);
+			CurUserWidget->bIsFocusable = false;
 			ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			ChangeWidget->bIsFocusable = true;
 			for (TPair<ETitleUIType, UTitleUserWidget*> Pair : Widgets)
 			{
 				if (Pair.Key == ETitleUIType::InvenBtn)
@@ -219,21 +223,27 @@ void UTitleMainWidget::SwitchWidget(ETitleUIType _UIType)
 		case ETitleUIType::TitleHome:
 		{
 			CurUserWidget->SetVisibility(ESlateVisibility::Hidden);
+			CurUserWidget->bIsFocusable = false;
 			ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			ChangeWidget->bIsFocusable = true;
 			MenuWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 			break;
 		}
 		case ETitleUIType::TitleIPPort:
 		{
 			CurUserWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			CurUserWidget->bIsFocusable = false;
 			ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			ChangeWidget->bIsFocusable = true;
 			MenuWidget->SetVisibility(ESlateVisibility::Hidden);
 			break;
 		}
 		case ETitleUIType::TitlePlayerCount:
 		{
 			CurUserWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			CurUserWidget->bIsFocusable = false;
 			ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			ChangeWidget->bIsFocusable = true;
 			MenuWidget->SetVisibility(ESlateVisibility::Hidden);
 			break;
 		}
@@ -256,7 +266,9 @@ void UTitleMainWidget::SwitchWidget(ETitleUIType _UIType)
 				}
 			}
 			CurUserWidget->SetVisibility(ESlateVisibility::Hidden);
+			CurUserWidget->bIsFocusable = false;
 			ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			ChangeWidget->bIsFocusable = true;
 			MenuWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 			break;
 		}
@@ -272,7 +284,9 @@ void UTitleMainWidget::SwitchWidget(ETitleUIType _UIType)
 		case ETitleUIType::TitleEntrance:
 		{
 			CurUserWidget->SetVisibility(ESlateVisibility::Hidden);
+			CurUserWidget->bIsFocusable = false;
 			ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			ChangeWidget->bIsFocusable = true;
 			MenuWidget->SetVisibility(ESlateVisibility::Hidden);
 			break;
 		}
@@ -288,7 +302,9 @@ void UTitleMainWidget::SwitchWidget(ETitleUIType _UIType)
 		case ETitleUIType::TitleEntrance:
 		{
 			CurUserWidget->SetVisibility(ESlateVisibility::Hidden);
+			CurUserWidget->bIsFocusable = false;
 			ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			ChangeWidget->bIsFocusable = true;
 			MenuWidget->SetVisibility(ESlateVisibility::Hidden);
 			break;
 		}

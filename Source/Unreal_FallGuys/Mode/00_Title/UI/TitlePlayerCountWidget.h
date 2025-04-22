@@ -19,6 +19,9 @@ public:
 	void NativeConstruct();
 
 	UFUNCTION(BlueprintCallable)
+	void WIdgetSelectInputAction(const FVector2D& _Value) override;
+
+	UFUNCTION(BlueprintCallable)
 	void SetPlayerCount(int _PlayerCount)
 	{
 		PlayerCount = _PlayerCount;
@@ -31,7 +34,35 @@ public:
 		return UFallConst::MinPlayerCount;
 	}
 
+	UFUNCTION(BlueprintCallable)
+	bool GetSelectInputState()
+	{
+		return IsSelectInput;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	void SetSelectInputState(bool _Value)
+	{
+		IsSelectInput = _Value;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	bool GetEscInputState()
+	{
+		return IsEscInput;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	void SetEscInputState(bool _Value)
+	{
+		IsEscInput = _Value;
+	}
+
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Server", meta = (AllowPrivateAccess = "true"))
 	int PlayerCount = UFallConst::MinPlayerCount;
+
+	bool IsSelectInput = false;
+	bool IsEscInput = false;
+	bool bInputReady = true;
 };
