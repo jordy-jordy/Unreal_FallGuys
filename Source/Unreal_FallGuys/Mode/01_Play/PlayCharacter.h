@@ -84,7 +84,7 @@ public:
 		GetUpTime = 0.0f;
 	}
 
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintImplementableEvent,BlueprintCallable)
 	void SpectatorOn();
 
 	FVector GetControllerForward();
