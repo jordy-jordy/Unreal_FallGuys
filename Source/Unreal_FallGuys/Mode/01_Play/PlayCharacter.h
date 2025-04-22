@@ -84,6 +84,9 @@ public:
 		GetUpTime = 0.0f;
 	}
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void SpectatorOn();
+
 	FVector GetControllerForward();
 	FVector GetControllerRight();
 
