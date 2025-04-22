@@ -9,28 +9,6 @@
 #include <Global/GlobalEnum.h>
 #include "CustomColorButtonWidget.generated.h"
 
-
-/**
- *
- */
- //UENUM(BlueprintType)
- //enum class EColor : uint8
- //{
- //	TEST00,
- //	TEST01,
- //	TEST02,
- //};
-// ÄÚ½ºÆ¬ »ö»ó
-//UENUM(BlueprintType)
-//enum class ECostumeColor : uint8
-//{
-//	NONE UMETA(DisplayName = "³í"),
-//	PINK UMETA(DisplayName = "ÇÎÅ©"),
-//	YELLOW UMETA(DisplayName = "¿»·Î¿ì"),
-//	BLUE UMETA(DisplayName = "ºí·ç"),
-//	MAX UMETA(DisplayName = "¸Æ½º")
-//};
-
 UCLASS()
 class UNREAL_FALLGUYS_API UCustomColorButtonWidget : public UCustomButtonWidget
 {
@@ -45,16 +23,12 @@ public:
 	FString GetCustomValueAsString(ECostumeColor _Color);
 
 
-	
-
 	UFUNCTION(BlueprintCallable)
 	void ChangePawnColor();
 
 	UFUNCTION(BlueprintCallable)
 	void SetButtonColor();
 
-	UFUNCTION()
-	void GetResourceFromName();
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
 	ECostumeColor Color = ECostumeColor::YELLOW;

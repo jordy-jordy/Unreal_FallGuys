@@ -9,26 +9,18 @@
 #include "Materials/MaterialInterface.h"
 #include <Global/FallGlobal.h>
 
-//void UCustomColorButtonWidget::Tick(FGeometry MyGeometry, float InDeltaTime)
-//{
-//	Super::Tick(MyGeometry, InDeltaTime);
-//
-//	//int a = 0;
-//}
-
 void UCustomColorButtonWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	
-
+	// 버튼 색상 세팅
 	SetButtonColor();
 }
 
+// 컬러 종류에 따라 컬러 네임 가져오기
 FString UCustomColorButtonWidget::GetCustomValueAsString(ECostumeColor _Color)
 {
 	FString ColorName = "";
-
 
 	switch (_Color)
 	{
@@ -54,14 +46,10 @@ FString UCustomColorButtonWidget::GetCustomValueAsString(ECostumeColor _Color)
 	}
 
 	return ColorName;
-	//FString Data = UEnum::GetValueAsString(TEXT("/Script/Unreal_FallGuys.GlobalEnum.ECostumeColor"), _Color);
-
-	
-	//return Data;
-
 	
 }
 
+// 타이틀폰 컬러 변환 실행 함수
 void UCustomColorButtonWidget::ChangePawnColor()
 {
 	CustomName = GetCustomValueAsString(Color);
@@ -69,17 +57,17 @@ void UCustomColorButtonWidget::ChangePawnColor()
 	UFallGlobal::ChangeCostumeColor(GetOwningPlayerPawn(), CustomName);
 }
 
+
+// 버튼 색상 세팅
 void UCustomColorButtonWidget::SetButtonColor()
 {
 	CustomName = GetCustomValueAsString(Color);
-	UMaterialInterface* CustomMaterial= UFallGlobal::GetCostumeColorUIMaterial(GetOwningPlayerPawn(), CustomName);
+
+	// 데이터 테이블에서 컬러 이미지 이름에 맞는 Material 가져옴
+	UMaterialInterface* CustomMaterial= UFallGlobal::GetCostumeColorUIMaterial(GetOwningPlayerPawn(), CustomName); 
 
 	SetButtonStyle(CustomMaterial);
 
-}
-
-void UCustomColorButtonWidget::GetResourceFromName()
-{
 }
 
 
