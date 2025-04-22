@@ -390,7 +390,7 @@ void APlayCharacter::S2M_SpectarLoc_Implementation()
 			GetMesh()->SetSimulatePhysics(false);
 			GetMesh()->SetEnableGravity(false);
 		}
-		SpectatorOn();
+		//SpectatorOn();
 		// 다른 캐릭터로 시점 변경
 	
 }
