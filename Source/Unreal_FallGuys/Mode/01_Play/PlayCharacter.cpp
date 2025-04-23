@@ -449,9 +449,18 @@ void APlayCharacter::OutFailPlayer()
 {
 	if (true == bIsSpectar)
 	{
-		C2S_SpectarLoc();
-		SpectatorOn();
+		
 
+		if (true == bIsResultLevel)
+		{
+			SpectatorOnForRaceOver();
+		}
+		else
+		{
+			SpectatorOn();
+
+		}
+		C2S_SpectarLoc();
 	}
 	
 }
