@@ -140,7 +140,10 @@ void ATeamPlayGameMode::AssignTeam(APlayPlayerState* _PlayerState)
 // 레드팀 점수 계산
 void ATeamPlayGameMode::CountREDTeamScore(int _NumberOfEgg)
 {
+	// 서버장이 아니면 리턴
 	if (!HasAuthority()) return;
+	// 게임이 끝났으면 리턴
+	if (IsEndGame) return;
 	
 	REDTeamScore = _NumberOfEgg * UFallConst::EggScore;
 
@@ -152,7 +155,10 @@ void ATeamPlayGameMode::CountREDTeamScore(int _NumberOfEgg)
 // 블루팀 점수 계산
 void ATeamPlayGameMode::CountBLUETeamScore(int _NumberOfEgg)
 {
+	// 서버장이 아니면 리턴
 	if (!HasAuthority()) return;
+	// 게임이 끝났으면 리턴
+	if (IsEndGame) return;
 
 	BLUETeamScore = _NumberOfEgg * UFallConst::EggScore;
 

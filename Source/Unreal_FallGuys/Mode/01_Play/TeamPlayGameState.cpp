@@ -20,20 +20,29 @@ void ATeamPlayGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 
 void ATeamPlayGameState::SetREDTeamScore_Implementation(int32 _Score)
 {
+	// 서버장이 아니면 리턴
 	if (!HasAuthority()) return;
+	// 게임이 끝났으면 리턴
+	if (StateIsEndGame) return;
 
 	GameStateREDTeamScore = _Score;
 }
 
 void ATeamPlayGameState::SetBLUETeamScore_Implementation(int32 _Score)
 {
+	// 서버장이 아니면 리턴
 	if (!HasAuthority()) return;
+	// 게임이 끝났으면 리턴
+	if (StateIsEndGame) return;
 
 	GameStateBLUETeamScore = _Score;
 }
 
 void ATeamPlayGameState::SetRemainingTime_Implementation(float _Time)
 {
+	// 서버장이 아니면 리턴
+	if (!HasAuthority()) return;
+
 	STATE_RemainingTime = _Time;
 }
 
