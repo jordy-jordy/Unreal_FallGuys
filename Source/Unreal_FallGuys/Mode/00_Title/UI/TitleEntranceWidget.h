@@ -109,5 +109,4 @@ private:
 
 	bool IsMoveInput = false;
 	bool IsSelectInput = false;
-	bool bInputReady = true;
 };

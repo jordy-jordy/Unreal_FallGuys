@@ -32,8 +32,9 @@ void UTitleHomeWidget::WIdgetSelectInputAction(const FVector2D& _Value)
 	
 	if (GetMainWidget()->GetCurUIType() == ETitleUIType::TitleHome)
 	{
-		if (_Value.X > 0 && _Value.Y == 0.0f)
+		if (_Value.X > 0 && _Value.Y == 0.0f && true == InputCheckValue)
 		{
+			InputCheckValue = false;
 			GetMainWidget()->SwitchWidget(ETitleUIType::TitleEntrance);
 			return;
 		}

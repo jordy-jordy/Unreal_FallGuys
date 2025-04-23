@@ -27,19 +27,4 @@ bool UTitleUserWidget::InputCheck(const FVector2D _Value)
 	return false;
 }
 
-void UTitleUserWidget::WIdgetSelectInputAction(const FVector2D& _Value)
-{
-	if (_Value.IsNearlyZero())
-	{
-		bCanReceiveInput = true;
-		return;
-	}
-
-	if (!bCanReceiveInput)
-	{
-		return;
-	}
-
-	bCanReceiveInput = false;
-}
 

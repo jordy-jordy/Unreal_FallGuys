@@ -18,8 +18,9 @@ void UTitlePlayerCountWidget::WIdgetSelectInputAction(const FVector2D& _Value)
 
 	if (GetMainWidget()->GetCurUIType() == ETitleUIType::TitlePlayerCount)
 	{
-		if ((_Value.X < 0.0f && _Value.Y == 0.0f)/* && true == IsEscInput*/)
+		if ((_Value.X < 0.0f && _Value.Y == 0.0f) && true == InputCheckValue)
 		{
+			InputCheckValue = false;
 			GetMainWidget()->SwitchWidget(ETitleUIType::TitleEntrance);
 			return;
 		}

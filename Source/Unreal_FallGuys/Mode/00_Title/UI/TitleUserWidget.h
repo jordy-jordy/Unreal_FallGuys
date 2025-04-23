@@ -35,15 +35,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool InputCheck(const FVector2D _Value);
 
-	virtual void WIdgetSelectInputAction(const FVector2D& _Value);
+	virtual void WIdgetSelectInputAction(const FVector2D& _Value) {}
 	virtual void WIdgetMenuInputAction(const FVector2D& _Value) {}
 	virtual void WIdgetMoveInputAction(const FVector2D& _Value) {}
 
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
+	bool InputCheckValue = false;
 
 private:
 	UPROPERTY(Category = "UI", EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UTitleMainWidget* MainWidget;
-
-	bool bCanReceiveInput = true;
 };

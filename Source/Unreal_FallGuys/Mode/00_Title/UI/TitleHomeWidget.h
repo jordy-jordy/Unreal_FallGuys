@@ -22,4 +22,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void WIdgetSelectInputAction(const FVector2D& _Value) override;
+
+private:
+
 };

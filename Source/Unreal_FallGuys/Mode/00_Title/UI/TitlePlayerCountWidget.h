@@ -64,5 +64,4 @@ private:
 
 	bool IsSelectInput = false;
 	bool IsEscInput = false;
-	bool bInputReady = true;
 };

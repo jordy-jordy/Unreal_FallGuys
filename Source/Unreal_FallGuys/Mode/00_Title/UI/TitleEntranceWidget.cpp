@@ -29,16 +29,16 @@ void UTitleEntranceWidget::WIdgetSelectInputAction(const FVector2D& _Value)
 
 	if (GetMainWidget()->GetCurUIType() == ETitleUIType::TitleEntrance)
 	{
-		if ((_Value.X < 0.0f && _Value.Y == 0.0f) && (true == IsSelectInput)/* && (false == PlayerCount->GetEscInputState())*/)
+		if ((_Value.X < 0.0f && _Value.Y == 0.0f) && (true == InputCheckValue))
 		{
+			InputCheckValue = false;
 			GetMainWidget()->SwitchWidget(ETitleUIType::TitleHome);
-			IsSelectInput = false;
 			return;
 		}
 
-		if (_Value.X == 0.0f && _Value.Y < 0.0f)
+		if ((_Value.X > 0.0f && _Value.Y == 0.0f) && (true == InputCheckValue))
 		{
-			//IsSelectInput = false;
+			InputCheckValue = false;
 			return;
 		}
 	}
