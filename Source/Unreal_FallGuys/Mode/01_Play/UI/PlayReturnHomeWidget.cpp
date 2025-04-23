@@ -8,3 +8,17 @@ void UPlayReturnHomeWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 }
+
+void UPlayReturnHomeWidget::ToggleWidget()
+{
+	IsWidgetVisible = !IsWidgetVisible;
+
+	if (true == IsWidgetVisible)
+	{
+		SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	}
+	else
+	{
+		SetVisibility(ESlateVisibility::Hidden);
+	}
+}
