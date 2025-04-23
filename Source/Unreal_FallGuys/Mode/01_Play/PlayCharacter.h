@@ -87,6 +87,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent,BlueprintCallable)
 	void SpectatorOn();
 
+	UFUNCTION(BlueprintImplementableEvent,BlueprintCallable)
+	void SpectatorOnForRaceOver();
+
 	FVector GetControllerForward();
 	FVector GetControllerRight();
 
