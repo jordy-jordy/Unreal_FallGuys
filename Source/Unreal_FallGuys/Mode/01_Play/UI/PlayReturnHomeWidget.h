@@ -16,4 +16,10 @@ class UNREAL_FALLGUYS_API UPlayReturnHomeWidget : public UPlayUserWidget
 
 public:
 	void NativeConstruct();
+
+	UFUNCTION(BlueprintCallable)
+	void ToggleWidget();
+
+private:
+	bool IsWidgetVisible = false;
 };
