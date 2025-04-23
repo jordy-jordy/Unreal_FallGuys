@@ -708,6 +708,7 @@ void UBaseGameInstance::InsResetPlayerAndLevelCondition()
 	IsMovedLevel = false; 
 	bIsConnected = false;
 	bIsResultLevel = false;
+	bIsSpectar = false;
 
 	// 플레이 했던 레벨 초기화
 	PlayedMapList.Empty();
