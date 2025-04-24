@@ -8,8 +8,6 @@
 void UTitleHomeWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-
-	bIsFocusable = false;
 }
 
 void UTitleHomeWidget::WIdgetMenuInputAction(const FVector2D& _Value)

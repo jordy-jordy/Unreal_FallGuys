@@ -7,6 +7,4 @@
 void UTitleIPPortWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-
-	bIsFocusable = false;
 }

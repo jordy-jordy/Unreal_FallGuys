@@ -8,7 +8,6 @@ void UTitleNameSetWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	bIsFocusable = true;
 	SetKeyboardFocus();
 }
 

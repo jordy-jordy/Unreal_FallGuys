@@ -13,8 +13,6 @@ void UTitleEntranceWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	bIsFocusable = false;
-
 	if (false == ArrButtons.IsEmpty())
 	{
 		CurButton = ArrButtons[0];
@@ -126,8 +124,8 @@ void UTitleEntranceWidget::ChangeButtonImage()
 
 	for (int i = 0; i < ArrButtons.Num(); i++)
 	{
-		FButtonStyle ButtonStyle = ArrButtons[i]->WidgetStyle;
-		FSlateBrush NormalBrush = ArrButtons[i]->WidgetStyle.Normal;
+		FButtonStyle ButtonStyle = ArrButtons[i]->GetStyle();
+		FSlateBrush NormalBrush = ArrButtons[i]->GetStyle().Normal;
 
 		if (ArrButtons[i] == CurButton)
 		{

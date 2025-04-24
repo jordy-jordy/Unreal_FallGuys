@@ -6,12 +6,6 @@
 #include "Components/CanvasPanelSlot.h"
 
 
-UTitleUserWidget::UTitleUserWidget(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
-{
-	bAutomaticallyRegisterInputOnConstruction = true;
-}
-
 void UTitleUserWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
