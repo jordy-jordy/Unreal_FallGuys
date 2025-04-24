@@ -30,31 +30,7 @@ public:
 	}
 
 	UFUNCTION(BlueprintCallable)
-	void WIdgetSelectInputAction(const FVector2D& _Value) override;
-
-	UFUNCTION(BlueprintCallable)
-	void WIdgetMoveInputAction(const FVector2D& _Value) override;
-
-	UFUNCTION(BlueprintCallable)
 	void PlayButtonAnim(int _CurIndex);
-
-	UFUNCTION(BlueprintCallable)
-	void SetMoveInputState(bool _Value)
-	{
-		IsMoveInput = _Value;
-	}
-
-	UFUNCTION(BlueprintCallable)
-	bool GetSelectInputState()
-	{
-		return IsSelectInput;
-	}
-
-	UFUNCTION(BlueprintCallable)
-	void SetSelectInputState(bool _Value)
-	{
-		IsSelectInput = _Value;
-	}
 
 	UFUNCTION(BlueprintCallable)
 	int GetCurIndex()
@@ -103,7 +79,4 @@ private:
 	class UButton* CurButton;
 
 	int CurIndex = 0;
-
-	bool IsMoveInput = false;
-	bool IsSelectInput = false;
 };

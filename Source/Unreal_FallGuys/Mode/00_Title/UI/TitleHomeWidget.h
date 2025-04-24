@@ -17,12 +17,4 @@ class UNREAL_FALLGUYS_API UTitleHomeWidget : public UTitleUserWidget
 public:
 	void NativeConstruct();
 
-	UFUNCTION(BlueprintCallable)
-	void WIdgetMenuInputAction(const FVector2D& _Value) override;
-
-	UFUNCTION(BlueprintCallable)
-	void WIdgetSelectInputAction(const FVector2D& _Value) override;
-
-private:
-
 };

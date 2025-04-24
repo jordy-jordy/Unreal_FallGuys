@@ -14,8 +14,4 @@ UCLASS()
 class UNREAL_FALLGUYS_API UTitleCustomizingMainWidget : public UTitleUserWidget
 {
 	GENERATED_BODY()
-
-public:
-	UFUNCTION(BlueprintCallable)
-	void WIdgetInputAction(const FVector2D& _Value);
 };

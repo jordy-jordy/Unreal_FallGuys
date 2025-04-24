@@ -19,63 +19,6 @@ void UTitleEntranceWidget::NativeConstruct()
 	}
 }
 
-void UTitleEntranceWidget::WIdgetSelectInputAction(const FVector2D& _Value)
-{
-	Super::WIdgetSelectInputAction(_Value);
-
-	UTitlePlayerCountWidget* PlayerCount = Cast<UTitlePlayerCountWidget>(GetMainWidget()->FindWidget(ETitleUIType::TitlePlayerCount));
-
-	if (GetMainWidget()->GetCurUIType() == ETitleUIType::TitleEntrance)
-	{
-		if ((_Value.X < 0.0f && _Value.Y == 0.0f) && (true == InputCheckValue))
-		{
-			InputCheckValue = false;
-			GetMainWidget()->SwitchWidget(ETitleUIType::TitleHome);
-			return;
-		}
-
-		if ((_Value.X > 0.0f && _Value.Y == 0.0f) && (true == InputCheckValue))
-		{
-			InputCheckValue = false;
-			return;
-		}
-	}
-}
-
-void UTitleEntranceWidget::WIdgetMoveInputAction(const FVector2D& _Value)
-{
-	Super::WIdgetMoveInputAction(_Value);
-
-	if (GetMainWidget()->GetCurUIType() == ETitleUIType::TitleEntrance)
-	{
-		if (false == ArrButtons.IsEmpty() && true == IsMoveInput)
-		{
-			if (_Value.X < 0 && _Value.Y == 0.0f)
-			{
-				CurIndex -= 1;
-
-				if (CurIndex < 0)
-				{
-					CurIndex = 0;
-				}
-			}
-
-			if (_Value.X > 0 && _Value.Y == 0.0f)
-			{
-				CurIndex += 1;
-
-				if (CurIndex > ArrButtons.Num() - 1)
-				{
-					CurIndex = ArrButtons.Num() - 1;
-				}
-			}
-
-			CurButton = ArrButtons[CurIndex];
-			PlayButtonAnim(CurIndex);
-		}
-	}
-}
-
 void UTitleEntranceWidget::PlayButtonAnim(int _CurIndex)
 {
 	switch (_CurIndex)
@@ -98,8 +41,6 @@ void UTitleEntranceWidget::PlayButtonAnim(int _CurIndex)
 	default:
 		break;
 	}
-
-	IsMoveInput = false;
 }
 
 void UTitleEntranceWidget::ChangeButtonImage()
