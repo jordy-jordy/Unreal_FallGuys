@@ -8,5 +8,7 @@
 void UTitleMenuWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	bIsFocusable = true;
 }
 
