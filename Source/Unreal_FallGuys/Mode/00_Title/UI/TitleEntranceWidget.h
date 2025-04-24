@@ -90,9 +90,6 @@ private:
 	UPROPERTY(VisibleAnywhere, Transient, meta = (BindWidgetAnim), Category = "UI")
 	UWidgetAnimation* ConnectButton;
 
-	FWidgetAnimationDynamicEvent EntAnimStarted;
-	FWidgetAnimationDynamicEvent EntAnimFinished;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
 	TArray<class UButton*> ArrButtons;
 

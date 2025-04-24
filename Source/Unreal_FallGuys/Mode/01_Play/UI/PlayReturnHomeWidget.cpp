@@ -7,8 +7,6 @@
 void UPlayReturnHomeWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-
-	bIsFocusable = true;
 }
 
 void UPlayReturnHomeWidget::ToggleWidget()

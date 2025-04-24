@@ -13,8 +13,6 @@ void UTitleEntranceWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	bIsFocusable = true;
-
 	if (false == ArrButtons.IsEmpty())
 	{
 		CurButton = ArrButtons[0];

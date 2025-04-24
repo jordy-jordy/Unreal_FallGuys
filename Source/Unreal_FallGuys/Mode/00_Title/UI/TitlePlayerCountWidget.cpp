@@ -8,8 +8,6 @@
 void UTitlePlayerCountWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-
-	bIsFocusable = true;
 }
 
 void UTitlePlayerCountWidget::WIdgetSelectInputAction(const FVector2D& _Value)

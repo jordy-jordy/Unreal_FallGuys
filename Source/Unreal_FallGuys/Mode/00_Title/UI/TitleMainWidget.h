@@ -52,6 +52,7 @@ public:
 		CurWidget = _CurWidget;
 	}
 
+	UFUNCTION(BlueprintCallable)
 	ETitleUIType& GetCurUIType()
 	{
 		return CurUIType;
