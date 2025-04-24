@@ -412,6 +412,8 @@ public:
 
 #pragma region LeeMinHa :: BaseGameInstance :: 플레이어 관전
 public: 
+
+	UPROPERTY(BlueprintReadWrite)
 	bool bIsSpectar = false;
 #pragma endregion
 

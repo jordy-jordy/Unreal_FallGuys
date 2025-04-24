@@ -117,7 +117,7 @@ void APlayCharacter::BeginPlay()
 	}
 
 	// 시작시 전 라운드 실패한 캐릭터 처리 함수
-	CheckPlayer();
+	//CheckPlayer();
 }
 
 // Called every frame
@@ -427,7 +427,7 @@ void APlayCharacter::CurStatusReadTimerFuc()
 // 이민하 : 경기에서 실패한 캐릭터 관전자로 저장
 void APlayCharacter::CheckFailPlayer()
 {
-	 OutFailPlayer();
+	// OutFailPlayer();
 
 	 APlayPlayerState* PlayState = GetPlayerState<APlayPlayerState>();
 	 if (nullptr == PlayState) return;
