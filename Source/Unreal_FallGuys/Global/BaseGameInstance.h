@@ -414,5 +414,17 @@ public:
 public: 
 	bool bIsSpectar = false;
 #pragma endregion
+
+#pragma region 사운드 볼륨
+public:
+	float VolumeValue = 0.4f;
+
+	UFUNCTION(BlueprintCallable)
+	float GetVolueValue()
+	{
+		return VolumeValue;
+	}
+
+#pragma endregion
 };
 
