@@ -68,7 +68,7 @@ struct FPlayerInfo
 
     FPlayerInfo()
         : Tag(TEXT("")), NickName(TEXT("")), CostumeColor(TEXT("")), CostumeTOP(TEXT("")), CostumeBOT(TEXT("")),
-          Status(EPlayerStatus::DEFAULT), Team(ETeamType::NONE), DropOrder(-1)
+          Status(EPlayerStatus::DEFAULT), Team(ETeamType::NONE), DropOrder(-1), bIsSpectar(false)
     {
     }
 };
