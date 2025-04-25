@@ -53,12 +53,12 @@ void UPlayResultWidget::FinishedResultWidget()
 		return;
 	}
 
+	ReturnBGMVolume();
+
 	int WholePlayerNum = PlayGameState->GetGameStateFinishPlayer();
 	int TargetPlayerNum = PlayGameState->GetGameStateCurFinishPlayer();
 
 	EStageType StageType = PlayGameState->GetLevelType_STATE();
-
-	ReturnBGMVolume();
 
 	if (StageType == EStageType::SOLO)
 	{
