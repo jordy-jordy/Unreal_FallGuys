@@ -415,7 +415,7 @@ void APlayGameMode::BeginPlay()
 		GetWorldTimerManager().SetTimer(
 			SpectatorCheckTimerHandle,
 			this,
-			&APlayGameMode::CheckFailedPlayersAndSpectate,
+			&APlayGameMode::SetSpectar_STAGE,
 			0.1f,
 			true
 		);
@@ -426,7 +426,7 @@ void APlayGameMode::BeginPlay()
 		GetWorldTimerManager().SetTimer(
 			SpectatorCheckTimerHandle,
 			this,
-			&APlayGameMode::CheckFailedPlayersAndSpectateOnResultLevel,
+			&APlayGameMode::SetSpectar_RESULT,
 			0.1f,
 			true
 		);
@@ -1266,7 +1266,7 @@ void APlayGameMode::ServerTravelToEndLevel()
 
 #pragma endregion
 
-void APlayGameMode::CheckFailedPlayersAndSpectate()
+void APlayGameMode::SetSpectar_STAGE()
 {
 	for (TActorIterator<APlayCharacter> It(GetWorld()); It; ++It)
 	{
@@ -1284,7 +1284,7 @@ void APlayGameMode::CheckFailedPlayersAndSpectate()
 	}
 }
 
-void APlayGameMode::CheckFailedPlayersAndSpectateOnResultLevel()
+void APlayGameMode::SetSpectar_RESULT()
 {
 	for (TActorIterator<APlayCharacter> It(GetWorld()); It; ++It)
 	{
@@ -1292,7 +1292,7 @@ void APlayGameMode::CheckFailedPlayersAndSpectateOnResultLevel()
 		if (!PlayerCharacter) continue;
 
 		APlayPlayerState* PS = PlayerCharacter->GetPlayerState<APlayPlayerState>();
-		if (PS && PS->PlayerInfo.Status == EPlayerStatus::FAIL && !PlayerCharacter->bSpectatorApplied)
+		if (PS && PS->PlayerInfo.bCanHiddenAtResult == true && !PlayerCharacter->bSpectatorApplied)
 		{
 			PlayerCharacter->S2C_ResultSpectarTrigger();
 			PlayerCharacter->bSpectatorApplied = true;

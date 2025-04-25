@@ -348,8 +348,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetFinishPlayerCount(int _p);
 
-	void CheckFailedPlayersAndSpectate();
-	void CheckFailedPlayersAndSpectateOnResultLevel();
+	void SetSpectar_STAGE();
+	void SetSpectar_RESULT();
 
 	FTimerHandle SpectatorCheckTimerHandle;
 
