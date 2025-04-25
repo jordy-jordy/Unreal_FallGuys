@@ -400,13 +400,24 @@ void APlayGameMode::BeginPlay()
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode BeginPlay START ======= "));
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: GameMode 주소: %p"), this);
 
-	// 결과 화면이 아닐 때만 0.1초마다 실패자 체크 타이머 시작
+	// 결과 화면이 아닐 때 : 0.1초마다 실패자 체크 타이머 시작 → 투명화 O, 관전자 모드 ON
 	if (!bMODEIsResultLevel)
 	{
 		GetWorldTimerManager().SetTimer(
 			SpectatorCheckTimerHandle,
 			this,
 			&APlayGameMode::CheckFailedPlayersAndSpectate,
+			0.1f,
+			true
+		);
+	}
+	// 결과 화면일 때 : 0.1초마다 실패자 체크 타이머 시작 → 투명화 X, 관전자 모드 ON
+	else if (bMODEIsResultLevel)
+	{
+		GetWorldTimerManager().SetTimer(
+			SpectatorCheckTimerHandle,
+			this,
+			&APlayGameMode::CheckFailedPlayersAndSpectateOnResultLevel,
 			0.1f,
 			true
 		);
@@ -696,7 +707,7 @@ void APlayGameMode::SetCharacterMovePossible()
 					PlayerCharacter->S2M_SetCanMoveTrue();
 				}
 			}
-		}, 0.2f, false); // 0.2초 뒤에 한 번 실행
+		}, 0.1f, false); // 0.2초 뒤에 한 번 실행
 
 	bPlayerMoving = true;
 }
@@ -813,6 +824,8 @@ void APlayGameMode::OnPlayerFinished(APlayCharacter* _Character)
 	// 서버장이 아닐시 리턴
 	if (!HasAuthority()) return;
 
+	// 게임 시작 안했으면 리턴
+	if (!bGameStarted) return;
 	// 게임 끝났으면 리턴
 	if (IsEndGame) return;
 
@@ -826,18 +839,24 @@ void APlayGameMode::OnPlayerFinished(APlayCharacter* _Character)
 	// 이미 실패한 유저는 리턴
 	if (PlayerState->PlayerInfo.Status == EPlayerStatus::FAIL) return;
 
+	// 이동을 막음
+	_Character->S2M_SetCanMoveFalse();
+
 	// 관전자 모드를 켜줌
 	PlayerState->SetPlayertoSpectar(true);
-	_Character->S2M_ActivateSpectatorMode();
+	_Character->S2C_ActivateSpectatorMode();
+
+	// 메쉬 및 콜리전 투명화
+	_Character->ApplySpectatorVisibilityAtGoalColl();
 
 	if (CurLevelInfo_Mode.EndCondition == EPlayerStatus::SUCCESS)
 	{
-		// 레이싱
+		// 레이싱 : 성공 처리
 		PlayerState->SetPlayerStatus(EPlayerStatus::SUCCESS);
 	}
 	else if (CurLevelInfo_Mode.EndCondition == EPlayerStatus::FAIL)
 	{
-		// 생존
+		// 생존 : 실패 처리
 		PlayerState->SetPlayerStatus(EPlayerStatus::FAIL);
 	}
 	else
@@ -917,7 +936,7 @@ void APlayGameMode::SetCharacterMoveImPossible()
 					PlayerCharacter->S2M_SetCanMoveFalse();
 				}
 			}
-		}, 0.2f, false); // 0.2초 뒤에 한 번 실행
+		}, 0.1f, false); // 0.2초 뒤에 한 번 실행
 }
 
 // 개인전 종료 로직
@@ -1247,10 +1266,29 @@ void APlayGameMode::CheckFailedPlayersAndSpectate()
 		if (!PlayerCharacter) continue;
 
 		APlayPlayerState* PS = PlayerCharacter->GetPlayerState<APlayPlayerState>();
+		if (PS && PS->PlayerInfo.Status == EPlayerStatus::FAIL && !PlayerCharacter->bSpectatorApplied && !PlayerCharacter->bVisibilityApplied)
+		{
+			// 실패 + 아직 처리 안 된 경우만 실행
+			PlayerCharacter->S2C_StageSpectarOn();
+			PlayerCharacter->S2M_ApplySpectatorVisibility();
+			PlayerCharacter->bSpectatorApplied = true;
+			PlayerCharacter->bVisibilityApplied = true;
+		}
+	}
+}
+
+void APlayGameMode::CheckFailedPlayersAndSpectateOnResultLevel()
+{
+	for (TActorIterator<APlayCharacter> It(GetWorld()); It; ++It)
+	{
+		APlayCharacter* PlayerCharacter = *It;
+		if (!PlayerCharacter) continue;
+
+		APlayPlayerState* PS = PlayerCharacter->GetPlayerState<APlayPlayerState>();
 		if (PS && PS->PlayerInfo.Status == EPlayerStatus::FAIL && !PlayerCharacter->bSpectatorApplied)
 		{
 			// 실패 + 아직 처리 안 된 경우만 실행
-			PlayerCharacter->S2M_ApplySpectatorVisibility(true);
+			PlayerCharacter->S2C_ResultSpectarOn();
 		}
 	}
 }

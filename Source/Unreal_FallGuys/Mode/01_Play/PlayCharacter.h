@@ -210,33 +210,52 @@ protected:
 	// 클라이언트의 캐릭터 상태를 세팅
 	virtual void OnRep_PlayerState() override;
 
-#pragma region LeeMinha > 레벨 시작 > 실패 플레이어 처리
 public:
-	UPROPERTY(Replicated, BlueprintReadWrite, Category = "PLAYER START")
+	// 관전자인지 : PlayPlayerState 로 부터 값을 받음
+	UPROPERTY(VisibleAnywhere, Replicated, BlueprintReadOnly)
 	bool bIsSpectar = false;
-
-	UPROPERTY(Replicated, BlueprintReadWrite, Category = "PLAYER START")
+	// 죽었는지 : PlayPlayerState 로 부터 값을 받음
+	UPROPERTY(VisibleAnywhere, Replicated, BlueprintReadOnly)
+	bool IsDie = false;
+	// 관전자 세팅 했는지 : PlayerGameMode 로 부터 값이 세팅됨
+	UPROPERTY(VisibleAnywhere, Replicated, BlueprintReadOnly)
+	bool bSpectatorApplied = false;
+	// 투명화 했는지 : PlayerGameMode 로 부터 값이 세팅됨
+	UPROPERTY(VisibleAnywhere, Replicated, BlueprintReadOnly)
+	bool bVisibilityApplied = false;
+	// 결과 레벨인지
+	UPROPERTY(VisibleAnywhere, Replicated, BlueprintReadOnly)
 	bool bIsResultLevel = false;
 
-	UPROPERTY(VisibleAnywhere, Replicated, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	bool IsDie = true;
-#pragma endregion
-
+	// PlayPlayerState 로 부터 값을 받음
 	void InitializeFromPlayerInfo(const FPlayerInfo& _Info);
 
+	UFUNCTION(Client, Reliable)
+	void S2C_ActivateSpectatorMode();
+	void S2C_ActivateSpectatorMode_Implementation();
+
+	UFUNCTION(Client, Reliable)
+	void S2C_ActivateSpectatorModeOnResultLevel();
+	void S2C_ActivateSpectatorModeOnResultLevel_Implementation();
+
 	UFUNCTION(NetMulticast, Reliable)
-	void S2M_ActivateSpectatorMode();
-	void S2M_ActivateSpectatorMode_Implementation();
+	void S2M_ApplySpectatorVisibility();
+	void S2M_ApplySpectatorVisibility_Implementation();
 
 	UFUNCTION()
-	void ApplySpectatorVisibility();
+	void ApplySpectatorVisibilityAtGoalColl();
 
-	UFUNCTION(NetMulticast, Reliable)
-	void S2M_ApplySpectatorVisibility(bool _bIsSpectar);
-	void S2M_ApplySpectatorVisibility_Implementation(bool _bIsSpectar);
+	UFUNCTION(Client, Reliable)
+	void S2C_StageSpectarOn();
+	void S2C_StageSpectarOn_Implementation();
 
-	UPROPERTY()
-	bool bSpectatorApplied = false;
+	UFUNCTION(Client, Reliable)
+	void S2C_ResultSpectarOn();
+	void S2C_ResultSpectarOn_Implementation();
+
+
+	UFUNCTION(BlueprintCallable)
+	bool GetIsSpectar() { return bIsSpectar; }
 
 
 };

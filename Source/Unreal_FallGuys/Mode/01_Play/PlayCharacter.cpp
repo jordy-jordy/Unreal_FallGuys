@@ -69,6 +69,8 @@ void APlayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(APlayCharacter, CurStatus);
 	DOREPLIFETIME(APlayCharacter, bIsSpectar);
 	DOREPLIFETIME(APlayCharacter, bIsResultLevel);
+	DOREPLIFETIME(APlayCharacter, bSpectatorApplied);
+	DOREPLIFETIME(APlayCharacter, bVisibilityApplied);
 }
 
 // Called when the game starts or when spawned
@@ -179,6 +181,17 @@ void APlayCharacter::PlayerAMove()
 	AddMovementInput(-GetControllerRight());
 }
 
+void APlayCharacter::C2S_NickName_Implementation(const FString& _NickName)
+{
+	NickName = _NickName;
+	//S2M_NickName(NickName);
+}
+
+void APlayCharacter::S2M_NickName_Implementation(const FString& _NickName)
+{
+	NickName = _NickName;
+}
+
 // 이현정 : 캐릭터 코스튬 설정 - 로컬
 void APlayCharacter::SetCharacterCostume(FString _Color, FString _Top, FString _Bot)
 {
@@ -284,19 +297,8 @@ void APlayCharacter::PossessedBy(AController* _NewController)
 	APlayPlayerState* PlayState = GetPlayerState<APlayPlayerState>();
 	if (PlayState)
 	{
-		// PlayerState에 있는 Tag를 캐릭터 태그에 세팅
-		if (!PlayState->PlayerInfo.Tag.IsNone())
-		{
-			InitializeFromPlayerInfo(PlayState->PlayerInfo);
-		}
+		InitializeFromPlayerInfo(PlayState->PlayerInfo);
 	}
-
-	//// PlayerState의 Status에 따라 IsDie 세팅
-	//CurStatus = PlayState->GetPlayerStateStatus();
-	//IsDie = (CurStatus == EPlayerStatus::FAIL);
-
-	//// 관전자 상태 세팅
-	//bIsSpectar = IsDie;
 }
 
 // 이현정 : 클라이언트의 캐릭터 상태를 세팅
@@ -307,17 +309,88 @@ void APlayCharacter::OnRep_PlayerState()
 	APlayPlayerState* PlayState = GetPlayerState<APlayPlayerState>();
 	if (PlayState)
 	{
-		// PlayerState에 있는 Tag를 캐릭터 태그에 세팅
-		if (!PlayState->PlayerInfo.Tag.IsNone())
+		InitializeFromPlayerInfo(PlayState->PlayerInfo);
+	}
+}
+
+void APlayCharacter::S2M_ApplySpectatorVisibility_Implementation()
+{
+	if (bVisibilityApplied) return;
+	
+	GetMovementComponent()->StopMovementImmediately();
+	SetActorHiddenInGame(true);
+	SetActorEnableCollision(false);
+	GetMesh()->SetSimulatePhysics(false);
+	GetMesh()->SetEnableGravity(false);
+
+	// 모든 컴포넌트를 숨김
+	TArray<UActorComponent*> Components = GetComponents().Array();
+	for (UActorComponent* Comp : Components)
+	{
+		UPrimitiveComponent* PrimComp = Cast<UPrimitiveComponent>(Comp);
+		if (PrimComp)
 		{
-			InitializeFromPlayerInfo(PlayState->PlayerInfo);
+			PrimComp->SetVisibility(false, true); // true: 자식까지 적용
+			PrimComp->SetHiddenInGame(true, true);
 		}
 	}
-	//// PlayerState의 Status에 따라 IsDie 세팅
-	//IsDie = (CurStatus == EPlayerStatus::FAIL);
 
-	//// 관전자 상태 세팅
-	//bIsSpectar = IsDie;
+	bVisibilityApplied = true;
+
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayCharacter :: 일반 스테이지 :: 관전자 숨김 처리 완료 :: 닉네임 : %s"),
+	*NickName);
+}
+
+void APlayCharacter::ApplySpectatorVisibilityAtGoalColl()
+{
+	GetMovementComponent()->StopMovementImmediately();
+	SetActorHiddenInGame(true);
+	SetActorEnableCollision(false);
+	GetMesh()->SetSimulatePhysics(false);
+	GetMesh()->SetEnableGravity(false);
+
+	// 자식 숨김 처리
+	TArray<UActorComponent*> Components = GetComponents().Array();
+	for (UActorComponent* Comp : Components)
+	{
+		UPrimitiveComponent* PrimComp = Cast<UPrimitiveComponent>(Comp);
+		if (PrimComp)
+		{
+			PrimComp->SetVisibility(false, true);
+			PrimComp->SetHiddenInGame(true, true);
+		}
+	}
+
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayCharacter :: GoalColl or KillZone 처리 :: 닉네임 : %s"),
+	*NickName);
+}
+
+void APlayCharacter::S2C_StageSpectarOn_Implementation()
+{
+	if (bSpectatorApplied) return;
+	// 일반 스테이지 전용 관전자 모드 ON
+	S2C_ActivateSpectatorMode();
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayCharacter :: 스테이지 전용 스펙터가 켜짐"));
+	bSpectatorApplied = true;
+}
+
+void APlayCharacter::S2C_ResultSpectarOn_Implementation()
+{
+	if (bSpectatorApplied) return;
+	// 결과 레벨 전용 관전자 모드 ON
+	S2C_ActivateSpectatorModeOnResultLevel();
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayCharacter :: 결과 화면 전용 스펙터가 켜짐"));
+	bSpectatorApplied = true;
+}
+
+void APlayCharacter::S2C_ActivateSpectatorMode_Implementation()
+{
+	SpectatorOn();
+}
+
+void APlayCharacter::S2C_ActivateSpectatorModeOnResultLevel_Implementation()
+{
+	SpectatorOnForRaceOver();
 }
 
 // 이현정 : 디버그용 : 캐릭터 상태 확인
@@ -339,7 +412,8 @@ void APlayCharacter::DebugCheckDieStatus()
 		TagStringForLog = TEXT("태그 없음");
 	}
 
-	UE_LOG(FALL_DEV_LOG, Log, TEXT("Tag: %s / CurStatus: %s / IsDie: %s / Spectar: %s"),
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("닉네임 : %s | 태그 : %s | 현재 상태 : %s | IsDie : %s | Spectar : %s"),
+		*NickName,
 		*TagStringForLog,
 		*StatusStr,
 		IsDie ? TEXT("true") : TEXT("false"),
@@ -361,49 +435,16 @@ void APlayCharacter::DebugCheckDieStatus()
 			TagStringForScreen = TEXT("태그 없음");
 		}
 
-		const FString ScreenMsg = FString::Printf(TEXT("[Debug] Tag: %s / CurStatus: %s / IsDie: %s"),
+		const FString ScreenMsg = FString::Printf(TEXT("[Debug] 닉네임 : %s | 태그 : %s | 현재 상태 : %s | IsDie : %s | Spectar : %s"),
+			*NickName,
 			*TagStringForScreen,
 			*StatusStr,
-			IsDie ? TEXT("true") : TEXT("false"));
+			IsDie ? TEXT("true") : TEXT("false"),
+			bIsSpectar ? TEXT("true") : TEXT("false"));
 
 		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Green, ScreenMsg);
 	}
 }
 
-void APlayCharacter::C2S_NickName_Implementation(const FString& _NickName)
-{
-	NickName = _NickName;
-	//S2M_NickName(NickName);
-}
 
-void APlayCharacter::S2M_NickName_Implementation(const FString& _NickName)
-{
-	NickName = _NickName;
-}
 
-void APlayCharacter::S2M_ActivateSpectatorMode_Implementation()
-{
-	if (IsLocallyControlled())
-	{
-		SpectatorOn(); // 클라에서만 관전자 모드 실행
-	}
-}
-
-void APlayCharacter::ApplySpectatorVisibility()
-{
-	SetActorEnableCollision(false);
-	SetActorHiddenInGame(true);
-	GetMesh()->SetSimulatePhysics(false);
-	GetMesh()->SetEnableGravity(false);
-	SetActorLocation(FVector(0, 0, -100000));
-
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("ApplySpectatorVisibility :: 관전자 숨김 처리 완료"));
-}
-
-void APlayCharacter::S2M_ApplySpectatorVisibility_Implementation(bool _bIsSpectar)
-{
-	if (bSpectatorApplied) return;
-	ApplySpectatorVisibility();  // 숨김 처리
-	S2M_ActivateSpectatorMode(); // 관전자 모드 진입 (클라 포함 모두 적용)
-	bSpectatorApplied = true;	 // 중복 방지 설정
-}

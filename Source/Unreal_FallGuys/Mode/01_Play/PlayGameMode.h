@@ -349,6 +349,8 @@ public:
 	void SetFinishPlayerCount(int _p);
 
 	void CheckFailedPlayersAndSpectate();
+	void CheckFailedPlayersAndSpectateOnResultLevel();
+
 	FTimerHandle SpectatorCheckTimerHandle;
 
 

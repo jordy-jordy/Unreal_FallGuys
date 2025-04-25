@@ -170,6 +170,10 @@ public:
     void SetPlayertoSpectar(bool _Value);
     void SetPlayertoSpectar_Implementation(bool _Value);
 
+    // 관전자야?
+    UFUNCTION(BlueprintCallable, Category = "PLAYER INFO")
+    bool GetIsSpectar() { return PlayerInfo.bIsSpectar; }
+
 protected:
     // 승자 여부
     UPROPERTY(Replicated)
