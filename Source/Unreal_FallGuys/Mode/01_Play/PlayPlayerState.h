@@ -148,6 +148,11 @@ public:
     void SetCanHiddenAtResult(bool _Value);
     void SetCanHiddenAtResult_Implementation(bool _Value);
 
+    // 플레이어 인포 동기화
+    UFUNCTION(Reliable, NetMulticast, Category = "PLAYER INFO")
+    void S2M_SetPlayInfo(FPlayerInfo _PlayerInfo);
+    void S2M_SetPlayInfo_Implementation(FPlayerInfo _PlayerInfo);
+
 
 // 반환 함수
 public:

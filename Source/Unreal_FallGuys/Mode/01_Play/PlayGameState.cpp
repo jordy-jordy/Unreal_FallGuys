@@ -3,6 +3,7 @@
 
 #include "Mode/01_Play/PlayGameState.h"
 #include <Net/UnrealNetwork.h>
+#include <EngineUtils.h>
 
 #include <Unreal_FallGuys.h>
 #include <Global/FallConst.h>
@@ -11,6 +12,7 @@
 #include <Global/BaseGameInstance.h>
 #include <Mode/01_Play/PlayGameMode.h>
 #include <Mode/01_Play/PlayPlayerController.h>
+#include <Mode/01_Play/PlayCharacter.h>
 
 
 void APlayGameState::RegisterWidgetDelegate(FName _Name, FWidgetDelegate InDelegate)
@@ -45,6 +47,15 @@ void APlayGameState::BeginPlay()
 	{
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: BeginPlay :: 스테이지 모드 : %s"), *UEnum::GetValueAsString(CurLevelInfo_GameState.LevelType));
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: BeginPlay :: 스테이지 페이즈 : %s"), *UEnum::GetValueAsString(CurLevelInfo_GameState.CurStagePhase));
+
+		// AlivePlayers를 주기적으로 업데이트
+		GetWorldTimerManager().SetTimer(
+			AlivePlayersUpdateTimerHandle,
+			this,
+			&APlayGameState::UpdateAlivePlayers,
+			0.5f, // 0.5초마다 갱신
+			true
+		);
 	}
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameState BeginPlay END ======= "));
@@ -129,6 +140,48 @@ void APlayGameState::SyncPlayerInfoFromPlayerState_Implementation()
 	for (const FString& Key : KeysToRemove)
 	{
 		CachedPlayerInfoMap.Remove(Key);
+	}
+}
+
+void APlayGameState::UpdateAlivePlayers()
+{
+	if (!HasAuthority()) return; // 서버에서만 업데이트
+
+	AlivePlayers.Empty();
+
+	if (!bGameStateIsResultLevel) // 일반 스테이지
+	{
+		for (TActorIterator<APlayCharacter> It(GetWorld()); It; ++It)
+		{
+			APlayCharacter* PlayerCharacter = *It;
+			if (PlayerCharacter)
+			{
+				APlayPlayerState* PS = PlayerCharacter->GetPlayerState<APlayPlayerState>();
+				if (PS && PS->PlayerInfo.Status == EPlayerStatus::DEFAULT)
+				{
+					AlivePlayers.Add(PlayerCharacter);
+				}
+			}
+		}
+
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameState :: 일반 스테이지 :: 현재 AlivePlayers 수 : %d"), AlivePlayers.Num());
+	}
+	else // 결과 화면
+	{
+		for (TActorIterator<APlayCharacter> It(GetWorld()); It; ++It)
+		{
+			APlayCharacter* PlayerCharacter = *It;
+			if (PlayerCharacter)
+			{
+				APlayPlayerState* PS = PlayerCharacter->GetPlayerState<APlayPlayerState>();
+				if (PS && PS->PlayerInfo.Status == EPlayerStatus::SUCCESS)
+				{
+					AlivePlayers.Add(PlayerCharacter);
+				}
+			}
+		}
+
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameState :: 결과 화면 :: 현재 AlivePlayers 수 : %d"), AlivePlayers.Num());
 	}
 }
 
@@ -387,6 +440,11 @@ void APlayGameState::SetStateMaxPlayerCount_Implementation(int _Value)
 void APlayGameState::SetStateIsEndGameTrue_Implementation()
 {
 	StateIsEndGame = true;
+
+	// 타이머 클리어
+	GetWorldTimerManager().ClearTimer(AlivePlayersUpdateTimerHandle);
+
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameState :: 게임 종료됨 :: AlivePlayers 타이머 클리어"));
 }
 
 // 현 스테이지의 골 타입을 반환함
@@ -428,6 +486,7 @@ void APlayGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(APlayGameState, StateMaxPlayerCount);
 	DOREPLIFETIME(APlayGameState, STATECanMoveToResultLevel);
 	DOREPLIFETIME(APlayGameState, StateIsEndGame);
+	DOREPLIFETIME(APlayGameState, AlivePlayers);
 }
 
 void APlayGameState::PrintFailPlayersInfo()

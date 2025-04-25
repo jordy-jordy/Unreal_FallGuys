@@ -299,10 +299,8 @@ void APlayCharacter::OnRep_PlayerState()
 void APlayCharacter::InitializeFromPlayerInfo(const FPlayerInfo& _Info)
 {
 	// 중복된 태그 방지
-	if (!Tags.Contains(_Info.Tag))
-	{
-		Tags.Add(_Info.Tag);
-	}
+	Tags.Empty();
+	Tags.Add(_Info.Tag);
 
 	// PlayerState의 Status에 따라 IsDie 세팅
 	CurStatus = _Info.Status;
@@ -434,7 +432,7 @@ void APlayCharacter::DebugCheckDieStatus()
 		{
 			for (const FName& Tag : Tags)
 			{
-				TagStringForScreen += Tag.ToString() + TEXT(" ");
+				TagStringForScreen += Tag.ToString() + TEXT("");
 			}
 		}
 		else

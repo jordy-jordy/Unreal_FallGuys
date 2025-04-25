@@ -143,6 +143,12 @@ void APlayPlayerState::SetCanHiddenAtResult_Implementation(bool _Value)
 	PlayerInfo.bCanHiddenAtResult = _Value;
 }
 
+// 플레이어 인포 동기화
+void APlayPlayerState::S2M_SetPlayInfo_Implementation(FPlayerInfo _PlayerInfo)
+{
+	PlayerInfo = _PlayerInfo;
+}
+
 void APlayPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);

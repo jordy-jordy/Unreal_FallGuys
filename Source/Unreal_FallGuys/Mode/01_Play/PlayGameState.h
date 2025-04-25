@@ -152,6 +152,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "PLAYERS")
 	void RestoreFailPlayersInfo();
 
+	UFUNCTION(BlueprintCallable, Category = "PLAYER LIST")
+	TArray<APlayCharacter*> GetAlivePlayers() { return AlivePlayers; }
+
 
 protected:
 	// 전체 플레이어 정보 목록
@@ -168,6 +171,16 @@ protected:
 	// 성공한 플레이어 정보 목록
 	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category = "PLAYER LIST")
 	TArray<FPlayerInfoEntry> DefaultPlayerInfoArray;
+
+	// 실시간 Default or Sussee 상태 플레이어 목록
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "PLAYER LIST")
+	TArray<APlayCharacter*> AlivePlayers;
+
+	// 실시간 업데이트
+	UFUNCTION(Category = "PLAYER LIST")
+	void UpdateAlivePlayers();
+	// 실시간 업데이트 타이머
+	FTimerHandle AlivePlayersUpdateTimerHandle;
 
 	// 접속한 플레이어의 수
 	UPROPERTY(Replicated)
