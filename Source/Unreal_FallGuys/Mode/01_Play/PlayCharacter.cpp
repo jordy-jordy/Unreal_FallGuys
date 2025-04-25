@@ -116,8 +116,14 @@ void APlayCharacter::BeginPlay()
 		SetCharacterCostume(CostumeColor, CostumeTopName, CostumeBotName);
 	}
 
-	// 시작시 전 라운드 실패한 캐릭터 처리 함수
-	//CheckPlayer();
+	// 시작시 전 라운드 실패한 캐릭터 처리 함수 : 대기 후 실행
+	GetWorldTimerManager().SetTimer(
+		CheckPlayerTimerHandle,			// 타이머 핸들
+		this,							// 대상 클래스
+		&APlayCharacter::CheckPlayer,	// 호출할 함수 포인터
+		0.5f,							// 대기 시간 (초)
+		false							// 반복 여부 (false면 한 번만 실행)
+	);
 }
 
 // Called every frame
@@ -370,23 +376,28 @@ void APlayCharacter::CheckPlayer()
 
 	UBaseGameInstance* GameIns = GetGameInstance<UBaseGameInstance>();
 	
-	if (HasAuthority())
-	{
-		bIsResultLevel= GameIns->bIsResultLevel;
-	}
+	APlayPlayerState* FallPlayerState = GetPlayerState<APlayPlayerState>();
+	if (!GameIns || !FallPlayerState) return;
+
+	// 결과 화면인지 확인
+	bIsResultLevel = FallPlayerState->GetIsResultLevel();
 
 	bIsSpectar = GameIns->bIsSpectar;
 
-	// PlayerInfo 세팅할 시간 딜레이
-	FTimerDelegate CurStatusReadyTimer;
-	CurStatusReadyTimer.BindUFunction(this, FName("CurStatusReadTimerFuc")); // 실행 함수
 
-	GetWorldTimerManager().SetTimer(
-		PlayOutStartTimer,
-		CurStatusReadyTimer, 
-		0.7f,
-		false
-	);
+	if (UGameplayStatics::GetPlayerController(GetWorld(), 0) == GetController())
+	{
+		if (false == bIsResultLevel)
+		{
+			OutFailPlayer();
+		}
+		else
+		{
+			CheckFailPlayer();
+		}
+	}
+
+	/*CurStatusReadTimerFuc();*/
 }
 void APlayCharacter::C2S_SpectarLoc_Implementation()
 {
@@ -411,23 +422,13 @@ void APlayCharacter::S2M_SpectarLoc_Implementation()
 // 이민하 : 결과 레벨 / 게임 레벨 구분해서 캐릭터 아웃 처리
 void APlayCharacter::CurStatusReadTimerFuc()
 {
-	if (UGameplayStatics::GetPlayerController(GetWorld(), 0) == GetController())
-	{
-		if (false == bIsResultLevel)
-		{
-			OutFailPlayer();
-		}
-		else
-		{
-			CheckFailPlayer();
-		}
-	}
+
 }
 
 // 이민하 : 경기에서 실패한 캐릭터 관전자로 저장
 void APlayCharacter::CheckFailPlayer()
 {
-	// OutFailPlayer();
+	OutFailPlayer();
 
 	 APlayPlayerState* PlayState = GetPlayerState<APlayPlayerState>();
 	 if (nullptr == PlayState) return;

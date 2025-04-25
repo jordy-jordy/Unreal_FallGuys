@@ -212,7 +212,7 @@ protected:
 #pragma region LeeMinha > 레벨 시작 > 실패 플레이어 처리
 public:
 
-	FTimerHandle PlayOutStartTimer;
+	FTimerHandle CheckPlayerTimerHandle;
 
 	UFUNCTION()
 	void CheckPlayer();
