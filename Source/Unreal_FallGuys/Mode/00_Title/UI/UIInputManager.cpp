@@ -309,16 +309,96 @@ void UUIInputManager::SwitchWidget_E()
 // Move
 void UUIInputManager::SwitchWidget_W()
 {
+	UTitleMainWidget* MainWidget = UFallGlobal::GetMainWidget(GetWorld());
+	UTitleCustomWidget* CustomInvenWidget = MainWidget->FindWidget<UTitleCustomWidget>(ETitleUIType::CustomeInven);
+
+	if (nullptr == MainWidget)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : MainWidget is null"), *FString(__FUNCSIG__));
+		return;
+	}
+	if (nullptr == CustomInvenWidget)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : CustomInvenWidget is null"), *FString(__FUNCSIG__));
+		return;
+	}
+
+	ETitleUIType CurType = MainWidget->GetCurUIType();
+	if (ETitleUIType::CustomeInven == CurType)
+	{
+		CustomInvenWidget->Move_UP();
+		return;
+	}
 }
 
 void UUIInputManager::SwitchWidget_A()
 {
+	UTitleMainWidget* MainWidget = UFallGlobal::GetMainWidget(GetWorld());
+	UTitleCustomWidget* CustomInvenWidget = MainWidget->FindWidget<UTitleCustomWidget>(ETitleUIType::CustomeInven);
+
+	if (nullptr == MainWidget)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : MainWidget is null"), *FString(__FUNCSIG__));
+		return;
+	}
+	if (nullptr == CustomInvenWidget)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : CustomInvenWidget is null"), *FString(__FUNCSIG__));
+		return;
+	}
+
+	ETitleUIType CurType = MainWidget->GetCurUIType();
+	if (ETitleUIType::CustomeInven == CurType)
+	{
+		CustomInvenWidget->Move_LEFT();
+		return;
+	}
 }
 
 void UUIInputManager::SwitchWidget_S()
 {
+	UTitleMainWidget* MainWidget = UFallGlobal::GetMainWidget(GetWorld());
+	UTitleCustomWidget* CustomInvenWidget = MainWidget->FindWidget<UTitleCustomWidget>(ETitleUIType::CustomeInven);
+
+	if (nullptr == MainWidget)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : MainWidget is null"), *FString(__FUNCSIG__));
+		return;
+	}
+	if (nullptr == CustomInvenWidget)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : CustomInvenWidget is null"), *FString(__FUNCSIG__));
+		return;
+	}
+
+	ETitleUIType CurType = MainWidget->GetCurUIType();
+	if (ETitleUIType::CustomeInven == CurType)
+	{
+		CustomInvenWidget->Move_DOWN();
+		return;
+	}
 }
 
 void UUIInputManager::SwitchWidget_D()
 {
+	UTitleMainWidget* MainWidget = UFallGlobal::GetMainWidget(GetWorld());
+	UTitleCustomWidget* CustomInvenWidget = MainWidget->FindWidget<UTitleCustomWidget>(ETitleUIType::CustomeInven);
+
+	if (nullptr == MainWidget)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : MainWidget is null"), *FString(__FUNCSIG__));
+		return;
+	}
+	if (nullptr == CustomInvenWidget)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : CustomInvenWidget is null"), *FString(__FUNCSIG__));
+		return;
+	}
+
+	ETitleUIType CurType = MainWidget->GetCurUIType();
+	if (ETitleUIType::CustomeInven == CurType)
+	{
+		CustomInvenWidget->Move_RIGHT();
+		return;
+	}
 }
