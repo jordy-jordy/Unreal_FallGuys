@@ -701,8 +701,8 @@ void APlayGameMode::OnPlayerFinished(APlayCharacter* _Character)
 	if (PlayerState->PlayerInfo.Status == EPlayerStatus::FAIL) return;
 
 	// 관전자 모드를 켜줌
-	_Character->bIsSpectar = true;
-	_Character->SpectatorOn();
+	//_Character->bIsSpectar = true;
+	//_Character->SpectatorOn();
 
 	if (CurLevelInfo_Mode.EndCondition == EPlayerStatus::SUCCESS)
 	{

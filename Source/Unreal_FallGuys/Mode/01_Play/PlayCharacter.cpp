@@ -67,8 +67,8 @@ void APlayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(APlayCharacter, IsDie);
 	DOREPLIFETIME(APlayCharacter, CanMove);
 	DOREPLIFETIME(APlayCharacter, CurStatus);
-	DOREPLIFETIME(APlayCharacter, bIsSpectar);
-	DOREPLIFETIME(APlayCharacter, bIsResultLevel);
+	//DOREPLIFETIME(APlayCharacter, bIsSpectar);
+	//DOREPLIFETIME(APlayCharacter, bIsResultLevel);
 }
 
 // Called when the game starts or when spawned
@@ -376,18 +376,13 @@ void APlayCharacter::CheckPlayer()
 
 	UBaseGameInstance* GameIns = GetGameInstance<UBaseGameInstance>();
 	
-	APlayPlayerState* FallPlayerState = GetPlayerState<APlayPlayerState>();
-	if (!GameIns || !FallPlayerState) return;
-
-	// 결과 화면인지 확인
-	bIsResultLevel = FallPlayerState->GetIsResultLevel();
-
-	
-
 
 	if (UGameplayStatics::GetPlayerController(GetWorld(), 0) == GetController())
 	{
-		bIsSpectar = GameIns->bIsSpectar;
+		APlayPlayerState* FallPlayerState = GetPlayerState<APlayPlayerState>();
+
+		bIsResultLevel = FallPlayerState->GetIsResultLevel();
+
 		if (false == bIsResultLevel)
 		{
 			OutFailPlayer();
@@ -449,10 +444,15 @@ void APlayCharacter::CheckFailPlayer()
 // 이민하 : 탈락자 아웃시키기 ( 위치 -10000.. 바닥으로 이동)
 void APlayCharacter::OutFailPlayer()
 {
-	if (true == bIsSpectar)
+	UBaseGameInstance* GameIns = GetGameInstance<UBaseGameInstance>();
+	if (true == GameIns->bIsSpectar)
 	{
-		
 
+		APlayPlayerState* FallPlayerState = GetPlayerState<APlayPlayerState>();
+		if (!GameIns || !FallPlayerState) return;
+
+		// 결과 화면인지 확인
+		bIsResultLevel = FallPlayerState->GetIsResultLevel();
 		if (true == bIsResultLevel)
 		{
 			SpectatorOnForRaceOver();
