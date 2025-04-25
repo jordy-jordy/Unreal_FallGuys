@@ -342,6 +342,7 @@ void APlayGameMode::RestorePlayerInfo(APlayerController* _NewPlayer, APlayPlayer
 
 	if (bMODEIsResultLevel)
 	{
+		// 결과 화면일 경우 성공한 사람들의 관전자 상태를 리셋
 		if (RestoredInfo.Status == EPlayerStatus::SUCCESS)
 		{
 			RestoredInfo.bIsSpectar = false; // 관전자 초기화
@@ -352,10 +353,17 @@ void APlayGameMode::RestorePlayerInfo(APlayerController* _NewPlayer, APlayPlayer
 	{
 		if (CurLevelInfo_Mode.LevelType == EStageType::SOLO)
 		{
+			// 일반 스테이지일 경우 성공한 사람들의 관전자 상태를 리셋 및 상태 리셋
 			if (RestoredInfo.Status == EPlayerStatus::SUCCESS)
 			{
 				RestoredInfo.Status = EPlayerStatus::DEFAULT;
-				RestoredInfo.bIsSpectar = false; // 관전자 초기화
+				RestoredInfo.bIsSpectar = false; 
+			}
+			// 실패한 사람들의 관전자 상태 복구 및 결과 레벨에서 숨김 처리
+			else if (RestoredInfo.Status == EPlayerStatus::FAIL)
+			{
+				RestoredInfo.bIsSpectar = true; // 관전자 세팅
+				RestoredInfo.bCanHiddenAtResult = true;
 			}
 			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode:: PostLogin :: 개인전 입니다 - 성공한 플레이어 정보 리셋"));
 		}
@@ -363,6 +371,7 @@ void APlayGameMode::RestorePlayerInfo(APlayerController* _NewPlayer, APlayPlayer
 		{
 			RestoredInfo.Status = EPlayerStatus::DEFAULT;
 			RestoredInfo.Team = ETeamType::NONE;
+			RestoredInfo.bIsSpectar = false; // 관전자 초기화
 			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode:: PostLogin :: 팀전 입니다 - 플레이어 팀 정보 리셋"));
 		}
 		else
@@ -1256,7 +1265,6 @@ void APlayGameMode::ServerTravelToEndLevel()
 }
 
 #pragma endregion
-
 
 void APlayGameMode::CheckFailedPlayersAndSpectate()
 {

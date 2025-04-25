@@ -21,8 +21,6 @@ APlayPlayerState::APlayPlayerState()
 void APlayPlayerState::BeginPlay()
 {
 	Super::BeginPlay();
-
-	//CheckPlayer();
 }
 
 void APlayPlayerState::SetPlayerTag_Implementation(const FName& _Tag)
@@ -133,26 +131,16 @@ void APlayPlayerState::SetIsResultLevel_Implementation(bool _Value)
 	bIsResultLevel = _Value;
 }
 
-// 클라이언트 → 서버 호출
-void APlayPlayerState::C2S_SyncPlayerInfo_Implementation(const FPlayerInfo& _Info)
-{
-	// 서버에서 PlayerInfo 갱신
-	PlayerInfo = _Info;
-
-	// 모든 클라이언트에게 동기화
-	MCAST_SyncPlayerInfo(_Info);
-}
-
-// 서버 → 클라이언트 Multicast 동기화
-void APlayPlayerState::MCAST_SyncPlayerInfo_Implementation(const FPlayerInfo& _Info)
-{
-	PlayerInfo = _Info;
-}
-
 // 관전자 세팅
 void APlayPlayerState::SetPlayertoSpectar_Implementation(bool _Value)
 {
 	PlayerInfo.bIsSpectar = _Value;
+}
+
+// 결과 화면에서 가릴게
+void APlayPlayerState::SetCanHiddenAtResult_Implementation(bool _Value)
+{
+	PlayerInfo.bCanHiddenAtResult = _Value;
 }
 
 void APlayPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -163,6 +151,5 @@ void APlayPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(APlayPlayerState, PlayerDropOrder);
 	DOREPLIFETIME(APlayPlayerState, bIsWinner);
 	DOREPLIFETIME(APlayPlayerState, bIsResultLevel);
-
 }
 
