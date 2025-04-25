@@ -700,6 +700,10 @@ void APlayGameMode::OnPlayerFinished(APlayCharacter* _Character)
 	// 이미 실패한 유저는 리턴
 	if (PlayerState->PlayerInfo.Status == EPlayerStatus::FAIL) return;
 
+	// 관전자 모드를 켜줌
+	_Character->bIsSpectar = true;
+	_Character->SpectatorOn();
+
 	if (CurLevelInfo_Mode.EndCondition == EPlayerStatus::SUCCESS)
 	{
 		// 레이싱
