@@ -21,6 +21,18 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void SwitchToInvenMenu();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void Move_UP();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void Move_DOWN();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void Move_LEFT();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void Move_RIGHT();
+
 	UFUNCTION(BlueprintCallable)
 	void SetCurIndex(int _Index)
 	{
@@ -31,6 +43,18 @@ public:
 	int GetCurIndex()
 	{
 		return CurIndex;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	void SetCurChildIndex(int _Index)
+	{
+		CurChildIndex = _Index;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	int GetCurChildIndex()
+	{
+		return CurChildIndex;
 	}
 
 	UFUNCTION(BlueprintCallable)
@@ -48,4 +72,15 @@ public:
 private:
 	int CurIndex = 0;
 	int AllSwitcherNum = 0;
+
+	int CurChildIndex = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
+	TArray<class UObject*> ArrColor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
+	TArray<class UObject*> ArrTop;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
+	TArray<class UObject*> ArrBottom;
 };
