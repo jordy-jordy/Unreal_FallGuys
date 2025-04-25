@@ -409,25 +409,25 @@ void APlayGameMode::BeginPlay()
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode BeginPlay START ======= "));
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: GameMode 주소: %p"), this);
 
-	// 결과 화면이 아닐 때 : 0.1초마다 실패자 체크 타이머 시작 → 투명화 O, 관전자 모드 ON
-	if (!bMODEIsResultLevel)
+	// 개인전용 : 결과 화면이 아닐 때 : 0.1초마다 실패자 체크 타이머 시작 → 투명화 O, 관전자 모드 ON
+	if (!bMODEIsResultLevel && CurLevelInfo_Mode.LevelType == EStageType::SOLO)
 	{
 		GetWorldTimerManager().SetTimer(
 			SpectatorCheckTimerHandle,
 			this,
 			&APlayGameMode::SetSpectar_STAGE,
-			0.1f,
+			0.5f,
 			true
 		);
 	}
-	// 결과 화면일 때 : 0.1초마다 실패자 체크 타이머 시작 → 투명화 X, 관전자 모드 ON
-	else if (bMODEIsResultLevel)
+	// 개인전용 : 결과 화면일 때 : 0.1초마다 실패자 체크 타이머 시작 → 투명화 X, 관전자 모드 ON
+	else if (bMODEIsResultLevel && CurLevelInfo_Mode.LevelType == EStageType::SOLO)
 	{
 		GetWorldTimerManager().SetTimer(
 			SpectatorCheckTimerHandle,
 			this,
 			&APlayGameMode::SetSpectar_RESULT,
-			0.1f,
+			0.5f,
 			true
 		);
 	}
@@ -518,10 +518,13 @@ void APlayGameMode::CheckStartConditions()
 
 		// 조건 초기화 (중복 실행 방지)
 		bNumberOfPlayer = false;
+		bCinematicEND == false;
 		bCountDownEnd = false;
 
-		// 타이머 제거
+		// 게임 시작 조건을 체크하는 타이머 제거
 		GetWorldTimerManager().ClearTimer(GameStartConditionTimer);
+		// 실패자의 관전자 ON 타이머 해제
+		GetWorldTimerManager().ClearTimer(SpectatorCheckTimerHandle);
 
 		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: BeginPlay :: CheckStartConditions 함수 종료"));
 	}
@@ -687,9 +690,6 @@ void APlayGameMode::UpdateCountdown()
 // 게임 시작
 void APlayGameMode::StartGame()
 {
-	// 실패자 체크 해제
-	GetWorldTimerManager().ClearTimer(SpectatorCheckTimerHandle);
-
 	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
 
 	// 게임 시작됐음
