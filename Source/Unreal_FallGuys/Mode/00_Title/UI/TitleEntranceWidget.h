@@ -39,6 +39,12 @@ public:
 	}
 
 	UFUNCTION(BlueprintCallable)
+	void SetCurIndex(int _Index)
+	{
+		CurIndex = _Index;
+	}
+
+	UFUNCTION(BlueprintCallable)
 	class UButton* GetCurButton()
 	{
 		return CurButton;
@@ -47,12 +53,25 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetCurButton(int _Index)
 	{
-		CurIndex = _Index;
 		CurButton = ArrButtons[_Index];
 	}
 
 	UFUNCTION(BlueprintCallable)
 	void ChangeButtonImage();
+
+	TArray<class UButton*> GetButtonArray()
+	{
+		return ArrButtons;
+	}
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void SwtichToHome();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void KeyInputButtonChoice();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void KeyInputButtonHover();
 
 private:
 	EStageType TagetStage;

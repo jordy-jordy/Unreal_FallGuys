@@ -81,12 +81,17 @@ void ATitlePawn::SetupPlayerInputComponent(UInputComponent* _PlayerInputComponen
 			{
 				if (nullptr != MeshComponent && TEXT("Plinth") == MeshComponent->GetName())
 				{
-					PawnRotation(MeshComponent, LookAxisVector);
+					UTitleMainWidget* MainWidget = UFallGlobal::GetMainWidget(GetWorld());
+					ETitleUIType CurType = MainWidget->GetCurUIType();
+					if (ETitleUIType::TitleHome == CurType)
+					{
+						PawnRotation(MeshComponent, LookAxisVector);
+					}
 				}
 			}
 		});
 
-	//UIInputManager->SetupPlayerInputComponent(_PlayerInputComponent);
+	UIInputManager->SetupPlayerInputComponent(_PlayerInputComponent);
 }
 
 void ATitlePawn::PawnRotation(UStaticMeshComponent* _Target, const FVector2D& _Value)

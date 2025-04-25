@@ -53,6 +53,8 @@ void UPlayResultWidget::FinishedResultWidget()
 		return;
 	}
 
+	ReturnBGMVolume();
+
 	int WholePlayerNum = PlayGameState->GetGameStateFinishPlayer();
 	int TargetPlayerNum = PlayGameState->GetGameStateCurFinishPlayer();
 

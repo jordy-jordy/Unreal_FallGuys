@@ -32,6 +32,12 @@ public:
 		CurButton = MenuButtons[_Index];
 	}
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void MovePawnToHOME();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void MovePawnToCUSTOM();
+
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
 	TArray<class UButton*> MenuButtons;

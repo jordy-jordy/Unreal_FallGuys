@@ -17,4 +17,7 @@ class UNREAL_FALLGUYS_API UTitleHomeWidget : public UTitleUserWidget
 public:
 	void NativeConstruct();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void SwitchToEntrance();
+
 };

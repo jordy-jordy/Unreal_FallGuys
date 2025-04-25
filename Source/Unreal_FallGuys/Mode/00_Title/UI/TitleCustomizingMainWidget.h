@@ -14,4 +14,8 @@ UCLASS()
 class UNREAL_FALLGUYS_API UTitleCustomizingMainWidget : public UTitleUserWidget
 {
 	GENERATED_BODY()
+
+public:
+	UFUNCTION(BlueprintImplementableEvent)
+	void SwitchToHome();
 };

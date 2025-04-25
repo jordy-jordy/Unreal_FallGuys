@@ -30,6 +30,9 @@ public:
 		return IsShowResult;
 	}
 
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void BGMVolumeZero();
+
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
 	bool IsShowResult = false;
