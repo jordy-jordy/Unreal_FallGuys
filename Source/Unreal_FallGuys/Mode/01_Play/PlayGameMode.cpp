@@ -853,7 +853,7 @@ void APlayGameMode::OnPlayerFinished(APlayCharacter* _Character)
 
 	// 관전자 모드를 켜줌
 	PlayerState->SetPlayertoSpectar(true);
-	_Character->S2C_ActivateSpectatorMode();
+	_Character->S2C_ActivateSpectator_Stage();
 
 	// 메쉬 및 콜리전 투명화
 	_Character->ApplySpectatorVisibilityAtGoalColl();
@@ -1276,8 +1276,7 @@ void APlayGameMode::CheckFailedPlayersAndSpectate()
 		APlayPlayerState* PS = PlayerCharacter->GetPlayerState<APlayPlayerState>();
 		if (PS && PS->PlayerInfo.Status == EPlayerStatus::FAIL && !PlayerCharacter->bSpectatorApplied && !PlayerCharacter->bVisibilityApplied)
 		{
-			// 실패 + 아직 처리 안 된 경우만 실행
-			PlayerCharacter->S2C_StageSpectarOn();
+			PlayerCharacter->S2C_StageSpectarTrigger();
 			PlayerCharacter->S2M_ApplySpectatorVisibility();
 			PlayerCharacter->bSpectatorApplied = true;
 			PlayerCharacter->bVisibilityApplied = true;
@@ -1295,8 +1294,8 @@ void APlayGameMode::CheckFailedPlayersAndSpectateOnResultLevel()
 		APlayPlayerState* PS = PlayerCharacter->GetPlayerState<APlayPlayerState>();
 		if (PS && PS->PlayerInfo.Status == EPlayerStatus::FAIL && !PlayerCharacter->bSpectatorApplied)
 		{
-			// 실패 + 아직 처리 안 된 경우만 실행
-			PlayerCharacter->S2C_ResultSpectarOn();
+			PlayerCharacter->S2C_ResultSpectarTrigger();
+			PlayerCharacter->bSpectatorApplied = true;
 		}
 	}
 }

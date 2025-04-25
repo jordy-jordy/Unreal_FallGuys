@@ -227,35 +227,39 @@ public:
 	UPROPERTY(VisibleAnywhere, Replicated, BlueprintReadOnly)
 	bool bIsResultLevel = false;
 
-	// PlayPlayerState 로 부터 값을 받음
+	// PlayPlayerState 로 부터 정보를 세팅함
 	void InitializeFromPlayerInfo(const FPlayerInfo& _Info);
 
-	UFUNCTION(Client, Reliable)
-	void S2C_ActivateSpectatorMode();
-	void S2C_ActivateSpectatorMode_Implementation();
-
-	UFUNCTION(Client, Reliable)
-	void S2C_ActivateSpectatorModeOnResultLevel();
-	void S2C_ActivateSpectatorModeOnResultLevel_Implementation();
-
+	// 플레이어를 투명화 : PlayGameMode로부터 호출됨 !!! 게임이 시작됐을때
 	UFUNCTION(NetMulticast, Reliable)
 	void S2M_ApplySpectatorVisibility();
 	void S2M_ApplySpectatorVisibility_Implementation();
 
+	// 플레이어를 투명화 : PlayGameMode로부터 호출됨 !!! Goal Or Kill 콜리전에 닿았을때
 	UFUNCTION()
 	void ApplySpectatorVisibilityAtGoalColl();
 
+	// 일반 스테이지 :: 스테이지 전용 관전자 모드 트리거 : PlayGameMode로부터 호출됨
 	UFUNCTION(Client, Reliable)
-	void S2C_StageSpectarOn();
-	void S2C_StageSpectarOn_Implementation();
+	void S2C_StageSpectarTrigger();
+	void S2C_StageSpectarTrigger_Implementation();
 
+	// 일반 스테이지 :: 스테이지 전용 관전자 모드를 활성화 : PlayGameMode로부터 호출됨
 	UFUNCTION(Client, Reliable)
-	void S2C_ResultSpectarOn();
-	void S2C_ResultSpectarOn_Implementation();
+	void S2C_ActivateSpectator_Stage();
+	void S2C_ActivateSpectator_Stage_Implementation();
 
+	// 중간 결과 화면 :: 결과 화면 전용 관전자 모드 트리거 : PlayGameMode로부터 호출됨
+	UFUNCTION(Client, Reliable)
+	void S2C_ResultSpectarTrigger();
+	void S2C_ResultSpectarTrigger_Implementation();
 
+	// 중간 결과 화면 :: 결과 화면 전용 관전자 모드를 활성화 : PlayGameMode로부터 호출됨
+	UFUNCTION(Client, Reliable)
+	void S2C_ActivateSpectator_Result();
+	void S2C_ActivateSpectator_Result_Implementation();
+
+	// 나 관전자 모드냐?
 	UFUNCTION(BlueprintCallable)
 	bool GetIsSpectar() { return bIsSpectar; }
-
-
 };

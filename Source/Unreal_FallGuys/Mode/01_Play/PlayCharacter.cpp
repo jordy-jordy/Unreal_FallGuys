@@ -271,24 +271,6 @@ void APlayCharacter::S2M_SetCanMoveFalse_Implementation()
 	CanMove = false;
 }
 
-void APlayCharacter::InitializeFromPlayerInfo(const FPlayerInfo& _Info)
-{
-	// 중복된 태그 방지
-	if (!Tags.Contains(_Info.Tag))
-	{
-		Tags.Add(_Info.Tag);
-	}
-
-	// PlayerState의 Status에 따라 IsDie 세팅
-	CurStatus = _Info.Status;
-	IsDie = (CurStatus == EPlayerStatus::FAIL);
-
-	// 관전자 상태 세팅
-	bIsSpectar = _Info.bIsSpectar;
-
-	DebugCheckDieStatus();
-}
-
 // 이현정 : 서버장의 캐릭터 상태를 세팅
 void APlayCharacter::PossessedBy(AController* _NewController)
 {
@@ -313,6 +295,26 @@ void APlayCharacter::OnRep_PlayerState()
 	}
 }
 
+// PlayPlayerState 로 부터 정보를 세팅함
+void APlayCharacter::InitializeFromPlayerInfo(const FPlayerInfo& _Info)
+{
+	// 중복된 태그 방지
+	if (!Tags.Contains(_Info.Tag))
+	{
+		Tags.Add(_Info.Tag);
+	}
+
+	// PlayerState의 Status에 따라 IsDie 세팅
+	CurStatus = _Info.Status;
+	IsDie = (CurStatus == EPlayerStatus::FAIL);
+
+	// 관전자 상태 세팅
+	bIsSpectar = _Info.bIsSpectar;
+
+	DebugCheckDieStatus();
+}
+
+// 플레이어를 투명화 : PlayGameMode로부터 호출됨 !!! 게임이 시작됐을때
 void APlayCharacter::S2M_ApplySpectatorVisibility_Implementation()
 {
 	if (bVisibilityApplied) return;
@@ -341,6 +343,7 @@ void APlayCharacter::S2M_ApplySpectatorVisibility_Implementation()
 	*NickName);
 }
 
+// 플레이어를 투명화 : PlayGameMode로부터 호출됨 !!! Goal Or Kill 콜리전에 닿았을때
 void APlayCharacter::ApplySpectatorVisibilityAtGoalColl()
 {
 	GetMovementComponent()->StopMovementImmediately();
@@ -365,30 +368,34 @@ void APlayCharacter::ApplySpectatorVisibilityAtGoalColl()
 	*NickName);
 }
 
-void APlayCharacter::S2C_StageSpectarOn_Implementation()
+// 일반 스테이지 :: 스테이지 전용 관전자 모드 트리거 : PlayGameMode로부터 호출됨
+void APlayCharacter::S2C_StageSpectarTrigger_Implementation()
 {
 	if (bSpectatorApplied) return;
 	// 일반 스테이지 전용 관전자 모드 ON
-	S2C_ActivateSpectatorMode();
+	S2C_ActivateSpectator_Stage();
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayCharacter :: 스테이지 전용 스펙터가 켜짐"));
 	bSpectatorApplied = true;
 }
 
-void APlayCharacter::S2C_ResultSpectarOn_Implementation()
-{
-	if (bSpectatorApplied) return;
-	// 결과 레벨 전용 관전자 모드 ON
-	S2C_ActivateSpectatorModeOnResultLevel();
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayCharacter :: 결과 화면 전용 스펙터가 켜짐"));
-	bSpectatorApplied = true;
-}
-
-void APlayCharacter::S2C_ActivateSpectatorMode_Implementation()
+// 일반 스테이지 :: 스테이지 전용 관전자 모드를 활성화 : PlayGameMode로부터 호출됨
+void APlayCharacter::S2C_ActivateSpectator_Stage_Implementation()
 {
 	SpectatorOn();
 }
 
-void APlayCharacter::S2C_ActivateSpectatorModeOnResultLevel_Implementation()
+// 중간 결과 화면 :: 결과 화면 전용 관전자 모드 트리거 : PlayGameMode로부터 호출됨
+void APlayCharacter::S2C_ResultSpectarTrigger_Implementation()
+{
+	if (bSpectatorApplied) return;
+	// 결과 레벨 전용 관전자 모드 ON
+	S2C_ActivateSpectator_Result();
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayCharacter :: 결과 화면 전용 스펙터가 켜짐"));
+	bSpectatorApplied = true;
+}
+
+// 중간 결과 화면 :: 결과 화면 전용 관전자 모드를 활성화 : PlayGameMode로부터 호출됨
+void APlayCharacter::S2C_ActivateSpectator_Result_Implementation()
 {
 	SpectatorOnForRaceOver();
 }
