@@ -115,15 +115,6 @@ void APlayCharacter::BeginPlay()
 		// 코스튬 세팅
 		SetCharacterCostume(CostumeColor, CostumeTopName, CostumeBotName);
 	}
-
-	// 시작시 전 라운드 실패한 캐릭터 처리 함수 : 대기 후 실행
-	GetWorldTimerManager().SetTimer(
-		CheckPlayerTimerHandle,			// 타이머 핸들
-		this,							// 대상 클래스
-		&APlayCharacter::CheckPlayer,	// 호출할 함수 포인터
-		0.5f,							// 대기 시간 (초)
-		false							// 반복 여부 (false면 한 번만 실행)
-	);
 }
 
 // Called every frame
@@ -267,6 +258,24 @@ void APlayCharacter::S2M_SetCanMoveFalse_Implementation()
 	CanMove = false;
 }
 
+void APlayCharacter::InitializeFromPlayerInfo(const FPlayerInfo& _Info)
+{
+	// 중복된 태그 방지
+	if (!Tags.Contains(_Info.Tag))
+	{
+		Tags.Add(_Info.Tag);
+	}
+
+	// PlayerState의 Status에 따라 IsDie 세팅
+	CurStatus = _Info.Status;
+	IsDie = (CurStatus == EPlayerStatus::FAIL);
+
+	// 관전자 상태 세팅
+	bIsSpectar = _Info.bIsSpectar;
+
+	DebugCheckDieStatus();
+}
+
 // 이현정 : 서버장의 캐릭터 상태를 세팅
 void APlayCharacter::PossessedBy(AController* _NewController)
 {
@@ -278,14 +287,16 @@ void APlayCharacter::PossessedBy(AController* _NewController)
 		// PlayerState에 있는 Tag를 캐릭터 태그에 세팅
 		if (!PlayState->PlayerInfo.Tag.IsNone())
 		{
-			Tags.Add(FName(PlayState->PlayerInfo.Tag));
+			InitializeFromPlayerInfo(PlayState->PlayerInfo);
 		}
-
-		// PlayerState의 Status에 따라 IsDie 세팅
-		CurStatus = PlayState->GetPlayerStateStatus();
-		IsDie = (CurStatus == EPlayerStatus::FAIL);
-		DebugCheckDieStatus(); // 상태 디버깅
 	}
+
+	//// PlayerState의 Status에 따라 IsDie 세팅
+	//CurStatus = PlayState->GetPlayerStateStatus();
+	//IsDie = (CurStatus == EPlayerStatus::FAIL);
+
+	//// 관전자 상태 세팅
+	//bIsSpectar = IsDie;
 }
 
 // 이현정 : 클라이언트의 캐릭터 상태를 세팅
@@ -299,14 +310,14 @@ void APlayCharacter::OnRep_PlayerState()
 		// PlayerState에 있는 Tag를 캐릭터 태그에 세팅
 		if (!PlayState->PlayerInfo.Tag.IsNone())
 		{
-			Tags.Add(FName(PlayState->PlayerInfo.Tag));
+			InitializeFromPlayerInfo(PlayState->PlayerInfo);
 		}
-
-		// PlayerState의 Status에 따라 IsDie 세팅
-		CurStatus = PlayState->GetPlayerStateStatus();
-		IsDie = (CurStatus == EPlayerStatus::FAIL);
-		DebugCheckDieStatus(); // 상태 디버깅
 	}
+	//// PlayerState의 Status에 따라 IsDie 세팅
+	//IsDie = (CurStatus == EPlayerStatus::FAIL);
+
+	//// 관전자 상태 세팅
+	//bIsSpectar = IsDie;
 }
 
 // 이현정 : 디버그용 : 캐릭터 상태 확인
@@ -320,7 +331,7 @@ void APlayCharacter::DebugCheckDieStatus()
 	{
 		for (const FName& Tag : Tags)
 		{
-			TagStringForLog += Tag.ToString() + TEXT(" ");
+			TagStringForLog += Tag.ToString() + TEXT("");
 		}
 	}
 	else
@@ -328,10 +339,11 @@ void APlayCharacter::DebugCheckDieStatus()
 		TagStringForLog = TEXT("태그 없음");
 	}
 
-	UE_LOG(FALL_DEV_LOG, Log, TEXT("Tag: %s / CurStatus: %s / IsDie: %s"),
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("Tag: %s / CurStatus: %s / IsDie: %s / Spectar: %s"),
 		*TagStringForLog,
 		*StatusStr,
-		IsDie ? TEXT("true") : TEXT("false"));
+		IsDie ? TEXT("true") : TEXT("false"),
+		bIsSpectar ? TEXT("true") : TEXT("false"));
 
 	if (UFallConst::PrintDebugLog && GEngine)
 	{
@@ -369,99 +381,29 @@ void APlayCharacter::S2M_NickName_Implementation(const FString& _NickName)
 	NickName = _NickName;
 }
 
-//이민하
-// 전 라운드에서 실패한 캐릭터를 레이스에서 아웃 시키는 기능
-void APlayCharacter::CheckPlayer()
+void APlayCharacter::S2M_ActivateSpectatorMode_Implementation()
 {
-
-	UBaseGameInstance* GameIns = GetGameInstance<UBaseGameInstance>();
-	
-	APlayPlayerState* FallPlayerState = GetPlayerState<APlayPlayerState>();
-	if (!GameIns || !FallPlayerState) return;
-
-	// 결과 화면인지 확인
-	bIsResultLevel = FallPlayerState->GetIsResultLevel();
-
-	bIsSpectar = GameIns->bIsSpectar;
-
-
-	if (UGameplayStatics::GetPlayerController(GetWorld(), 0) == GetController())
+	if (IsLocallyControlled())
 	{
-		if (false == bIsResultLevel)
-		{
-			OutFailPlayer();
-		}
-		else
-		{
-			CheckFailPlayer();
-		}
+		SpectatorOn(); // 클라에서만 관전자 모드 실행
 	}
-
-	/*CurStatusReadTimerFuc();*/
-}
-void APlayCharacter::C2S_SpectarLoc_Implementation()
-{
-	S2M_SpectarLoc_Implementation();
 }
 
-void APlayCharacter::S2M_SpectarLoc_Implementation()
+void APlayCharacter::ApplySpectatorVisibility()
 {
-		//위치 동기화
-		SetActorLocation({ 0,0,-100000 });
-		SetActorEnableCollision(false);
+	SetActorEnableCollision(false);
+	SetActorHiddenInGame(true);
+	GetMesh()->SetSimulatePhysics(false);
+	GetMesh()->SetEnableGravity(false);
+	SetActorLocation(FVector(0, 0, -100000));
 
-		if (GetMesh())
-		{
-			GetMesh()->SetSimulatePhysics(false);
-			GetMesh()->SetEnableGravity(false);
-		}
-		// 다른 캐릭터로 시점 변경
-	
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("ApplySpectatorVisibility :: 관전자 숨김 처리 완료"));
 }
 
-// 이민하 : 결과 레벨 / 게임 레벨 구분해서 캐릭터 아웃 처리
-void APlayCharacter::CurStatusReadTimerFuc()
+void APlayCharacter::S2M_ApplySpectatorVisibility_Implementation(bool _bIsSpectar)
 {
-
-}
-
-// 이민하 : 경기에서 실패한 캐릭터 관전자로 저장
-void APlayCharacter::CheckFailPlayer()
-{
-	OutFailPlayer();
-
-	 APlayPlayerState* PlayState = GetPlayerState<APlayPlayerState>();
-	 if (nullptr == PlayState) return;
-
-	 if (EPlayerStatus::FAIL == PlayState->PlayerInfo.Status)
-	 {
-		 bIsSpectar = true;
-
-
-		 UBaseGameInstance* GameIns = GetGameInstance<UBaseGameInstance>();
-
-		 GameIns->bIsSpectar = bIsSpectar;
-
-	 }
-}
-
-// 이민하 : 탈락자 아웃시키기 ( 위치 -10000.. 바닥으로 이동)
-void APlayCharacter::OutFailPlayer()
-{
-	if (true == bIsSpectar)
-	{
-		
-
-		if (true == bIsResultLevel)
-		{
-			SpectatorOnForRaceOver();
-		}
-		else
-		{
-			SpectatorOn();
-
-		}
-		C2S_SpectarLoc();
-	}
-	
+	if (bSpectatorApplied) return;
+	ApplySpectatorVisibility();  // 숨김 처리
+	S2M_ActivateSpectatorMode(); // 관전자 모드 진입 (클라 포함 모두 적용)
+	bSpectatorApplied = true;	 // 중복 방지 설정
 }

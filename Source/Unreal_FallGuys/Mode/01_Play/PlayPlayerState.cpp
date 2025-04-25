@@ -34,6 +34,17 @@ void APlayPlayerState::SetPlayerTag_Implementation(const FName& _Tag)
 	PlayerInfo.UniqueID = GetUniqueId()->ToString();
 }
 
+void APlayPlayerState::OnRep_PlayerInfo()
+{
+	APlayCharacter* MyCharacter = Cast<APlayCharacter>(GetPawn());
+	if (MyCharacter)
+	{
+		MyCharacter->InitializeFromPlayerInfo(PlayerInfo);  // 여기서 직접 캐릭터 세팅
+	}
+
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("OnRep_PlayerInfo :: 복제 완료 - 태그: %s"), *PlayerInfo.Tag.ToString());
+}
+
 // 클라들에게도 플레이어 인포 동기화
 void APlayPlayerState::MCAST_ApplyPlayerInfo_Implementation(const FPlayerInfo& _Info)
 {
@@ -120,6 +131,28 @@ void APlayPlayerState::SetbReadyToTravelTrue()
 void APlayPlayerState::SetIsResultLevel_Implementation(bool _Value)
 {
 	bIsResultLevel = _Value;
+}
+
+// 클라이언트 → 서버 호출
+void APlayPlayerState::C2S_SyncPlayerInfo_Implementation(const FPlayerInfo& _Info)
+{
+	// 서버에서 PlayerInfo 갱신
+	PlayerInfo = _Info;
+
+	// 모든 클라이언트에게 동기화
+	MCAST_SyncPlayerInfo(_Info);
+}
+
+// 서버 → 클라이언트 Multicast 동기화
+void APlayPlayerState::MCAST_SyncPlayerInfo_Implementation(const FPlayerInfo& _Info)
+{
+	PlayerInfo = _Info;
+}
+
+// 관전자 세팅
+void APlayPlayerState::SetPlayertoSpectar_Implementation(bool _Value)
+{
+	PlayerInfo.bIsSpectar = _Value;
 }
 
 void APlayPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

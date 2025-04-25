@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "Global/GlobalEnum.h"
 #include "Mode/01_Play/PlayEnum.h"
+#include "Mode/01_Play/PlayPlayerState.h"
 #include "PlayCharacter.generated.h"
 
 UCLASS()
@@ -211,36 +212,31 @@ protected:
 
 #pragma region LeeMinha > 레벨 시작 > 실패 플레이어 처리
 public:
-
-	FTimerHandle CheckPlayerTimerHandle;
-
-	UFUNCTION()
-	void CheckPlayer();
-
-	UFUNCTION(Reliable, Server, Category = "PLAYER START")
-	void C2S_SpectarLoc();
-	void C2S_SpectarLoc_Implementation();
-
-	UFUNCTION(Reliable, NetMulticast, Category = "PLAYER START")
-	void S2M_SpectarLoc();
-	void S2M_SpectarLoc_Implementation();
-
-	UFUNCTION()
-	void CurStatusReadTimerFuc();
-
-	UFUNCTION(Category = "PLAYER START")
-	void CheckFailPlayer();
-
-	void OutFailPlayer();
-
 	UPROPERTY(Replicated, BlueprintReadWrite, Category = "PLAYER START")
 	bool bIsSpectar = false;
+
 	UPROPERTY(Replicated, BlueprintReadWrite, Category = "PLAYER START")
 	bool bIsResultLevel = false;
 
-public:
 	UPROPERTY(VisibleAnywhere, Replicated, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	bool IsDie = true;
 #pragma endregion
+
+	void InitializeFromPlayerInfo(const FPlayerInfo& _Info);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void S2M_ActivateSpectatorMode();
+	void S2M_ActivateSpectatorMode_Implementation();
+
+	UFUNCTION()
+	void ApplySpectatorVisibility();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void S2M_ApplySpectatorVisibility(bool _bIsSpectar);
+	void S2M_ApplySpectatorVisibility_Implementation(bool _bIsSpectar);
+
+	UPROPERTY()
+	bool bSpectatorApplied = false;
+
 
 };

@@ -16,37 +16,40 @@ struct FPlayerInfo
     GENERATED_BODY()
 
     // 플레이어의 고유 ID :: 언리얼에서 제공하는 고유 ID
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
     FString UniqueID;
     // Player0, Player1 같은 태그 :: PlayGameMode에서 지정
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
     FName Tag;
     // 닉네임 :: BaseGameInstance에서 지정
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
     FString NickName;
     // 플레이어 코스튬 컬러
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
     FString CostumeColor = TEXT("");
     // 플레이어 코스튬 상의
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
     FString CostumeTOP = TEXT("");
     // 플레이어 코스튬 하의
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
     FString CostumeBOT = TEXT("");
     // 플레이어 상태 :: PlayGameMode에서 지정
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
     EPlayerStatus Status;
     // 팀 정보 :: TeamPlayGameMode에서 지정
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
     ETeamType Team;
     // 실패했을 경우 떨어지는 순서
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
     int32 DropOrder;
+    // 관전자 여부
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    bool bIsSpectar;
 
     // 플레이어 정보가 모두 동일할 때 TRUE 반환
     bool operator==(const FPlayerInfo& Other) const
     {
-        return UniqueID == Other.UniqueID &&
+		return UniqueID == Other.UniqueID &&
 			Tag == Other.Tag &&
 			NickName == Other.NickName &&
 			CostumeColor == Other.CostumeColor &&
@@ -54,7 +57,8 @@ struct FPlayerInfo
 			CostumeBOT == Other.CostumeBOT &&
 			Status == Other.Status &&
 			Team == Other.Team &&
-			DropOrder == Other.DropOrder;
+			DropOrder == Other.DropOrder &&
+            bIsSpectar == Other.bIsSpectar;
     }
     // 플레이어 정보가 동일하지 않을때 FALSE 반환
     bool operator!=(const FPlayerInfo& Other) const
@@ -63,7 +67,7 @@ struct FPlayerInfo
     }
 
     FPlayerInfo()
-        : Tag(TEXT("NoTag")), NickName(TEXT("테스트죠르디")), CostumeColor(TEXT("")), CostumeTOP(TEXT("")), CostumeBOT(TEXT("")),
+        : Tag(TEXT("")), NickName(TEXT("")), CostumeColor(TEXT("")), CostumeTOP(TEXT("")), CostumeBOT(TEXT("")),
           Status(EPlayerStatus::DEFAULT), Team(ETeamType::NONE), DropOrder(-1)
     {
     }
@@ -82,7 +86,7 @@ public:
     void BeginPlay() override;
 
     // 개별 플레이어 정보
-    UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category = "PLAYER INFO")
+    UPROPERTY(ReplicatedUsing = OnRep_PlayerInfo, VisibleAnywhere, BlueprintReadOnly, Category = "PLAYER INFO")
     FPlayerInfo PlayerInfo;
 
     // 클라들에게도 플레이어 인포 동기화
@@ -152,6 +156,20 @@ public:
     UFUNCTION(BlueprintCallable, Category = "GAME INFO")
 	bool GetIsResultLevel() { return bIsResultLevel; }
 
+    // 서버에서 PlayerInfo를 갱신하고 클라이언트에 동기화하는 함수
+    UFUNCTION(BlueprintCallable, Server, Reliable)
+    void C2S_SyncPlayerInfo(const FPlayerInfo& _Info);
+    void C2S_SyncPlayerInfo_Implementation(const FPlayerInfo& _Info);
+
+    UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
+    void MCAST_SyncPlayerInfo(const FPlayerInfo& _Info);
+    void MCAST_SyncPlayerInfo_Implementation(const FPlayerInfo& _Info);
+
+    // 관전자 세팅
+    UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "PLAYER INFO")
+    void SetPlayertoSpectar(bool _Value);
+    void SetPlayertoSpectar_Implementation(bool _Value);
+
 protected:
     // 승자 여부
     UPROPERTY(Replicated)
@@ -169,15 +187,19 @@ protected:
     UPROPERTY(BlueprintReadOnly)
     bool bReadyToTravel = false;
 
+    // 결과화면 여부
+    UPROPERTY(Replicated)
+    bool bIsResultLevel = false;
+
+    // PlayerInfo 가 변할 때 호출되는 함수 - 동기화
+    UFUNCTION()
+    void OnRep_PlayerInfo();
+
 	// PlayerDropOrder 가 변할 때 호출되는 함수 - 동기화
     UFUNCTION()
     void OnRep_PlayerDropOrder();
 
     // 동기화 관련
     void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
-    // 결과화면 여부
-    UPROPERTY(Replicated)
-    bool bIsResultLevel = false;
 };
 

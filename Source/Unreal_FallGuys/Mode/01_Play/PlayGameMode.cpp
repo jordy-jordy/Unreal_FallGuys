@@ -311,7 +311,7 @@ void APlayGameMode::HandleSeamlessTravelPlayer(AController*& _NewController)
 
 	// 시네마틱 시작 호출
 	PostInitializePlayer(FallState);
-
+	
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode HandleSeamlessTravelPlayer END ======= "));
 }
 #pragma endregion
@@ -342,6 +342,10 @@ void APlayGameMode::RestorePlayerInfo(APlayerController* _NewPlayer, APlayPlayer
 
 	if (bMODEIsResultLevel)
 	{
+		if (RestoredInfo.Status == EPlayerStatus::SUCCESS)
+		{
+			RestoredInfo.bIsSpectar = false; // 관전자 초기화
+		}
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode:: PostLogin :: 결과 화면 - 기존 플레이어 정보 복구"));
 	}
 	else
@@ -351,6 +355,7 @@ void APlayGameMode::RestorePlayerInfo(APlayerController* _NewPlayer, APlayPlayer
 			if (RestoredInfo.Status == EPlayerStatus::SUCCESS)
 			{
 				RestoredInfo.Status = EPlayerStatus::DEFAULT;
+				RestoredInfo.bIsSpectar = false; // 관전자 초기화
 			}
 			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode:: PostLogin :: 개인전 입니다 - 성공한 플레이어 정보 리셋"));
 		}
@@ -394,6 +399,18 @@ void APlayGameMode::BeginPlay()
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode BeginPlay START ======= "));
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: GameMode 주소: %p"), this);
+
+	// 결과 화면이 아닐 때만 0.1초마다 실패자 체크 타이머 시작
+	if (!bMODEIsResultLevel)
+	{
+		GetWorldTimerManager().SetTimer(
+			SpectatorCheckTimerHandle,
+			this,
+			&APlayGameMode::CheckFailedPlayersAndSpectate,
+			0.1f,
+			true
+		);
+	}
 
 	// 게임 시작을 위한 조건을 주기적으로 체크
 	GetWorldTimerManager().SetTimer(
@@ -650,6 +667,9 @@ void APlayGameMode::UpdateCountdown()
 // 게임 시작
 void APlayGameMode::StartGame()
 {
+	// 실패자 체크 해제
+	GetWorldTimerManager().ClearTimer(SpectatorCheckTimerHandle);
+
 	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
 
 	// 게임 시작됐음
@@ -679,55 +699,6 @@ void APlayGameMode::SetCharacterMovePossible()
 		}, 0.2f, false); // 0.2초 뒤에 한 번 실행
 
 	bPlayerMoving = true;
-}
-
-// 이현정 : 25.04.02 : 동기화 함수로 수정 - 게임종료 트리거
-void APlayGameMode::OnPlayerFinished(APlayCharacter* _Character)
-{
-	// 서버장이 아닐시 리턴
-	if (!HasAuthority()) return;
-
-	// 게임 끝났으면 리턴
-	if (IsEndGame) return;
-
-	// 일단 게임 스테이트를 가져오고
-	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
-	if (!FallState) return;
-	
-	// 결승선에 닿은 캐릭터의 스테이트를 가져옴
-	APlayPlayerState* PlayerState = _Character->GetPlayerState<APlayPlayerState>();
-	if (!PlayerState) return;
-	// 이미 실패한 유저는 리턴
-	if (PlayerState->PlayerInfo.Status == EPlayerStatus::FAIL) return;
-
-	// 관전자 모드를 켜줌
-	_Character->bIsSpectar = true;
-	_Character->SpectatorOn();
-
-	if (CurLevelInfo_Mode.EndCondition == EPlayerStatus::SUCCESS)
-	{
-		// 레이싱
-		PlayerState->SetPlayerStatus(EPlayerStatus::SUCCESS);
-	}
-	else if (CurLevelInfo_Mode.EndCondition == EPlayerStatus::FAIL)
-	{
-		// 생존
-		PlayerState->SetPlayerStatus(EPlayerStatus::FAIL);
-	}
-	else
-	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: OnPlayerFinished :: 뭔가 잘못됨."));
-		return;
-	}
-
-	// 결승선 or 킬존 닿은 플레이어 카운트 +1
-	++CurFinishPlayer;
-	FallState->SetGameStateCurFinishPlayer(CurFinishPlayer);
-
-	if (CurFinishPlayer >= FinishPlayer && IsEndGame == false)
-	{
-		SetEndCondition_Trigger(FallState);
-	}
 }
 
 // 이현정 : 25.04.02 : 동기화 함수로 수정 : 골인 목표 인원 수 세팅
@@ -836,6 +807,55 @@ void APlayGameMode::Tick(float DeltaSeconds)
 #pragma endregion
 
 #pragma region PlayGameMode :: Tick 에서 실행되는 함수들
+// 이현정 : 25.04.02 : 동기화 함수로 수정 - 게임종료 트리거
+void APlayGameMode::OnPlayerFinished(APlayCharacter* _Character)
+{
+	// 서버장이 아닐시 리턴
+	if (!HasAuthority()) return;
+
+	// 게임 끝났으면 리턴
+	if (IsEndGame) return;
+
+	// 일단 게임 스테이트를 가져오고
+	APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
+	if (!FallState) return;
+
+	// 결승선에 닿은 캐릭터의 스테이트를 가져옴
+	APlayPlayerState* PlayerState = _Character->GetPlayerState<APlayPlayerState>();
+	if (!PlayerState) return;
+	// 이미 실패한 유저는 리턴
+	if (PlayerState->PlayerInfo.Status == EPlayerStatus::FAIL) return;
+
+	// 관전자 모드를 켜줌
+	PlayerState->SetPlayertoSpectar(true);
+	_Character->S2M_ActivateSpectatorMode();
+
+	if (CurLevelInfo_Mode.EndCondition == EPlayerStatus::SUCCESS)
+	{
+		// 레이싱
+		PlayerState->SetPlayerStatus(EPlayerStatus::SUCCESS);
+	}
+	else if (CurLevelInfo_Mode.EndCondition == EPlayerStatus::FAIL)
+	{
+		// 생존
+		PlayerState->SetPlayerStatus(EPlayerStatus::FAIL);
+	}
+	else
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: OnPlayerFinished :: 뭔가 잘못됨."));
+		return;
+	}
+
+	// 결승선 or 킬존 닿은 플레이어 카운트 +1
+	++CurFinishPlayer;
+	FallState->SetGameStateCurFinishPlayer(CurFinishPlayer);
+
+	if (CurFinishPlayer >= FinishPlayer && IsEndGame == false)
+	{
+		SetEndCondition_Trigger(FallState);
+	}
+}
+
 // 게임 종료 트리거
 void APlayGameMode::SetEndCondition_Trigger(APlayGameState* _FallState)
 {
@@ -936,6 +956,76 @@ void APlayGameMode::SetEndCondition_Solo(APlayGameState* _FallState)
 	}
 }
 
+// 남은 플레이어의 상태 일괄 변경
+void APlayGameMode::ChangeDefaultPlayersTo()
+{
+	if (CurLevelInfo_Mode.EndCondition == EPlayerStatus::SUCCESS)
+	{
+		SetDefaultPlayersToFail();
+	}
+	else if (CurLevelInfo_Mode.EndCondition == EPlayerStatus::FAIL)
+	{
+		SetDefaultPlayersToSuccess();
+	}
+	else
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: ChangeDefaultPlayersTo :: 게임 종료 조건이 뭔가 잘못 됨"));
+	}
+}
+
+// Default 상태인 플레이어를 FAIL 상태로 변경
+void APlayGameMode::SetDefaultPlayersToFail()
+{
+	// 마지막 동기화
+	SyncPlayerInfo();
+
+	APlayGameState* FallState = GetGameState<APlayGameState>();
+	if (!FallState)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: SetDefaultPlayersToFail :: GameState가 nullptr입니다."));
+		return;
+	}
+
+	for (APlayerState* PS : FallState->PlayerArray)
+	{
+		APlayPlayerState* PState = Cast<APlayPlayerState>(PS);
+		if (PState && PState->GetPlayerStateStatus() == EPlayerStatus::DEFAULT)
+		{
+			PState->SetPlayerStatusOnEnd(EPlayerStatus::FAIL);
+			PState->SetPlayertoSpectar(true);
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: SetDefaultPlayersToFail :: FAIL 처리됨 - %s"), *PState->PlayerInfo.Tag.ToString());
+		}
+	}
+	// 상태 바꾼 것을 동기화
+	SyncPlayerInfo();
+}
+
+// Default 상태인 플레이어를 SUCCESS 상태로 변경
+void APlayGameMode::SetDefaultPlayersToSuccess()
+{
+	// 마지막 동기화
+	SyncPlayerInfo();
+
+	APlayGameState* FallState = GetGameState<APlayGameState>();
+	if (!FallState)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: SetDefaultPlayersToSuccess :: GameState가 nullptr입니다."));
+		return;
+	}
+
+	for (APlayerState* PS : FallState->PlayerArray)
+	{
+		APlayPlayerState* PState = Cast<APlayPlayerState>(PS);
+		if (PState && PState->GetPlayerStateStatus() == EPlayerStatus::DEFAULT)
+		{
+			PState->SetPlayerStatusOnEnd(EPlayerStatus::SUCCESS);
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: SetDefaultPlayersToSuccess :: SUCCESS 처리됨 - %s"), *PState->PlayerInfo.Tag.ToString());
+		}
+	}
+	// 상태 바꾼 것을 동기화
+	SyncPlayerInfo();
+}
+
 // 플레이어 정보 백업
 void APlayGameMode::BackUpPlayersInfo()
 {
@@ -1000,75 +1090,6 @@ void APlayGameMode::SetNextSoloLevelData()
 
 	// 스테이지 전환 했음을 알림
 	GameInstance->IsMovedLevel = true;
-}
-
-// 남은 플레이어의 상태 일괄 변경
-void APlayGameMode::ChangeDefaultPlayersTo()
-{
-	if (CurLevelInfo_Mode.EndCondition == EPlayerStatus::SUCCESS)
-	{
-		SetDefaultPlayersToFail();
-	}
-	else if (CurLevelInfo_Mode.EndCondition == EPlayerStatus::FAIL)
-	{
-		SetDefaultPlayersToSuccess();
-	}
-	else
-	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: ChangeDefaultPlayersTo :: 게임 종료 조건이 뭔가 잘못 됨"));
-	}
-}
-
-// Default 상태인 플레이어를 FAIL 상태로 변경
-void APlayGameMode::SetDefaultPlayersToFail()
-{
-	// 마지막 동기화
-	SyncPlayerInfo();
-
-	APlayGameState* FallState = GetGameState<APlayGameState>();
-	if (!FallState)
-	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: SetDefaultPlayersToFail :: GameState가 nullptr입니다."));
-		return;
-	}
-
-	for (APlayerState* PS : FallState->PlayerArray)
-	{
-		APlayPlayerState* PState = Cast<APlayPlayerState>(PS);
-		if (PState && PState->GetPlayerStateStatus() == EPlayerStatus::DEFAULT)
-		{
-			PState->SetPlayerStatusOnEnd(EPlayerStatus::FAIL);
-			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: SetDefaultPlayersToFail :: FAIL 처리됨 - %s"), *PState->PlayerInfo.Tag.ToString());
-		}
-	}
-	// 상태 바꾼 것을 동기화
-	SyncPlayerInfo();
-}
-
-// Default 상태인 플레이어를 SUCCESS 상태로 변경
-void APlayGameMode::SetDefaultPlayersToSuccess()
-{
-	// 마지막 동기화
-	SyncPlayerInfo();
-
-	APlayGameState* FallState = GetGameState<APlayGameState>();
-	if (!FallState)
-	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: SetDefaultPlayersToSuccess :: GameState가 nullptr입니다."));
-		return;
-	}
-
-	for (APlayerState* PS : FallState->PlayerArray)
-	{
-		APlayPlayerState* PState = Cast<APlayPlayerState>(PS);
-		if (PState && PState->GetPlayerStateStatus() == EPlayerStatus::DEFAULT)
-		{
-			PState->SetPlayerStatusOnEnd(EPlayerStatus::SUCCESS);
-			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: SetDefaultPlayersToSuccess :: SUCCESS 처리됨 - %s"), *PState->PlayerInfo.Tag.ToString());
-		}
-	}
-	// 상태 바꾼 것을 동기화
-	SyncPlayerInfo();
 }
 
 // 최종 승리 플레이어를 마킹
@@ -1216,3 +1237,20 @@ void APlayGameMode::ServerTravelToEndLevel()
 }
 
 #pragma endregion
+
+
+void APlayGameMode::CheckFailedPlayersAndSpectate()
+{
+	for (TActorIterator<APlayCharacter> It(GetWorld()); It; ++It)
+	{
+		APlayCharacter* PlayerCharacter = *It;
+		if (!PlayerCharacter) continue;
+
+		APlayPlayerState* PS = PlayerCharacter->GetPlayerState<APlayPlayerState>();
+		if (PS && PS->PlayerInfo.Status == EPlayerStatus::FAIL && !PlayerCharacter->bSpectatorApplied)
+		{
+			// 실패 + 아직 처리 안 된 경우만 실행
+			PlayerCharacter->S2M_ApplySpectatorVisibility(true);
+		}
+	}
+}
