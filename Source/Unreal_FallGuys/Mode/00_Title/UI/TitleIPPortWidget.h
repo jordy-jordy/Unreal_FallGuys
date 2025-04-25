@@ -43,6 +43,9 @@ public:
 	{
 		return UFallConst::DefaultPort;
 	}
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void SwitchToEntrance();
 	
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Server", meta = (AllowPrivateAccess = "true"))

@@ -58,6 +58,8 @@ void UPlayResultWidget::FinishedResultWidget()
 
 	EStageType StageType = PlayGameState->GetLevelType_STATE();
 
+	ReturnBGMVolume();
+
 	if (StageType == EStageType::SOLO)
 	{
 		if ((WholePlayerNum <= TargetPlayerNum) && true == IsAnimated)

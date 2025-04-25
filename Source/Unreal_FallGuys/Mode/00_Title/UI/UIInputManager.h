@@ -19,10 +19,19 @@ public:
 
 	void SetupPlayerInputComponent(UInputComponent* _PlayerInputComponent);
 
+	// Select
 	void SwitchWidget_SPACE();
 	void SwitchWidget_ESC();
+
+	// Menu
 	void SwitchWidget_Q();
 	void SwitchWidget_E();
+
+	// Move
+	void SwitchWidget_W();
+	void SwitchWidget_A();
+	void SwitchWidget_S();
+	void SwitchWidget_D();
 
 protected:
 	// Called when the game starts

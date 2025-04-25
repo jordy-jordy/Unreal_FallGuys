@@ -33,6 +33,9 @@ public:
 		return IsAnimated;
 	}
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void ReturnBGMVolume();
+
 private:
 	UPROPERTY(VisibleAnywhere, Transient, meta = (BindWidgetAnim), Category = "UI")
 	UWidgetAnimation* ResultAnim;
