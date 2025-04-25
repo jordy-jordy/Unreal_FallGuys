@@ -54,6 +54,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ChangeButtonImage();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void KeyInputButtonChoice();
+
 private:
 	EStageType TagetStage;
 

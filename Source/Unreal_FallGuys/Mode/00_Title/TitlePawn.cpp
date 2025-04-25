@@ -86,7 +86,7 @@ void ATitlePawn::SetupPlayerInputComponent(UInputComponent* _PlayerInputComponen
 			}
 		});
 
-	//UIInputManager->SetupPlayerInputComponent(_PlayerInputComponent);
+	UIInputManager->SetupPlayerInputComponent(_PlayerInputComponent);
 }
 
 void ATitlePawn::PawnRotation(UStaticMeshComponent* _Target, const FVector2D& _Value)

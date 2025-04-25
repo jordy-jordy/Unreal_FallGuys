@@ -61,6 +61,28 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UTitleUserWidget* FindWidget(ETitleUIType _Type, int _Index = 0);
 
+	template<typename T>
+	T* FindWidget(ETitleUIType _Type, int _Index = 0)
+	{
+		if (ETitleUIType::InvenBtn == _Type)
+		{
+			TArray<UTitleUserWidget*> InvenBtn;
+			Widgets.MultiFind(ETitleUIType::InvenBtn, InvenBtn);
+			return Cast<T>(InvenBtn[_Index]);
+		}
+
+		for (TPair<ETitleUIType, UTitleUserWidget*> Pair : Widgets)
+		{
+			if (Pair.Key == _Type)
+			{
+				return Cast<T>(Pair.Value);
+			}
+		}
+
+		return nullptr;
+	}
+	
+
 protected:
 
 private:

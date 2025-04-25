@@ -9,6 +9,9 @@
 #include "Unreal_FallGuys.h"
 #include "Mode/00_Title/TitlePlayerController.h"
 #include "Mode/00_Title/UI/TitleMainWidget.h"
+#include "Mode/00_Title/UI/TitleEntranceWidget.h"
+#include "Mode/00_Title/UI/TitlePlayerCountWidget.h"
+#include "Mode/00_Title/UI/TitleMenuWidget.h"
 
 
 // Sets default values for this component's properties
@@ -44,114 +47,134 @@ void UUIInputManager::SetupPlayerInputComponent(UInputComponent* _PlayerInputCom
 
 	ATitlePlayerController* PlayerController = Cast<ATitlePlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 
-	const UInputAction* UIMenuInputAction = PlayerController->GetInputAction(TEXT("IA_UIMenuInput"));
-	const UInputAction* UIMoveInputAction = PlayerController->GetInputAction(TEXT("IA_UIMoveInput"));
-	const UInputAction* UISelectInputAction = PlayerController->GetInputAction(TEXT("IA_UISelectInput"));
+	const UInputAction* UI_Space = PlayerController->GetInputAction(TEXT("IA_UI_Space"));
+	const UInputAction* UI_Esc = PlayerController->GetInputAction(TEXT("IA_UI_Esc"));
+	const UInputAction* UI_Q = PlayerController->GetInputAction(TEXT("IA_UI_Q"));
+	const UInputAction* UI_E = PlayerController->GetInputAction(TEXT("IA_UI_E"));
 
-	//EnhancedInputComponent->BindAction(UIMenuInputAction, ETriggerEvent::Completed, this, &UUIInputManager::SwitchMenuWidget);
+	EnhancedInputComponent->BindAction(UI_Space, ETriggerEvent::Completed, this, &UUIInputManager::SwitchWidget_SPACE);
+	EnhancedInputComponent->BindAction(UI_Esc, ETriggerEvent::Completed, this, &UUIInputManager::SwitchWidget_ESC);
+	EnhancedInputComponent->BindAction(UI_Q, ETriggerEvent::Completed, this, &UUIInputManager::SwitchWidget_Q);
+	EnhancedInputComponent->BindAction(UI_E, ETriggerEvent::Completed, this, &UUIInputManager::SwitchWidget_E);
 }
 
-//void UUIInputManager::SwitchMenuWidget(const FInputActionValue& _Value)
-//{
-//	FVector2D Value = _Value.Get<FVector2D>();
-//
-//	UTitleMainWidget* Widget = UFallGlobal::GetMainWidget(GetWorld());
-//
-//	if (nullptr == Widget)
-//	{
-//#ifdef WITH_EDITOR
-//		UE_LOG(FALL_DEV_LOG, Fatal, TEXT("%S(%u)> if (nullptr == Widget)"), __FUNCTION__, __LINE__);
-//#endif
-//		return;
-//	}
-//
-//	ETitleUIType CurUIType = Widget->GetCurUIType();
-//
-//	if (Value.Y == 0)
-//	{
-//		if (Value.X > 0)
-//		{
-//			switch (CurUIType)
-//			{
-//			case ETitleUIType::TitleHome:
-//				Widget->SwitchWidget(ETitleUIType::TitleCustom);
-//				return;
-//				break;
-//			default:
-//				break;
-//			}
-//		}
-//		else if (Value.X < 0)
-//		{
-//			switch (CurUIType)
-//			{
-//			case ETitleUIType::TitleCustom:
-//				Widget->SwitchWidget(ETitleUIType::TitleHome);
-//				return;
-//				break;
-//			default:
-//				break;
-//			}
-//		}
-//	}
-//	else if (Value.X == 0)
-//	{
-//		if (Value.Y > 0)
-//		{
-//			switch (CurUIType)
-//			{
-//			case ETitleUIType::TitleHome:
-//				Widget->SwitchWidget(ETitleUIType::TitleEntrance);
-//				return;
-//				break;
-//			case ETitleUIType::TitleCustom:
-//				return;
-//				break;
-//			case ETitleUIType::TitleEntrance:
-//				return;
-//				break;
-//			case ETitleUIType::CustomeInven:
-//				return;
-//				break;
-//			case ETitleUIType::TitleIPPort:
-//				// ServerConnect
-//				return;
-//				break;
-//			case ETitleUIType::TitleName:
-//				// SetNickName
-//				Widget->SwitchWidget(ETitleUIType::TitleHome);
-//				return;
-//				break;
-//			default:
-//				break;
-//			}
-//		}
-//		else if (Value.Y < 0)
-//		{
-//			switch (CurUIType)
-//			{
-//			case ETitleUIType::TitleCustom:
-//				Widget->SwitchWidget(ETitleUIType::TitleHome);
-//				return;
-//				break;
-//			case ETitleUIType::TitleEntrance:
-//				Widget->SwitchWidget(ETitleUIType::TitleHome);
-//				return;
-//				break;
-//			case ETitleUIType::CustomeInven:
-//				//Widget->SwitchWidget(EUIType::TitleHome);
-//				Widget->SwitchWidget(ETitleUIType::TitleCustom);
-//				return;
-//				break;
-//			case ETitleUIType::TitleIPPort:
-//				Widget->SwitchWidget(ETitleUIType::TitleEntrance);
-//				return;
-//				break;
-//			default:
-//				break;
-//			}
-//		}
-//	}
-//}
+void UUIInputManager::SwitchWidget_SPACE()
+{
+	UTitleMainWidget* MainWidget = UFallGlobal::GetMainWidget(GetWorld());
+	UTitleEntranceWidget* EntranceWidget = MainWidget->FindWidget<UTitleEntranceWidget>(ETitleUIType::TitleEntrance);
 
+	if (nullptr == MainWidget)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : MainWidget is null"), *FString(__FUNCSIG__));
+		return;
+	}
+	if (nullptr == EntranceWidget)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : EntranceWidget is null"), *FString(__FUNCSIG__));
+		return;
+	}
 
+	ETitleUIType CurType = MainWidget->GetCurUIType();
+	if (ETitleUIType::TitleHome == CurType)
+	{
+		MainWidget->SwitchWidget(ETitleUIType::TitleEntrance);
+		return;
+	}
+	else if (ETitleUIType::TitleEntrance == CurType)
+	{
+		EntranceWidget->KeyInputButtonChoice();
+
+		if (2 != EntranceWidget->GetCurIndex())
+		{
+			MainWidget->SwitchWidget(ETitleUIType::TitlePlayerCount);
+			return;
+		}
+		else
+		{
+			MainWidget->SwitchWidget(ETitleUIType::TitleIPPort);
+			return;
+		}
+	}
+	else if (ETitleUIType::TitlePlayerCount == CurType)
+	{
+		return;
+	}
+}
+
+void UUIInputManager::SwitchWidget_ESC()
+{
+	UTitleMainWidget* MainWidget = UFallGlobal::GetMainWidget(GetWorld());
+
+	if (nullptr == MainWidget)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : MainWidget is null"), *FString(__FUNCSIG__));
+		return;
+	}
+
+	ETitleUIType CurType = MainWidget->GetCurUIType();
+	if (ETitleUIType::TitleEntrance == CurType)
+	{
+		MainWidget->SwitchWidget(ETitleUIType::TitleHome);
+		return;
+	}
+	else if (ETitleUIType::TitlePlayerCount == CurType)
+	{
+		MainWidget->SwitchWidget(ETitleUIType::TitleEntrance);
+		return;
+	}
+	else if (ETitleUIType::TitleIPPort == CurType)
+	{
+		MainWidget->SwitchWidget(ETitleUIType::TitleEntrance);
+		return;
+	}
+}
+
+void UUIInputManager::SwitchWidget_Q()
+{
+	UTitleMainWidget* MainWidget = UFallGlobal::GetMainWidget(GetWorld());
+	UTitleMenuWidget* MenuWidget = MainWidget->FindWidget<UTitleMenuWidget>(ETitleUIType::TitleMenu);
+
+	if (nullptr == MainWidget)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : MainWidget is null"), *FString(__FUNCSIG__));
+		return;
+	}
+	if (nullptr == MenuWidget)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : MenuWidget is null"), *FString(__FUNCSIG__));
+		return;
+	}
+
+	ETitleUIType CurType = MainWidget->GetCurUIType();
+	if (ETitleUIType::TitleCustom == CurType)
+	{
+		MenuWidget->MovePawnToHOME();
+		MainWidget->SwitchWidget(ETitleUIType::TitleHome);
+		return;
+	}
+}
+
+void UUIInputManager::SwitchWidget_E()
+{
+	UTitleMainWidget* MainWidget = UFallGlobal::GetMainWidget(GetWorld());
+	UTitleMenuWidget* MenuWidget = MainWidget->FindWidget<UTitleMenuWidget>(ETitleUIType::TitleMenu);
+
+	if (nullptr == MainWidget)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : MainWidget is null"), *FString(__FUNCSIG__));
+		return;
+	}
+	if (nullptr == MenuWidget)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : MenuWidget is null"), *FString(__FUNCSIG__));
+		return;
+	}
+
+	ETitleUIType CurType = MainWidget->GetCurUIType();
+	if (ETitleUIType::TitleHome == CurType)
+	{
+		MenuWidget->MovePawnToCUSTOM();
+		MainWidget->SwitchWidget(ETitleUIType::TitleCustom);
+		return;
+	}
+}
