@@ -382,11 +382,12 @@ void APlayCharacter::CheckPlayer()
 	// 결과 화면인지 확인
 	bIsResultLevel = FallPlayerState->GetIsResultLevel();
 
-	bIsSpectar = GameIns->bIsSpectar;
+	
 
 
 	if (UGameplayStatics::GetPlayerController(GetWorld(), 0) == GetController())
 	{
+		bIsSpectar = GameIns->bIsSpectar;
 		if (false == bIsResultLevel)
 		{
 			OutFailPlayer();
@@ -461,7 +462,15 @@ void APlayCharacter::OutFailPlayer()
 			SpectatorOn();
 
 		}
-		C2S_SpectarLoc();
+		if (HasAuthority())
+		{
+			S2M_SpectarLoc_Implementation();
+		}
+		else
+		{
+			C2S_SpectarLoc();
+
+		}
 	}
 	
 }
