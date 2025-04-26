@@ -30,8 +30,6 @@ void ATitlePlayerController::AddMappingContext(UInputMappingContext* _MappingCon
 
 	UEnhancedInputLocalPlayerSubsystem* InputSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
 
-	//UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent);
-
 	TArray<FEnhancedActionKeyMapping> Map = _MappingContext->GetMappings();
 
 	for (FEnhancedActionKeyMapping& Action : Map)

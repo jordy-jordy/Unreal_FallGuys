@@ -198,7 +198,6 @@ void UUIInputManager::SwitchWidget_Q()
 {
 	UTitleMainWidget* MainWidget = UFallGlobal::GetMainWidget(GetWorld());
 	UTitleMenuWidget* MenuWidget = MainWidget->FindWidget<UTitleMenuWidget>(ETitleUIType::TitleMenu);
-	UTitleEntranceWidget* EntranceWidget = MainWidget->FindWidget<UTitleEntranceWidget>(ETitleUIType::TitleEntrance);
 	UTitleCustomWidget* CustomInvenWidget = MainWidget->FindWidget<UTitleCustomWidget>(ETitleUIType::CustomeInven);
 
 	if (nullptr == MainWidget)
@@ -211,11 +210,6 @@ void UUIInputManager::SwitchWidget_Q()
 		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : MenuWidget is null"), *FString(__FUNCSIG__));
 		return;
 	}
-	if (nullptr == EntranceWidget)
-	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : EntranceWidget is null"), *FString(__FUNCSIG__));
-		return;
-	}
 	if (nullptr == CustomInvenWidget)
 	{
 		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : CustomInvenWidget is null"), *FString(__FUNCSIG__));
@@ -226,19 +220,6 @@ void UUIInputManager::SwitchWidget_Q()
 	if (ETitleUIType::TitleCustom == CurType)
 	{
 		MenuWidget->MovePawnToHOME();
-		return;
-	}
-	if (ETitleUIType::TitleEntrance == CurType)
-	{
-		int CurIndex = EntranceWidget->GetCurIndex() - 1;
-
-		if (CurIndex < 0)
-		{
-			CurIndex = 0;
-		}
-
-		EntranceWidget->SetCurIndex(CurIndex);
-		EntranceWidget->KeyInputButtonHover();
 		return;
 	}
 	if (ETitleUIType::CustomeInven == CurType)
@@ -260,7 +241,6 @@ void UUIInputManager::SwitchWidget_E()
 {
 	UTitleMainWidget* MainWidget = UFallGlobal::GetMainWidget(GetWorld());
 	UTitleMenuWidget* MenuWidget = MainWidget->FindWidget<UTitleMenuWidget>(ETitleUIType::TitleMenu);
-	UTitleEntranceWidget* EntranceWidget = MainWidget->FindWidget<UTitleEntranceWidget>(ETitleUIType::TitleEntrance);
 	UTitleCustomWidget* CustomInvenWidget = MainWidget->FindWidget<UTitleCustomWidget>(ETitleUIType::CustomeInven);
 
 	if (nullptr == MainWidget)
@@ -273,11 +253,6 @@ void UUIInputManager::SwitchWidget_E()
 		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : MenuWidget is null"), *FString(__FUNCSIG__));
 		return;
 	}
-	if (nullptr == EntranceWidget)
-	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : EntranceWidget is null"), *FString(__FUNCSIG__));
-		return;
-	}
 	if (nullptr == CustomInvenWidget)
 	{
 		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : CustomInvenWidget is null"), *FString(__FUNCSIG__));
@@ -288,19 +263,6 @@ void UUIInputManager::SwitchWidget_E()
 	if (ETitleUIType::TitleHome == CurType)
 	{
 		MenuWidget->MovePawnToCUSTOM();
-		return;
-	}
-	if (ETitleUIType::TitleEntrance == CurType)
-	{
-		int CurIndex = EntranceWidget->GetCurIndex() + 1;
-
-		if (CurIndex > EntranceWidget->GetButtonArray().Num() - 1)
-		{
-			CurIndex = EntranceWidget->GetButtonArray().Num() - 1;
-		}
-
-		EntranceWidget->SetCurIndex(CurIndex);
-		EntranceWidget->KeyInputButtonHover();
 		return;
 	}
 	if (ETitleUIType::CustomeInven == CurType)
@@ -348,7 +310,8 @@ void UUIInputManager::SwitchWidget_A()
 	UTitleMainWidget* MainWidget = UFallGlobal::GetMainWidget(GetWorld());
 	UTitleCustomWidget* CustomInvenWidget = MainWidget->FindWidget<UTitleCustomWidget>(ETitleUIType::CustomeInven);
 	UTitleCustomizingMainWidget* CustomizeMainWidget = MainWidget->FindWidget<UTitleCustomizingMainWidget>(ETitleUIType::TitleCustom);
-
+	UTitleEntranceWidget* EntranceWidget = MainWidget->FindWidget<UTitleEntranceWidget>(ETitleUIType::TitleEntrance);
+	
 	if (nullptr == MainWidget)
 	{
 		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : MainWidget is null"), *FString(__FUNCSIG__));
@@ -364,6 +327,11 @@ void UUIInputManager::SwitchWidget_A()
 		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : CustomizeMainWidget is null"), *FString(__FUNCSIG__));
 		return;
 	}
+	if (nullptr == EntranceWidget)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : EntranceWidget is null"), *FString(__FUNCSIG__));
+		return;
+	}
 
 	ETitleUIType CurType = MainWidget->GetCurUIType();
 	if (ETitleUIType::CustomeInven == CurType)
@@ -375,6 +343,19 @@ void UUIInputManager::SwitchWidget_A()
 	{
 		CustomizeMainWidget->ChangeType_Left();
 		CustomizeMainWidget->Move_LEFT();
+		return;
+	}
+	if (ETitleUIType::TitleEntrance == CurType)
+	{
+		int CurIndex = EntranceWidget->GetCurIndex() - 1;
+
+		if (CurIndex < 0)
+		{
+			CurIndex = 0;
+		}
+
+		EntranceWidget->SetCurIndex(CurIndex);
+		EntranceWidget->KeyInputButtonHover();
 		return;
 	}
 }
@@ -408,6 +389,7 @@ void UUIInputManager::SwitchWidget_D()
 	UTitleMainWidget* MainWidget = UFallGlobal::GetMainWidget(GetWorld());
 	UTitleCustomWidget* CustomInvenWidget = MainWidget->FindWidget<UTitleCustomWidget>(ETitleUIType::CustomeInven);
 	UTitleCustomizingMainWidget* CustomizeMainWidget = MainWidget->FindWidget<UTitleCustomizingMainWidget>(ETitleUIType::TitleCustom);
+	UTitleEntranceWidget* EntranceWidget = MainWidget->FindWidget<UTitleEntranceWidget>(ETitleUIType::TitleEntrance);
 
 	if (nullptr == MainWidget)
 	{
@@ -424,6 +406,11 @@ void UUIInputManager::SwitchWidget_D()
 		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : CustomizeMainWidget is null"), *FString(__FUNCSIG__));
 		return;
 	}
+	if (nullptr == EntranceWidget)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : EntranceWidget is null"), *FString(__FUNCSIG__));
+		return;
+	}
 
 	ETitleUIType CurType = MainWidget->GetCurUIType();
 	if (ETitleUIType::CustomeInven == CurType)
@@ -435,6 +422,19 @@ void UUIInputManager::SwitchWidget_D()
 	{
 		CustomizeMainWidget->ChangeType_Right();
 		CustomizeMainWidget->Move_RIGHT();
+		return;
+	}
+	if (ETitleUIType::TitleEntrance == CurType)
+	{
+		int CurIndex = EntranceWidget->GetCurIndex() + 1;
+
+		if (CurIndex > EntranceWidget->GetButtonArray().Num() - 1)
+		{
+			CurIndex = EntranceWidget->GetButtonArray().Num() - 1;
+		}
+
+		EntranceWidget->SetCurIndex(CurIndex);
+		EntranceWidget->KeyInputButtonHover();
 		return;
 	}
 }
