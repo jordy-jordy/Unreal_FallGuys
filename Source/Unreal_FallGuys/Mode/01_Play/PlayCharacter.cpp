@@ -67,7 +67,7 @@ void APlayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(APlayCharacter, IsDie);
 	DOREPLIFETIME(APlayCharacter, CanMove);
 	DOREPLIFETIME(APlayCharacter, CurStatus);
-	//DOREPLIFETIME(APlayCharacter, bIsSpectar);
+	DOREPLIFETIME(APlayCharacter, IsFail);
 	//DOREPLIFETIME(APlayCharacter, bIsResultLevel);
 }
 
@@ -376,6 +376,14 @@ void APlayCharacter::CheckPlayer()
 
 	UBaseGameInstance* GameIns = GetGameInstance<UBaseGameInstance>();
 	
+	if (HasAuthority())
+	{
+		APlayPlayerState* PlayState = GetPlayerState<APlayPlayerState>();
+		if (EPlayerStatus::FAIL == PlayState->GetPlayerStateStatus())
+		{
+			IsFail = true;
+		}
+	}
 
 	if (UGameplayStatics::GetPlayerController(GetWorld(), 0) == GetController())
 	{
@@ -395,6 +403,7 @@ void APlayCharacter::CheckPlayer()
 
 	/*CurStatusReadTimerFuc();*/
 }
+
 void APlayCharacter::C2S_SpectarLoc_Implementation()
 {
 	S2M_SpectarLoc_Implementation();
@@ -429,7 +438,12 @@ void APlayCharacter::CheckFailPlayer()
 	 APlayPlayerState* PlayState = GetPlayerState<APlayPlayerState>();
 	 if (nullptr == PlayState) return;
 
-	 if (EPlayerStatus::FAIL == PlayState->PlayerInfo.Status)
+	 
+	 UE_LOG(FALL_DEV_LOG, Warning, TEXT("CheckFailPlayer ::%s, %d"),*PlayState->GetPlayerStateNickName(), PlayState->GetPlayerStateStatus());
+	 //APlayerState
+
+
+	 if (true == IsFail)
 	 {
 		 bIsSpectar = true;
 
@@ -462,15 +476,9 @@ void APlayCharacter::OutFailPlayer()
 			SpectatorOn();
 
 		}
-		if (HasAuthority())
-		{
-			S2M_SpectarLoc_Implementation();
-		}
-		else
-		{
-			C2S_SpectarLoc();
 
-		}
+			C2S_SpectarLoc();
+\
 	}
 	
 }

@@ -211,7 +211,13 @@ protected:
 
 #pragma region LeeMinha > 레벨 시작 > 실패 플레이어 처리
 public:
+	FString GetBodyEnumAsString(EPlayerStatus value)
+	{
+		const UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("ELocomotionState"), true);
+		if (!EnumPtr) return FString("Invalid");
 
+		return EnumPtr->GetNameStringByIndex((int32)value);
+	}
 	FTimerHandle CheckPlayerTimerHandle;
 
 	UFUNCTION()
@@ -238,9 +244,11 @@ public:
 	UPROPERTY(Replicated, BlueprintReadWrite, Category = "PLAYER START")
 	bool bIsResultLevel = false;
 
-public:
 	UPROPERTY(VisibleAnywhere, Replicated, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	bool IsDie = true;
+
+	UPROPERTY( Replicated, BlueprintReadWrite, Category = "PLAYER START")
+	bool IsFail = false;
 #pragma endregion
 
 };
