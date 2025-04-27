@@ -462,7 +462,7 @@ void APlayCharacter::OutFailPlayer()
 		if (nullptr == PlayState) return;
 
 
-	/*	if (true == PlayState->GetIsResultLevel())
+		if (true == PlayState->GetIsResultLevel())
 		{
 			SpectatorOnForRaceOver();
 		}
@@ -470,7 +470,7 @@ void APlayCharacter::OutFailPlayer()
 		{
 			SpectatorOn();
 
-		}*/
+		}
 
 			C2S_SpectarLoc();
 \
