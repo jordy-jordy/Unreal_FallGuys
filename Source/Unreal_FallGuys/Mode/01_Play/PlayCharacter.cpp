@@ -68,7 +68,7 @@ void APlayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(APlayCharacter, CanMove);
 	DOREPLIFETIME(APlayCharacter, CurStatus);
 	DOREPLIFETIME(APlayCharacter, IsFail);
-	//DOREPLIFETIME(APlayCharacter, bIsResultLevel);
+	DOREPLIFETIME(APlayCharacter, bIsResultLevel);
 }
 
 // Called when the game starts or when spawned
@@ -383,13 +383,13 @@ void APlayCharacter::CheckPlayer()
 		{
 			IsFail = true;
 		}
+
+		bIsResultLevel = GameIns->bIsResultLevel;
 	}
 
 	if (UGameplayStatics::GetPlayerController(GetWorld(), 0) == GetController())
 	{
 		APlayPlayerState* FallPlayerState = GetPlayerState<APlayPlayerState>();
-
-		bIsResultLevel = FallPlayerState->GetIsResultLevel();
 
 		if (false == bIsResultLevel)
 		{
@@ -466,7 +466,7 @@ void APlayCharacter::OutFailPlayer()
 		if (!GameIns || !FallPlayerState) return;
 
 		// 결과 화면인지 확인
-		bIsResultLevel = FallPlayerState->GetIsResultLevel();
+		
 		if (true == bIsResultLevel)
 		{
 			SpectatorOnForRaceOver();
