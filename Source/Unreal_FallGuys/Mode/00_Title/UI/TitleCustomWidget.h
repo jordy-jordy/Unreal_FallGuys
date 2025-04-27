@@ -15,6 +15,8 @@ class UNREAL_FALLGUYS_API UTitleCustomWidget : public UTitleUserWidget
 	GENERATED_BODY()
 
 public:
+	void NativeConstruct();
+
 	UFUNCTION(BlueprintImplementableEvent)
 	void SwitchToCustomize();
 
@@ -33,6 +35,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void Move_RIGHT();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void SelectCustom();
+
 	UFUNCTION(BlueprintCallable)
 	void SetCurIndex(int _Index)
 	{
@@ -46,15 +51,15 @@ public:
 	}
 
 	UFUNCTION(BlueprintCallable)
-	void SetCurChildIndex(int _Index)
+	void SetCurColorIndex(int _Index)
 	{
-		CurChildIndex = _Index;
+		CurColorIndex = _Index;
 	}
 
 	UFUNCTION(BlueprintCallable)
-	int GetCurChildIndex()
+	int GetCurColorIndex()
 	{
-		return CurChildIndex;
+		return CurColorIndex;
 	}
 
 	UFUNCTION(BlueprintCallable)
@@ -69,18 +74,51 @@ public:
 		return AllSwitcherNum;
 	}
 
+	UFUNCTION(BlueprintCallable)
+	void SetCurCustomType(ECustomType _Type)
+	{
+		CurCustomType = _Type;
+	}
+
+	void ChangeType_Left();
+	void ChangeType_Right();
+
+	void ChangeColorIndex_Left();
+	void ChangeColorIndex_Right();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void CustomColorMove();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void CustomColorReturn();
+
+	UFUNCTION(BlueprintCallable)
+	void CurColorSetting();
+
 private:
 	int CurIndex = 0;
 	int AllSwitcherNum = 0;
 
-	int CurChildIndex = 0;
+	int CurColorIndex = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
+	TMap<ECustomType, class UObject*> CustomMap;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
+	ECustomType CurCustomType = ECustomType::MAX;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
 	TArray<class UObject*> ArrColor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
+	class UObject* CurColor;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
 	TArray<class UObject*> ArrTop;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
 	TArray<class UObject*> ArrBottom;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
+	TArray<class UObject*> ArrFiltered;
 };

@@ -85,6 +85,7 @@ void UUIInputManager::SwitchWidget_SPACE()
 	UTitleHomeWidget* HomeWidget = MainWidget->FindWidget<UTitleHomeWidget>(ETitleUIType::TitleHome);
 	UTitleEntranceWidget* EntranceWidget = MainWidget->FindWidget<UTitleEntranceWidget>(ETitleUIType::TitleEntrance);
 	UTitleCustomizingMainWidget* CustomizingMainWidget = MainWidget->FindWidget<UTitleCustomizingMainWidget>(ETitleUIType::TitleCustom);
+	UTitleCustomWidget* CustomInvenWidget = MainWidget->FindWidget<UTitleCustomWidget>(ETitleUIType::CustomeInven);
 
 	if (nullptr == MainWidget)
 	{
@@ -106,6 +107,11 @@ void UUIInputManager::SwitchWidget_SPACE()
 		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : CustomizingMainWidget is null"), *FString(__FUNCSIG__));
 		return;
 	}
+	if (nullptr == CustomInvenWidget)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("[%s] : CustomInvenWidget is null"), *FString(__FUNCSIG__));
+		return;
+	}
 
 	ETitleUIType CurType = MainWidget->GetCurUIType();
 	if (ETitleUIType::TitleHome == CurType)
@@ -121,6 +127,11 @@ void UUIInputManager::SwitchWidget_SPACE()
 	else if (ETitleUIType::TitleCustom == CurType)
 	{
 		CustomizingMainWidget->SelectInven();
+		return;
+	}
+	if (ETitleUIType::CustomeInven == CurType)
+	{
+		CustomInvenWidget->SelectCustom();
 		return;
 	}
 }
@@ -224,14 +235,7 @@ void UUIInputManager::SwitchWidget_Q()
 	}
 	if (ETitleUIType::CustomeInven == CurType)
 	{
-		int CurIndex = CustomInvenWidget->GetCurIndex() - 1;
-
-		if (CurIndex < 0)
-		{
-			CurIndex = 0;
-		}
-
-		CustomInvenWidget->SetCurIndex(CurIndex);
+		CustomInvenWidget->ChangeType_Left();
 		CustomInvenWidget->SwitchToInvenMenu();
 		return;
 	}
@@ -267,14 +271,7 @@ void UUIInputManager::SwitchWidget_E()
 	}
 	if (ETitleUIType::CustomeInven == CurType)
 	{
-		int CurIndex = CustomInvenWidget->GetCurIndex() + 1;
-
-		if (CurIndex > CustomInvenWidget->GetSwitcherNum() - 1)
-		{
-			CurIndex = CustomInvenWidget->GetSwitcherNum() - 1;
-		}
-
-		CustomInvenWidget->SetCurIndex(CurIndex);
+		CustomInvenWidget->ChangeType_Right();
 		CustomInvenWidget->SwitchToInvenMenu();
 		return;
 	}
@@ -336,6 +333,7 @@ void UUIInputManager::SwitchWidget_A()
 	ETitleUIType CurType = MainWidget->GetCurUIType();
 	if (ETitleUIType::CustomeInven == CurType)
 	{
+		CustomInvenWidget->ChangeColorIndex_Left();
 		CustomInvenWidget->Move_LEFT();
 		return;
 	}
@@ -415,6 +413,7 @@ void UUIInputManager::SwitchWidget_D()
 	ETitleUIType CurType = MainWidget->GetCurUIType();
 	if (ETitleUIType::CustomeInven == CurType)
 	{
+		CustomInvenWidget->ChangeColorIndex_Right();
 		CustomInvenWidget->Move_RIGHT();
 		return;
 	}
