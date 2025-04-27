@@ -353,6 +353,10 @@ public:
 
 	FTimerHandle SpectatorCheckTimerHandle;
 
+	// 특정 클라이언트의 뷰 타겟을 랜덤 AlivePlayer로 설정
+	void SetRandomViewForClient(class APlayerController* _TargetController);
 
+	// 전체 플레이어 순회하면서 개별적으로 랜덤 타겟 설정
+	void SetRandomViewForAllClients();
 
 };

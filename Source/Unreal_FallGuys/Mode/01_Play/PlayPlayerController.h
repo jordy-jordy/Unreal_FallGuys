@@ -99,5 +99,10 @@ public:
 	void Client_CallReadyAfterTravel();
 	void Client_CallReadyAfterTravel_Implementation();
 
+	// 클라이언트 전용 View Target 설정 함수
+	UFUNCTION(Client, Reliable)
+	void Client_SetViewTargetByTag(FName _TargetTag);
+	void Client_SetViewTargetByTag_Implementation(FName _TargetTag);
+
 
 };

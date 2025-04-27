@@ -309,6 +309,9 @@ void APlayCharacter::InitializeFromPlayerInfo(const FPlayerInfo& _Info)
 	// 관전자 상태 세팅
 	bIsSpectar = _Info.bIsSpectar;
 
+	// 결과 화면에서 숨겨져야 하는지
+	HiddenInResult = _Info.bCanHiddenAtResult;
+
 	DebugCheckDieStatus();
 }
 
@@ -323,15 +326,14 @@ void APlayCharacter::S2M_ApplySpectatorVisibility_Implementation()
 	GetMesh()->SetSimulatePhysics(false);
 	GetMesh()->SetEnableGravity(false);
 
-	// 모든 컴포넌트를 숨김
-	TArray<UActorComponent*> Components = GetComponents().Array();
+	TArray<UActorComponent*> Components;
+	GetComponents(Components);
 	for (UActorComponent* Comp : Components)
 	{
-		UPrimitiveComponent* PrimComp = Cast<UPrimitiveComponent>(Comp);
-		if (PrimComp)
+		if (UPrimitiveComponent* PrimComp = Cast<UPrimitiveComponent>(Comp))
 		{
-			PrimComp->SetVisibility(false, true); // true: 자식까지 적용
-			PrimComp->SetHiddenInGame(true, true);
+			PrimComp->SetVisibility(false, true);
+			PrimComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		}
 	}
 
@@ -350,15 +352,14 @@ void APlayCharacter::ApplySpectatorVisibilityAtGoalColl()
 	GetMesh()->SetSimulatePhysics(false);
 	GetMesh()->SetEnableGravity(false);
 
-	// 자식 숨김 처리
-	TArray<UActorComponent*> Components = GetComponents().Array();
+	TArray<UActorComponent*> Components;
+	GetComponents(Components);
 	for (UActorComponent* Comp : Components)
 	{
-		UPrimitiveComponent* PrimComp = Cast<UPrimitiveComponent>(Comp);
-		if (PrimComp)
+		if (UPrimitiveComponent* PrimComp = Cast<UPrimitiveComponent>(Comp))
 		{
 			PrimComp->SetVisibility(false, true);
-			PrimComp->SetHiddenInGame(true, true);
+			PrimComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		}
 	}
 
@@ -417,12 +418,14 @@ void APlayCharacter::DebugCheckDieStatus()
 		TagStringForLog = TEXT("태그 없음");
 	}
 
-	UE_LOG(FALL_DEV_LOG, Log, TEXT("닉네임 : %s | 태그 : %s | 현재 상태 : %s | IsDie : %s | Spectar : %s"),
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("닉네임 : %s | 태그 : %s | 현재 상태 : %s | IsDie : %s | Spectar : %s | HiddenResult : %s"),
 		*NickName,
 		*TagStringForLog,
 		*StatusStr,
-		IsDie ? TEXT("true") : TEXT("false"),
-		bIsSpectar ? TEXT("true") : TEXT("false"));
+		IsDie ? TEXT("TRUE") : TEXT("FALSE"),
+		bIsSpectar ? TEXT("TRUE") : TEXT("FALSE"),
+		HiddenInResult ? TEXT("TRUE") : TEXT("FALSE")
+	);
 
 	if (UFallConst::PrintDebugLog && GEngine)
 	{
@@ -444,8 +447,10 @@ void APlayCharacter::DebugCheckDieStatus()
 			*NickName,
 			*TagStringForScreen,
 			*StatusStr,
-			IsDie ? TEXT("true") : TEXT("false"),
-			bIsSpectar ? TEXT("true") : TEXT("false"));
+			IsDie ? TEXT("TRUE") : TEXT("FALSE"),
+			bIsSpectar ? TEXT("TRUE") : TEXT("FALSE"),
+			HiddenInResult ? TEXT("TRUE") : TEXT("FALSE")
+		);
 
 		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Green, ScreenMsg);
 	}

@@ -262,4 +262,7 @@ public:
 	// 나 관전자 모드냐?
 	UFUNCTION(BlueprintCallable)
 	bool GetIsSpectar() { return bIsSpectar; }
+
+	// 결과 화면에서 숨겨져야 함
+	bool HiddenInResult = false;
 };

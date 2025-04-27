@@ -92,6 +92,8 @@ public:
 	APlayGameState();
 	virtual void BeginPlay() override;
 
+	friend class APlayGameMode;
+
 	// 위젯 델리게이트 맵
 	TMap<FName, FWidgetDelegate> WidgetDelegates;
 

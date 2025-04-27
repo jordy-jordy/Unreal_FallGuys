@@ -421,8 +421,6 @@ void APlayGameMode::BeginPlay()
 			true
 		);
 	}
-	// 개인전용 : 결과 화면일 때 : 0.1초마다 실패자 체크 타이머 시작 → 투명화 X, 관전자 모드 ON
-	else if (bMODEIsResultLevel && CurLevelInfo_Mode.LevelType == EStageType::SOLO)
 	{
 		GetWorldTimerManager().SetTimer(
 			SpectatorCheckTimerHandle,
@@ -852,13 +850,6 @@ void APlayGameMode::OnPlayerFinished(APlayCharacter* _Character)
 	// 이동을 막음
 	_Character->S2M_SetCanMoveFalse();
 
-	// 관전자 모드를 켜줌
-	PlayerState->SetPlayertoSpectar(true);
-	_Character->S2C_ActivateSpectator_Stage();
-
-	// 메쉬 및 콜리전 투명화
-	_Character->ApplySpectatorVisibilityAtGoalColl();
-
 	if (CurLevelInfo_Mode.EndCondition == EPlayerStatus::SUCCESS)
 	{
 		// 레이싱 : 성공 처리
@@ -874,6 +865,17 @@ void APlayGameMode::OnPlayerFinished(APlayCharacter* _Character)
 		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: OnPlayerFinished :: 뭔가 잘못됨."));
 		return;
 	}
+
+	// 유저 리스트 업데이트 해줌
+	FallState->UpdateAlivePlayers();
+
+	// 관전자 모드를 켜줌
+	PlayerState->SetPlayertoSpectar(true);
+	APlayerController* FallController = Cast<APlayerController>(_Character->GetController());
+	SetRandomViewForClient(FallController);
+
+	// 메쉬 및 콜리전 투명화
+	_Character->ApplySpectatorVisibilityAtGoalColl();
 
 	// 결승선 or 킬존 닿은 플레이어 카운트 +1
 	++CurFinishPlayer;
@@ -1275,12 +1277,11 @@ void APlayGameMode::SetSpectar_STAGE()
 		if (!PlayerCharacter) continue;
 
 		APlayPlayerState* PS = PlayerCharacter->GetPlayerState<APlayPlayerState>();
-		if (PS && PS->PlayerInfo.Status == EPlayerStatus::FAIL && !PlayerCharacter->bSpectatorApplied && !PlayerCharacter->bVisibilityApplied)
+		if (PS && PS->PlayerInfo.Status == EPlayerStatus::FAIL)
 		{
-			PlayerCharacter->S2C_StageSpectarTrigger();
 			PlayerCharacter->S2M_ApplySpectatorVisibility();
-			PlayerCharacter->bSpectatorApplied = true;
-			PlayerCharacter->bVisibilityApplied = true;
+			APlayPlayerController* FallController = PlayerCharacter->GetController<APlayPlayerController>();
+			SetRandomViewForClient(FallController);
 		}
 	}
 }
@@ -1293,10 +1294,59 @@ void APlayGameMode::SetSpectar_RESULT()
 		if (!PlayerCharacter) continue;
 
 		APlayPlayerState* PS = PlayerCharacter->GetPlayerState<APlayPlayerState>();
-		if (PS && PS->PlayerInfo.bCanHiddenAtResult == true && !PlayerCharacter->bSpectatorApplied)
+		if (PS && PS->PlayerInfo.bCanHiddenAtResult == true)
 		{
-			PlayerCharacter->S2C_ResultSpectarTrigger();
-			PlayerCharacter->bSpectatorApplied = true;
+			APlayPlayerController* FallController = PlayerCharacter->GetController<APlayPlayerController>();
+			SetRandomViewForClient(FallController);
+		}
+	}
+}
+
+void APlayGameMode::SetRandomViewForClient(APlayerController* _TargetController)
+{
+	APlayGameState* FallState = GetGameState<APlayGameState>();
+	if (!FallState || !_TargetController) return;
+
+	APlayPlayerController* PC = Cast<APlayPlayerController>(_TargetController);
+	if (!PC) return;
+
+	TArray<APlayCharacter*> ValidTargets = FallState->GetAlivePlayers();
+
+	if (ValidTargets.Num() == 0)
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("SetRandomViewForClient :: 유효한 타겟 없음 (자기 자신 제외 후)"));
+		return;
+	}
+
+	int32 RandomIndex = FMath::RandRange(0, ValidTargets.Num() - 1);
+	APlayCharacter* RandomTarget = ValidTargets[RandomIndex];
+
+	FName TargetTag = NAME_None;
+
+	if (RandomTarget)
+	{
+		APlayPlayerState* PS = RandomTarget->GetPlayerState<APlayPlayerState>();
+		if (PS)
+		{
+			TargetTag = PS->PlayerInfo.Tag;
+			RandomTarget->Tags.AddUnique(TargetTag);
+		}
+
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("SetRandomViewForClient :: 서버 → 클라 :: 타겟: %s | 태그: %s"),
+			*RandomTarget->GetName(), *TargetTag.ToString());
+
+		PC->Client_SetViewTargetByTag(TargetTag);
+	}
+}
+
+void APlayGameMode::SetRandomViewForAllClients()
+{
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	{
+		APlayerController* PC = Cast<APlayerController>(It->Get());
+		if (PC)
+		{
+			SetRandomViewForClient(PC);
 		}
 	}
 }

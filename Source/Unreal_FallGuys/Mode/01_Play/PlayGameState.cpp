@@ -47,15 +47,6 @@ void APlayGameState::BeginPlay()
 	{
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: BeginPlay :: 스테이지 모드 : %s"), *UEnum::GetValueAsString(CurLevelInfo_GameState.LevelType));
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameState :: BeginPlay :: 스테이지 페이즈 : %s"), *UEnum::GetValueAsString(CurLevelInfo_GameState.CurStagePhase));
-
-		// AlivePlayers를 주기적으로 업데이트
-		GetWorldTimerManager().SetTimer(
-			AlivePlayersUpdateTimerHandle,
-			this,
-			&APlayGameState::UpdateAlivePlayers,
-			0.5f, // 0.5초마다 갱신
-			true
-		);
 	}
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameState BeginPlay END ======= "));
@@ -163,8 +154,6 @@ void APlayGameState::UpdateAlivePlayers()
 				}
 			}
 		}
-
-		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameState :: 일반 스테이지 :: 현재 AlivePlayers 수 : %d"), AlivePlayers.Num());
 	}
 	else // 결과 화면
 	{
@@ -180,8 +169,6 @@ void APlayGameState::UpdateAlivePlayers()
 				}
 			}
 		}
-
-		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameState :: 결과 화면 :: 현재 AlivePlayers 수 : %d"), AlivePlayers.Num());
 	}
 }
 

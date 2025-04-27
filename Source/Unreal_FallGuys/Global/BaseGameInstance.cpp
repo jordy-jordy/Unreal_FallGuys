@@ -780,7 +780,7 @@ void UBaseGameInstance::InsPrintPlayerInfo()
 		const FPlayerInfo& Info = PS->PlayerInfo;
 		const FString StatusStr = UEnum::GetValueAsString(Info.Status);
 
-		FString LogMessage = FString::Printf(TEXT("Tag: %s | Nick: %s | Color: %s | Top: %s | Bot: %s | Status: %s | Drop: %d | Winner: %s | Result: %s"),
+		FString LogMessage = FString::Printf(TEXT("Tag: %s | Nick: %s | Color: %s | Top: %s | Bot: %s | Status: %s | Drop: %d | Winner: %s | HiddenAtResult: %s"),
 			*Info.Tag.ToString(),
 			*Info.NickName,
 			*Info.CostumeColor,
@@ -789,7 +789,7 @@ void UBaseGameInstance::InsPrintPlayerInfo()
 			*StatusStr,
 			Info.DropOrder,
 			PS->GetIsWinner() ? TEXT("TRUE") : TEXT("FALSE"),
-			PS->GetIsResultLevel() ? TEXT("TRUE") : TEXT("FALSE"));
+			PS->GetCanHiddenAtResult() ? TEXT("TRUE") : TEXT("FALSE"));
 
 		UE_LOG(FALL_DEV_LOG, Log, TEXT("%s"), *LogMessage);
 		if (GEngine) ScreenMessage += LogMessage + TEXT("\n");
