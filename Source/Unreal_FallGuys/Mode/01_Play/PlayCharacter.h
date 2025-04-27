@@ -248,7 +248,13 @@ public:
 	bool IsDie = true;
 
 	UPROPERTY( Replicated, BlueprintReadWrite, Category = "PLAYER START")
-	bool IsFail = false;
+	bool IsSuccess = false;
+
+	UFUNCTION(BlueprintCallable)
+	class UGameInstance* GetPlayerGameInstance()
+	{
+		return GetGameInstance<UGameInstance>();
+	}
 #pragma endregion
 
 };

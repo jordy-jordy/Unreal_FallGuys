@@ -415,6 +415,9 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 	bool bIsSpectar = false;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool bIsSuccess = false;
 #pragma endregion
 
 #pragma region 사운드 볼륨

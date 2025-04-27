@@ -67,7 +67,6 @@ void APlayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(APlayCharacter, IsDie);
 	DOREPLIFETIME(APlayCharacter, CanMove);
 	DOREPLIFETIME(APlayCharacter, CurStatus);
-	DOREPLIFETIME(APlayCharacter, IsFail);
 	DOREPLIFETIME(APlayCharacter, bIsResultLevel);
 }
 
@@ -374,29 +373,23 @@ void APlayCharacter::S2M_NickName_Implementation(const FString& _NickName)
 void APlayCharacter::CheckPlayer()
 {
 
-	UBaseGameInstance* GameIns = GetGameInstance<UBaseGameInstance>();
-	
-	if (HasAuthority())
-	{
-		APlayPlayerState* PlayState = GetPlayerState<APlayPlayerState>();
-		if (EPlayerStatus::FAIL == PlayState->GetPlayerStateStatus())
-		{
-			IsFail = true;
-		}
-
-		bIsResultLevel = GameIns->bIsResultLevel;
-	}
 
 	if (UGameplayStatics::GetPlayerController(GetWorld(), 0) == GetController())
 	{
-		APlayPlayerState* FallPlayerState = GetPlayerState<APlayPlayerState>();
-
-		if (false == bIsResultLevel)
+		APlayPlayerState* PlayState = GetPlayerState<APlayPlayerState>();
+		
+		
+		if (false == PlayState->GetIsResultLevel())
 		{
 			OutFailPlayer();
+
+			UBaseGameInstance* GameIns = GetGameInstance<UBaseGameInstance>();
+			GameIns->bIsSuccess = false;
+
 		}
 		else
 		{
+			// 결과 화면인지 확인
 			CheckFailPlayer();
 		}
 	}
@@ -414,11 +407,15 @@ void APlayCharacter::S2M_SpectarLoc_Implementation()
 		//위치 동기화
 		SetActorLocation({ 0,0,-100000 });
 		SetActorEnableCollision(false);
+		SetActorHiddenInGame(true);
 
 		if (GetMesh())
 		{
 			GetMesh()->SetSimulatePhysics(false);
 			GetMesh()->SetEnableGravity(false);
+			GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+
 		}
 		// 다른 캐릭터로 시점 변경
 	
@@ -437,37 +434,35 @@ void APlayCharacter::CheckFailPlayer()
 
 	 APlayPlayerState* PlayState = GetPlayerState<APlayPlayerState>();
 	 if (nullptr == PlayState) return;
-
+	 UBaseGameInstance* GameIns = GetGameInstance<UBaseGameInstance>();
 	 
-	 UE_LOG(FALL_DEV_LOG, Warning, TEXT("CheckFailPlayer ::%s, %d"),*PlayState->GetPlayerStateNickName(), PlayState->GetPlayerStateStatus());
-	 //APlayerState
+	// UE_LOG(FALL_DEV_LOG, Warning, TEXT("CheckFailPlayer ::%s, %d"),*PlayState->GetPlayerStateNickName(), PlayState->GetPlayerStateStatus());
 
 
-	 if (true == IsFail)
+	 if (false == GameIns->bIsSuccess)
 	 {
-		 bIsSpectar = true;
-
-
-		 UBaseGameInstance* GameIns = GetGameInstance<UBaseGameInstance>();
-
-		 GameIns->bIsSpectar = bIsSpectar;
-
+		 GameIns->bIsSpectar = true;
 	 }
+
 }
 
 // 이민하 : 탈락자 아웃시키기 ( 위치 -10000.. 바닥으로 이동)
 void APlayCharacter::OutFailPlayer()
 {
+
+
 	UBaseGameInstance* GameIns = GetGameInstance<UBaseGameInstance>();
+
+
 	if (true == GameIns->bIsSpectar)
 	{
-
-		APlayPlayerState* FallPlayerState = GetPlayerState<APlayPlayerState>();
-		if (!GameIns || !FallPlayerState) return;
-
-		// 결과 화면인지 확인
 		
-		if (true == bIsResultLevel)
+
+		APlayPlayerState* PlayState = GetPlayerState<APlayPlayerState>();
+		if (nullptr == PlayState) return;
+
+
+	/*	if (true == PlayState->GetIsResultLevel())
 		{
 			SpectatorOnForRaceOver();
 		}
@@ -475,7 +470,7 @@ void APlayCharacter::OutFailPlayer()
 		{
 			SpectatorOn();
 
-		}
+		}*/
 
 			C2S_SpectarLoc();
 \
