@@ -67,7 +67,7 @@ void UPlayStartCountWidget::AfterCountWidget()
 		// 카운트 끝나면->관전자 위젯 나오게
 		SpectatorResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		UPlayResultWidget* Result = Cast<UPlayResultWidget>(GetMainWidget()->FindWidget(EPlayUIType::PlayResult));
-		Result->SetSpectatorView(true);
+		//Result->SetSpectatorView(true);
 	}
 }
 
