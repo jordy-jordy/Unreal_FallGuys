@@ -102,22 +102,36 @@ public:
 	void Client_CallReadyAfterTravel();
 	void Client_CallReadyAfterTravel_Implementation();
 
-	// 클라이언트 전용 View Target 설정 함수
+	// 클라이언트 전용 View Target 설정 함수 : 일반 스테이지
 	UFUNCTION(Client, Reliable)
 	void Client_SetViewTargetByTag(FName _TargetTag);
 	void Client_SetViewTargetByTag_Implementation(FName _TargetTag);
 
-	// 클라이언트 전용 View Target 설정 함수
+	UFUNCTION(Server, Reliable)
+	void Server_NotifySettedRandomTarget(bool _Value);
+	void Server_NotifySettedRandomTarget_Implementation(bool _Value);
+
+	// 클라이언트 전용 View Target 설정 함수 : 중간 결과 화면
 	UFUNCTION(Client, Reliable)
 	void ClientWhoHidden_SetViewTargetByTag(FName _TargetTag);
 	void ClientWhoHidden_SetViewTargetByTag_Implementation(FName _TargetTag);
 
-	// 레벨 이동 후, 저장된 SpectateTargetTag를 사용해 카메라 세팅
-	void ClientPostTravelSetup(FName _Tag);
+	UFUNCTION(Server, Reliable)
+	void Server_NotifySettedTarget(bool _Value);
+	void Server_NotifySettedTarget_Implementation(bool _Value);
+
+	// 레벨 이동 후 결과 화면에서 저장된 SpectateTargetTag를 사용해 카메라 세팅
+	void Client_SetFailPlayerResultView(FName _Tag);
+
+	// 레벨 이동 후 일반 스테이지에서 저장된 SpectateTargetTag를 사용해 카메라 세팅
+	void Client_SetFailPlayerStageView(FName _Tag);
 
 	// 결과 화면에서
 	bool SettedTarget = false;
+	bool SettedTarget_server = false; // 서버에서 클라 상태를 알기 위한 변수
+
 	// 일반 스테이지에서
 	bool SettedRandomTarget = false;
+	bool SettedRandomTarget_server = false; // 서버에서 클라 상태를 알기 위한 변수
 
 };

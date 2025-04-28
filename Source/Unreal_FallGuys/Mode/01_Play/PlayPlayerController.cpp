@@ -95,10 +95,10 @@ void APlayPlayerController::Server_NotifyReadyForTravel_Implementation()
 		const FString ControllerName = GetName();
 		const bool bReady = MyState->GetbReadyToTravel();
 
-		UE_LOG(FALL_DEV_LOG, Log,
-			TEXT("PlayPlayerController :: Server_NotifyReadyForTravel :: 컨트롤러: %s, 준비 상태: %s"),
-			*ControllerName,
-			bReady ? TEXT("True") : TEXT("False"));
+		//UE_LOG(FALL_DEV_LOG, Log,
+		//	TEXT("PlayPlayerController :: Server_NotifyReadyForTravel :: 컨트롤러: %s, 준비 상태: %s"),
+		//	*ControllerName,
+		//	bReady ? TEXT("True") : TEXT("False"));
 	}
 	else
 	{
@@ -326,17 +326,21 @@ void APlayPlayerController::Client_SetViewTargetByTag_Implementation(FName _Targ
 			{
 				SetViewTargetWithBlend(PlayerCharacter, 0.0f); // 블렌딩 없이 바로 전환
 
-				UE_LOG(FALL_DEV_LOG, Log, TEXT("Client_SetViewTargetByTag :: 성공 → 태그: %s, 타겟: %s"),
+				// 세팅 완료
+				SettedRandomTarget = true;
+				// 서버에게 완료 알림
+				Server_NotifySettedRandomTarget(SettedRandomTarget);
+
+				UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayPlayerController :: Client_SetViewTargetByTag :: 성공 → 태그: %s, 타겟: %s"),
 					*_TargetTag.ToString(), *PlayerCharacter->GetName());
 
-				SettedRandomTarget = true;
 				bFound = true;
 				break;
 			}
 			else
 			{
 				FString StateTag = PS ? PS->PlayerInfo.Tag.ToString() : TEXT("NoState");
-				UE_LOG(FALL_DEV_LOG, Log, TEXT("Client_SetViewTargetByTag :: 검사중 → 태그: %s | 현재 액터: %s | 상태태그: %s"),
+				UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayPlayerController :: Client_SetViewTargetByTag :: 검사중 → 태그: %s | 현재 액터: %s | 상태태그: %s"),
 					*_TargetTag.ToString(),
 					*PlayerCharacter->GetName(),
 					*StateTag);
@@ -346,9 +350,17 @@ void APlayPlayerController::Client_SetViewTargetByTag_Implementation(FName _Targ
 
 	if (!bFound)
 	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("Client_SetViewTargetByTag :: 실패 → 태그: %s | 전체 액터 수: %d"),
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayPlayerController :: Client_SetViewTargetByTag :: 실패 → 태그: %s | 전체 액터 수: %d"),
 			*_TargetTag.ToString(), ActorCount);
 	}
+}
+
+// 세팅 완료 했다
+void APlayPlayerController::Server_NotifySettedRandomTarget_Implementation(bool _Value)
+{
+	SettedRandomTarget_server = _Value;
+
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayPlayerController :: 서버에서 뷰 타겟 세팅 완료 확인 :: %s"), *GetName());
 }
 
 // 결과 화면 : 뷰 타겟을 바꿔줌
@@ -369,17 +381,22 @@ void APlayPlayerController::ClientWhoHidden_SetViewTargetByTag_Implementation(FN
 			{
 				SetViewTargetWithBlend(PlayerCharacter, 0.0f); // 블렌딩 없이 바로 전환
 
-				UE_LOG(FALL_DEV_LOG, Log, TEXT("Client_SetViewTargetByTag :: 성공 → 태그: %s, 타겟: %s"),
+				// 세팅 완료
+				SettedTarget = true;
+				// 서버에게 완료 알림
+				Server_NotifySettedTarget(SettedTarget);
+
+				UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayPlayerController :: Client_SetViewTargetByTag :: 성공 → 태그: %s, 타겟: %s"),
 					*_TargetTag.ToString(), *PlayerCharacter->GetName());
 
-				SettedTarget = true;
+
 				bFound = true;
 				break;
 			}
 			else
 			{
 				FString StateTag = PS ? PS->PlayerInfo.Tag.ToString() : TEXT("NoState");
-				UE_LOG(FALL_DEV_LOG, Log, TEXT("Client_SetViewTargetByTag :: 검사중 → 태그: %s | 현재 액터: %s | 상태태그: %s"),
+				UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayPlayerController :: Client_SetViewTargetByTag :: 검사중 → 태그: %s | 현재 액터: %s | 상태태그: %s"),
 					*_TargetTag.ToString(),
 					*PlayerCharacter->GetName(),
 					*StateTag);
@@ -389,19 +406,33 @@ void APlayPlayerController::ClientWhoHidden_SetViewTargetByTag_Implementation(FN
 
 	if (!bFound)
 	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("Client_SetViewTargetByTag :: 실패 → 태그: %s | 전체 액터 수: %d"),
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayPlayerController :: Client_SetViewTargetByTag :: 실패 → 태그: %s | 전체 액터 수: %d"),
 			*_TargetTag.ToString(), ActorCount);
 	}
 }
 
-void APlayPlayerController::ClientPostTravelSetup(FName _Tag)
+void APlayPlayerController::Server_NotifySettedTarget_Implementation(bool _Value)
 {
-	APlayPlayerState* MyState = GetPlayerState<APlayPlayerState>();
-	if (!MyState) return;
+	SettedTarget_server = _Value;
 
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayPlayerController :: 서버에서 뷰 타겟 세팅 완료 확인 :: %s"), *GetName());
+}
+
+
+void APlayPlayerController::Client_SetFailPlayerResultView(FName _Tag)
+{
 	// 저장된 타겟 태그로 뷰 설정
 	ClientWhoHidden_SetViewTargetByTag(_Tag);
 
-	UE_LOG(FALL_DEV_LOG, Log, TEXT("ClientPostTravelSetup :: 저장된 타겟으로 카메라 세팅 | 타겟 태그: %s"),
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayPlayerController :: Client_SetFailPlayerResultView :: 결과 화면 :: 저장된 타겟으로 카메라 세팅 | 타겟 태그: %s"),
+		*_Tag.ToString());
+}
+
+void APlayPlayerController::Client_SetFailPlayerStageView(FName _Tag)
+{
+	// 저장된 타겟 태그로 뷰 설정
+	Client_SetViewTargetByTag(_Tag);
+
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayPlayerController :: Client_SetFailPlayerStageView :: 일반 화면 :: 저장된 타겟으로 카메라 세팅 | 타겟 태그: %s"),
 		*_Tag.ToString());
 }

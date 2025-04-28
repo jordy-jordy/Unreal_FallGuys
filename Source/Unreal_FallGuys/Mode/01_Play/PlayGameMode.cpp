@@ -424,7 +424,7 @@ void APlayGameMode::BeginPlay()
 			true
 		);
 	}
-	// 개인전용 : 결과 화면X 2라운드 부터O : 일반 스테이지용 관전자 ON
+	// 개인전용 : 결과 화면X, 2라운드 부터O : 일반 스테이지용 관전자 ON
 	else if (!bMODEIsResultLevel && bMODEIsLevelMoved && CurLevelInfo_Mode.LevelType == EStageType::SOLO)
 	{
 		GetWorldTimerManager().SetTimer(
@@ -441,7 +441,7 @@ void APlayGameMode::BeginPlay()
 		GameStartConditionTimer,
 		this,
 		&APlayGameMode::CheckStartConditions,
-		1.0f,  // 1초마다 검사
+		0.5f,  // 1초마다 검사
 		true   // 반복 실행
 	);
 
@@ -993,19 +993,21 @@ void APlayGameMode::SetEndCondition_Solo(APlayGameState* _FallState)
 			// 성공한 플레이어를 배열에 저장
 			UpdateSuccessPlayerInfoArray();
 			PrepareSpectatorTargets();
-			ResetAllControllersTargetStatus();
-		}
-
-		// 플레이어 인포를 백업한 이력이 없을때만
-		if (!bPlayerInfosBackUp)
-		{
-			// 플레이어 정보 백업
-			BackUpPlayersInfo();
 		}
 	}
 
 	bPlayerStatusChanged = true;
 	bSettedRandomViewTarget = true;
+
+	ResetAllControllersTargetStatus();
+	
+	// 플레이어 인포를 백업한 이력이 없을때만
+	if (!bMODEIsResultLevel && !bPlayerInfosBackUp)
+	{
+		// 플레이어 정보 백업
+		BackUpPlayersInfo();
+	}
+
 	bPlayerInfosBackUp = true;
 
 	// 개인전 세팅을 한 이력이 없을때만
@@ -1135,7 +1137,7 @@ void APlayGameMode::PrepareSpectatorTargets()
 	for (APlayerState* PS : FallState->PlayerArray)
 	{
 		APlayPlayerState* PState = Cast<APlayPlayerState>(PS);
-		if (PState && PState->PlayerInfo.bCanHiddenAtResult == true)
+		if (PState && PState->PlayerInfo.bCanHiddenAtResult == true || PState->PlayerInfo.Status == EPlayerStatus::FAIL)
 		{
 			int32 RandomIndex = FMath::RandRange(0, SuccessPlayers.Num() - 1);
 			const FPlayerInfoEntry& TargetEntry = SuccessPlayers[RandomIndex];
@@ -1279,10 +1281,10 @@ bool APlayGameMode::AreAllClientsReady()
 		const bool bReady = MyState->GetbReadyToTravel();
 		const FString PlayerTag = MyState->PlayerInfo.Tag.ToString();
 
-		UE_LOG(FALL_DEV_LOG, Log,
-			TEXT("PlayGameMode :: AreAllClientsReady :: 플레이어: %s, 준비 상태: %s"),
-			*PlayerTag,
-			bReady ? TEXT("true") : TEXT("false"));
+		//UE_LOG(FALL_DEV_LOG, Log,
+		//	TEXT("PlayGameMode :: AreAllClientsReady :: 플레이어: %s, 준비 상태: %s"),
+		//	*PlayerTag,
+		//	bReady ? TEXT("true") : TEXT("false"));
 
 		if (!bReady)
 		{
@@ -1377,9 +1379,16 @@ void APlayGameMode::SetSpectar_STAGE()
 		APlayPlayerState* PS = PlayerCharacter->GetPlayerState<APlayPlayerState>();
 		if (PS && PS->PlayerInfo.Status == EPlayerStatus::FAIL)
 		{
-			if (!FallController->SettedRandomTarget)
+			FString TagString = TEXT("");
+			if (!FallController->SettedRandomTarget_server)
 			{
-				SetRandomViewForClient(FallController);
+				FallController->Client_SetFailPlayerStageView(PS->PlayerInfo.SpectateTargetTag);
+				TagString = *PS->PlayerInfo.SpectateTargetTag.ToString();
+
+				UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 일반 화면 :: 캐릭터 숨김처리 시도 | 닉네임: %s | 타겟: %s"),
+					*PS->PlayerInfo.NickName,
+					*TagString
+				);
 			}
 			PlayerCharacter->S2M_ApplySpectatorVisibility();
 		}
@@ -1398,9 +1407,9 @@ void APlayGameMode::SetSpectar_RESULT()
 		APlayPlayerState* PS = PlayerCharacter->GetPlayerState<APlayPlayerState>();
 		if (PS && PS->PlayerInfo.bCanHiddenAtResult == true)
 		{
-			if (!FallController->SettedTarget)
+			if (!FallController->SettedTarget_server)
 			{
-				FallController->ClientPostTravelSetup(PS->PlayerInfo.SpectateTargetTag);
+				FallController->Client_SetFailPlayerResultView(PS->PlayerInfo.SpectateTargetTag);
 			}
 			PlayerCharacter->S2M_ApplySpectatorVisibility();
 			PlayerCharacter->SetActorLocation({ 0, -10000, 0 });
@@ -1415,37 +1424,34 @@ void APlayGameMode::SetRandomViewForClient(APlayerController* _TargetController)
 	APlayGameState* FallState = GetGameState<APlayGameState>();
 	if (!FallState || !_TargetController) return;
 
-	APlayPlayerController* PC = Cast<APlayPlayerController>(_TargetController);
-	if (!PC) return;
-
 	// 유저 리스트 업데이트 해줌
 	FallState->UpdateAlivePlayers();
 	TArray<APlayCharacter*> ValidTargets = FallState->GetAlivePlayers();
 
 	if (ValidTargets.Num() == 0)
 	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("SetRandomViewForClient :: 유효한 타겟 없음"));
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: SetRandomViewForClient :: 유효한 타겟 없음"));
 		return;
 	}
 
+	// 랜덤 타겟 뽑기
 	int32 RandomIndex = FMath::RandRange(0, ValidTargets.Num() - 1);
 	APlayCharacter* RandomTarget = ValidTargets[RandomIndex];
 
-	FName TargetTag = NAME_None;
-
-	if (RandomTarget)
+	APlayPlayerController* PC = Cast<APlayPlayerController>(_TargetController);
+	if (RandomTarget && PC)
 	{
+		FName TargetTag = NAME_None;
 		APlayPlayerState* PS = RandomTarget->GetPlayerState<APlayPlayerState>();
 		if (PS)
 		{
 			TargetTag = PS->PlayerInfo.Tag;
-			RandomTarget->Tags.AddUnique(TargetTag);
 		}
 
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("SetRandomViewForClient :: 서버 → 클라 :: 타겟: %s | 태그: %s"),
-			*RandomTarget->GetName(), *TargetTag.ToString());
-
 		PC->Client_SetViewTargetByTag(TargetTag);
+
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: SetRandomViewForClient :: 서버 → 클라 :: 타겟: %s | 태그: %s"),
+			*RandomTarget->GetName(), *TargetTag.ToString());
 	}
 }
 
@@ -1460,15 +1466,16 @@ void APlayGameMode::SetViewForClientByIndex(APlayerController* _TargetController
 
 	if (ValidTargets.Num() == 0)
 	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("SetViewForClientByIndex :: 유효한 타겟 없음"));
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: SetViewForClientByIndex :: 유효한 타겟 없음"));
 		return;
 	}
 
 	// 인덱스 보정
 	int32 ValidIndex = _TargetIndex % ValidTargets.Num();
 	if (ValidIndex < 0) ValidIndex += ValidTargets.Num();
-
+	// 다음 타겟
 	APlayCharacter* TargetCharacter = ValidTargets[ValidIndex];
+
 	APlayPlayerController* PC = Cast<APlayPlayerController>(_TargetController);
 	if (TargetCharacter && PC)
 	{
@@ -1478,10 +1485,11 @@ void APlayGameMode::SetViewForClientByIndex(APlayerController* _TargetController
 		{
 			TargetTag = PS->PlayerInfo.Tag;
 		}
-		UE_LOG(FALL_DEV_LOG, Log, TEXT("SetViewForClientByIndex :: 인덱스: %d | 타겟: %s | 태그: %s"),
-			ValidIndex, *TargetCharacter->GetName(), *TargetTag.ToString());
 
 		PC->Client_SetViewTargetByTag(TargetTag);
+
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: SetViewForClientByIndex :: 인덱스: %d | 타겟: %s | 태그: %s"),
+			ValidIndex, *TargetCharacter->GetName(), *TargetTag.ToString());
 	}
 }
 
@@ -1493,9 +1501,11 @@ void APlayGameMode::ResetAllControllersTargetStatus()
 		if (PC)
 		{
 			PC->SettedTarget = false;
+			PC->Server_NotifySettedTarget(false);
 			PC->SettedRandomTarget = false;
+			PC->Server_NotifySettedRandomTarget(false);
 
-			UE_LOG(FALL_DEV_LOG, Warning, TEXT("ResetAllControllersTargetStatus :: 컨트롤러 %s 초기화 완료"), *PC->GetName());
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: ResetAllControllersTargetStatus :: 컨트롤러 %s 초기화 완료"), *PC->GetName());
 		}
 	}
 }

@@ -427,11 +427,6 @@ void APlayGameState::SetStateMaxPlayerCount_Implementation(int _Value)
 void APlayGameState::SetStateIsEndGameTrue_Implementation()
 {
 	StateIsEndGame = true;
-
-	// 타이머 클리어
-	GetWorldTimerManager().ClearTimer(AlivePlayersUpdateTimerHandle);
-
-	UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameState :: 게임 종료됨 :: AlivePlayers 타이머 클리어"));
 }
 
 // 현 스테이지의 골 타입을 반환함
