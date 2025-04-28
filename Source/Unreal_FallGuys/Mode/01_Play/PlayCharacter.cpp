@@ -377,7 +377,7 @@ void APlayCharacter::CheckPlayer()
 	if (UGameplayStatics::GetPlayerController(GetWorld(), 0) == GetController())
 	{
 		APlayPlayerState* PlayState = GetPlayerState<APlayPlayerState>();
-		
+		if (nullptr == PlayState) return;
 		
 		if (false == PlayState->GetIsResultLevel())
 		{
@@ -405,7 +405,7 @@ void APlayCharacter::C2S_SpectarLoc_Implementation()
 void APlayCharacter::S2M_SpectarLoc_Implementation()
 {
 		//위치 동기화
-		SetActorLocation({ 0,0,-100000 });
+		SetActorLocation({ 0,0,-10000 });
 		SetActorEnableCollision(false);
 		SetActorHiddenInGame(true);
 
@@ -471,9 +471,16 @@ void APlayCharacter::OutFailPlayer()
 			SpectatorOn();
 
 		}
-
+		if (GetWorld()->GetAuthGameMode())
+		{
+			S2M_SpectarLoc_Implementation();
+		}
+		else
+		{
 			C2S_SpectarLoc();
-\
+
+		}
+
 	}
 	
 }
