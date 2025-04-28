@@ -1493,8 +1493,9 @@ void APlayGameMode::ResetAllControllersTargetStatus()
 		if (PC)
 		{
 			PC->SettedTarget = false;
+			PC->SettedRandomTarget = false;
 
-			UE_LOG(FALL_DEV_LOG, Log, TEXT("ResetAllControllersTargetStatus :: 컨트롤러 %s 초기화 완료"), *PC->GetName());
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("ResetAllControllersTargetStatus :: 컨트롤러 %s 초기화 완료"), *PC->GetName());
 		}
 	}
 }
