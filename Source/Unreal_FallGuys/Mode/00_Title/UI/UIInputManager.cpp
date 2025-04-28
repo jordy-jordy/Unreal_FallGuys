@@ -297,6 +297,10 @@ void UUIInputManager::SwitchWidget_W()
 	ETitleUIType CurType = MainWidget->GetCurUIType();
 	if (ETitleUIType::CustomeInven == CurType)
 	{
+		if (ECustomType::Top == CustomInvenWidget->GetCurCustomType())
+		{
+			CustomInvenWidget->ChangeTopIndex_Up();
+		}
 		CustomInvenWidget->Move_UP();
 		return;
 	}
@@ -333,7 +337,14 @@ void UUIInputManager::SwitchWidget_A()
 	ETitleUIType CurType = MainWidget->GetCurUIType();
 	if (ETitleUIType::CustomeInven == CurType)
 	{
-		CustomInvenWidget->ChangeColorIndex_Left();
+		if (ECustomType::Top == CustomInvenWidget->GetCurCustomType())
+		{
+			CustomInvenWidget->ChangeTopIndex_Left();
+		}
+		else if (ECustomType::Color == CustomInvenWidget->GetCurCustomType())
+		{
+			CustomInvenWidget->ChangeColorIndex_Left();
+		}
 		CustomInvenWidget->Move_LEFT();
 		return;
 	}
@@ -377,6 +388,10 @@ void UUIInputManager::SwitchWidget_S()
 	ETitleUIType CurType = MainWidget->GetCurUIType();
 	if (ETitleUIType::CustomeInven == CurType)
 	{
+		if (ECustomType::Top == CustomInvenWidget->GetCurCustomType())
+		{
+			CustomInvenWidget->ChangeTopIndex_Down();
+		}
 		CustomInvenWidget->Move_DOWN();
 		return;
 	}
@@ -413,7 +428,14 @@ void UUIInputManager::SwitchWidget_D()
 	ETitleUIType CurType = MainWidget->GetCurUIType();
 	if (ETitleUIType::CustomeInven == CurType)
 	{
-		CustomInvenWidget->ChangeColorIndex_Right();
+		if (ECustomType::Top == CustomInvenWidget->GetCurCustomType())
+		{
+			CustomInvenWidget->ChangeTopIndex_Right();
+		}
+		else if (ECustomType::Color == CustomInvenWidget->GetCurCustomType())
+		{
+			CustomInvenWidget->ChangeColorIndex_Right();
+		}
 		CustomInvenWidget->Move_RIGHT();
 		return;
 	}

@@ -10,9 +10,14 @@ void UTitleCustomWidget::NativeConstruct()
 
 	CurCustomType = ECustomType::Color;
 	CurIndex = 0;
+
+	// CustomColor
 	CurColorIndex = 0;
 	CurColor = ArrColor[0];
 
+	// CustomTop
+	CurTopIndex = 0;
+	CurTop = ArrTop[0];
 }
 
 void UTitleCustomWidget::ChangeType_Left()
@@ -132,6 +137,69 @@ void UTitleCustomWidget::CurColorSetting()
 		else
 		{
 			CustomColorReturn();
+		}
+	}
+}
+
+void UTitleCustomWidget::ChangeTopIndex_Up()
+{
+	CurTopIndex -= 5;
+
+	if (CurTopIndex < 0)
+	{
+		CurTopIndex = 0;
+	}
+
+	CurTop = ArrTop[CurTopIndex];
+}
+
+void UTitleCustomWidget::ChangeTopIndex_Down()
+{
+	CurTopIndex += 5;
+
+	if (CurTopIndex > ArrTop.Num() - 1)
+	{
+		CurTopIndex = ArrTop.Num() - 1;
+	}
+
+	CurTop = ArrTop[CurTopIndex];
+}
+
+void UTitleCustomWidget::ChangeTopIndex_Left()
+{
+	CurTopIndex -= 1;
+
+	if (CurTopIndex < 0)
+	{
+		CurTopIndex = 0;
+	}
+
+	CurTop = ArrTop[CurTopIndex];
+}
+
+void UTitleCustomWidget::ChangeTopIndex_Right()
+{
+	CurTopIndex += 1;
+
+	if (CurTopIndex > ArrTop.Num() - 1)
+	{
+		CurTopIndex = ArrTop.Num() - 1;
+	}
+
+	CurTop = ArrTop[CurTopIndex];
+}
+
+void UTitleCustomWidget::CurTopSetting()
+{
+	for (int i = 0; i < ArrTop.Num(); i++)
+	{
+		if (ArrTop[i] == CurTop)
+		{
+			CustomTopMove();
+		}
+		else
+		{
+			CustomTopReturn();
 		}
 	}
 }
