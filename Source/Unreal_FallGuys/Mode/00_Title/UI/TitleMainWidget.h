@@ -28,7 +28,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SwitchWidget(ETitleUIType _UIType);
 
-	TMultiMap<ETitleUIType, UTitleUserWidget*> GetAllWidgets()
+	TMultiMap<ETitleUIType, UTitleUserWidget*>& GetAllWidgets()
 	{
 		return Widgets;
 	}

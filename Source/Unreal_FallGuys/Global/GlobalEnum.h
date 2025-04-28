@@ -72,6 +72,26 @@ enum class ETitleUIType : uint8
 };
 
 UENUM(BlueprintType)
+enum class ECustomInvenType : uint8
+{
+	Custom UMETA(DisplayName = "Custom"),
+	Animation UMETA(DisplayName = "Animation"),
+	Interface UMETA(DisplayName = "Interface"),
+	MAX UMETA(DisplayName = "MAX"),
+};
+
+UENUM(BlueprintType)
+enum class ECustomType : uint8
+{
+	Color UMETA(DisplayName = "Color"),
+	Pattern UMETA(DisplayName = "Pattern"),
+	Emotion UMETA(DisplayName = "Emotion"),
+	Top UMETA(DisplayName = "Top"),
+	Bottom UMETA(DisplayName = "Bottom"),
+	MAX UMETA(DisplayName = "MAX"),
+};
+
+UENUM(BlueprintType)
 enum class EPlayUIType : uint8
 {
 	PlayStandby UMETA(DisplayName = "PlayStandby"),
