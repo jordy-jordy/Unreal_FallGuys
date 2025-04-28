@@ -9,10 +9,10 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Mode/01_Play/PlayGameState.h"
 
-// юс╫ц
 #include "Mode/01_Play/PlayPlayerState.h"
 #include "Mode/01_Play/PlayCharacter.h"
 #include "Mode/01_Play/UI/PlayResultWidget.h"
+#include "Mode/01_Play/UI/PlayInGameWidget.h"
 
 void UPlayMainWidget::NativeConstruct()
 {
@@ -234,6 +234,9 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 				return;
 			}
 
+			UPlayInGameWidget* InGameWidget = Cast<UPlayInGameWidget>(FindWidget(EPlayUIType::PlayInGame));
+			InGameWidget->BGMVolumeZero();
+
 			EStagePhase CurStagePhase = GameState->GetCurStagePhase_STATE();
 			EPlayerStatus CurPlayerStatus = PlayPlayerState->GetPlayerStateStatus();
 
@@ -300,7 +303,7 @@ void UPlayMainWidget::SwitchWidget(EPlayUIType _UIType)
 				ChangeWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 				ClearCount->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 				SpectatorResult->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-				Result->SetSpectatorView(true);
+				//Result->SetSpectatorView(true);
 			}
 			else if (StageType == EStageType::TEAM)
 			{

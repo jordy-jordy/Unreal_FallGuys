@@ -25,8 +25,8 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void ChangeResources();
 
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
-	void SetSpectatorView(bool _Value);
+	//UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	//void SetSpectatorView(bool _Value);
 
 	bool GetAnimatedStatus()
 	{
