@@ -861,9 +861,20 @@ void APlayGameMode::OnPlayerFinished(APlayCharacter* _Character)
 
 	// 이동을 막음
 	_Character->S2M_SetCanMoveFalse();
+	// 관전자 중에서 이 캐릭터를 보고 있는 사람들 → 타겟 변경
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	{
+		APlayPlayerController* SpectatorPC = Cast<APlayPlayerController>(It->Get());
+		if (SpectatorPC && SpectatorPC->GetViewTarget() == _Character)
+		{
+			// 타겟 바꿔줌
+			SetRandomViewForClient(SpectatorPC);
+		}
+	}
 	// 메쉬 및 콜리전 투명화
 	_Character->C2S_ApplySpectatorVisibilityAtGoalColl();
-
+	// 관전자 모드를 켜줌
+	PlayerState->SetPlayertoSpectar(true);
 
 	if (CurLevelInfo_Mode.EndCondition == EPlayerStatus::SUCCESS)
 	{
@@ -881,17 +892,6 @@ void APlayGameMode::OnPlayerFinished(APlayCharacter* _Character)
 		return;
 	}
 
-	// 관전자 중에서 이 캐릭터를 보고 있는 사람들 → 타겟 변경
-	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
-	{
-		APlayPlayerController* SpectatorPC = Cast<APlayPlayerController>(It->Get());
-		if (SpectatorPC && SpectatorPC->GetViewTarget() == _Character)
-		{
-			// 타겟 바꿔줌
-			SetRandomViewForClient(SpectatorPC);
-		}
-	}
-
 	// 결승선 or 킬존 닿은 플레이어 카운트 +1
 	++CurFinishPlayer;
 	FallState->SetGameStateCurFinishPlayer(CurFinishPlayer);
@@ -902,8 +902,6 @@ void APlayGameMode::OnPlayerFinished(APlayCharacter* _Character)
 	}
 	else
 	{
-		// 관전자 모드를 켜줌
-		PlayerState->SetPlayertoSpectar(true);
 		APlayerController* FallController = Cast<APlayerController>(_Character->GetController());
 		SetRandomViewForClient(FallController);
 	}
@@ -1323,6 +1321,8 @@ void APlayGameMode::SetSpectar_RESULT()
 			APlayPlayerController* FallController = PlayerCharacter->GetController<APlayPlayerController>();
 			SetRandomViewForClient(FallController);
 			PlayerCharacter->SetActorLocation({ 0, -10000, 0 });
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: SetSpectar_RESULT :: 캐릭터 숨김처리 완료 | 닉네임: %s"),
+				*PS->PlayerInfo.NickName);
 			PlayerCharacter->bSpectatorApplied = true;
 		}
 	}

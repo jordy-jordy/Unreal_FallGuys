@@ -172,7 +172,7 @@ void APlayPlayerController::OnNextSpectate()
 	APlayCharacter* MyCharacter = Cast<APlayCharacter>(GetPawn());
 	if (MyCharacter != nullptr)
 	{
-		MyCharacter->SpectateTargetIndex++;
+		++MyCharacter->SpectateTargetIndex;
 		MyCharacter->C2S_RequestSetViewByIndex(MyCharacter->SpectateTargetIndex);
 
 		UE_LOG(FALL_DEV_LOG, Log, TEXT("OnNextSpectate :: 인덱스 증가: %d"), MyCharacter->SpectateTargetIndex);
@@ -186,7 +186,7 @@ void APlayPlayerController::OnPrevSpectate()
 	APlayCharacter* MyCharacter = Cast<APlayCharacter>(GetPawn());
 	if (MyCharacter != nullptr)
 	{
-		MyCharacter->SpectateTargetIndex--;
+		--MyCharacter->SpectateTargetIndex;
 		MyCharacter->C2S_RequestSetViewByIndex(MyCharacter->SpectateTargetIndex);
 
 		UE_LOG(FALL_DEV_LOG, Log, TEXT("OnPrevSpectate :: 인덱스 감소: %d"), MyCharacter->SpectateTargetIndex);
@@ -312,7 +312,7 @@ void APlayPlayerController::Client_SetViewTargetByTag_Implementation(FName _Targ
 	for (TActorIterator<APlayCharacter> It(GetWorld()); It; ++It)
 	{
 		APlayCharacter* PlayerCharacter = *It;
-		ActorCount++;
+		++ActorCount;
 
 		if (PlayerCharacter)
 		{
