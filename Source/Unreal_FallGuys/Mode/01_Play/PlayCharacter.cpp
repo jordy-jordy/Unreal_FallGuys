@@ -71,6 +71,7 @@ void APlayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(APlayCharacter, bIsResultLevel);
 	DOREPLIFETIME(APlayCharacter, bSpectatorApplied);
 	DOREPLIFETIME(APlayCharacter, bVisibilityApplied);
+	DOREPLIFETIME(APlayCharacter, ReplicatedCameraRotation);
 }
 
 // Called when the game starts or when spawned
@@ -123,6 +124,12 @@ void APlayCharacter::BeginPlay()
 void APlayCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	// 자기 자신의 카메라 회전 복제
+	if (IsLocallyControlled())
+	{
+		ReplicatedCameraRotation = GetControlRotation();
+	}
 }
 
 FVector APlayCharacter::GetControllerForward()
@@ -388,6 +395,43 @@ void APlayCharacter::S2M_ApplySpectatorVisibilityAtGoalColl_Implementation()
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayCharacter :: GoalColl or KillZone 처리 :: 닉네임 : %s"),
 		*NickName);
+}
+
+void APlayCharacter::C2S_RequestRandomView_Implementation()
+{
+	APlayGameMode* PlayMode = Cast<APlayGameMode>(GetWorld()->GetAuthGameMode());
+	APlayerController* PC = Cast<APlayerController>(GetController());
+
+	if (PlayMode != nullptr && PC != nullptr)
+	{
+		PlayMode->SetRandomViewForClient(PC);
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayCharacter :: Server_RequestRandomView :: 서버에서 랜덤 뷰 요청 처리"));
+	}
+	else
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayCharacter :: Server_RequestRandomView :: GameMode 또는 Controller가 nullptr"));
+	}
+}
+
+void APlayCharacter::C2S_RequestSetViewByIndex_Implementation(int32 _TargetIndex)
+{
+	APlayGameMode* PlayMode = Cast<APlayGameMode>(GetWorld()->GetAuthGameMode());
+	APlayerController* PC = Cast<APlayerController>(GetController());
+
+	if (PlayMode == nullptr)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("C2S_RequestSetViewByIndex :: PlayMode is nullptr"));
+	}
+	if (PC == nullptr)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("C2S_RequestSetViewByIndex :: Controller is nullptr"));
+	}
+
+	if (PlayMode != nullptr && PC != nullptr)
+	{
+		PlayMode->SetViewForClientByIndex(PC, _TargetIndex);
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayCharacter :: C2S_RequestSetViewByIndex :: 인덱스 %d로 요청"), _TargetIndex);
+	}
 }
 
 // 이현정 : 디버그용 : 캐릭터 상태 확인

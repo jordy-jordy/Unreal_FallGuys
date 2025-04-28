@@ -251,4 +251,22 @@ public:
 
 	// 결과 화면에서 숨겨져야 함
 	bool HiddenInResult = false;
+
+	// 서버에 랜덤 뷰 요청
+	UFUNCTION(Server, Reliable)
+	void C2S_RequestRandomView();
+	void C2S_RequestRandomView_Implementation();
+
+	// 관전 대상 인덱스
+	UPROPERTY()
+	int32 SpectateTargetIndex = 0;
+
+	// 인덱스로 서버에 요청
+	UFUNCTION(Server, Reliable)
+	void C2S_RequestSetViewByIndex(int32 _TargetIndex);
+	void C2S_RequestSetViewByIndex_Implementation(int32 _TargetIndex);
+
+	UPROPERTY(Replicated)
+	FRotator ReplicatedCameraRotation;
+
 };
