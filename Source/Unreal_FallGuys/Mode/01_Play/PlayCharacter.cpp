@@ -130,26 +130,26 @@ void APlayCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//APlayPlayerState* FallPlayState = GetPlayerState<APlayPlayerState>();
-	//UBaseGameInstance* FallGameIns = GetGameInstance<UBaseGameInstance>();
+	APlayPlayerState* FallPlayState = GetPlayerState<APlayPlayerState>();
+	UBaseGameInstance* FallGameIns = GetGameInstance<UBaseGameInstance>();
 
-	//if (FallPlayState == nullptr) return;
+	if (FallPlayState == nullptr) return;
 
-	//if (true == FallPlayState->GetIsResultLevel())
-	//{
-	//	if (true == FallGameIns->bIsSpectar)
-	//	{
-	//		if (GetWorld()->GetAuthGameMode())
-	//		{
-	//			S2M_SpectarLoc();
-	//		}
-	//		else
-	//		{
-	//			C2S_SpectarLoc();
+	if (false == FallPlayState->GetIsResultLevel())
+	{
+		if (true == FallGameIns->bIsSpectar)
+		{
+			if (GetWorld()->GetAuthGameMode())
+			{
+				S2M_SpectarLoc();
+			}
+			else
+			{
+				C2S_SpectarLoc();
 
-	//		}
-	//	}
-	//}
+			}
+		}
+	}
 
 	if (UGameplayStatics::GetPlayerController(GetWorld(), 0) == GetController())
 	{
