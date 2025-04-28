@@ -356,7 +356,6 @@ public:
 	// 특정 클라이언트의 뷰 타겟을 랜덤 AlivePlayer로 설정
 	void SetRandomViewForClient(class APlayerController* _TargetController);
 
-	// 전체 플레이어 순회하면서 개별적으로 랜덤 타겟 설정
-	void SetRandomViewForAllClients();
-
+	// 특정 클라이언트의 뷰 타겟을 인덱스 기반으로 설정
+	void SetViewForClientByIndex(class APlayerController* _TargetController, int32 _TargetIndex);
 };

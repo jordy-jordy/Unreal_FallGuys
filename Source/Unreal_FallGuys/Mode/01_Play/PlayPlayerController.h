@@ -30,6 +30,7 @@ public:
 protected:
 	void BeginPlay() override;
 	void SetupInputComponent() override;
+	virtual void Tick(float DeltaSeconds) override;
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
@@ -39,24 +40,26 @@ private:
 private:
 	UPROPERTY(EditAnywhere, Category = "DEBUG", meta = (AllowPrivateAccess = "true"))
 	UInputAction* InputAction_PlayerInfo;
-
 	UPROPERTY(EditAnywhere, Category = "DEBUG", meta = (AllowPrivateAccess = "true"))
 	UInputAction* InputAction_ConnectedPlayers;
-
 	UPROPERTY(EditAnywhere, Category = "DEBUG", meta = (AllowPrivateAccess = "true"))
 	UInputAction* InputAction_LevelName;
-
 	UPROPERTY(EditAnywhere, Category = "DEBUG", meta = (AllowPrivateAccess = "true"))
 	UInputAction* InputAction_LevelCinematicEnd;
-
 	UPROPERTY(EditAnywhere, Category = "DEBUG", meta = (AllowPrivateAccess = "true"))
 	UInputAction* InputAction_CurFinishPlayer;
+	UPROPERTY(EditAnywhere, Category = "INPUT", meta = (AllowPrivateAccess = "true"))
+	UInputAction* InputAction_NextSpectate;
+	UPROPERTY(EditAnywhere, Category = "INPUT", meta = (AllowPrivateAccess = "true"))
+	UInputAction* InputAction_PrevSpectate;
 
 	void OnPrintPlayerInfo();         // [ : 플레이어 인포 출력 (PlayerState)
 	void OnPrintConnectedPlayers();   // ] : 접속자 수 출력
 	void OnPrintLevelName();          // - : 현재 레벨의 이름 출력
 	void OnPrintLevelCinematicEnd();  // = : 레벨 시네마틱 끝나게
 	void OnPrintCurFinishPlayer();	  // \ : 골인한 인원 및 목표 골인 인원 출력
+	void OnNextSpectate();			  // Q
+	void OnPrevSpectate();			  // E
 
 	// 이현정 : 클라이언트의 정보 세팅 및 동기화
 public:
@@ -104,5 +107,6 @@ public:
 	void Client_SetViewTargetByTag(FName _TargetTag);
 	void Client_SetViewTargetByTag_Implementation(FName _TargetTag);
 
+	bool SettedSpect = false;
 
 };

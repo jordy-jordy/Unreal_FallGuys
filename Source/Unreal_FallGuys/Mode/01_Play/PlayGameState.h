@@ -179,8 +179,9 @@ protected:
 	TArray<APlayCharacter*> AlivePlayers;
 
 	// 실시간 업데이트
-	UFUNCTION(Category = "PLAYER LIST")
+	UFUNCTION(Reliable, NetMulticast, Category = "PLAYER LIST")
 	void UpdateAlivePlayers();
+	void UpdateAlivePlayers_Implementation();
 	// 실시간 업데이트 타이머
 	FTimerHandle AlivePlayersUpdateTimerHandle;
 

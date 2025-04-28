@@ -385,6 +385,9 @@ void APlayGameMode::RestorePlayerInfo(APlayerController* _NewPlayer, APlayPlayer
 	_PlayerState->S2M_SetPlayInfo(_PlayerState->PlayerInfo);
 	_NewPlayer->Tags.Add(RestoredInfo.Tag);
 
+	// 유저 리스트 업데이트 해줌
+	_FallState->UpdateAlivePlayers();
+
 	// 이전 스테이지에서 실패한 유저 리스트 복구
 	_FallState->RestoreFailPlayersInfo();
 
@@ -409,29 +412,6 @@ void APlayGameMode::BeginPlay()
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode BeginPlay START ======= "));
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: GameMode 주소: %p"), this);
-
-	// 개인전용 : 결과 화면이 아닐 때 : 0.1초마다 실패자 체크 타이머 시작 → 투명화 O, 관전자 모드 ON
-	if (!bMODEIsResultLevel && CurLevelInfo_Mode.LevelType == EStageType::SOLO)
-	{
-		GetWorldTimerManager().SetTimer(
-			SpectatorCheckTimerHandle,
-			this,
-			&APlayGameMode::SetSpectar_STAGE,
-			0.1f,
-			true
-		);
-	}
-	// 개인전용 : 결과 화면일 때 : 0.1초마다 실패자 체크 타이머 시작 → 투명화 X, 관전자 모드 ON
-	else if (bMODEIsResultLevel && CurLevelInfo_Mode.LevelType == EStageType::SOLO)
-	{
-		GetWorldTimerManager().SetTimer(
-			SpectatorCheckTimerHandle,
-			this,
-			&APlayGameMode::SetSpectar_RESULT,
-			0.1f,
-			true
-		);
-	}
 
 	// 게임 시작을 위한 조건을 주기적으로 체크
 	GetWorldTimerManager().SetTimer(
@@ -461,6 +441,29 @@ void APlayGameMode::CheckStartConditions()
 {
 	// 인원이 안찼으면 리턴
 	if (bNumberOfPlayer == false) return;
+
+	// 개인전용 : 결과 화면이 아닐 때 : 0.1초마다 실패자 체크 타이머 시작 → 투명화 O, 관전자 모드 ON
+	if (!bMODEIsResultLevel && CurLevelInfo_Mode.LevelType == EStageType::SOLO)
+	{
+		GetWorldTimerManager().SetTimer(
+			SpectatorCheckTimerHandle,
+			this,
+			&APlayGameMode::SetSpectar_STAGE,
+			0.1f,
+			true
+		);
+	}
+	// 개인전용 : 결과 화면일 때 : 0.1초마다 실패자 체크 타이머 시작 → 투명화 X, 관전자 모드 ON
+	else if (bMODEIsResultLevel && CurLevelInfo_Mode.LevelType == EStageType::SOLO)
+	{
+		GetWorldTimerManager().SetTimer(
+			SpectatorCheckTimerHandle,
+			this,
+			&APlayGameMode::SetSpectar_RESULT,
+			0.1f,
+			true
+		);
+	}
 
 	APlayGameState* FallState = GetGameState<APlayGameState>();
 
@@ -788,12 +791,18 @@ void APlayGameMode::Tick(float DeltaSeconds)
 		// 결과 화면이 아닌 경우 결과 화면으로 이동
 		if (!bMODEIsResultLevel)
 		{
+			// 실패자의 관전자 ON 타이머 해제
+			GetWorldTimerManager().ClearTimer(SpectatorCheckTimerHandle);
+
 			// 서버 트래블 활성화
 			StartedServerTravel = true;
 			ServerTravelToRaceOver();
 		}
 		else if (bMODEIsResultLevel && !bPassedResultLevel && CurLevelInfo_Mode.CurStagePhase != EStagePhase::STAGE_3_RESULT)
 		{
+			// 실패자의 관전자 ON 타이머 해제
+			GetWorldTimerManager().ClearTimer(SpectatorCheckTimerHandle);
+
 			// 결과 화면에서 넘어가도 된다는 콜이 오기 전까진 리턴
 			if (!bCanMoveResultLevel) return;
 
@@ -808,6 +817,9 @@ void APlayGameMode::Tick(float DeltaSeconds)
 		}
 		else
 		{
+			// 실패자의 관전자 ON 타이머 해제
+			GetWorldTimerManager().ClearTimer(SpectatorCheckTimerHandle);
+
 			// 결과 화면에서 넘어가도 된다는 콜이 오기 전까진 리턴
 			if (!bCanMoveResultLevel) return;
 
@@ -893,9 +905,6 @@ void APlayGameMode::SetEndCondition_Trigger(APlayGameState* _FallState)
 	// 게임 종료 설정
 	IsEndGame = true;
 	_FallState->SetStateIsEndGameTrue();
-
-	// 실패자의 관전자 ON 타이머 해제
-	GetWorldTimerManager().ClearTimer(SpectatorCheckTimerHandle);
 
 	// 공통 종료 로직
 	SetEndCondition_Common(_FallState);
@@ -1279,9 +1288,9 @@ void APlayGameMode::SetSpectar_STAGE()
 		APlayPlayerState* PS = PlayerCharacter->GetPlayerState<APlayPlayerState>();
 		if (PS && PS->PlayerInfo.Status == EPlayerStatus::FAIL && PlayerCharacter->bSpectatorApplied == false)
 		{
+			PlayerCharacter->S2M_ApplySpectatorVisibility();
 			APlayPlayerController* FallController = PlayerCharacter->GetController<APlayPlayerController>();
 			SetRandomViewForClient(FallController);
-			PlayerCharacter->S2M_ApplySpectatorVisibility();
 			PlayerCharacter->bSpectatorApplied = true;
 		}
 	}
@@ -1297,9 +1306,9 @@ void APlayGameMode::SetSpectar_RESULT()
 		APlayPlayerState* PS = PlayerCharacter->GetPlayerState<APlayPlayerState>();
 		if (PS && PS->PlayerInfo.bCanHiddenAtResult == true && PlayerCharacter->bSpectatorApplied == false)
 		{
+			PlayerCharacter->S2M_ApplySpectatorVisibility();
 			APlayPlayerController* FallController = PlayerCharacter->GetController<APlayPlayerController>();
 			SetRandomViewForClient(FallController);
-			PlayerCharacter->S2M_ApplySpectatorVisibility();
 			PlayerCharacter->SetActorLocation({ 0, -10000, 0 });
 			PlayerCharacter->bSpectatorApplied = true;
 		}
@@ -1311,17 +1320,16 @@ void APlayGameMode::SetRandomViewForClient(APlayerController* _TargetController)
 	APlayGameState* FallState = GetGameState<APlayGameState>();
 	if (!FallState || !_TargetController) return;
 
-	// 유저 리스트 업데이트 해줌
-	FallState->UpdateAlivePlayers();
-
 	APlayPlayerController* PC = Cast<APlayPlayerController>(_TargetController);
 	if (!PC) return;
 
+	// 유저 리스트 업데이트 해줌
+	FallState->UpdateAlivePlayers();
 	TArray<APlayCharacter*> ValidTargets = FallState->GetAlivePlayers();
 
 	if (ValidTargets.Num() == 0)
 	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("SetRandomViewForClient :: 유효한 타겟 없음 (자기 자신 제외 후)"));
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("SetRandomViewForClient :: 유효한 타겟 없음"));
 		return;
 	}
 
@@ -1346,14 +1354,39 @@ void APlayGameMode::SetRandomViewForClient(APlayerController* _TargetController)
 	}
 }
 
-void APlayGameMode::SetRandomViewForAllClients()
+void APlayGameMode::SetViewForClientByIndex(APlayerController* _TargetController, int32 _TargetIndex)
 {
-	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	APlayGameState* FallState = GetGameState<APlayGameState>();
+	if (!FallState || !_TargetController) return;
+
+	// 유저 리스트 업데이트 해줌
+	FallState->UpdateAlivePlayers();
+	TArray<APlayCharacter*> ValidTargets = FallState->GetAlivePlayers();
+
+	if (ValidTargets.Num() == 0)
 	{
-		APlayerController* PC = Cast<APlayerController>(It->Get());
-		if (PC)
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("SetViewForClientByIndex :: 유효한 타겟 없음"));
+		return;
+	}
+
+	// 인덱스 보정
+	int32 ValidIndex = _TargetIndex % ValidTargets.Num();
+	if (ValidIndex < 0) ValidIndex += ValidTargets.Num();
+
+	APlayCharacter* TargetCharacter = ValidTargets[ValidIndex];
+	APlayPlayerController* PC = Cast<APlayPlayerController>(_TargetController);
+	if (TargetCharacter && PC)
+	{
+		FName TargetTag = NAME_None;
+		APlayPlayerState* PS = TargetCharacter->GetPlayerState<APlayPlayerState>();
+		if (PS)
 		{
-			SetRandomViewForClient(PC);
+			TargetTag = PS->PlayerInfo.Tag;
 		}
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("SetViewForClientByIndex :: 인덱스: %d | 타겟: %s | 태그: %s"),
+			ValidIndex, *TargetCharacter->GetName(), *TargetTag.ToString());
+
+		PC->Client_SetViewTargetByTag(TargetTag);
 	}
 }
+
