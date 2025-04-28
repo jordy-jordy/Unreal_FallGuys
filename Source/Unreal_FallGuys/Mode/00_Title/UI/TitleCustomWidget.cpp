@@ -13,13 +13,27 @@ void UTitleCustomWidget::NativeConstruct()
 
 	// CustomColor
 	CurColorIndex = 0;
-	CurColor = ArrColor[0];
+	if (false == ArrColor.IsEmpty())
+	{
+		CurColor = ArrColor[0];
+	}
 
 	// CustomTop
 	CurTopIndex = 0;
-	CurTop = ArrTop[0];
+	if (false == ArrTop.IsEmpty())
+	{
+		CurTop = ArrTop[0];
+	}
+
+	// CustomBottom
+	CurBottomIndex = 0;
+	if (false == ArrBottom.IsEmpty())
+	{
+		CurBottom = ArrBottom[0];
+	}
 }
 
+#pragma region CustomMenu
 void UTitleCustomWidget::ChangeType_Left()
 {
 	CurIndex -= 1;
@@ -101,7 +115,9 @@ void UTitleCustomWidget::ChangeType_Right()
 		break;
 	}
 }
+#pragma endregion
 
+#pragma region CustomColor
 void UTitleCustomWidget::ChangeColorIndex_Left()
 {
 	CurColorIndex -= 1;
@@ -140,7 +156,9 @@ void UTitleCustomWidget::CurColorSetting()
 		}
 	}
 }
+#pragma endregion
 
+#pragma region CustomTop
 void UTitleCustomWidget::ChangeTopIndex_Up()
 {
 	CurTopIndex -= 5;
@@ -203,3 +221,69 @@ void UTitleCustomWidget::CurTopSetting()
 		}
 	}
 }
+#pragma endregion
+
+#pragma region CustomBottom
+void UTitleCustomWidget::ChangeBottomIndex_Up()
+{
+	CurBottomIndex -= 5;
+
+	if (CurBottomIndex < 0)
+	{
+		CurBottomIndex = 0;
+	}
+
+	CurBottom = ArrBottom[CurBottomIndex];
+}
+
+void UTitleCustomWidget::ChangeBottomIndex_Down()
+{
+	CurBottomIndex += 5;
+
+	if (CurBottomIndex > ArrBottom.Num() - 1)
+	{
+		CurBottomIndex = ArrBottom.Num() - 1;
+	}
+
+	CurBottom = ArrBottom[CurBottomIndex];
+}
+
+void UTitleCustomWidget::ChangeBottomIndex_Left()
+{
+	CurBottomIndex -= 1;
+
+	if (CurBottomIndex < 0)
+	{
+		CurBottomIndex = 0;
+	}
+
+	CurBottom = ArrBottom[CurBottomIndex];
+}
+
+void UTitleCustomWidget::ChangeBottomIndex_Right()
+{
+	CurBottomIndex += 1;
+
+	if (CurBottomIndex > ArrBottom.Num() - 1)
+	{
+		CurBottomIndex = ArrBottom.Num() - 1;
+	}
+
+	CurBottom = ArrBottom[CurBottomIndex];
+}
+
+void UTitleCustomWidget::CurBottomSetting()
+{
+	for (int i = 0; i < ArrBottom.Num(); i++)
+	{
+		if (ArrBottom[i] == CurBottom)
+		{
+			CustomBottomMove();
+		}
+		else
+		{
+			CustomBottomReturn();
+		}
+	}
+}
+#pragma endregion

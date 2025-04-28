@@ -301,6 +301,10 @@ void UUIInputManager::SwitchWidget_W()
 		{
 			CustomInvenWidget->ChangeTopIndex_Up();
 		}
+		else if (ECustomType::Bottom == CustomInvenWidget->GetCurCustomType())
+		{
+			CustomInvenWidget->ChangeBottomIndex_Up();
+		}
 		CustomInvenWidget->Move_UP();
 		return;
 	}
@@ -340,6 +344,10 @@ void UUIInputManager::SwitchWidget_A()
 		if (ECustomType::Top == CustomInvenWidget->GetCurCustomType())
 		{
 			CustomInvenWidget->ChangeTopIndex_Left();
+		}
+		else if (ECustomType::Bottom == CustomInvenWidget->GetCurCustomType())
+		{
+			CustomInvenWidget->ChangeBottomIndex_Left();
 		}
 		else if (ECustomType::Color == CustomInvenWidget->GetCurCustomType())
 		{
@@ -392,6 +400,10 @@ void UUIInputManager::SwitchWidget_S()
 		{
 			CustomInvenWidget->ChangeTopIndex_Down();
 		}
+		else if (ECustomType::Bottom == CustomInvenWidget->GetCurCustomType())
+		{
+			CustomInvenWidget->ChangeBottomIndex_Down();
+		}
 		CustomInvenWidget->Move_DOWN();
 		return;
 	}
@@ -431,6 +443,10 @@ void UUIInputManager::SwitchWidget_D()
 		if (ECustomType::Top == CustomInvenWidget->GetCurCustomType())
 		{
 			CustomInvenWidget->ChangeTopIndex_Right();
+		}
+		else if (ECustomType::Bottom == CustomInvenWidget->GetCurCustomType())
+		{
+			CustomInvenWidget->ChangeBottomIndex_Right();
 		}
 		else if (ECustomType::Color == CustomInvenWidget->GetCurCustomType())
 		{
