@@ -785,9 +785,6 @@ void APlayGameMode::Tick(float DeltaSeconds)
 			}
 		}
 
-		// 실패자의 관전자 ON 타이머 해제
-		GetWorldTimerManager().ClearTimer(SpectatorCheckTimerHandle);
-
 		// 결과 화면이 아닌 경우 결과 화면으로 이동
 		if (!bMODEIsResultLevel)
 		{
@@ -896,6 +893,9 @@ void APlayGameMode::SetEndCondition_Trigger(APlayGameState* _FallState)
 	// 게임 종료 설정
 	IsEndGame = true;
 	_FallState->SetStateIsEndGameTrue();
+
+	// 실패자의 관전자 ON 타이머 해제
+	GetWorldTimerManager().ClearTimer(SpectatorCheckTimerHandle);
 
 	// 공통 종료 로직
 	SetEndCondition_Common(_FallState);
