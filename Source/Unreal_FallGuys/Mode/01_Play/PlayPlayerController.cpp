@@ -308,6 +308,7 @@ void APlayPlayerController::Server_RequestSetCanMoveLevel_Implementation(bool _b
 	}
 }
 
+// 일반 스테이지 : 뷰 타겟을 바꿔줌
 void APlayPlayerController::Client_SetViewTargetByTag_Implementation(FName _TargetTag)
 {
 	bool bFound = false;
@@ -328,6 +329,7 @@ void APlayPlayerController::Client_SetViewTargetByTag_Implementation(FName _Targ
 				UE_LOG(FALL_DEV_LOG, Log, TEXT("Client_SetViewTargetByTag :: 성공 → 태그: %s, 타겟: %s"),
 					*_TargetTag.ToString(), *PlayerCharacter->GetName());
 
+				SettedRandomTarget = true;
 				bFound = true;
 				break;
 			}
@@ -349,6 +351,7 @@ void APlayPlayerController::Client_SetViewTargetByTag_Implementation(FName _Targ
 	}
 }
 
+// 결과 화면 : 뷰 타겟을 바꿔줌
 void APlayPlayerController::ClientWhoHidden_SetViewTargetByTag_Implementation(FName _TargetTag)
 {
 	bool bFound = false;

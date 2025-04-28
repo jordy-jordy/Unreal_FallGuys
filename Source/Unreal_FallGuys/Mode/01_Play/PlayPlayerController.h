@@ -115,6 +115,9 @@ public:
 	// 레벨 이동 후, 저장된 SpectateTargetTag를 사용해 카메라 세팅
 	void ClientPostTravelSetup(FName _Tag);
 
+	// 결과 화면에서
 	bool SettedTarget = false;
+	// 일반 스테이지에서
+	bool SettedRandomTarget = false;
 
 };

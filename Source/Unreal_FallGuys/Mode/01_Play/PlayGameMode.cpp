@@ -311,7 +311,7 @@ void APlayGameMode::HandleSeamlessTravelPlayer(AController*& _NewController)
 
 	// 시네마틱 시작 호출
 	PostInitializePlayer(FallState);
-	
+
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode HandleSeamlessTravelPlayer END ======= "));
 }
 #pragma endregion
@@ -357,7 +357,7 @@ void APlayGameMode::RestorePlayerInfo(APlayerController* _NewPlayer, APlayPlayer
 			if (RestoredInfo.Status == EPlayerStatus::SUCCESS)
 			{
 				RestoredInfo.Status = EPlayerStatus::DEFAULT;
-				RestoredInfo.bIsSpectar = false; 
+				RestoredInfo.bIsSpectar = false;
 			}
 			// 실패한 사람들의 관전자 상태 복구 및 결과 레벨에서 숨김 처리
 			else if (RestoredInfo.Status == EPlayerStatus::FAIL)
@@ -424,6 +424,17 @@ void APlayGameMode::BeginPlay()
 			true
 		);
 	}
+	// 개인전용 : 결과 화면X 2라운드 부터O : 일반 스테이지용 관전자 ON
+	else if (!bMODEIsResultLevel && bMODEIsLevelMoved && CurLevelInfo_Mode.LevelType == EStageType::SOLO)
+	{
+		GetWorldTimerManager().SetTimer(
+			SpectatorCheckTimerHandle,
+			this,
+			&APlayGameMode::SetSpectar_STAGE,
+			0.1f,
+			true
+		);
+	}
 
 	// 게임 시작을 위한 조건을 주기적으로 체크
 	GetWorldTimerManager().SetTimer(
@@ -453,18 +464,6 @@ void APlayGameMode::CheckStartConditions()
 {
 	// 인원이 안찼으면 리턴
 	if (bNumberOfPlayer == false) return;
-
-	// 개인전용 : 결과 화면X 2라운드 부터O : 일반 스테이지용 관전자 ON
-	if (!bMODEIsResultLevel && bMODEIsLevelMoved && CurLevelInfo_Mode.LevelType == EStageType::SOLO)
-	{
-		GetWorldTimerManager().SetTimer(
-			SpectatorCheckTimerHandle,
-			this,
-			&APlayGameMode::SetSpectar_STAGE,
-			0.1f,
-			true
-		);
-	}
 
 	APlayGameState* FallState = GetGameState<APlayGameState>();
 
@@ -582,16 +581,16 @@ void APlayGameMode::FinishPlayer_Race()
 	switch (CurLevelInfo_Mode.CurStagePhase)
 	{
 	case EStagePhase::STAGE_1:
-		if		(DefaultPlayerCount <= 2) { SetFinishPlayerCount(1); }
+		if (DefaultPlayerCount <= 2) { SetFinishPlayerCount(1); }
 		else if (DefaultPlayerCount <= 4) { SetFinishPlayerCount(DefaultPlayerCount - 1); }
 		else if (DefaultPlayerCount <= 5) { SetFinishPlayerCount(3); }
-		else	{ SetFinishPlayerCount(DefaultPlayerCount / 2); }
+		else { SetFinishPlayerCount(DefaultPlayerCount / 2); }
 		break;
 
 	case EStagePhase::STAGE_2:
-		if		(DefaultPlayerCount <= 2) { SetFinishPlayerCount(1); }
+		if (DefaultPlayerCount <= 2) { SetFinishPlayerCount(1); }
 		else if (DefaultPlayerCount <= 5) { SetFinishPlayerCount(DefaultPlayerCount - 1); }
-		else	{ SetFinishPlayerCount((DefaultPlayerCount / 2) / 2); }
+		else { SetFinishPlayerCount((DefaultPlayerCount / 2) / 2); }
 		break;
 
 	case EStagePhase::STAGE_3:
@@ -610,22 +609,22 @@ void APlayGameMode::FinishPlayer_Survive()
 	switch (CurLevelInfo_Mode.CurStagePhase)
 	{
 	case EStagePhase::STAGE_1:
-		if		(DefaultPlayerCount <= 1) { SetFinishPlayerCount(0); }
+		if (DefaultPlayerCount <= 1) { SetFinishPlayerCount(0); }
 		else if (DefaultPlayerCount <= 4) { SetFinishPlayerCount(1); }
 		else if (DefaultPlayerCount <= 5) { SetFinishPlayerCount(2); }
-		else	{ SetFinishPlayerCount(DefaultPlayerCount / 2); }
+		else { SetFinishPlayerCount(DefaultPlayerCount / 2); }
 		break;
 
 	case EStagePhase::STAGE_2:
-		if		(DefaultPlayerCount <= 1) { SetFinishPlayerCount(0); }
+		if (DefaultPlayerCount <= 1) { SetFinishPlayerCount(0); }
 		else if (DefaultPlayerCount <= 4) { SetFinishPlayerCount(1); }
 		else if (DefaultPlayerCount <= 5) { SetFinishPlayerCount(2); }
-		else	{ SetFinishPlayerCount((DefaultPlayerCount / 2) / 2); }
+		else { SetFinishPlayerCount((DefaultPlayerCount / 2) / 2); }
 		break;
 
 	case EStagePhase::STAGE_3:
-		if		(DefaultPlayerCount <= 1) { SetFinishPlayerCount(0); }
-		else	{ SetFinishPlayerCount(DefaultPlayerCount - 1); }
+		if (DefaultPlayerCount <= 1) { SetFinishPlayerCount(0); }
+		else { SetFinishPlayerCount(DefaultPlayerCount - 1); }
 		break;
 
 	case EStagePhase::FINISHED:
@@ -761,7 +760,7 @@ void APlayGameMode::Tick(float DeltaSeconds)
 
 	// 서버 트래블 활성화 됐으면 여기서 끝
 	if (StartedServerTravel) return;
-	
+
 	// 성공 조건이 0명이면 바로 성공 처리
 	if (FinishPlayer == 0 && !bSetWinbyDefault)
 	{
@@ -789,9 +788,6 @@ void APlayGameMode::Tick(float DeltaSeconds)
 		// 결과 화면이 아닌 경우 결과 화면으로 이동
 		if (!bMODEIsResultLevel)
 		{
-			// 실패자의 관전자 ON 타이머 해제
-			GetWorldTimerManager().ClearTimer(SpectatorCheckTimerHandle);
-
 			// 서버 트래블 활성화
 			StartedServerTravel = true;
 			ServerTravelToRaceOver();
@@ -914,6 +910,13 @@ void APlayGameMode::SetEndCondition_Trigger(APlayGameState* _FallState)
 	// 게임 종료 설정
 	IsEndGame = true;
 	_FallState->SetStateIsEndGameTrue();
+	
+	// 결과 레벨이 아니라면 여기서 타이머 초기화
+	if (!bMODEIsResultLevel)
+	{
+		// 실패자의 관전자 ON 타이머 해제
+		GetWorldTimerManager().ClearTimer(SpectatorCheckTimerHandle);
+	}
 
 	// 공통 종료 로직
 	SetEndCondition_Common(_FallState);
@@ -1362,6 +1365,7 @@ void APlayGameMode::ServerTravelToEndLevel()
 
 #pragma endregion
 
+// 일반 스테이지용
 void APlayGameMode::SetSpectar_STAGE()
 {
 	for (TActorIterator<APlayCharacter> It(GetWorld()); It; ++It)
@@ -1369,17 +1373,20 @@ void APlayGameMode::SetSpectar_STAGE()
 		APlayCharacter* PlayerCharacter = *It;
 		if (!PlayerCharacter) continue;
 
+		APlayPlayerController* FallController = PlayerCharacter->GetController<APlayPlayerController>();
 		APlayPlayerState* PS = PlayerCharacter->GetPlayerState<APlayPlayerState>();
-		if (PS && PS->PlayerInfo.Status == EPlayerStatus::FAIL && PlayerCharacter->bSpectatorApplied == false)
+		if (PS && PS->PlayerInfo.Status == EPlayerStatus::FAIL)
 		{
+			if (!FallController->SettedRandomTarget)
+			{
+				SetRandomViewForClient(FallController);
+			}
 			PlayerCharacter->S2M_ApplySpectatorVisibility();
-			APlayPlayerController* FallController = PlayerCharacter->GetController<APlayPlayerController>();
-			SetRandomViewForClient(FallController);
-			PlayerCharacter->bSpectatorApplied = true;
 		}
 	}
 }
 
+// 결과 화면용
 void APlayGameMode::SetSpectar_RESULT()
 {
 	for (TActorIterator<APlayCharacter> It(GetWorld()); It; ++It)
@@ -1389,7 +1396,7 @@ void APlayGameMode::SetSpectar_RESULT()
 
 		APlayPlayerController* FallController = PlayerCharacter->GetController<APlayPlayerController>();
 		APlayPlayerState* PS = PlayerCharacter->GetPlayerState<APlayPlayerState>();
-		if (PS && PS->PlayerInfo.bCanHiddenAtResult == true /*&& PlayerCharacter->bSpectatorApplied == false*/)
+		if (PS && PS->PlayerInfo.bCanHiddenAtResult == true)
 		{
 			if (!FallController->SettedTarget)
 			{
@@ -1399,7 +1406,6 @@ void APlayGameMode::SetSpectar_RESULT()
 			PlayerCharacter->SetActorLocation({ 0, -10000, 0 });
 			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 결과 화면 :: 캐릭터 숨김처리 완료 | 닉네임: %s"),
 				*PS->PlayerInfo.NickName);
-			// PlayerCharacter->bSpectatorApplied = true;
 		}
 	}
 }
@@ -1487,8 +1493,9 @@ void APlayGameMode::ResetAllControllersTargetStatus()
 		if (PC)
 		{
 			PC->SettedTarget = false;
+			PC->SettedRandomTarget = false;
 
-			UE_LOG(FALL_DEV_LOG, Log, TEXT("ResetAllControllersTargetStatus :: 컨트롤러 %s 초기화 완료"), *PC->GetName());
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("ResetAllControllersTargetStatus :: 컨트롤러 %s 초기화 완료"), *PC->GetName());
 		}
 	}
 }
