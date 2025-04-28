@@ -253,21 +253,11 @@ void APlayPlayerController::Server_RequestSetCanMoveLevel_Implementation(bool _b
 void APlayPlayerController::Client_SetViewTargetByTag_Implementation(FName _TargetTag)
 {
 	bool bFound = false;
-	int32 CandidateCount = 0;
 
 	// 후보 캐릭터 출력
 	for (TActorIterator<APlayCharacter> It(GetWorld()); It; ++It)
 	{
 		APlayCharacter* PlayerCharacter = *It;
-		FString TagLog = TEXT("None");
-		if (PlayerCharacter->Tags.Num() > 0)
-		{
-			TagLog = PlayerCharacter->Tags[0].ToString();
-		}
-
-		UE_LOG(FALL_DEV_LOG, Log, TEXT("Client_SetViewTargetByTag :: 후보 캐릭터: %s | 태그: %s"),
-			*PlayerCharacter->GetName(), *TagLog);
-		CandidateCount++;
 
 		if (PlayerCharacter && PlayerCharacter->Tags.Contains(_TargetTag))
 		{
@@ -281,8 +271,8 @@ void APlayPlayerController::Client_SetViewTargetByTag_Implementation(FName _Targ
 
 	if (!bFound)
 	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("Client_SetViewTargetByTag :: 실패 → 태그: %s | 후보 수: %d | 재시도 예정"),
-			*_TargetTag.ToString(), CandidateCount);
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("Client_SetViewTargetByTag :: 실패 → 태그: %s | 재시도 예정"),
+			*_TargetTag.ToString());
 
 		// 재시도 (0.5초 후)
 		FTimerHandle RetryHandle;

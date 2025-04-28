@@ -344,7 +344,30 @@ void APlayCharacter::S2M_ApplySpectatorVisibility_Implementation()
 }
 
 // 플레이어를 투명화 : PlayGameMode로부터 호출됨 !!! Goal Or Kill 콜리전에 닿았을때
-void APlayCharacter::ApplySpectatorVisibilityAtGoalColl()
+void APlayCharacter::C2S_ApplySpectatorVisibilityAtGoalColl_Implementation()
+{
+	GetMovementComponent()->StopMovementImmediately();
+	SetActorHiddenInGame(true);
+	SetActorEnableCollision(false);
+	GetMesh()->SetSimulatePhysics(false);
+	GetMesh()->SetEnableGravity(false);
+
+	TArray<UActorComponent*> Components;
+	GetComponents(Components);
+	for (UActorComponent* Comp : Components)
+	{
+		if (UPrimitiveComponent* PrimComp = Cast<UPrimitiveComponent>(Comp))
+		{
+			PrimComp->SetVisibility(false, true);
+			PrimComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		}
+	}
+
+	S2M_ApplySpectatorVisibilityAtGoalColl();
+}
+
+// 플레이어를 투명화 : PlayGameMode로부터 호출됨 !!! Goal Or Kill 콜리전에 닿았을때
+void APlayCharacter::S2M_ApplySpectatorVisibilityAtGoalColl_Implementation()
 {
 	GetMovementComponent()->StopMovementImmediately();
 	SetActorHiddenInGame(true);
@@ -364,39 +387,7 @@ void APlayCharacter::ApplySpectatorVisibilityAtGoalColl()
 	}
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayCharacter :: GoalColl or KillZone 처리 :: 닉네임 : %s"),
-	*NickName);
-}
-
-// 일반 스테이지 :: 스테이지 전용 관전자 모드 트리거 : PlayGameMode로부터 호출됨
-void APlayCharacter::S2C_StageSpectarTrigger_Implementation()
-{
-	if (bSpectatorApplied) return;
-	// 일반 스테이지 전용 관전자 모드 ON
-	S2C_ActivateSpectator_Stage();
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayCharacter :: 스테이지 전용 스펙터가 켜짐"));
-	bSpectatorApplied = true;
-}
-
-// 일반 스테이지 :: 스테이지 전용 관전자 모드를 활성화 : PlayGameMode로부터 호출됨
-void APlayCharacter::S2C_ActivateSpectator_Stage_Implementation()
-{
-	SpectatorOn();
-}
-
-// 중간 결과 화면 :: 결과 화면 전용 관전자 모드 트리거 : PlayGameMode로부터 호출됨
-void APlayCharacter::S2C_ResultSpectarTrigger_Implementation()
-{
-	if (bSpectatorApplied) return;
-	// 결과 레벨 전용 관전자 모드 ON
-	S2C_ActivateSpectator_Result();
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayCharacter :: 결과 화면 전용 스펙터가 켜짐"));
-	bSpectatorApplied = true;
-}
-
-// 중간 결과 화면 :: 결과 화면 전용 관전자 모드를 활성화 : PlayGameMode로부터 호출됨
-void APlayCharacter::S2C_ActivateSpectator_Result_Implementation()
-{
-	SpectatorOnForRaceOver();
+		*NickName);
 }
 
 // 이현정 : 디버그용 : 캐릭터 상태 확인

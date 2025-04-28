@@ -421,6 +421,8 @@ void APlayGameMode::BeginPlay()
 			true
 		);
 	}
+	// 개인전용 : 결과 화면일 때 : 0.1초마다 실패자 체크 타이머 시작 → 투명화 X, 관전자 모드 ON
+	else if (bMODEIsResultLevel && CurLevelInfo_Mode.LevelType == EStageType::SOLO)
 	{
 		GetWorldTimerManager().SetTimer(
 			SpectatorCheckTimerHandle,
@@ -522,8 +524,6 @@ void APlayGameMode::CheckStartConditions()
 
 		// 게임 시작 조건을 체크하는 타이머 제거
 		GetWorldTimerManager().ClearTimer(GameStartConditionTimer);
-		// 실패자의 관전자 ON 타이머 해제
-		GetWorldTimerManager().ClearTimer(SpectatorCheckTimerHandle);
 
 		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: BeginPlay :: CheckStartConditions 함수 종료"));
 	}
@@ -785,6 +785,9 @@ void APlayGameMode::Tick(float DeltaSeconds)
 			}
 		}
 
+		// 실패자의 관전자 ON 타이머 해제
+		GetWorldTimerManager().ClearTimer(SpectatorCheckTimerHandle);
+
 		// 결과 화면이 아닌 경우 결과 화면으로 이동
 		if (!bMODEIsResultLevel)
 		{
@@ -866,16 +869,13 @@ void APlayGameMode::OnPlayerFinished(APlayCharacter* _Character)
 		return;
 	}
 
-	// 유저 리스트 업데이트 해줌
-	FallState->UpdateAlivePlayers();
-
 	// 관전자 모드를 켜줌
 	PlayerState->SetPlayertoSpectar(true);
 	APlayerController* FallController = Cast<APlayerController>(_Character->GetController());
 	SetRandomViewForClient(FallController);
 
 	// 메쉬 및 콜리전 투명화
-	_Character->ApplySpectatorVisibilityAtGoalColl();
+	_Character->C2S_ApplySpectatorVisibilityAtGoalColl();
 
 	// 결승선 or 킬존 닿은 플레이어 카운트 +1
 	++CurFinishPlayer;
@@ -1277,11 +1277,12 @@ void APlayGameMode::SetSpectar_STAGE()
 		if (!PlayerCharacter) continue;
 
 		APlayPlayerState* PS = PlayerCharacter->GetPlayerState<APlayPlayerState>();
-		if (PS && PS->PlayerInfo.Status == EPlayerStatus::FAIL)
+		if (PS && PS->PlayerInfo.Status == EPlayerStatus::FAIL && PlayerCharacter->bSpectatorApplied == false)
 		{
-			PlayerCharacter->S2M_ApplySpectatorVisibility();
 			APlayPlayerController* FallController = PlayerCharacter->GetController<APlayPlayerController>();
 			SetRandomViewForClient(FallController);
+			PlayerCharacter->S2M_ApplySpectatorVisibility();
+			PlayerCharacter->bSpectatorApplied = true;
 		}
 	}
 }
@@ -1294,10 +1295,13 @@ void APlayGameMode::SetSpectar_RESULT()
 		if (!PlayerCharacter) continue;
 
 		APlayPlayerState* PS = PlayerCharacter->GetPlayerState<APlayPlayerState>();
-		if (PS && PS->PlayerInfo.bCanHiddenAtResult == true)
+		if (PS && PS->PlayerInfo.bCanHiddenAtResult == true && PlayerCharacter->bSpectatorApplied == false)
 		{
 			APlayPlayerController* FallController = PlayerCharacter->GetController<APlayPlayerController>();
 			SetRandomViewForClient(FallController);
+			PlayerCharacter->S2M_ApplySpectatorVisibility();
+			PlayerCharacter->SetActorLocation({ 0, -10000, 0 });
+			PlayerCharacter->bSpectatorApplied = true;
 		}
 	}
 }
@@ -1306,6 +1310,9 @@ void APlayGameMode::SetRandomViewForClient(APlayerController* _TargetController)
 {
 	APlayGameState* FallState = GetGameState<APlayGameState>();
 	if (!FallState || !_TargetController) return;
+
+	// 유저 리스트 업데이트 해줌
+	FallState->UpdateAlivePlayers();
 
 	APlayPlayerController* PC = Cast<APlayPlayerController>(_TargetController);
 	if (!PC) return;
