@@ -107,6 +107,14 @@ public:
 	void Client_SetViewTargetByTag(FName _TargetTag);
 	void Client_SetViewTargetByTag_Implementation(FName _TargetTag);
 
-	bool SettedSpect = false;
+	// 클라이언트 전용 View Target 설정 함수
+	UFUNCTION(Client, Reliable)
+	void ClientWhoHidden_SetViewTargetByTag(FName _TargetTag);
+	void ClientWhoHidden_SetViewTargetByTag_Implementation(FName _TargetTag);
+
+	// 레벨 이동 후, 저장된 SpectateTargetTag를 사용해 카메라 세팅
+	void ClientPostTravelSetup(FName _Tag);
+
+	bool SettedTarget = false;
 
 };

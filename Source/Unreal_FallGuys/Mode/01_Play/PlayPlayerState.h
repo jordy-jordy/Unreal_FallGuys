@@ -48,22 +48,26 @@ struct FPlayerInfo
     // 결과화면에서 가려도 되니?
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
     bool bCanHiddenAtResult;
-
+    // 랜덤 뷰 타겟
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    FName SpectateTargetTag;
 
     // 플레이어 정보가 모두 동일할 때 TRUE 반환
     bool operator==(const FPlayerInfo& Other) const
     {
-		return UniqueID == Other.UniqueID &&
-			Tag == Other.Tag &&
-			NickName == Other.NickName &&
-			CostumeColor == Other.CostumeColor &&
-			CostumeTOP == Other.CostumeTOP &&
-			CostumeBOT == Other.CostumeBOT &&
-			Status == Other.Status &&
-			Team == Other.Team &&
-			DropOrder == Other.DropOrder &&
-			bIsSpectar == Other.bIsSpectar &&
-			bCanHiddenAtResult == Other.bCanHiddenAtResult;
+        return UniqueID == Other.UniqueID &&
+            Tag == Other.Tag &&
+            NickName == Other.NickName &&
+            CostumeColor == Other.CostumeColor &&
+            CostumeTOP == Other.CostumeTOP &&
+            CostumeBOT == Other.CostumeBOT &&
+            Status == Other.Status &&
+            Team == Other.Team &&
+            DropOrder == Other.DropOrder &&
+            bIsSpectar == Other.bIsSpectar &&
+            bCanHiddenAtResult == Other.bCanHiddenAtResult &&
+            SpectateTargetTag == Other.SpectateTargetTag;
+
     }
     // 플레이어 정보가 동일하지 않을때 FALSE 반환
     bool operator!=(const FPlayerInfo& Other) const
@@ -73,7 +77,8 @@ struct FPlayerInfo
 
     FPlayerInfo()
         : Tag(TEXT("")), NickName(TEXT("")), CostumeColor(TEXT("")), CostumeTOP(TEXT("")), CostumeBOT(TEXT("")),
-          Status(EPlayerStatus::DEFAULT), Team(ETeamType::NONE), DropOrder(-1), bIsSpectar(false), bCanHiddenAtResult(false)
+          Status(EPlayerStatus::DEFAULT), Team(ETeamType::NONE), DropOrder(-1), bIsSpectar(false), bCanHiddenAtResult(false), 
+          SpectateTargetTag(TEXT(""))
     {
     }
 };

@@ -413,6 +413,18 @@ void APlayGameMode::BeginPlay()
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode BeginPlay START ======= "));
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: GameMode 주소: %p"), this);
 
+	// 개인전용 : 결과 화면용 관전자 ON
+	if (bMODEIsResultLevel && CurLevelInfo_Mode.LevelType == EStageType::SOLO)
+	{
+		GetWorldTimerManager().SetTimer(
+			SpectatorCheckTimerHandle,
+			this,
+			&APlayGameMode::SetSpectar_RESULT,
+			0.1f,
+			true
+		);
+	}
+
 	// 게임 시작을 위한 조건을 주기적으로 체크
 	GetWorldTimerManager().SetTimer(
 		GameStartConditionTimer,
@@ -449,17 +461,6 @@ void APlayGameMode::CheckStartConditions()
 			SpectatorCheckTimerHandle,
 			this,
 			&APlayGameMode::SetSpectar_STAGE,
-			0.1f,
-			true
-		);
-	}
-	// 개인전용 : 결과 화면용 관전자 ON
-	else if (bMODEIsResultLevel && CurLevelInfo_Mode.LevelType == EStageType::SOLO)
-	{
-		GetWorldTimerManager().SetTimer(
-			SpectatorCheckTimerHandle,
-			this,
-			&APlayGameMode::SetSpectar_RESULT,
 			0.1f,
 			true
 		);
@@ -543,7 +544,6 @@ int32 APlayGameMode::GetDefaultPlayerCount()
 	}
 
 	int32 Count = 0;
-	FallState->GetDefaultPlayerInfoArray().Empty();
 
 	for (APlayerState* PS : FallState->PlayerArray)
 	{
@@ -552,9 +552,7 @@ int32 APlayGameMode::GetDefaultPlayerCount()
 		{
 			++Count;
 
-			// 추가: 배열에도 저장
 			FPlayerInfoEntry Entry(PState->PlayerInfo.UniqueID, PState->PlayerInfo);
-			FallState->GetDefaultPlayerInfoArray().Add(Entry);
 
 			UE_LOG(FALL_DEV_LOG, Log,
 				TEXT("PlayGameMode :: GetDefaultPlayerCount :: UID = %s, Tag = %s → 디폴트 상태로 등록"),
@@ -987,6 +985,14 @@ void APlayGameMode::SetEndCondition_Solo(APlayGameState* _FallState)
 		// 실패자에게 DropOrder 배정 및 실패한 유저 정보 백업
 		_FallState->SetDropOrder();
 
+		if (!bSettedRandomViewTarget)
+		{
+			// 성공한 플레이어를 배열에 저장
+			UpdateSuccessPlayerInfoArray();
+			PrepareSpectatorTargets();
+			ResetAllControllersTargetStatus();
+		}
+
 		// 플레이어 인포를 백업한 이력이 없을때만
 		if (!bPlayerInfosBackUp)
 		{
@@ -996,6 +1002,7 @@ void APlayGameMode::SetEndCondition_Solo(APlayGameState* _FallState)
 	}
 
 	bPlayerStatusChanged = true;
+	bSettedRandomViewTarget = true;
 	bPlayerInfosBackUp = true;
 
 	// 개인전 세팅을 한 이력이 없을때만
@@ -1074,6 +1081,72 @@ void APlayGameMode::SetDefaultPlayersToSuccess()
 		}
 	}
 	// 상태 바꾼 것을 동기화
+	SyncPlayerInfo();
+}
+
+// 성공한 플레이어들을 SuccessPlayerInfoArray에 저장
+void APlayGameMode::UpdateSuccessPlayerInfoArray()
+{
+	// 마지막 동기화
+	SyncPlayerInfo();
+
+	APlayGameState* FallState = GetGameState<APlayGameState>();
+	if (!FallState)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: UpdateSuccessPlayerInfoArray :: GameState가 nullptr 입니다."));
+		return;
+	}
+
+	FallState->SuccessPlayerInfoArray.Empty();
+
+	for (APlayerState* PS : FallState->PlayerArray)
+	{
+		APlayPlayerState* PState = Cast<APlayPlayerState>(PS);
+		if (PState && PState->PlayerInfo.Status == EPlayerStatus::SUCCESS)
+		{
+			FPlayerInfoEntry Entry(PState->PlayerInfo.UniqueID, PState->PlayerInfo);
+			FallState->SuccessPlayerInfoArray.Add(Entry);
+
+			UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: UpdateSuccessPlayerInfoArray :: 성공 플레이어 등록 - %s"), *Entry.PlayerInfo.Tag.ToString());
+		}
+	}
+}
+
+// 실패한 플레이어들에게 관전 타겟 지정
+void APlayGameMode::PrepareSpectatorTargets()
+{
+	// 마지막 동기화
+	SyncPlayerInfo();
+
+	APlayGameState* FallState = GetGameState<APlayGameState>();
+	if (!FallState) return;
+
+	const TArray<FPlayerInfoEntry>& SuccessPlayers = FallState->SuccessPlayerInfoArray;
+
+	if (SuccessPlayers.Num() == 0)
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: PrepareSpectatorTargets :: 성공한 플레이어 없음"));
+		return;
+	}
+
+	for (APlayerState* PS : FallState->PlayerArray)
+	{
+		APlayPlayerState* PState = Cast<APlayPlayerState>(PS);
+		if (PState && PState->PlayerInfo.bCanHiddenAtResult == true)
+		{
+			int32 RandomIndex = FMath::RandRange(0, SuccessPlayers.Num() - 1);
+			const FPlayerInfoEntry& TargetEntry = SuccessPlayers[RandomIndex];
+
+			// 관전자 타겟 저장
+			PState->PlayerInfo.SpectateTargetTag = TargetEntry.PlayerInfo.Tag;
+
+			UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: PrepareSpectatorTargets :: 관전자 %s → 타겟 %s"),
+				*PState->PlayerInfo.Tag.ToString(),
+				*TargetEntry.PlayerInfo.Tag.ToString());
+		}
+	}
+
+	// 마지막 동기화
 	SyncPlayerInfo();
 }
 
@@ -1314,16 +1387,19 @@ void APlayGameMode::SetSpectar_RESULT()
 		APlayCharacter* PlayerCharacter = *It;
 		if (!PlayerCharacter) continue;
 
+		APlayPlayerController* FallController = PlayerCharacter->GetController<APlayPlayerController>();
 		APlayPlayerState* PS = PlayerCharacter->GetPlayerState<APlayPlayerState>();
-		if (PS && PS->PlayerInfo.bCanHiddenAtResult == true && PlayerCharacter->bSpectatorApplied == false)
+		if (PS && PS->PlayerInfo.bCanHiddenAtResult == true /*&& PlayerCharacter->bSpectatorApplied == false*/)
 		{
+			if (!FallController->SettedTarget)
+			{
+				FallController->ClientPostTravelSetup(PS->PlayerInfo.SpectateTargetTag);
+			}
 			PlayerCharacter->S2M_ApplySpectatorVisibility();
-			APlayPlayerController* FallController = PlayerCharacter->GetController<APlayPlayerController>();
-			SetRandomViewForClient(FallController);
 			PlayerCharacter->SetActorLocation({ 0, -10000, 0 });
-			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: SetSpectar_RESULT :: 캐릭터 숨김처리 완료 | 닉네임: %s"),
+			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 결과 화면 :: 캐릭터 숨김처리 완료 | 닉네임: %s"),
 				*PS->PlayerInfo.NickName);
-			PlayerCharacter->bSpectatorApplied = true;
+			// PlayerCharacter->bSpectatorApplied = true;
 		}
 	}
 }
@@ -1403,3 +1479,16 @@ void APlayGameMode::SetViewForClientByIndex(APlayerController* _TargetController
 	}
 }
 
+void APlayGameMode::ResetAllControllersTargetStatus()
+{
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	{
+		APlayPlayerController* PC = Cast<APlayPlayerController>(It->Get());
+		if (PC)
+		{
+			PC->SettedTarget = false;
+
+			UE_LOG(FALL_DEV_LOG, Log, TEXT("ResetAllControllersTargetStatus :: 컨트롤러 %s 초기화 완료"), *PC->GetName());
+		}
+	}
+}

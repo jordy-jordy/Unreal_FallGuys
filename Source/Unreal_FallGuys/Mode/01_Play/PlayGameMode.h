@@ -358,4 +358,14 @@ public:
 
 	// 특정 클라이언트의 뷰 타겟을 인덱스 기반으로 설정
 	void SetViewForClientByIndex(class APlayerController* _TargetController, int32 _TargetIndex);
+
+	// 성공한 플레이어들을 SuccessPlayerInfoArray에 저장
+	void UpdateSuccessPlayerInfoArray();
+	// 실패한 플레이어들에게 관전 타겟 지정
+	void PrepareSpectatorTargets();
+	// 관전 타겟 지정 완료
+	bool bSettedRandomViewTarget = false;
+	// 모든 플레이어 컨트롤러의 SettedTarget 초기화
+	void ResetAllControllersTargetStatus();
+
 };

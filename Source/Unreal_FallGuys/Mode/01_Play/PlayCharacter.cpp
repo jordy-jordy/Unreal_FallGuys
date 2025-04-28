@@ -347,7 +347,7 @@ void APlayCharacter::S2M_ApplySpectatorVisibility_Implementation()
 
 	bVisibilityApplied = true;
 
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayCharacter :: 일반 스테이지 :: 관전자 숨김 처리 완료 :: 닉네임 : %s"),
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayCharacter :: 관전자 숨김 처리 완료 :: 닉네임 : %s"),
 	*NickName);
 }
 

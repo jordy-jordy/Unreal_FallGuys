@@ -115,7 +115,7 @@ public:
 
 	// 디폴트 플레이어 리스트 반환
 	UFUNCTION(BlueprintCallable, Category = "PLAYER LIST")
-	TArray<FPlayerInfoEntry> GetDefaultPlayerInfoArray() { return DefaultPlayerInfoArray; }
+	TArray<FPlayerInfoEntry> GetSuccessPlayerInfoArray() { return SuccessPlayerInfoArray; }
 
 	// `PlayerState`에서 데이터 동기화
 	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "PLAYER LIST")
@@ -172,7 +172,7 @@ protected:
 
 	// 성공한 플레이어 정보 목록
 	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category = "PLAYER LIST")
-	TArray<FPlayerInfoEntry> DefaultPlayerInfoArray;
+	TArray<FPlayerInfoEntry> SuccessPlayerInfoArray;
 
 	// 실시간 Default or Sussee 상태 플레이어 목록
 	UPROPERTY(Replicated, BlueprintReadOnly, Category = "PLAYER LIST")

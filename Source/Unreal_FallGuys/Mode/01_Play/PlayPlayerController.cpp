@@ -168,9 +168,11 @@ void APlayPlayerController::SetupInputComponent()
 void APlayPlayerController::OnNextSpectate()
 {
 	if (!IsLocalController()) return;
-	
 	APlayCharacter* MyCharacter = Cast<APlayCharacter>(GetPawn());
-	if (MyCharacter != nullptr)
+	APlayPlayerState* MyState = MyCharacter->GetPlayerState<APlayPlayerState>();
+	if (MyCharacter == nullptr || MyState == nullptr) return;
+
+	if (MyState->PlayerInfo.bIsSpectar == true)
 	{
 		++MyCharacter->SpectateTargetIndex;
 		MyCharacter->C2S_RequestSetViewByIndex(MyCharacter->SpectateTargetIndex);
@@ -182,14 +184,16 @@ void APlayPlayerController::OnNextSpectate()
 void APlayPlayerController::OnPrevSpectate()
 {
 	if (!IsLocalController()) return;
-
 	APlayCharacter* MyCharacter = Cast<APlayCharacter>(GetPawn());
-	if (MyCharacter != nullptr)
+	APlayPlayerState* MyState = MyCharacter->GetPlayerState<APlayPlayerState>();
+	if (MyCharacter == nullptr || MyState == nullptr) return;
+
+	if (MyState->PlayerInfo.bIsSpectar == true)
 	{
 		--MyCharacter->SpectateTargetIndex;
 		MyCharacter->C2S_RequestSetViewByIndex(MyCharacter->SpectateTargetIndex);
 
-		UE_LOG(FALL_DEV_LOG, Log, TEXT("OnPrevSpectate :: 인덱스 감소: %d"), MyCharacter->SpectateTargetIndex);
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("OnNextSpectate :: 인덱스 감소: %d"), MyCharacter->SpectateTargetIndex);
 	}
 }
 
@@ -343,4 +347,58 @@ void APlayPlayerController::Client_SetViewTargetByTag_Implementation(FName _Targ
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("Client_SetViewTargetByTag :: 실패 → 태그: %s | 전체 액터 수: %d"),
 			*_TargetTag.ToString(), ActorCount);
 	}
+}
+
+void APlayPlayerController::ClientWhoHidden_SetViewTargetByTag_Implementation(FName _TargetTag)
+{
+	bool bFound = false;
+	int32 ActorCount = 0;
+
+	for (TActorIterator<APlayCharacter> It(GetWorld()); It; ++It)
+	{
+		APlayCharacter* PlayerCharacter = *It;
+		++ActorCount;
+
+		if (PlayerCharacter)
+		{
+			APlayPlayerState* PS = PlayerCharacter->GetPlayerState<APlayPlayerState>();
+			if (PS && PS->PlayerInfo.Tag == _TargetTag)
+			{
+				SetViewTargetWithBlend(PlayerCharacter, 0.0f); // 블렌딩 없이 바로 전환
+
+				UE_LOG(FALL_DEV_LOG, Log, TEXT("Client_SetViewTargetByTag :: 성공 → 태그: %s, 타겟: %s"),
+					*_TargetTag.ToString(), *PlayerCharacter->GetName());
+
+				SettedTarget = true;
+				bFound = true;
+				break;
+			}
+			else
+			{
+				FString StateTag = PS ? PS->PlayerInfo.Tag.ToString() : TEXT("NoState");
+				UE_LOG(FALL_DEV_LOG, Log, TEXT("Client_SetViewTargetByTag :: 검사중 → 태그: %s | 현재 액터: %s | 상태태그: %s"),
+					*_TargetTag.ToString(),
+					*PlayerCharacter->GetName(),
+					*StateTag);
+			}
+		}
+	}
+
+	if (!bFound)
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("Client_SetViewTargetByTag :: 실패 → 태그: %s | 전체 액터 수: %d"),
+			*_TargetTag.ToString(), ActorCount);
+	}
+}
+
+void APlayPlayerController::ClientPostTravelSetup(FName _Tag)
+{
+	APlayPlayerState* MyState = GetPlayerState<APlayPlayerState>();
+	if (!MyState) return;
+
+	// 저장된 타겟 태그로 뷰 설정
+	ClientWhoHidden_SetViewTargetByTag(_Tag);
+
+	UE_LOG(FALL_DEV_LOG, Log, TEXT("ClientPostTravelSetup :: 저장된 타겟으로 카메라 세팅 | 타겟 태그: %s"),
+		*_Tag.ToString());
 }
