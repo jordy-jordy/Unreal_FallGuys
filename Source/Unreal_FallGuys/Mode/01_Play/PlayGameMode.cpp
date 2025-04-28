@@ -417,7 +417,7 @@ void APlayGameMode::BeginPlay()
 			SpectatorCheckTimerHandle,
 			this,
 			&APlayGameMode::SetSpectar_STAGE,
-			0.5f,
+			0.1f,
 			true
 		);
 	}
@@ -428,7 +428,7 @@ void APlayGameMode::BeginPlay()
 			SpectatorCheckTimerHandle,
 			this,
 			&APlayGameMode::SetSpectar_RESULT,
-			0.5f,
+			0.1f,
 			true
 		);
 	}
