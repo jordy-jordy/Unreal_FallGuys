@@ -60,6 +60,24 @@ void APlayPlayerController::BeginPlay()
 	}
 }
 
+void APlayPlayerController::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	// 관전 중일 때만 회전 동기화
+	if (GetViewTarget() && GetViewTarget() != GetPawn())
+	{
+		APlayCharacter* TargetCharacter = Cast<APlayCharacter>(GetViewTarget());
+		if (TargetCharacter != nullptr)
+		{
+			FRotator TargetCamRot = TargetCharacter->ReplicatedCameraRotation;
+
+			// 카메라 회전 반영
+			SetControlRotation(TargetCamRot);
+		}
+	}
+}
+
 // 이현정 : 서버에 준비 완료 알림
 void APlayPlayerController::CallReady()
 {
@@ -136,6 +154,42 @@ void APlayPlayerController::SetupInputComponent()
 		{
 			EnhancedInput->BindAction(InputAction_CurFinishPlayer, ETriggerEvent::Started, this, &APlayPlayerController::OnPrintCurFinishPlayer);
 		}
+		if (InputAction_NextSpectate)
+		{
+			EnhancedInput->BindAction(InputAction_NextSpectate, ETriggerEvent::Started, this, &APlayPlayerController::OnNextSpectate);
+		}
+		if (InputAction_PrevSpectate)
+		{
+			EnhancedInput->BindAction(InputAction_PrevSpectate, ETriggerEvent::Started, this, &APlayPlayerController::OnPrevSpectate);
+		}
+	}
+}
+
+void APlayPlayerController::OnNextSpectate()
+{
+	if (!IsLocalController()) return;
+	
+	APlayCharacter* MyCharacter = Cast<APlayCharacter>(GetPawn());
+	if (MyCharacter != nullptr)
+	{
+		MyCharacter->SpectateTargetIndex++;
+		MyCharacter->C2S_RequestSetViewByIndex(MyCharacter->SpectateTargetIndex);
+
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("OnNextSpectate :: 인덱스 증가: %d"), MyCharacter->SpectateTargetIndex);
+	}
+}
+
+void APlayPlayerController::OnPrevSpectate()
+{
+	if (!IsLocalController()) return;
+
+	APlayCharacter* MyCharacter = Cast<APlayCharacter>(GetPawn());
+	if (MyCharacter != nullptr)
+	{
+		MyCharacter->SpectateTargetIndex--;
+		MyCharacter->C2S_RequestSetViewByIndex(MyCharacter->SpectateTargetIndex);
+
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("OnPrevSpectate :: 인덱스 감소: %d"), MyCharacter->SpectateTargetIndex);
 	}
 }
 
@@ -253,32 +307,40 @@ void APlayPlayerController::Server_RequestSetCanMoveLevel_Implementation(bool _b
 void APlayPlayerController::Client_SetViewTargetByTag_Implementation(FName _TargetTag)
 {
 	bool bFound = false;
+	int32 ActorCount = 0;
 
-	// 후보 캐릭터 출력
 	for (TActorIterator<APlayCharacter> It(GetWorld()); It; ++It)
 	{
 		APlayCharacter* PlayerCharacter = *It;
+		ActorCount++;
 
-		if (PlayerCharacter && PlayerCharacter->Tags.Contains(_TargetTag))
+		if (PlayerCharacter)
 		{
-			SetViewTargetWithBlend(PlayerCharacter, 0.1f);
-			UE_LOG(FALL_DEV_LOG, Log, TEXT("Client_SetViewTargetByTag :: 성공 → 태그: %s, 타겟: %s"),
-				*_TargetTag.ToString(), *PlayerCharacter->GetName());
-			bFound = true;
-			break;
+			APlayPlayerState* PS = PlayerCharacter->GetPlayerState<APlayPlayerState>();
+			if (PS && PS->PlayerInfo.Tag == _TargetTag)
+			{
+				SetViewTargetWithBlend(PlayerCharacter, 0.0f); // 블렌딩 없이 바로 전환
+
+				UE_LOG(FALL_DEV_LOG, Log, TEXT("Client_SetViewTargetByTag :: 성공 → 태그: %s, 타겟: %s"),
+					*_TargetTag.ToString(), *PlayerCharacter->GetName());
+
+				bFound = true;
+				break;
+			}
+			else
+			{
+				FString StateTag = PS ? PS->PlayerInfo.Tag.ToString() : TEXT("NoState");
+				UE_LOG(FALL_DEV_LOG, Log, TEXT("Client_SetViewTargetByTag :: 검사중 → 태그: %s | 현재 액터: %s | 상태태그: %s"),
+					*_TargetTag.ToString(),
+					*PlayerCharacter->GetName(),
+					*StateTag);
+			}
 		}
 	}
 
 	if (!bFound)
 	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("Client_SetViewTargetByTag :: 실패 → 태그: %s | 재시도 예정"),
-			*_TargetTag.ToString());
-
-		// 재시도 (0.5초 후)
-		FTimerHandle RetryHandle;
-		GetWorld()->GetTimerManager().SetTimer(RetryHandle, [this, _TargetTag]()
-			{
-				Client_SetViewTargetByTag(_TargetTag);
-			}, 0.5f, false);
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("Client_SetViewTargetByTag :: 실패 → 태그: %s | 전체 액터 수: %d"),
+			*_TargetTag.ToString(), ActorCount);
 	}
 }

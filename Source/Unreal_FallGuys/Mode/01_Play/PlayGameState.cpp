@@ -134,7 +134,7 @@ void APlayGameState::SyncPlayerInfoFromPlayerState_Implementation()
 	}
 }
 
-void APlayGameState::UpdateAlivePlayers()
+void APlayGameState::UpdateAlivePlayers_Implementation()
 {
 	if (!HasAuthority()) return; // 서버에서만 업데이트
 
