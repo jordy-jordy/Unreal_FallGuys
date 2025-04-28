@@ -35,6 +35,7 @@ APlayCharacter::APlayCharacter()
 	SpringArmComponent->SetupAttachment(RootComponent);
 	SpringArmComponent->TargetArmLength = 400.0f; // The camera follows at this distance behind the character	
 	SpringArmComponent->bUsePawnControlRotation = true; // Rotate the arm based on the controller
+	SpringArmComponent->bDoCollisionTest = false; // 충돌 검사 비활성화
 
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
 	CameraComponent->SetupAttachment(SpringArmComponent, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation

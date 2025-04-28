@@ -442,8 +442,8 @@ void APlayGameMode::CheckStartConditions()
 	// 인원이 안찼으면 리턴
 	if (bNumberOfPlayer == false) return;
 
-	// 개인전용 : 결과 화면이 아닐 때 : 0.1초마다 실패자 체크 타이머 시작 → 투명화 O, 관전자 모드 ON
-	if (!bMODEIsResultLevel && CurLevelInfo_Mode.LevelType == EStageType::SOLO)
+	// 개인전용 : 결과 화면X 2라운드 부터O : 일반 스테이지용 관전자 ON
+	if (!bMODEIsResultLevel && bMODEIsLevelMoved && CurLevelInfo_Mode.LevelType == EStageType::SOLO)
 	{
 		GetWorldTimerManager().SetTimer(
 			SpectatorCheckTimerHandle,
@@ -453,7 +453,7 @@ void APlayGameMode::CheckStartConditions()
 			true
 		);
 	}
-	// 개인전용 : 결과 화면일 때 : 0.1초마다 실패자 체크 타이머 시작 → 투명화 X, 관전자 모드 ON
+	// 개인전용 : 결과 화면용 관전자 ON
 	else if (bMODEIsResultLevel && CurLevelInfo_Mode.LevelType == EStageType::SOLO)
 	{
 		GetWorldTimerManager().SetTimer(
@@ -861,6 +861,9 @@ void APlayGameMode::OnPlayerFinished(APlayCharacter* _Character)
 
 	// 이동을 막음
 	_Character->S2M_SetCanMoveFalse();
+	// 메쉬 및 콜리전 투명화
+	_Character->C2S_ApplySpectatorVisibilityAtGoalColl();
+
 
 	if (CurLevelInfo_Mode.EndCondition == EPlayerStatus::SUCCESS)
 	{
@@ -878,13 +881,16 @@ void APlayGameMode::OnPlayerFinished(APlayCharacter* _Character)
 		return;
 	}
 
-	// 관전자 모드를 켜줌
-	PlayerState->SetPlayertoSpectar(true);
-	APlayerController* FallController = Cast<APlayerController>(_Character->GetController());
-	SetRandomViewForClient(FallController);
-
-	// 메쉬 및 콜리전 투명화
-	_Character->C2S_ApplySpectatorVisibilityAtGoalColl();
+	// 관전자 중에서 이 캐릭터를 보고 있는 사람들 → 타겟 변경
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	{
+		APlayPlayerController* SpectatorPC = Cast<APlayPlayerController>(It->Get());
+		if (SpectatorPC && SpectatorPC->GetViewTarget() == _Character)
+		{
+			// 타겟 바꿔줌
+			SetRandomViewForClient(SpectatorPC);
+		}
+	}
 
 	// 결승선 or 킬존 닿은 플레이어 카운트 +1
 	++CurFinishPlayer;
@@ -893,6 +899,13 @@ void APlayGameMode::OnPlayerFinished(APlayCharacter* _Character)
 	if (CurFinishPlayer >= FinishPlayer && IsEndGame == false)
 	{
 		SetEndCondition_Trigger(FallState);
+	}
+	else
+	{
+		// 관전자 모드를 켜줌
+		PlayerState->SetPlayertoSpectar(true);
+		APlayerController* FallController = Cast<APlayerController>(_Character->GetController());
+		SetRandomViewForClient(FallController);
 	}
 }
 
