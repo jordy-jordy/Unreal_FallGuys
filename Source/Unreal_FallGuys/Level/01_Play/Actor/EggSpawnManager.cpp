@@ -3,6 +3,7 @@
 
 #include "Level/01_Play/Actor/EggSpawnManager.h"
 #include "Level/01_Play/Actor/Egg.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AEggSpawnManager::AEggSpawnManager()
@@ -16,10 +17,9 @@ AEggSpawnManager::AEggSpawnManager()
 void AEggSpawnManager::BeginPlay()
 {
 	Super::BeginPlay();
-
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEgg::StaticClass(), Eggs);
 	for (int i = 0; i < EggCount; i++)
 	{
-		Eggs.Add(GetWorld()->SpawnActor<AEgg>(EggFactory, GetActorTransform()));
 		Eggs[i]->SetOwner(this);
 	}
 	
@@ -39,10 +39,11 @@ TArray<int> AEggSpawnManager::CheckEggTeam()
 
 	TArray<int> TeamEggCoopy;
 	TeamEggCoopy.SetNum(4);
-	for (AEgg* egg : Eggs)
+	for (AActor* egg : Eggs)
 	{
-		if (egg->Team == -1) continue;
-		TeamEggCoopy[egg->Team] += 1;
+		AEgg* Egg = Cast<AEgg>(egg);
+		if (Egg->Team == -1) continue;
+		TeamEggCoopy[Egg->Team] += 1;
 		
 	}
 	return TeamEggCoopy;

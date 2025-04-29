@@ -24,7 +24,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION()
-	TArray<class AEgg*> GetCurEggs() const
+	TArray<class AActor*> GetCurEggs() const
 	{
 		return Eggs;
 	}
@@ -33,10 +33,10 @@ public:
 	TArray<int> CheckEggTeam();
 
 	UPROPERTY(EditAnywhere, Category = "Egg|Factory")
-	TSubclassOf<class AActor> EggFactory;
+	TSubclassOf<class AEgg> EggFactory;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Egg")
-	TArray<class AEgg*> Eggs;
+	TArray<class AActor*> Eggs;
 
 	UPROPERTY(EditAnywhere, Category = "Egg")
 	int EggCount = 0;
