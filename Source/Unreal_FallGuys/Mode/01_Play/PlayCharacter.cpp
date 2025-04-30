@@ -22,6 +22,8 @@
 // Sets default values
 APlayCharacter::APlayCharacter()
 {
+	bReplicates = true;
+
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -39,7 +41,7 @@ APlayCharacter::APlayCharacter()
 
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
 	CameraComponent->SetupAttachment(SpringArmComponent, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
-	CameraComponent->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+	CameraComponent->bUsePawnControlRotation = false;
 
 	CostumeTOPStaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TOPMesh"));
 	CostumeTOPStaticMesh->SetCollisionProfileName(TEXT("NoCollision"));
@@ -52,8 +54,6 @@ APlayCharacter::APlayCharacter()
 	CostumeBOTStaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	CostumeBOTStaticMesh->SetGenerateOverlapEvents(false);
 	CostumeBOTStaticMesh->CanCharacterStepUpOn = ECanBeCharacterBase::ECB_No;
-
-	bReplicates = true;
 }
 
 void APlayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -79,6 +79,13 @@ void APlayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 void APlayCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// 카메라 설정
+	if (CameraComponent)
+	{
+		CameraComponent->SetAutoActivate(true);
+		CameraComponent->Activate();
+	}
 
 	// 이현정 : 캐릭터 무브먼트 컴포넌트 세팅
 	// 캐릭터 무브먼트 :: 일반 세팅 : 마찰 인수 제동
