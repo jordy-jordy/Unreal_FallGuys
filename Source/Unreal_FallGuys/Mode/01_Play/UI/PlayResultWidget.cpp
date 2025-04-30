@@ -77,7 +77,7 @@ void UPlayResultWidget::FinishedResultWidget()
 	else if (StageType == EStageType::TEAM)
 	{
 		int CurLimitTime = static_cast<int>(UFallGlobal::GetRemainingTime());
-		if (0.0f == CurLimitTime)
+		if (0.1f < CurLimitTime)
 		{
 			UPlayInGameWidget* InGameWidget = Cast<UPlayInGameWidget>(GetMainWidget()->FindWidget(EPlayUIType::PlayInGame));
 			InGameWidget->ShowResult(true);
