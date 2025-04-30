@@ -43,7 +43,7 @@ TArray<int> AEggSpawnManager::CheckEggTeam()
 	{
 		AEgg* Egg = Cast<AEgg>(egg);
 		if (Egg->Team == -1) continue;
-		TeamEggCoopy[Egg->Team] += 1;
+		else TeamEggCoopy[Egg->Team] += 1;
 		
 	}
 	return TeamEggCoopy;
