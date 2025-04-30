@@ -332,6 +332,53 @@ void APlayPlayerController::Server_NotifySettedRandomTarget_Implementation(bool 
 }
 
 // 결과 화면 : 뷰 타겟을 바꿔줌
+//void APlayPlayerController::ClientWhoHidden_SetViewTargetByTag_Implementation(FName _TargetTag)
+//{
+//	bool bFound = false;
+//	int32 ActorCount = 0;
+//
+//	for (TActorIterator<APlayCharacter> It(GetWorld()); It; ++It)
+//	{
+//		APlayCharacter* PlayerCharacter = *It;
+//		++ActorCount;
+//
+//		if (PlayerCharacter)
+//		{
+//			APlayPlayerState* PS = PlayerCharacter->GetPlayerState<APlayPlayerState>();
+//			if (PS && PS->PlayerInfo.Tag == _TargetTag)
+//			{
+//				SetViewTargetWithBlend(PlayerCharacter, 0.0f); // 블렌딩 없이 바로 전환
+//
+//				// 세팅 완료
+//				SettedTarget = true;
+//				// 서버에게 완료 알림
+//				Server_NotifySettedTarget(SettedTarget);
+//
+//				UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayPlayerController :: Client_SetViewTargetByTag :: 성공 → 태그: %s, 타겟: %s"),
+//					*_TargetTag.ToString(), *PlayerCharacter->GetName());
+//
+//				bFound = true;
+//				break;
+//			}
+//			else
+//			{
+//				FString StateTag = PS ? PS->PlayerInfo.Tag.ToString() : TEXT("NoState");
+//				UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayPlayerController :: Client_SetViewTargetByTag :: 검사중 → 태그: %s | 현재 액터: %s | 상태태그: %s"),
+//					*_TargetTag.ToString(),
+//					*PlayerCharacter->GetName(),
+//					*StateTag);
+//			}
+//		}
+//	}
+//
+//	if (!bFound)
+//	{
+//		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayPlayerController :: Client_SetViewTargetByTag :: 실패 → 태그: %s | 전체 액터 수: %d"),
+//			*_TargetTag.ToString(), ActorCount);
+//	}
+//}
+
+// 결과 화면 : 뷰 타겟을 바꿔줌
 void APlayPlayerController::ClientWhoHidden_SetViewTargetByTag_Implementation(FName _TargetTag)
 {
 	bool bFound = false;
@@ -347,11 +394,9 @@ void APlayPlayerController::ClientWhoHidden_SetViewTargetByTag_Implementation(FN
 			APlayPlayerState* PS = PlayerCharacter->GetPlayerState<APlayPlayerState>();
 			if (PS && PS->PlayerInfo.Tag == _TargetTag)
 			{
-				SetViewTargetWithBlend(PlayerCharacter, 0.0f); // 블렌딩 없이 바로 전환
+				SetViewTargetWithBlend(PlayerCharacter, 0.0f);
 
-				// 세팅 완료
 				SettedTarget = true;
-				// 서버에게 완료 알림
 				Server_NotifySettedTarget(SettedTarget);
 
 				UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayPlayerController :: Client_SetViewTargetByTag :: 성공 → 태그: %s, 타겟: %s"),
@@ -373,10 +418,19 @@ void APlayPlayerController::ClientWhoHidden_SetViewTargetByTag_Implementation(FN
 
 	if (!bFound)
 	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayPlayerController :: Client_SetViewTargetByTag :: 실패 → 태그: %s | 전체 액터 수: %d"),
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayPlayerController :: Client_SetViewTargetByTag :: 실패 → 태그: %s | 전체 액터 수: %d. 0.2초 후 재시도합니다."),
 			*_TargetTag.ToString(), ActorCount);
+
+		FTimerHandle RetryHandle;
+		FTimerDelegate RetryDelegate;
+		RetryDelegate.BindLambda([this, _TargetTag]()
+			{
+				ClientWhoHidden_SetViewTargetByTag(_TargetTag);
+			});
+		GetWorld()->GetTimerManager().SetTimer(RetryHandle, RetryDelegate, 0.2f, false);
 	}
 }
+
 
 void APlayPlayerController::Server_NotifySettedTarget_Implementation(bool _Value)
 {

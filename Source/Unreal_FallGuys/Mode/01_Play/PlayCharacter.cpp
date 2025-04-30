@@ -23,6 +23,8 @@
 // Sets default values
 APlayCharacter::APlayCharacter()
 {
+	bNetLoadOnClient = true;
+	bOnlyRelevantToOwner = false;
 	bReplicates = true;
 	SetReplicateMovement(true);
 
@@ -31,9 +33,9 @@ APlayCharacter::APlayCharacter()
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
-	bUseControllerRotationRoll = false;
 
-	GetCharacterMovement()->bOrientRotationToMovement = true;
+	// 캐릭터의 회전
+	bUseControllerRotationYaw = false;
 
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComponent"));
 	SpringArmComponent->SetupAttachment(RootComponent);
@@ -74,7 +76,10 @@ void APlayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(APlayCharacter, bIsResultLevel);
 	DOREPLIFETIME(APlayCharacter, bSpectatorApplied);
 	DOREPLIFETIME(APlayCharacter, bVisibilityApplied);
-	DOREPLIFETIME(APlayCharacter, ReplicatedCameraRotation);
+
+	// 회전값 동기화
+	DOREPLIFETIME_CONDITION_NOTIFY(APlayCharacter, ReplicatedCameraRotation, COND_SkipOwner, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(APlayCharacter, SyncedActorRotation, COND_None, REPNOTIFY_Always);
 }
 
 // Called when the game starts or when spawned
@@ -82,6 +87,15 @@ void APlayCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	if (HasAuthority())
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayCharacter BeginPlay START ======= "));
+	}
+	else if (IsLocallyControlled())
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("CLIENT :: ======= PlayCharacter BeginPlay START ======= "));
+	}
+
 	// 카메라 설정
 	if (CameraComponent)
 	{
@@ -102,6 +116,7 @@ void APlayCharacter::BeginPlay()
 	GetCharacterMovement()->BrakingDecelerationWalking = 3500.0f;
 	// 캐릭터 무브먼트 :: 점프/낙하 : 대기 컨트롤
 	GetCharacterMovement()->AirControl = 0.4f;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 	// 스켈레탈 메시 소켓에 어태치
 	if (CostumeTOPStaticMesh && CostumeBOTStaticMesh)
@@ -134,12 +149,45 @@ void APlayCharacter::BeginPlay()
 	{
 		GetCharacterMovement()->NetworkSmoothingMode = ENetworkSmoothingMode::Linear;
 	}
+
+	if (HasAuthority())
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayCharacter BeginPlay END ======= "));
+	}
+	else if (IsLocallyControlled())
+	{
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("CLIENT :: ======= PlayCharacter BeginPlay END ======= "));
+	}
 }
 
 // Called every frame
 void APlayCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	// 이현정 : 클라이언트 본인의 화면 전환
+	if (!bSettedView && bNeedHiddenAtResult && IsLocallyControlled())
+	{
+		APlayPlayerController* FallController = Cast<APlayPlayerController>(GetController());
+		APlayPlayerState* FallPlyerState = Cast<APlayPlayerState>(GetPlayerState());
+		if (FallPlyerState && FallController)
+		{
+			C2S_ApplySpectatorVisibilityAtResult();
+			FallController->Client_SetFailPlayerResultView(FallPlyerState->PlayerInfo.SpectateTargetTag);
+			bSettedView = true;
+		}
+	}
+
+	// 이현정 : 클라이언트 본인의 캐릭터만 제어 → 준비 완료 CALL / 클라가 가진 다른 클라 캐릭터는 제어 XX
+	if (!bCallReadySent && IsLocallyControlled())
+	{
+		APlayPlayerController* FallController = Cast<APlayPlayerController>(GetController());
+		if (FallController)
+		{
+			FallController->CallReady();
+			bCallReadySent = true;
+		}
+	}
 }
 
 FVector APlayCharacter::GetControllerForward()
@@ -302,40 +350,45 @@ void APlayCharacter::S2M_SetCanMoveFalse_Implementation()
 	CanMove = false;
 }
 
-// 이현정 : 서버장의 캐릭터 상태를 세팅
+// 이현정 : 서버에 있는 캐릭터들을 세팅 → 서버장이 소유한 클라1, 클라2, 클라3... 캐릭터들
 void APlayCharacter::PossessedBy(AController* _NewController)
 {
 	Super::PossessedBy(_NewController);
 
-	// 컨트롤러 준비 됐는지 확인
-	APlayPlayerController* PC = Cast<APlayPlayerController>(GetController());
-	if (PC && IsLocallyControlled())
+	if (IsValid(Controller))
 	{
-		PC->CallReady();
+		// ControlRotation 적용
+		SyncedActorRotation = GetActorRotation(); // 서버가 회전값을 설정
+		Controller->SetControlRotation(SyncedActorRotation);
+
+		// ReplicatedCameraRotation에 회전값 저장
+		ReplicatedCameraRotation = SyncedActorRotation;
 	}
 
 	APlayPlayerState* PlayState = GetPlayerState<APlayPlayerState>();
 	if (PlayState)
 	{
+		// 서버 캐릭터 정보 초기화
 		InitializeFromPlayerInfo(PlayState->PlayerInfo);
+	}
+
+	// 서버: 서버장의 캐릭터 준비 완료 CALL
+	if (IsValid(_NewController) && _NewController->IsLocalController())
+	{
+		APlayPlayerController* PC = Cast<APlayPlayerController>(GetController());
+		PC->CallReady();
 	}
 }
 
-// 이현정 : 클라이언트의 캐릭터 상태를 세팅
+// 이현정 : 클라에 있는 캐릭터들을 세팅 → 클라가 소유한 본인 및 서버장, 다른 클라의 캐릭터들
 void APlayCharacter::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
 
-	// 컨트롤러 준비 됐는지 확인
-	APlayPlayerController* PC = Cast<APlayPlayerController>(GetController());
-	if (PC && IsLocallyControlled())
-	{
-		PC->CallReady();
-	}
-
 	APlayPlayerState* PlayState = GetPlayerState<APlayPlayerState>();
-	if (PlayState)
+	if (PlayState && IsLocallyControlled())
 	{
+		// 클라이언트 캐릭터 정보 초기화
 		InitializeFromPlayerInfo(PlayState->PlayerInfo);
 	}
 }
@@ -355,16 +408,14 @@ void APlayCharacter::InitializeFromPlayerInfo(const FPlayerInfo& _Info)
 	bIsSpectar = _Info.bIsSpectar;
 
 	// 결과 화면에서 숨겨져야 하는지
-	HiddenInResult = _Info.bCanHiddenAtResult;
+	bNeedHiddenAtResult = _Info.bCanHiddenAtResult;
 
 	DebugCheckDieStatus();
 }
 
-// 플레이어를 투명화 : PlayGameMode로부터 호출됨 !!! 게임이 시작됐을때
-void APlayCharacter::S2M_ApplySpectatorVisibility_Implementation()
+// 플레이어를 투명화 : PlayGameMode로부터 호출됨 !!! 플레이 도중
+void APlayCharacter::S2M_ApplySpectatorVisibilityAtPlay_Implementation()
 {
-	if (bVisibilityApplied) return;
-	
 	GetMovementComponent()->StopMovementImmediately();
 	SetActorHiddenInGame(true);
 	SetActorEnableCollision(false);
@@ -381,8 +432,53 @@ void APlayCharacter::S2M_ApplySpectatorVisibility_Implementation()
 			PrimComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		}
 	}
+}
 
-	bVisibilityApplied = true;
+// 플레이어를 투명화 : 결과 화면에서 - 서버에게 요청
+void APlayCharacter::C2S_ApplySpectatorVisibilityAtResult_Implementation()
+{
+	GetMovementComponent()->StopMovementImmediately();
+	SetActorHiddenInGame(true);
+	SetActorEnableCollision(false);
+	GetMesh()->SetSimulatePhysics(false);
+	GetMesh()->SetEnableGravity(false);
+	SetActorLocation({ 0, -10000, 0 });
+
+	TArray<UActorComponent*> Components;
+	GetComponents(Components);
+	for (UActorComponent* Comp : Components)
+	{
+		if (UPrimitiveComponent* PrimComp = Cast<UPrimitiveComponent>(Comp))
+		{
+			PrimComp->SetVisibility(false, true);
+			PrimComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		}
+	}
+
+	// 서버가 다른 클라에도 전파
+	S2M_ApplySpectatorVisibilityAtResult();
+}
+
+// 플레이어를 투명화 : 결과 화면에서 - 서버가 동기화
+void APlayCharacter::S2M_ApplySpectatorVisibilityAtResult_Implementation()
+{
+	GetMovementComponent()->StopMovementImmediately();
+	SetActorHiddenInGame(true);
+	SetActorEnableCollision(false);
+	GetMesh()->SetSimulatePhysics(false);
+	GetMesh()->SetEnableGravity(false);
+	SetActorLocation({ 0, -10000, 0 });
+
+	TArray<UActorComponent*> Components;
+	GetComponents(Components);
+	for (UActorComponent* Comp : Components)
+	{
+		if (UPrimitiveComponent* PrimComp = Cast<UPrimitiveComponent>(Comp))
+		{
+			PrimComp->SetVisibility(false, true);
+			PrimComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		}
+	}
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayCharacter :: 관전자 숨김 처리 완료 :: 닉네임 : %s"),
 	*NickName);
@@ -497,7 +593,7 @@ void APlayCharacter::DebugCheckDieStatus()
 		*StatusStr,
 		IsDie ? TEXT("TRUE") : TEXT("FALSE"),
 		bIsSpectar ? TEXT("TRUE") : TEXT("FALSE"),
-		HiddenInResult ? TEXT("TRUE") : TEXT("FALSE")
+		bNeedHiddenAtResult ? TEXT("TRUE") : TEXT("FALSE")
 	);
 
 	if (UFallConst::PrintDebugLog && GEngine)
@@ -522,12 +618,32 @@ void APlayCharacter::DebugCheckDieStatus()
 			*StatusStr,
 			IsDie ? TEXT("TRUE") : TEXT("FALSE"),
 			bIsSpectar ? TEXT("TRUE") : TEXT("FALSE"),
-			HiddenInResult ? TEXT("TRUE") : TEXT("FALSE")
+			bNeedHiddenAtResult ? TEXT("TRUE") : TEXT("FALSE")
 		);
 
 		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Green, ScreenMsg);
 	}
 }
 
+void APlayCharacter::OnRep_ReplicatedCameraRotation()
+{
+	if (IsLocallyControlled() && Controller)
+	{
+		Controller->SetControlRotation(ReplicatedCameraRotation);
+
+		UE_LOG(FALL_DEV_LOG, Warning,
+			TEXT("PlayCharacter :: OnRep_ReplicatedCameraRotation :: 회전 보정 적용됨 - ControlRot ← %s"),
+			*ReplicatedCameraRotation.ToString());
+	}
+}
+
+void APlayCharacter::OnRep_SyncedActorRotation()
+{
+	SetActorRotation(SyncedActorRotation);
+
+	UE_LOG(FALL_DEV_LOG, Log,
+		TEXT("PlayCharacter :: OnRep_SyncedActorRotation :: SetActorRotation ← %s"),
+		*SyncedActorRotation.ToString());
+}
 
 

@@ -195,7 +195,9 @@ protected:
 	bool bCinematicEND = false;
 	// 모든 캐릭터 및 컨트롤러가 준비 됐니
 	bool bAllPlayerReadyToGame = false;
-
+	// 복제를 위한 타이머가 세팅 됐니
+	bool bSettedPlayersRepliTimer = false;
+	
 	// 디폴트 상태의 플레이어 수
 	int32 DefaultPlayerCount = 0;
 
@@ -218,6 +220,8 @@ protected:
 	FTimerHandle SyncPlayerInfoTimer;
 	// 결과 화면 타이머 핸들
 	FTimerHandle ResultTravelTimerHandle;
+	// 복제 할 시간을 주는 타이머 핸들
+	FTimerHandle AllPlayerReadyTimerHandle;
 
 	// 카운트다운 시작 (3초 대기 후 실행)
 	void StartCountdown();
@@ -365,4 +369,6 @@ public:
 	// 모든 플레이어 컨트롤러의 SettedTarget 초기화
 	void ResetAllControllersTargetStatus();
 
+protected:
+	virtual APawn* SpawnDefaultPawnFor_Implementation(AController* _NewPlayer, AActor* _StartSpot) override;
 };

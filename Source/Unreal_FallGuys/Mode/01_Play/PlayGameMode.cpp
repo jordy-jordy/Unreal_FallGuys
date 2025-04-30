@@ -221,6 +221,9 @@ void APlayGameMode::InitPlayerInfo(APlayerController* _NewPlayer, APlayPlayerSta
 	// 플레이어 정보 세팅
 	_PlayerState->SetPlayerTag(UniqueTag);
 
+	// 동기화 한번 해줌
+	SyncPlayerInfo();
+
 	LogPlayerInfo(TEXT("PlayGameMode :: PostLogin :: 신규 플레이어 정보 세팅"), _PlayerState->PlayerInfo, _NewPlayer);
 }
 
@@ -384,6 +387,9 @@ void APlayGameMode::RestorePlayerInfo(APlayerController* _NewPlayer, APlayPlayer
 	// 이전 스테이지에서 실패한 유저 리스트 복구
 	_FallState->RestoreFailPlayersInfo();
 
+	// 동기화 한번 해줌
+	SyncPlayerInfo();
+
 	LogPlayerInfo(TEXT("PlayGameMode :: PostLogin :: 플레이어 정보 복구 완료"), RestoredInfo, _NewPlayer);
 }
 #pragma endregion
@@ -405,29 +411,6 @@ void APlayGameMode::BeginPlay()
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayGameMode BeginPlay START ======= "));
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: GameMode 주소: %p"), this);
-
-	// 개인전용 : 결과 화면용 관전자 ON
-	//if (bMODEIsResultLevel && CurLevelInfo_Mode.LevelType == EStageType::SOLO)
-	//{
-	//	GetWorldTimerManager().SetTimer(
-	//		SpectatorCheckTimerHandle,
-	//		this,
-	//		&APlayGameMode::SetSpectar_RESULT,
-	//		0.1f,
-	//		true
-	//	);
-	//}
-	// 개인전용 : 결과 화면X, 2라운드 부터O : 일반 스테이지용 관전자 ON
-	//else if (!bMODEIsResultLevel && bMODEIsLevelMoved && CurLevelInfo_Mode.LevelType == EStageType::SOLO)
-	//{
-	//	GetWorldTimerManager().SetTimer(
-	//		SpectatorCheckTimerHandle,
-	//		this,
-	//		&APlayGameMode::SetSpectar_STAGE,
-	//		0.1f,
-	//		true
-	//	);
-	//}
 
 	// 게임 시작을 위한 조건을 주기적으로 체크
 	GetWorldTimerManager().SetTimer(
@@ -459,20 +442,41 @@ void APlayGameMode::CheckStartConditions()
 	if (bNumberOfPlayer == false) return;
 	
 	// 모든 플레이어의 컨트롤러와 캐릭터가 준비되지 않았다면 리턴
+	APlayGameState* FallState = GetGameState<APlayGameState>();
 	if (!bAllPlayerReadyToGame)
 	{
-		AreAllClientsReadyToGame();
+		if (!bSettedPlayersRepliTimer && AreAllClientsReadyToGame())
+		{
+			// 타이머 중복 방지: 이미 예약된 타이머가 있으면 무시
+			if (!GetWorldTimerManager().IsTimerActive(AllPlayerReadyTimerHandle))
+			{
+				FTimerDelegate ReadyDelegate;
+				ReadyDelegate.BindLambda([this]()
+					{
+						APlayGameState* FallState = GetGameState<APlayGameState>();
+						if (FallState)
+						{
+							FallState->SetbAllPlayerReadyToGame_State(true);
+							UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: BeginPlay :: 모든 컨트롤러 및 캐릭터가 준비 완료됨."));
+						}
+						bAllPlayerReadyToGame = true;
+					});
+
+				// 3초 뒤 실행
+				GetWorldTimerManager().SetTimer(AllPlayerReadyTimerHandle, ReadyDelegate, 2.0f, false);
+				bSettedPlayersRepliTimer = true;
+			}
+		}
 		return;
 	}
 
 	// 현 레벨이 결과 화면인 경우 : 시네마틱, 카운트 다운 바로 종료 처리 및 종료 트리거 모두 true 세팅
-	APlayGameState* FallState = GetGameState<APlayGameState>();
 	if (bMODEIsResultLevel == true)
 	{
 		if (CurLevelInfo_Mode.LevelType == EStageType::SOLO)
 		{
 			// 실패자의 관전자 활성화
-			SetSpectar_RESULT();
+			// SetSpectar_RESULT();
 		}
 
 		FallState->SetIsLevelCinematicEnd(true);
@@ -556,10 +560,7 @@ bool APlayGameMode::AreAllClientsReadyToGame()
 		}
 	}
 
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: AreAllClientsReadyToGame :: 모든 플레이어의 준비가 완료되었습니다."));
-	bAllPlayerReadyToGame = true;
-	FallState->SetbAllPlayerReadyToGame_State(bAllPlayerReadyToGame);
-	return bAllPlayerReadyToGame;
+	return true;
 }
 
 // 상태가 디폴트인 플레이어 수 카운트 및 수집
@@ -1354,12 +1355,13 @@ void APlayGameMode::SetSpectar_STAGE()
 				FallController->Client_SetFailPlayerStageView(PS->PlayerInfo.SpectateTargetTag);
 				TagString = *PS->PlayerInfo.SpectateTargetTag.ToString();
 
-				UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 일반 화면 :: 캐릭터 숨김처리 시도 | 닉네임: %s | 타겟: %s"),
+				UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 일반 화면 :: 뷰타겟 변경 호출 | 컨트롤러: %s | 닉네임: %s | 뷰타겟 태그: %s"),
+					*PlayerCharacter->GetName(),
 					*PS->PlayerInfo.NickName,
 					*TagString
 				);
 			}
-			PlayerCharacter->S2M_ApplySpectatorVisibility();
+			PlayerCharacter->S2M_ApplySpectatorVisibilityAtPlay();
 		}
 	}
 }
@@ -1367,25 +1369,31 @@ void APlayGameMode::SetSpectar_STAGE()
 // 결과 화면용
 void APlayGameMode::SetSpectar_RESULT()
 {
-	for (TActorIterator<APlayCharacter> It(GetWorld()); It; ++It)
-	{
-		APlayCharacter* PlayerCharacter = *It;
-		if (!PlayerCharacter) continue;
+	//for (TActorIterator<APlayCharacter> It(GetWorld()); It; ++It)
+	//{
+	//	APlayCharacter* PlayerCharacter = *It;
+	//	if (!PlayerCharacter) continue;
 
-		APlayPlayerController* FallController = PlayerCharacter->GetController<APlayPlayerController>();
-		APlayPlayerState* PS = PlayerCharacter->GetPlayerState<APlayPlayerState>();
-		if (PS && PS->PlayerInfo.bCanHiddenAtResult == true)
-		{
-			if (!FallController->SettedTarget_server)
-			{
-				FallController->Client_SetFailPlayerResultView(PS->PlayerInfo.SpectateTargetTag);
-			}
-			PlayerCharacter->S2M_ApplySpectatorVisibility();
-			PlayerCharacter->SetActorLocation({ 0, -10000, 0 });
-			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 결과 화면 :: 캐릭터 숨김처리 완료 | 닉네임: %s"),
-				*PS->PlayerInfo.NickName);
-		}
-	}
+	//	APlayPlayerController* FallController = PlayerCharacter->GetController<APlayPlayerController>();
+	//	APlayPlayerState* PS = PlayerCharacter->GetPlayerState<APlayPlayerState>();
+	//	if (PS && PS->PlayerInfo.bCanHiddenAtResult == true)
+	//	{
+	//		FString TagString = TEXT("");
+	//		if (!FallController->SettedTarget_server)
+	//		{
+	//			FallController->Client_SetFailPlayerResultView(PS->PlayerInfo.SpectateTargetTag);
+	//			TagString = *PS->PlayerInfo.SpectateTargetTag.ToString();
+
+	//			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 결과 화면 :: 뷰타겟 변경 호출 | 컨트롤러: %s | 닉네임: %s | 뷰타겟 태그: %s"),
+	//				*PlayerCharacter->GetName(),
+	//				*PS->PlayerInfo.NickName,
+	//				*TagString
+	//			);
+	//		}
+	//		PlayerCharacter->S2M_ApplySpectatorVisibility();
+	//		PlayerCharacter->SetActorLocation({ 0, -10000, 0 });
+	//	}
+	//}
 }
 
 void APlayGameMode::SetRandomViewForClient(APlayerController* _TargetController)
@@ -1477,4 +1485,38 @@ void APlayGameMode::ResetAllControllersTargetStatus()
 			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: ResetAllControllersTargetStatus :: 컨트롤러 %s 초기화 완료"), *PC->GetName());
 		}
 	}
+}
+
+APawn* APlayGameMode::SpawnDefaultPawnFor_Implementation(AController* _NewPlayer, AActor* _StartSpot)
+{
+	if (DefaultPawnClass == nullptr || _StartSpot == nullptr)
+	{
+		return Super::SpawnDefaultPawnFor_Implementation(_NewPlayer, _StartSpot);
+	}
+
+	const FVector SpawnLocation = _StartSpot->GetActorLocation();
+	const FRotator SpawnRotation = _StartSpot->GetActorRotation();
+
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Instigator = GetInstigator();
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+	APawn* NewPawn = GetWorld()->SpawnActor<APawn>(
+		DefaultPawnClass,
+		SpawnLocation,
+		SpawnRotation,
+		SpawnParams
+	);
+
+	if (NewPawn == nullptr)
+	{
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: SpawnDefaultPawnFor :: Pawn 스폰 실패"));
+	}
+	else
+	{
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: SpawnDefaultPawnFor :: %s 에 Pawn 스폰 완료 (회전: %s)"),
+			*NewPawn->GetName(), *SpawnRotation.ToString());
+	}
+
+	return NewPawn;
 }

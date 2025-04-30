@@ -239,10 +239,20 @@ public:
 	// PlayPlayerState 로 부터 정보를 세팅함
 	void InitializeFromPlayerInfo(const FPlayerInfo& _Info);
 
-	// 플레이어를 투명화 : PlayGameMode로부터 호출됨 !!! 게임이 시작됐을때
+	// 플레이어를 투명화 : PlayGameMode로부터 호출됨 !!! 플레이 도중
 	UFUNCTION(NetMulticast, Reliable)
-	void S2M_ApplySpectatorVisibility();
-	void S2M_ApplySpectatorVisibility_Implementation();
+	void S2M_ApplySpectatorVisibilityAtPlay();
+	void S2M_ApplySpectatorVisibilityAtPlay_Implementation();
+
+	// 플레이어를 투명화 : 결과 화면에서 - 서버에게 요청
+	UFUNCTION(Server, Reliable)
+	void C2S_ApplySpectatorVisibilityAtResult();
+	void C2S_ApplySpectatorVisibilityAtResult_Implementation();
+
+	// 플레이어를 투명화 : 결과 화면에서 - 서버가 동기화
+	UFUNCTION(NetMulticast, Reliable)
+	void S2M_ApplySpectatorVisibilityAtResult();
+	void S2M_ApplySpectatorVisibilityAtResult_Implementation();
 
 	// 플레이어를 투명화 : PlayGameMode로부터 호출됨 !!! Goal Or Kill 콜리전에 닿았을때
 	UFUNCTION(Server, Reliable)
@@ -258,9 +268,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool GetIsSpectar() { return bIsSpectar; }
 
-	// 결과 화면에서 숨겨져야 함
-	bool HiddenInResult = false;
-
 	// 서버에 랜덤 뷰 요청
 	UFUNCTION(Server, Reliable)
 	void C2S_RequestRandomView();
@@ -275,7 +282,20 @@ public:
 	void C2S_RequestSetViewByIndex(int32 _TargetIndex);
 	void C2S_RequestSetViewByIndex_Implementation(int32 _TargetIndex);
 
+
+protected:
 	UPROPERTY(Replicated)
 	FRotator ReplicatedCameraRotation;
+	// 서버가 회전을 복제하기 위해 사용하는 값
+	UPROPERTY(ReplicatedUsing = OnRep_SyncedActorRotation)
+	FRotator SyncedActorRotation;
+	UFUNCTION()
+	void OnRep_ReplicatedCameraRotation();
+	UFUNCTION()
+	void OnRep_SyncedActorRotation();
+
+	bool bCallReadySent = false;
+	bool bSettedView = false;
+	bool bNeedHiddenAtResult = false;
 
 };

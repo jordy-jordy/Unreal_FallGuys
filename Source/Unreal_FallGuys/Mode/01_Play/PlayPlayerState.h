@@ -104,7 +104,7 @@ public:
 
 // 세팅 함수
 public:
-    // 컨트롤러의 상태 세팅
+    // 컨트롤러 및 캐릭터의 준비 상태 세팅
     UFUNCTION(Category = "PLAYER INFO")
     void SetControllerReadyToGame();
 
@@ -161,7 +161,7 @@ public:
 
 // 반환 함수
 public:
-    // 컨트롤러 준비 됐어?
+    // 컨트롤러 및 캐릭터 준비 됐어?
     bool GetControllerReadyToGame() const { return bControllerReadyToGame; }
 
     // 닉네임 반환
@@ -201,9 +201,12 @@ public:
 
 
 protected:
-    // 서버트래블 할 준비가 됨
+    // 컨트롤러와 캐릭터가 준비 됨
     UPROPERTY()
     bool bControllerReadyToGame = false;
+    // 캐릭터 복제(동기화) 까지 완료 됨
+    UPROPERTY()
+    bool bCharacterReady = false;
     // 실시간 상태 동기화를 위한 변수
     UPROPERTY(Replicated)
     EPlayerStatus PlayerStatus;

@@ -119,7 +119,7 @@ void APlayPlayerState::SetIsWinner_Implementation(bool _bWinner)
 	bIsWinner = _bWinner;
 }
 
-// 서버 트래블 할 준비 됐어
+// 컨트롤러 및 캐릭터의 준비 상태 세팅
 void APlayPlayerState::SetControllerReadyToGame()
 {
 	bControllerReadyToGame = true;
