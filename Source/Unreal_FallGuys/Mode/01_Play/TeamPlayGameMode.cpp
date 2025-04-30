@@ -351,6 +351,46 @@ void ATeamPlayGameMode::SetNextTeamLevelData()
 	GameInstance->IsMovedLevel = true;
 }
 
+// 타이머 일시 정지
+void ATeamPlayGameMode::ToggleRemainingTimerPause()
+{
+	if (!HasAuthority()) return;
+	
+	// 게임 시작하기 전엔 비활성화
+	if (!bGameStarted) return;
+
+	FTimerManager& TimerManager = GetWorldTimerManager();
+
+	if (bIsTimerPaused == false)
+	{
+		// 두 타이머 모두 일시 정지
+		if (TimerManager.IsTimerActive(StageLimitTimerHandle))
+		{
+			TimerManager.PauseTimer(StageLimitTimerHandle);
+		}
+		if (TimerManager.IsTimerActive(RemainingTimeUpdateHandle))
+		{
+			TimerManager.PauseTimer(RemainingTimeUpdateHandle);
+		}
+		bIsTimerPaused = true;
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("TeamPlayGameMode :: 두 타이머 일시 정지됨."));
+	}
+	else
+	{
+		// 두 타이머 모두 재개
+		if (TimerManager.IsTimerPaused(StageLimitTimerHandle))
+		{
+			TimerManager.UnPauseTimer(StageLimitTimerHandle);
+		}
+		if (TimerManager.IsTimerPaused(RemainingTimeUpdateHandle))
+		{
+			TimerManager.UnPauseTimer(RemainingTimeUpdateHandle);
+		}
+		bIsTimerPaused = false;
+		UE_LOG(FALL_DEV_LOG, Log, TEXT("TeamPlayGameMode :: 두 타이머 재개됨."));
+	}
+}
+
 // 다음 팀전 레벨로 이동
 void ATeamPlayGameMode::ServerTravelToNextTeamMap()
 {
