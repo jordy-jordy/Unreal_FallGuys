@@ -18,6 +18,15 @@ public:
 	// Sets default values for this character's properties
 	APlayCharacter();
 
+	UPROPERTY(EditAnywhere, Category = "INPUT", meta = (AllowPrivateAccess = "true"))
+	class UInputAction* MoveForwardAction;
+	UPROPERTY(EditAnywhere, Category = "INPUT", meta = (AllowPrivateAccess = "true"))
+	class UInputAction* MoveBackwardAction;
+	UPROPERTY(EditAnywhere, Category = "INPUT", meta = (AllowPrivateAccess = "true"))
+	class UInputAction* MoveRightAction;
+	UPROPERTY(EditAnywhere, Category = "INPUT", meta = (AllowPrivateAccess = "true"))
+	class UInputAction* MoveLeftAction;
+
 	UFUNCTION(BlueprintCallable)
 	void PlayerWMove();
 

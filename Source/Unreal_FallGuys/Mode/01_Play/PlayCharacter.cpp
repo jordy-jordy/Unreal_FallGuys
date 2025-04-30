@@ -23,6 +23,7 @@
 APlayCharacter::APlayCharacter()
 {
 	bReplicates = true;
+	SetReplicateMovement(true);
 
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -79,7 +80,7 @@ void APlayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 void APlayCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 	// 카메라 설정
 	if (CameraComponent)
 	{
@@ -126,6 +127,12 @@ void APlayCharacter::BeginPlay()
 		// 코스튬 세팅
 		SetCharacterCostume(CostumeColor, CostumeTopName, CostumeBotName);
 	}
+
+	// 클라이언트의 움직임 보정
+	if (HasAuthority() == false)
+	{
+		GetCharacterMovement()->NetworkSmoothingMode = ENetworkSmoothingMode::Linear;
+	}
 }
 
 // Called every frame
@@ -158,7 +165,12 @@ FVector APlayCharacter::GetControllerRight()
 void APlayCharacter::SetupPlayerInputComponent(UInputComponent* _PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(_PlayerInputComponent);
+
+	AController* MyController = GetController();
+	if (MyController == nullptr || MyController->IsLocalController() == false) return;
+
 	UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(_PlayerInputComponent);
+	if (!EnhancedInputComponent) return;
 
 	EnhancedInputComponent->BindActionValueLambda(LookAction, ETriggerEvent::Triggered,
 		[this](const FInputActionValue& _Value)
@@ -173,26 +185,35 @@ void APlayCharacter::SetupPlayerInputComponent(UInputComponent* _PlayerInputComp
 				AddControllerPitchInput(LookAxisVector.Y);
 			}
 		});
+
+	EnhancedInputComponent->BindAction(MoveForwardAction, ETriggerEvent::Triggered, this, &APlayCharacter::PlayerWMove);
+	EnhancedInputComponent->BindAction(MoveBackwardAction, ETriggerEvent::Triggered, this, &APlayCharacter::PlayerSMove);
+	EnhancedInputComponent->BindAction(MoveRightAction, ETriggerEvent::Triggered, this, &APlayCharacter::PlayerDMove);
+	EnhancedInputComponent->BindAction(MoveLeftAction, ETriggerEvent::Triggered, this, &APlayCharacter::PlayerAMove);
 }
 
 void APlayCharacter::PlayerWMove()
 {
-	if (!CanMove) { return; }
+	if (!IsLocallyControlled()) return; 
+	if (!CanMove) return;
 	AddMovementInput(GetControllerForward());
 }
 void APlayCharacter::PlayerSMove()
 {
-	if (!CanMove) { return; }
+	if (!IsLocallyControlled()) return;
+	if (!CanMove) return;
 	AddMovementInput(-GetControllerForward());
 }
 void APlayCharacter::PlayerDMove()
 {
-	if (!CanMove) { return; }
+	if (!IsLocallyControlled()) return;
+	if (!CanMove) return;
 	AddMovementInput(GetControllerRight());
 }
 void APlayCharacter::PlayerAMove()
 {
-	if (!CanMove) { return; }
+	if (!IsLocallyControlled()) return;
+	if (!CanMove) return;
 	AddMovementInput(-GetControllerRight());
 }
 
