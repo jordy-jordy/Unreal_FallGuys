@@ -205,6 +205,12 @@ void APlayGameState::MulticastUpdateConnectedPlayers_Implementation(int _NewCoun
 	}
 }
 
+// 모든 플레이어의 컨트롤러와 캐릭터가 준비됐어
+void APlayGameState::SetbAllPlayerReadyToGame_State_Implementation(bool _Value)
+{
+	bAllPlayerReadyToGame_State = _Value;
+}
+
 // 레벨 시네마틱 시작하세요
 void APlayGameState::SetCanStartLevelCinematic_Implementation()
 {
@@ -469,6 +475,7 @@ void APlayGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(APlayGameState, STATECanMoveToResultLevel);
 	DOREPLIFETIME(APlayGameState, StateIsEndGame);
 	DOREPLIFETIME(APlayGameState, AlivePlayers);
+	DOREPLIFETIME(APlayGameState, bAllPlayerReadyToGame_State);
 }
 
 void APlayGameState::PrintFailPlayersInfo()

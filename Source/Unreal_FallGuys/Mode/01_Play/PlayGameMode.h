@@ -160,21 +160,18 @@ protected:
 	// 레벨 시네마틱 시작을 호출
 	UFUNCTION()
 	void CallLevelCinematicStart(APlayGameState* _PlayState);
-
 	// 상태가 디폴트인 플레이어 수
 	int32 GetDefaultPlayerCount();
-
 	// 목표 골인 인원 수 제어
 	void ControllFinishPlayer();
-
 	// 목표 골인 인원 수 : 레이싱
 	void FinishPlayer_Race();
-
 	// 목표 골인 인원 수 : 생존
 	void FinishPlayer_Survive();
-
 	// 게임 시작 조건 검사 함수
 	void CheckStartConditions();
+	// 모든 플레이어가 게임할 준비됐는지 체크
+	bool AreAllClientsReadyToGame();
 
 	// 레벨 이동했니
 	bool bMODEIsLevelMoved = false;
@@ -196,6 +193,8 @@ protected:
 	bool bGameStarted = false;
 	// 시네마틱 끝났니
 	bool bCinematicEND = false;
+	// 모든 캐릭터 및 컨트롤러가 준비 됐니
+	bool bAllPlayerReadyToGame = false;
 
 	// 디폴트 상태의 플레이어 수
 	int32 DefaultPlayerCount = 0;
@@ -262,8 +261,6 @@ protected:
 	void SetCharacterMoveImPossible();
 	// 최종 승리 플레이어를 마킹
 	void MarkWinnersBeforeEndLevel();
-	// 서버 트래블 할 준비 됐는지 체크
-	bool AreAllClientsReady();
 
 	// 동기화 타이머 해제 됐니
 	bool bSyncCleared = false;
@@ -285,8 +282,8 @@ protected:
 	bool bCanMoveResultLevel = false;
 	// 결과 화면에서 다음으로 넘어감
 	bool bPassedResultLevel = false;
-	// 플레이어들 모두 준비 됐니?
-	bool bIsAllPlayersReady = false;
+	// 결과 화면에서 종료 트리거 호출했니
+	bool bCalledEndTriggerAtResult = false;
 
 #pragma endregion
 

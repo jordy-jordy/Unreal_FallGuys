@@ -156,7 +156,15 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "PLAYER LIST")
 	TArray<APlayCharacter*> GetAlivePlayers() { return AlivePlayers; }
+	
+	// 모든 플레이어의 컨트롤러와 캐릭터가 준비됐니?
+	UFUNCTION(BlueprintCallable, Category = "PLAYERS")
+	bool GetAllPlayerReadyToGame_State() const { return bAllPlayerReadyToGame_State; }
 
+	// 모든 플레이어의 컨트롤러와 캐릭터가 준비됐어
+	UFUNCTION(Reliable, NetMulticast, BlueprintCallable, Category = "PLAYERS")
+	void SetbAllPlayerReadyToGame_State(bool _Value);
+	void SetbAllPlayerReadyToGame_State_Implementation(bool _Value);
 
 protected:
 	// 전체 플레이어 정보 목록
@@ -186,6 +194,10 @@ protected:
 	// 접속한 플레이어의 수
 	UPROPERTY(Replicated)
 	int ConnectedPlayers = 0;
+
+	// 모든 플레이어의 컨트롤러와 캐릭터가 준비됐니?
+	UPROPERTY(Replicated)
+	bool bAllPlayerReadyToGame_State = false;
 
 #pragma endregion
 

@@ -276,13 +276,6 @@ void APlayGameMode::HandleSeamlessTravelPlayer(AController*& _NewController)
 	APlayerController* NewPlayerController = Cast<APlayerController>(_NewController);
 	if (!NewPlayerController) return;
 
-	APlayPlayerController* NewPlayPlayerController = Cast<APlayPlayerController>(_NewController);
-	if (!NewPlayPlayerController) return;
-	if (NewPlayPlayerController)
-	{
-		NewPlayPlayerController->Client_CallReadyAfterTravel();
-	}
-
 	APlayGameState* FallState = nullptr;
 	APlayPlayerState* PlayerState = nullptr;
 	UBaseGameInstance* GameInstance = nullptr;
@@ -414,27 +407,27 @@ void APlayGameMode::BeginPlay()
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: GameMode 주소: %p"), this);
 
 	// 개인전용 : 결과 화면용 관전자 ON
-	if (bMODEIsResultLevel && CurLevelInfo_Mode.LevelType == EStageType::SOLO)
-	{
-		GetWorldTimerManager().SetTimer(
-			SpectatorCheckTimerHandle,
-			this,
-			&APlayGameMode::SetSpectar_RESULT,
-			0.1f,
-			true
-		);
-	}
+	//if (bMODEIsResultLevel && CurLevelInfo_Mode.LevelType == EStageType::SOLO)
+	//{
+	//	GetWorldTimerManager().SetTimer(
+	//		SpectatorCheckTimerHandle,
+	//		this,
+	//		&APlayGameMode::SetSpectar_RESULT,
+	//		0.1f,
+	//		true
+	//	);
+	//}
 	// 개인전용 : 결과 화면X, 2라운드 부터O : 일반 스테이지용 관전자 ON
-	else if (!bMODEIsResultLevel && bMODEIsLevelMoved && CurLevelInfo_Mode.LevelType == EStageType::SOLO)
-	{
-		GetWorldTimerManager().SetTimer(
-			SpectatorCheckTimerHandle,
-			this,
-			&APlayGameMode::SetSpectar_STAGE,
-			0.1f,
-			true
-		);
-	}
+	//else if (!bMODEIsResultLevel && bMODEIsLevelMoved && CurLevelInfo_Mode.LevelType == EStageType::SOLO)
+	//{
+	//	GetWorldTimerManager().SetTimer(
+	//		SpectatorCheckTimerHandle,
+	//		this,
+	//		&APlayGameMode::SetSpectar_STAGE,
+	//		0.1f,
+	//		true
+	//	);
+	//}
 
 	// 게임 시작을 위한 조건을 주기적으로 체크
 	GetWorldTimerManager().SetTimer(
@@ -450,7 +443,7 @@ void APlayGameMode::BeginPlay()
 		SyncPlayerInfoTimer,
 		this,
 		&APlayGameMode::SyncPlayerInfo,
-		1.0f,
+		5.0f,
 		true
 	);
 
@@ -464,20 +457,36 @@ void APlayGameMode::CheckStartConditions()
 {
 	// 인원이 안찼으면 리턴
 	if (bNumberOfPlayer == false) return;
-
-	APlayGameState* FallState = GetGameState<APlayGameState>();
+	
+	// 모든 플레이어의 컨트롤러와 캐릭터가 준비되지 않았다면 리턴
+	if (!bAllPlayerReadyToGame)
+	{
+		AreAllClientsReadyToGame();
+		return;
+	}
 
 	// 현 레벨이 결과 화면인 경우 : 시네마틱, 카운트 다운 바로 종료 처리 및 종료 트리거 모두 true 세팅
+	APlayGameState* FallState = GetGameState<APlayGameState>();
 	if (bMODEIsResultLevel == true)
 	{
+		if (CurLevelInfo_Mode.LevelType == EStageType::SOLO)
+		{
+			// 실패자의 관전자 활성화
+			SetSpectar_RESULT();
+		}
+
 		FallState->SetIsLevelCinematicEnd(true);
 		bCountDownEnd = true;
-
-		SetEndCondition_Trigger(FallState);
 		bCanMoveLevel = true;
 	}
 	else
 	{
+		if (CurLevelInfo_Mode.LevelType == EStageType::SOLO)
+		{
+			// 실패자의 관전자 활성화
+			SetSpectar_STAGE();
+		}
+
 		// 인원수 조정
 		if (bSettedGoalCount == false)
 		{
@@ -512,8 +521,8 @@ void APlayGameMode::CheckStartConditions()
 		}
 	}
 
-	// 인원도 찼고, 레벨 시네마틱도 끝났고, 카운트 다운도 끝났으니까 게임 시작 가능
-	if (bNumberOfPlayer == true && bCinematicEND == true && bCountDownEnd == true)
+	// 인원도 찼고, 플레이어들도 준비 됐고, 레벨 시네마틱도 끝났고, 카운트 다운도 끝났으니까 게임 시작 가능
+	if (bNumberOfPlayer == true && bAllPlayerReadyToGame == true && bCinematicEND == true && bCountDownEnd == true)
 	{
 		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: BeginPlay :: 게임 시작 조건 충족. StartGame 호출"));
 
@@ -530,6 +539,27 @@ void APlayGameMode::CheckStartConditions()
 
 		UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayGameMode :: BeginPlay :: CheckStartConditions 함수 종료"));
 	}
+}
+
+// 모든 플레이어가 게임할 준비됐는지 체크
+bool APlayGameMode::AreAllClientsReadyToGame()
+{
+	APlayGameState* FallState = GetGameState<APlayGameState>();
+	if (!FallState) return false;
+
+	for (APlayerState* PS : FallState->PlayerArray)
+	{
+		APlayPlayerState* PState = Cast<APlayPlayerState>(PS);
+		if (!PState || !PState->GetControllerReadyToGame())
+		{
+			return false;
+		}
+	}
+
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: AreAllClientsReadyToGame :: 모든 플레이어의 준비가 완료되었습니다."));
+	bAllPlayerReadyToGame = true;
+	FallState->SetbAllPlayerReadyToGame_State(bAllPlayerReadyToGame);
+	return bAllPlayerReadyToGame;
 }
 
 // 상태가 디폴트인 플레이어 수 카운트 및 수집
@@ -704,19 +734,16 @@ void APlayGameMode::StartGame()
 // 캐릭터 이동 가능하게 세팅
 void APlayGameMode::SetCharacterMovePossible()
 {
-	FTimerHandle DelayHandle;
-	GetWorld()->GetTimerManager().SetTimer(DelayHandle, [this]()
+	for (TActorIterator<APlayCharacter> It(GetWorld()); It; ++It)
+	{
+		APlayCharacter* PlayerCharacter = *It;
+		if (PlayerCharacter && PlayerCharacter->GetPlayerState<APlayPlayerState>()->PlayerInfo.Status == EPlayerStatus::DEFAULT)
 		{
-			for (TActorIterator<APlayCharacter> It(GetWorld()); It; ++It)
-			{
-				APlayCharacter* PlayerCharacter = *It;
-				if (PlayerCharacter && PlayerCharacter->GetPlayerState<APlayPlayerState>()->PlayerInfo.Status == EPlayerStatus::DEFAULT)
-				{
-					PlayerCharacter->S2M_SetCanMoveTrue();
-				}
-			}
-		}, 0.1f, false); // 0.2초 뒤에 한 번 실행
+			PlayerCharacter->S2M_SetCanMoveTrue();
+		}
+	}
 
+	// 캐릭터 움직임 가능하다
 	bPlayerMoving = true;
 }
 
@@ -752,6 +779,9 @@ void APlayGameMode::Tick(float DeltaSeconds)
 	// 서버만 실행
 	if (!HasAuthority()) return;
 
+	// 모든 플레이어의 컨트롤러와 캐릭터가 준비되지 않았다면 리턴하도록 해
+	if (!bAllPlayerReadyToGame) return;
+
 	// 게임이 시작되지 않았다면 리턴하도록 해
 	if (!bGameStarted) return;
 
@@ -761,30 +791,25 @@ void APlayGameMode::Tick(float DeltaSeconds)
 	// 서버 트래블 활성화 됐으면 여기서 끝
 	if (StartedServerTravel) return;
 
-	// 성공 조건이 0명이면 바로 성공 처리
-	if (FinishPlayer == 0 && !bSetWinbyDefault)
+	// 결과 화면이 아니고, 성공 조건이 0명이면 바로 성공 처리 : 부전승
+	if (!bMODEIsResultLevel && FinishPlayer == 0 && !bSetWinbyDefault)
 	{
 		APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
 		SetEndCondition_Trigger(FallState);
 		bSetWinbyDefault = true;
 	}
 
+	// 결과 화면이면 바로 성공 처리
+	if (bMODEIsResultLevel && !bCalledEndTriggerAtResult)
+	{
+		APlayGameState* FallState = GWorld->GetGameState<APlayGameState>();
+		SetEndCondition_Trigger(FallState);
+		bCalledEndTriggerAtResult = true;
+	}
+
 	// 모든 조건이 true 가 되었을 때 서버 트래블 활성화
 	if (IsEndGame && bPlayerStatusChanged && bPlayerInfosBackUp && bNextLevelDataSetted && bCanMoveLevel)
 	{
-		// 모든 플레이어가 서버트래블 준비되기 전까진 리턴
-		if (!bIsAllPlayersReady)
-		{
-			if (AreAllClientsReady())
-			{
-				bIsAllPlayersReady = true;
-			}
-			else
-			{
-				return;
-			}
-		}
-
 		// 결과 화면이 아닌 경우 결과 화면으로 이동
 		if (!bMODEIsResultLevel)
 		{
@@ -797,15 +822,12 @@ void APlayGameMode::Tick(float DeltaSeconds)
 			// 결과 화면에서 넘어가도 된다는 콜이 오기 전까진 리턴
 			if (!bCanMoveResultLevel) return;
 
-			// 실패자의 관전자 ON 타이머 해제
-			GetWorldTimerManager().ClearTimer(SpectatorCheckTimerHandle);
-
 			// 서버 트래블 활성화
 			StartedServerTravel = true;
 			// 결과 화면에서 넘어갔단다.
 			bPassedResultLevel = true;
 
-			// 결과 화면일 경우 20초 타이머 후 호출
+			// 결과 화면일 경우 5초 타이머 후 호출
 			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: Tick :: 레벨로부터 레벨 이동 콜을 받았습니다. 5초 후 다음 레벨로 이동합니다."));
 			GetWorldTimerManager().SetTimer(ResultTravelTimerHandle, this, &APlayGameMode::ServerTravelToNextRandLevel, 5.0f, false);
 		}
@@ -813,9 +835,6 @@ void APlayGameMode::Tick(float DeltaSeconds)
 		{
 			// 결과 화면에서 넘어가도 된다는 콜이 오기 전까진 리턴
 			if (!bCanMoveResultLevel) return;
-
-			// 실패자의 관전자 ON 타이머 해제
-			GetWorldTimerManager().ClearTimer(SpectatorCheckTimerHandle);
 
 			// 서버 트래블 활성화
 			StartedServerTravel = true;
@@ -910,13 +929,6 @@ void APlayGameMode::SetEndCondition_Trigger(APlayGameState* _FallState)
 	// 게임 종료 설정
 	IsEndGame = true;
 	_FallState->SetStateIsEndGameTrue();
-	
-	// 결과 레벨이 아니라면 여기서 타이머 초기화
-	if (!bMODEIsResultLevel)
-	{
-		// 실패자의 관전자 ON 타이머 해제
-		GetWorldTimerManager().ClearTimer(SpectatorCheckTimerHandle);
-	}
 
 	// 공통 종료 로직
 	SetEndCondition_Common(_FallState);
@@ -958,18 +970,14 @@ void APlayGameMode::SetEndCondition_Common(APlayGameState* _FallState)
 // 캐릭터 이동 불가능하게 세팅
 void APlayGameMode::SetCharacterMoveImPossible()
 {
-	FTimerHandle DelayHandle;
-	GetWorld()->GetTimerManager().SetTimer(DelayHandle, [this]()
+	for (TActorIterator<APlayCharacter> It(GetWorld()); It; ++It)
+	{
+		APlayCharacter* PlayerCharacter = *It;
+		if (PlayerCharacter)
 		{
-			for (TActorIterator<APlayCharacter> It(GetWorld()); It; ++It)
-			{
-				APlayCharacter* PlayerCharacter = *It;
-				if (PlayerCharacter)
-				{
-					PlayerCharacter->S2M_SetCanMoveFalse();
-				}
-			}
-		}, 0.1f, false); // 0.2초 뒤에 한 번 실행
+			PlayerCharacter->S2M_SetCanMoveFalse();
+		}
+	}
 }
 
 // 개인전 종료 로직
@@ -1254,45 +1262,6 @@ void APlayGameMode::MarkWinnersBeforeEndLevel()
 			}
 		}
 	}
-}
-
-// 모든 클라이언트가 서버 트래블 준비됐는지 체크
-bool APlayGameMode::AreAllClientsReady()
-{
-	APlayGameState* FallState = GetGameState<APlayGameState>();
-	if (!FallState)
-	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("PlayGameMode :: AreAllClientsReady :: GameState가 nullptr입니다."));
-		return false;
-	}
-
-	bool bAllReady = true;
-
-	for (APlayerState* PS : FallState->PlayerArray)
-	{
-		APlayPlayerState* MyState = Cast<APlayPlayerState>(PS);
-		if (!MyState)
-		{
-			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: AreAllClientsReady :: 캐스팅 실패된 PlayerState 존재"));
-			bAllReady = false;
-			continue;
-		}
-
-		const bool bReady = MyState->GetbReadyToTravel();
-		const FString PlayerTag = MyState->PlayerInfo.Tag.ToString();
-
-		//UE_LOG(FALL_DEV_LOG, Log,
-		//	TEXT("PlayGameMode :: AreAllClientsReady :: 플레이어: %s, 준비 상태: %s"),
-		//	*PlayerTag,
-		//	bReady ? TEXT("true") : TEXT("false"));
-
-		if (!bReady)
-		{
-			bAllReady = false;
-		}
-	}
-
-	return bAllReady;
 }
 #pragma endregion
 

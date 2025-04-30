@@ -104,7 +104,7 @@ public:
 
 // 세팅 함수
 public:
-    // 서버 트래블 할 준비
+    // 컨트롤러의 상태 세팅
     UFUNCTION(Category = "PLAYER INFO")
     void SetControllerReadyToGame();
 
@@ -161,8 +161,8 @@ public:
 
 // 반환 함수
 public:
-    // 서버 트래블 할 준비 됐어?
-    bool GetControllerReadyToGame() { return bControllerReadyToGame; }
+    // 컨트롤러 준비 됐어?
+    bool GetControllerReadyToGame() const { return bControllerReadyToGame; }
 
     // 닉네임 반환
     UFUNCTION(BlueprintCallable, Category = "PLAYER INFO")

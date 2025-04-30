@@ -22,13 +22,6 @@ void APlayPlayerController::BeginPlay()
 	FInputModeGameOnly Mode;
 	SetInputMode(Mode);
 
-	// 로컬 플레이어인 경우 비긴 플레이가 실행되고 얼마 후에 서버 트래블 준비가 되었음을 알림
-	if (IsLocalController())
-	{
-		FTimerHandle Timer;
-		GetWorld()->GetTimerManager().SetTimer(Timer, this, &APlayPlayerController::CallReady, 1.0f, false);
-	}
-
 	// 클라이언트에서 자기 GameInstance 정보 → 서버 PlayerState에 전달
 	if (IsLocalController() && !HasAuthority())
 	{
@@ -67,34 +60,24 @@ void APlayPlayerController::Tick(float DeltaSeconds)
 
 }
 
-// 이현정 : 서버에 준비 완료 알림
+// 이현정 : 서버에 컨트롤러 준비 완료 알림
 void APlayPlayerController::CallReady()
 {
 	Server_NotifyControllerReadyForGame();
 }
 
-// 이현정 : 서버에 준비 완료 알림
+// 이현정 : 서버에 컨트롤러 준비 완료 알림
 void APlayPlayerController::Server_NotifyControllerReadyForGame_Implementation()
 {
 	APlayPlayerState* MyState = GetPlayerState<APlayPlayerState>();
 	if (MyState)
 	{
-		MyState->SetControllerReadyForGame();
-
-		const FString ControllerName = GetName();
-		const bool bReady = MyState->GetbReadyToTravel();
+		MyState->SetControllerReadyToGame();
 	}
 	else
 	{
 		UE_LOG(FALL_DEV_LOG, Error, TEXT("Server_NotifyControllerReadyForGame :: PlayerState가 nullptr입니다."));
 	}
-}
-
-void APlayPlayerController::Client_CallReadyAfterTravel_Implementation()
-{
-	// 다시 딜레이 호출
-	FTimerHandle Timer;
-	GetWorld()->GetTimerManager().SetTimer(Timer, this, &APlayPlayerController::CallReady, 1.0f, false);
 }
 
 void APlayPlayerController::AddMappingContext(UInputMappingContext* _MappingContext)

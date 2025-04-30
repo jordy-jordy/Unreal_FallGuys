@@ -17,6 +17,7 @@
 #include <Global/BaseGameInstance.h>
 #include <Mode/01_Play/PlayGameMode.h>
 #include <Mode/01_Play/PlayPlayerState.h>
+#include <Mode/01_Play/PlayPlayerController.h>
 
 
 // Sets default values
@@ -306,6 +307,13 @@ void APlayCharacter::PossessedBy(AController* _NewController)
 {
 	Super::PossessedBy(_NewController);
 
+	// 컨트롤러 준비 됐는지 확인
+	APlayPlayerController* PC = Cast<APlayPlayerController>(GetController());
+	if (PC && IsLocallyControlled())
+	{
+		PC->CallReady();
+	}
+
 	APlayPlayerState* PlayState = GetPlayerState<APlayPlayerState>();
 	if (PlayState)
 	{
@@ -317,6 +325,13 @@ void APlayCharacter::PossessedBy(AController* _NewController)
 void APlayCharacter::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
+
+	// 컨트롤러 준비 됐는지 확인
+	APlayPlayerController* PC = Cast<APlayPlayerController>(GetController());
+	if (PC && IsLocallyControlled())
+	{
+		PC->CallReady();
+	}
 
 	APlayPlayerState* PlayState = GetPlayerState<APlayPlayerState>();
 	if (PlayState)
