@@ -106,7 +106,7 @@ public:
 public:
     // 서버 트래블 할 준비
     UFUNCTION(Category = "PLAYER INFO")
-    void SetbReadyToTravelTrue();
+    void SetControllerReadyToGame();
 
     // 플레이어 태그 세팅
     UFUNCTION(Reliable, NetMulticast, Category = "PLAYER INFO")
@@ -162,7 +162,7 @@ public:
 // 반환 함수
 public:
     // 서버 트래블 할 준비 됐어?
-    bool GetbReadyToTravel() { return bReadyToTravel; }
+    bool GetControllerReadyToGame() { return bControllerReadyToGame; }
 
     // 닉네임 반환
     UFUNCTION(BlueprintCallable, Category = "PLAYER INFO")
@@ -203,7 +203,7 @@ public:
 protected:
     // 서버트래블 할 준비가 됨
     UPROPERTY()
-    bool bReadyToTravel = false;
+    bool bControllerReadyToGame = false;
     // 실시간 상태 동기화를 위한 변수
     UPROPERTY(Replicated)
     EPlayerStatus PlayerStatus;

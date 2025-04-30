@@ -120,9 +120,9 @@ void APlayPlayerState::SetIsWinner_Implementation(bool _bWinner)
 }
 
 // 서버 트래블 할 준비 됐어
-void APlayPlayerState::SetbReadyToTravelTrue()
+void APlayPlayerState::SetControllerReadyToGame()
 {
-	bReadyToTravel = true;
+	bControllerReadyToGame = true;
 }
 
 // 결과 화면인지 세팅 : PlayGameMode에서 호출

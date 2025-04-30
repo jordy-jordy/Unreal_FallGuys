@@ -98,8 +98,8 @@ public:
 
 	// 이현정 : 서버에 준비 완료 알림
 	UFUNCTION(Server, Reliable)
-	void Server_NotifyReadyForTravel();
-	void Server_NotifyReadyForTravel_Implementation();
+	void Server_NotifyControllerReadyForGame();
+	void Server_NotifyControllerReadyForGame_Implementation();
 
 	UFUNCTION(Client, Reliable)
 	void Client_CallReadyAfterTravel();

@@ -70,28 +70,23 @@ void APlayPlayerController::Tick(float DeltaSeconds)
 // 이현정 : 서버에 준비 완료 알림
 void APlayPlayerController::CallReady()
 {
-	Server_NotifyReadyForTravel();
+	Server_NotifyControllerReadyForGame();
 }
 
 // 이현정 : 서버에 준비 완료 알림
-void APlayPlayerController::Server_NotifyReadyForTravel_Implementation()
+void APlayPlayerController::Server_NotifyControllerReadyForGame_Implementation()
 {
 	APlayPlayerState* MyState = GetPlayerState<APlayPlayerState>();
 	if (MyState)
 	{
-		MyState->SetbReadyToTravelTrue();
+		MyState->SetControllerReadyForGame();
 
 		const FString ControllerName = GetName();
 		const bool bReady = MyState->GetbReadyToTravel();
-
-		//UE_LOG(FALL_DEV_LOG, Log,
-		//	TEXT("PlayPlayerController :: Server_NotifyReadyForTravel :: 컨트롤러: %s, 준비 상태: %s"),
-		//	*ControllerName,
-		//	bReady ? TEXT("True") : TEXT("False"));
 	}
 	else
 	{
-		UE_LOG(FALL_DEV_LOG, Error, TEXT("Server_NotifyReadyForTravel :: PlayerState가 nullptr입니다."));
+		UE_LOG(FALL_DEV_LOG, Error, TEXT("Server_NotifyControllerReadyForGame :: PlayerState가 nullptr입니다."));
 	}
 }
 
