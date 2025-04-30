@@ -1427,8 +1427,8 @@ void APlayGameMode::SetRandomViewForClient(APlayerController* _TargetController)
 
 		PC->Client_SetViewTargetByTag(TargetTag);
 
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: SetRandomViewForClient :: 서버 → 클라 :: 타겟: %s | 태그: %s"),
-			*RandomTarget->GetName(), *TargetTag.ToString());
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: SetRandomViewForClient :: 서버 → 클라 :: 대상자: %s | 타겟 컨트롤러: %s | 타겟의 태그: %s"),
+			*PC->GetName(), *RandomTarget->GetName(), *TargetTag.ToString());
 	}
 }
 
@@ -1465,8 +1465,8 @@ void APlayGameMode::SetViewForClientByIndex(APlayerController* _TargetController
 
 		PC->Client_SetViewTargetByTag(TargetTag);
 
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: SetViewForClientByIndex :: 인덱스: %d | 타겟: %s | 태그: %s"),
-			ValidIndex, *TargetCharacter->GetName(), *TargetTag.ToString());
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: SetViewForClientByIndex :: 서버 → 클라 :: 대상자: %s | 타겟 컨트롤러: %s | 타겟의 태그: %s | 인덱스: %d"),
+			*PC->GetName(), *TargetCharacter->GetName(), *TargetTag.ToString(), ValidIndex);
 	}
 }
 

@@ -284,16 +284,6 @@ public:
 
 
 protected:
-	UPROPERTY(Replicated)
-	FRotator ReplicatedCameraRotation;
-	// 서버가 회전을 복제하기 위해 사용하는 값
-	UPROPERTY(ReplicatedUsing = OnRep_SyncedActorRotation)
-	FRotator SyncedActorRotation;
-	UFUNCTION()
-	void OnRep_ReplicatedCameraRotation();
-	UFUNCTION()
-	void OnRep_SyncedActorRotation();
-
 	bool bCallReadySent = false;
 	bool bSettedView = false;
 	bool bNeedHiddenAtResult = false;

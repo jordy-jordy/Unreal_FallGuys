@@ -23,8 +23,8 @@
 // Sets default values
 APlayCharacter::APlayCharacter()
 {
-	bNetLoadOnClient = true;
-	bOnlyRelevantToOwner = false;
+	//bNetLoadOnClient = true;
+	//bOnlyRelevantToOwner = false;
 	bReplicates = true;
 	SetReplicateMovement(true);
 
@@ -36,6 +36,7 @@ APlayCharacter::APlayCharacter()
 
 	// 캐릭터의 회전
 	bUseControllerRotationYaw = false;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComponent"));
 	SpringArmComponent->SetupAttachment(RootComponent);
@@ -76,10 +77,6 @@ void APlayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(APlayCharacter, bIsResultLevel);
 	DOREPLIFETIME(APlayCharacter, bSpectatorApplied);
 	DOREPLIFETIME(APlayCharacter, bVisibilityApplied);
-
-	// 회전값 동기화
-	DOREPLIFETIME_CONDITION_NOTIFY(APlayCharacter, ReplicatedCameraRotation, COND_SkipOwner, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(APlayCharacter, SyncedActorRotation, COND_None, REPNOTIFY_Always);
 }
 
 // Called when the game starts or when spawned
@@ -116,7 +113,6 @@ void APlayCharacter::BeginPlay()
 	GetCharacterMovement()->BrakingDecelerationWalking = 3500.0f;
 	// 캐릭터 무브먼트 :: 점프/낙하 : 대기 컨트롤
 	GetCharacterMovement()->AirControl = 0.4f;
-	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 	// 스켈레탈 메시 소켓에 어태치
 	if (CostumeTOPStaticMesh && CostumeBOTStaticMesh)
@@ -165,7 +161,7 @@ void APlayCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	// 이현정 : 클라이언트 본인의 화면 전환
+	// 이현정 : 결과 화면에서 클라이언트 본인의 화면 전환 / 자기가 컨트롤 하는 캐릭터만 제어
 	if (!bSettedView && bNeedHiddenAtResult && IsLocallyControlled())
 	{
 		APlayPlayerController* FallController = Cast<APlayPlayerController>(GetController());
@@ -354,16 +350,6 @@ void APlayCharacter::S2M_SetCanMoveFalse_Implementation()
 void APlayCharacter::PossessedBy(AController* _NewController)
 {
 	Super::PossessedBy(_NewController);
-
-	if (IsValid(Controller))
-	{
-		// ControlRotation 적용
-		SyncedActorRotation = GetActorRotation(); // 서버가 회전값을 설정
-		Controller->SetControlRotation(SyncedActorRotation);
-
-		// ReplicatedCameraRotation에 회전값 저장
-		ReplicatedCameraRotation = SyncedActorRotation;
-	}
 
 	APlayPlayerState* PlayState = GetPlayerState<APlayPlayerState>();
 	if (PlayState)
@@ -623,27 +609,6 @@ void APlayCharacter::DebugCheckDieStatus()
 
 		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Green, ScreenMsg);
 	}
-}
-
-void APlayCharacter::OnRep_ReplicatedCameraRotation()
-{
-	if (IsLocallyControlled() && Controller)
-	{
-		Controller->SetControlRotation(ReplicatedCameraRotation);
-
-		UE_LOG(FALL_DEV_LOG, Warning,
-			TEXT("PlayCharacter :: OnRep_ReplicatedCameraRotation :: 회전 보정 적용됨 - ControlRot ← %s"),
-			*ReplicatedCameraRotation.ToString());
-	}
-}
-
-void APlayCharacter::OnRep_SyncedActorRotation()
-{
-	SetActorRotation(SyncedActorRotation);
-
-	UE_LOG(FALL_DEV_LOG, Log,
-		TEXT("PlayCharacter :: OnRep_SyncedActorRotation :: SetActorRotation ← %s"),
-		*SyncedActorRotation.ToString());
 }
 
 
