@@ -139,12 +139,6 @@ void APlayCharacter::BeginPlay()
 void APlayCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	// 자기 자신의 카메라 회전 복제
-	if (IsLocallyControlled())
-	{
-		ReplicatedCameraRotation = GetControlRotation();
-	}
 }
 
 FVector APlayCharacter::GetControllerForward()

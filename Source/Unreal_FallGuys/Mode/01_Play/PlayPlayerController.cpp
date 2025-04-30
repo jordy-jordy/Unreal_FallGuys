@@ -65,18 +65,6 @@ void APlayPlayerController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	// 관전 중일 때만 회전 동기화
-	if (GetViewTarget() && GetViewTarget() != GetPawn())
-	{
-		APlayCharacter* TargetCharacter = Cast<APlayCharacter>(GetViewTarget());
-		if (TargetCharacter != nullptr)
-		{
-			FRotator TargetCamRot = TargetCharacter->ReplicatedCameraRotation;
-
-			// 카메라 회전 반영
-			SetControlRotation(TargetCamRot);
-		}
-	}
 }
 
 // 이현정 : 서버에 준비 완료 알림
