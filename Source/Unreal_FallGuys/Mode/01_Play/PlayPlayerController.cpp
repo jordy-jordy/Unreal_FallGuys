@@ -10,6 +10,7 @@
 #include "Unreal_FallGuys.h"
 #include "Global/BaseGameInstance.h"
 #include "Mode/01_Play/PlayGameMode.h"
+#include "Mode/01_Play/TeamPlayGameMode.h"
 #include "Mode/01_Play/PlayPlayerState.h"
 #include "Mode/01_Play/PlayCharacter.h"
 
@@ -115,10 +116,7 @@ void APlayPlayerController::Client_CallReadyAfterTravel_Implementation()
 
 void APlayPlayerController::AddMappingContext(UInputMappingContext* _MappingContext)
 {
-	if (nullptr == GetLocalPlayer())
-	{
-		return;
-	}
+	if (nullptr == GetLocalPlayer()) return;
 
 	UEnhancedInputLocalPlayerSubsystem* InputSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
 
@@ -161,6 +159,10 @@ void APlayPlayerController::SetupInputComponent()
 		if (InputAction_PrevSpectate)
 		{
 			EnhancedInput->BindAction(InputAction_PrevSpectate, ETriggerEvent::Started, this, &APlayPlayerController::OnPrevSpectate);
+		}
+		if (InputAction_ToggleTimer)
+		{
+			EnhancedInput->BindAction(InputAction_ToggleTimer, ETriggerEvent::Started, this, &APlayPlayerController::OnToggleTimerAction);
 		}
 	}
 }
@@ -434,4 +436,20 @@ void APlayPlayerController::Client_SetFailPlayerStageView(FName _Tag)
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayPlayerController :: Client_SetFailPlayerStageView :: 일반 화면 :: 저장된 타겟으로 카메라 세팅 | 타겟 태그: %s"),
 		*_Tag.ToString());
+}
+
+// 제한시간 타이머 정지/재시작 입력 처리
+void APlayPlayerController::OnToggleTimerAction()
+{
+	Server_ToggleTimerPause();
+}
+
+// 서버에게 타이머 정지/재시작 요청
+void APlayPlayerController::Server_ToggleTimerPause_Implementation()
+{
+	ATeamPlayGameMode* TeamMode = Cast<ATeamPlayGameMode>(UGameplayStatics::GetGameMode(this));
+	if (TeamMode)
+	{
+		TeamMode->ToggleRemainingTimerPause();
+	}
 }

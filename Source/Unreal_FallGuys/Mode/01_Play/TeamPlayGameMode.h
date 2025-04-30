@@ -92,6 +92,14 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "LEVEL LIMIT TIME")
 	void OnStageLimitTimeOver();
 
+public:
+	// 타이머 정지 여부
+	bool bIsTimerPaused = false;
+
+	// 타이머 일시 정지/재시작 함수
+	UFUNCTION(BlueprintCallable)
+	void ToggleRemainingTimerPause();
+
 
 //LMH
 public:
