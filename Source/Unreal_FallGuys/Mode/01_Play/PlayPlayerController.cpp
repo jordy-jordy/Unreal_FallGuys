@@ -389,7 +389,6 @@ void APlayPlayerController::ClientWhoHidden_SetViewTargetByTag_Implementation(FN
 				UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayPlayerController :: Client_SetViewTargetByTag :: 성공 → 태그: %s, 타겟: %s"),
 					*_TargetTag.ToString(), *PlayerCharacter->GetName());
 
-
 				bFound = true;
 				break;
 			}

@@ -794,11 +794,11 @@ void APlayGameMode::Tick(float DeltaSeconds)
 		}
 		else if (bMODEIsResultLevel && !bPassedResultLevel && CurLevelInfo_Mode.CurStagePhase != EStagePhase::STAGE_3_RESULT)
 		{
-			// 실패자의 관전자 ON 타이머 해제
-			GetWorldTimerManager().ClearTimer(SpectatorCheckTimerHandle);
-
 			// 결과 화면에서 넘어가도 된다는 콜이 오기 전까진 리턴
 			if (!bCanMoveResultLevel) return;
+
+			// 실패자의 관전자 ON 타이머 해제
+			GetWorldTimerManager().ClearTimer(SpectatorCheckTimerHandle);
 
 			// 서버 트래블 활성화
 			StartedServerTravel = true;
@@ -811,11 +811,11 @@ void APlayGameMode::Tick(float DeltaSeconds)
 		}
 		else
 		{
-			// 실패자의 관전자 ON 타이머 해제
-			GetWorldTimerManager().ClearTimer(SpectatorCheckTimerHandle);
-
 			// 결과 화면에서 넘어가도 된다는 콜이 오기 전까진 리턴
 			if (!bCanMoveResultLevel) return;
+
+			// 실패자의 관전자 ON 타이머 해제
+			GetWorldTimerManager().ClearTimer(SpectatorCheckTimerHandle);
 
 			// 서버 트래블 활성화
 			StartedServerTravel = true;
