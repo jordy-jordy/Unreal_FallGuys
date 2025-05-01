@@ -16,6 +16,7 @@
 #include <Global/GlobalEnum.h>
 #include <Global/BaseGameInstance.h>
 #include <Mode/01_Play/PlayGameMode.h>
+#include <Mode/01_Play/PlayGameState.h>
 #include <Mode/01_Play/PlayPlayerState.h>
 #include <Mode/01_Play/PlayPlayerController.h>
 
@@ -156,7 +157,7 @@ void APlayCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	
 	// 이현정 : 클라이언트 본인의 캐릭터만 제어 → 준비 완료 CALL / 클라가 가진 다른 클라 캐릭터는 제어 XX
-	if (!bCallReadySent && !HasAuthority() && IsLocallyControlled())
+	if (!bCallReadySent && IsLocallyControlled())
 	{
 		APlayPlayerController* FallController = Cast<APlayPlayerController>(GetController());
 		if (FallController)
@@ -169,12 +170,22 @@ void APlayCharacter::Tick(float DeltaTime)
 	// 이현정 : 결과 화면에서 클라이언트 본인의 화면 전환 / 자기가 컨트롤 하는 캐릭터만 제어
 	if (!bSettedView && bNeedHiddenAtResult && IsLocallyControlled())
 	{
-		APlayPlayerController* FallController = Cast<APlayPlayerController>(GetController());
-		APlayPlayerState* FallPlyerState = Cast<APlayPlayerState>(GetPlayerState());
-		if (FallPlyerState && FallController)
+		if (!bSettedTransparent)
 		{
-			FallController->Client_SetFailPlayerResultView(FallPlyerState->PlayerInfo.SpectateTargetTag);
+			// 투명화
 			C2S_ApplySpectatorVisibilityAtResult();
+			bSettedTransparent = true;
+		}
+
+		// 모든 플레이어가 준비되기 전까진 대기
+		APlayGameState* FallState = Cast<APlayGameState>(GetWorld()->GetGameState());
+		if (!FallState || !FallState->GetAllPlayerReadyToGame_State()) return;
+
+		APlayPlayerController* FallController = Cast<APlayPlayerController>(GetController());
+		APlayPlayerState* FallPalyerState = Cast<APlayPlayerState>(GetPlayerState());
+		if (FallPalyerState && FallController)
+		{
+			FallController->Client_SetFailPlayerResultView(FallPalyerState->PlayerInfo.SpectateTargetTag);
 			bSettedView = true;
 		}
 	}
@@ -351,13 +362,6 @@ void APlayCharacter::PossessedBy(AController* _NewController)
 		// 서버 캐릭터 정보 초기화
 		InitializeFromPlayerInfo(PlayState->PlayerInfo);
 	}
-
-	// 서버: 서버장의 캐릭터 준비 완료 CALL
-	if (IsValid(_NewController) && _NewController->IsLocalController())
-	{
-		APlayPlayerController* PC = Cast<APlayPlayerController>(GetController());
-		PC->CallReady();
-	}
 }
 
 // 이현정 : 클라에 있는 캐릭터들을 세팅 → 클라가 소유한 본인 및 서버장, 다른 클라의 캐릭터들
@@ -418,16 +422,18 @@ void APlayCharacter::S2M_ApplySpectatorVisibilityAtPlay_Implementation()
 void APlayCharacter::C2S_ApplySpectatorVisibilityAtResult_Implementation()
 {
 	GetMovementComponent()->StopMovementImmediately();
-	SetActorHiddenInGame(true);
 	SetActorEnableCollision(false);
 	GetMesh()->SetSimulatePhysics(false);
 	GetMesh()->SetEnableGravity(false);
-	SetActorLocation({ 0, -10000, 0 });
+	SetActorLocation(FVector(0.f, -10000.f, 0.f));
 
 	TArray<UActorComponent*> Components;
 	GetComponents(Components);
 	for (UActorComponent* Comp : Components)
 	{
+		// 카메라는 숨기지 않음
+		if (Comp->IsA<UCameraComponent>()) continue;
+
 		if (UPrimitiveComponent* PrimComp = Cast<UPrimitiveComponent>(Comp))
 		{
 			PrimComp->SetVisibility(false, true);
@@ -443,16 +449,18 @@ void APlayCharacter::C2S_ApplySpectatorVisibilityAtResult_Implementation()
 void APlayCharacter::S2M_ApplySpectatorVisibilityAtResult_Implementation()
 {
 	GetMovementComponent()->StopMovementImmediately();
-	SetActorHiddenInGame(true);
 	SetActorEnableCollision(false);
 	GetMesh()->SetSimulatePhysics(false);
 	GetMesh()->SetEnableGravity(false);
-	SetActorLocation({ 0, -10000, 0 });
+	SetActorLocation(FVector(0.f, -10000.f, 0.f));
 
 	TArray<UActorComponent*> Components;
 	GetComponents(Components);
 	for (UActorComponent* Comp : Components)
 	{
+		// 카메라는 숨기지 않음
+		if (Comp->IsA<UCameraComponent>()) continue;
+
 		if (UPrimitiveComponent* PrimComp = Cast<UPrimitiveComponent>(Comp))
 		{
 			PrimComp->SetVisibility(false, true);
@@ -468,7 +476,6 @@ void APlayCharacter::S2M_ApplySpectatorVisibilityAtResult_Implementation()
 void APlayCharacter::C2S_ApplySpectatorVisibilityAtGoalColl_Implementation()
 {
 	GetMovementComponent()->StopMovementImmediately();
-	SetActorHiddenInGame(true);
 	SetActorEnableCollision(false);
 	GetMesh()->SetSimulatePhysics(false);
 	GetMesh()->SetEnableGravity(false);
@@ -477,6 +484,9 @@ void APlayCharacter::C2S_ApplySpectatorVisibilityAtGoalColl_Implementation()
 	GetComponents(Components);
 	for (UActorComponent* Comp : Components)
 	{
+		// 카메라는 숨기지 않음
+		if (Comp->IsA<UCameraComponent>()) continue;
+
 		if (UPrimitiveComponent* PrimComp = Cast<UPrimitiveComponent>(Comp))
 		{
 			PrimComp->SetVisibility(false, true);
@@ -484,6 +494,7 @@ void APlayCharacter::C2S_ApplySpectatorVisibilityAtGoalColl_Implementation()
 		}
 	}
 
+	// 서버가 다른 클라에도 전파
 	S2M_ApplySpectatorVisibilityAtGoalColl();
 }
 
@@ -491,7 +502,6 @@ void APlayCharacter::C2S_ApplySpectatorVisibilityAtGoalColl_Implementation()
 void APlayCharacter::S2M_ApplySpectatorVisibilityAtGoalColl_Implementation()
 {
 	GetMovementComponent()->StopMovementImmediately();
-	SetActorHiddenInGame(true);
 	SetActorEnableCollision(false);
 	GetMesh()->SetSimulatePhysics(false);
 	GetMesh()->SetEnableGravity(false);
@@ -500,6 +510,9 @@ void APlayCharacter::S2M_ApplySpectatorVisibilityAtGoalColl_Implementation()
 	GetComponents(Components);
 	for (UActorComponent* Comp : Components)
 	{
+		// 카메라는 숨기지 않음
+		if (Comp->IsA<UCameraComponent>()) continue;
+
 		if (UPrimitiveComponent* PrimComp = Cast<UPrimitiveComponent>(Comp))
 		{
 			PrimComp->SetVisibility(false, true);

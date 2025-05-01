@@ -417,7 +417,7 @@ void APlayGameMode::BeginPlay()
 		GameStartConditionTimer,
 		this,
 		&APlayGameMode::CheckStartConditions,
-		0.5f,  // 1초마다 검사
+		1.0f,  // 1초마다 검사
 		true   // 반복 실행
 	);
 
@@ -456,13 +456,13 @@ void APlayGameMode::CheckStartConditions()
 						APlayGameState* FallState = GetGameState<APlayGameState>();
 						if (FallState)
 						{
+							bAllPlayerReadyToGame = true;
 							FallState->SetbAllPlayerReadyToGame_State(true);
 							UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: BeginPlay :: 모든 컨트롤러 및 캐릭터가 준비 완료됨."));
 						}
-						bAllPlayerReadyToGame = true;
 					});
 
-				// 3초 뒤 실행
+				// 딜레이를 건 뒤 실행
 				GetWorldTimerManager().SetTimer(AllPlayerReadyTimerHandle, ReadyDelegate, 2.0f, false);
 				bSettedPlayersRepliTimer = true;
 			}

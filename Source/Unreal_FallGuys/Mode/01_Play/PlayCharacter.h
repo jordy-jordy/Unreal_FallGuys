@@ -286,6 +286,7 @@ public:
 protected:
 	bool bCallReadySent = false;
 	bool bSettedView = false;
+	bool bSettedTransparent = false;
 	bool bNeedHiddenAtResult = false;
 
 };
