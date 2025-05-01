@@ -163,12 +163,6 @@ public:
     void S2M_SetPlayInfo(FPlayerInfo _PlayerInfo);
     void S2M_SetPlayInfo_Implementation(FPlayerInfo _PlayerInfo);
 
-    // 현재 관전하고 있는 대상의 태그를 저장함
-    UFUNCTION(Reliable, NetMulticast, Category = "PLAYER INFO")
-    void S2M_SetSpectateTargetTag(FName _Tag);
-    void S2M_SetSpectateTargetTag_Implementation(FName _Tag);
-
-
 // 반환 함수
 public:
     // 컨트롤러 및 캐릭터 준비 됐어?

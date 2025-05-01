@@ -298,8 +298,8 @@ void APlayPlayerController::Client_SetViewTargetByTag_Implementation(FName _Targ
 				UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayPlayerController :: 일반 스테이지 :: 뷰 타겟 설정 성공 → 요청자의 태그: %s | 타겟 태그: %s | 타겟 컨트롤러: %s"),
 					*FallPCState->PlayerInfo.Tag.ToString(), *_TargetTag.ToString(), *PlayerCharacter->GetName());
 
-				// Server_NotifyHasSpectateTargetTag(FallPCState, _TargetTag);
-				SetViewTargetWithBlend(PlayerCharacter, 0.0f); // 블렌딩 없이 바로 전환
+				SetViewTargetWithBlend(PlayerCharacter, 0.0f);
+				Client_SetCurSpectateTargetTag(_TargetTag);
 
 				// 세팅 완료
 				SettedRandomTarget = true;
@@ -345,7 +345,6 @@ void APlayPlayerController::ClientWhoHidden_SetViewTargetByTag_Implementation(FN
 {
 	bool bFound = false;
 	int32 ActorCount = 0;
-	// 현재 컨트롤러의 캐릭터
 	APlayCharacter* FallPC = Cast<APlayCharacter>(GetCharacter());
 	APlayPlayerState* FallPCState = Cast<APlayPlayerState>(FallPC->GetPlayerState());
 
@@ -362,8 +361,8 @@ void APlayPlayerController::ClientWhoHidden_SetViewTargetByTag_Implementation(FN
 				UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayPlayerController :: 결과 화면 :: 뷰 타겟 설정 성공 → 요청자의 태그: %s | 타겟 태그: %s | 타겟 컨트롤러: %s"),
 					*FallPCState->PlayerInfo.Tag.ToString(), *_TargetTag.ToString(), *PlayerCharacter->GetName());
 
-				// Server_NotifyHasSpectateTargetTag(FallPCState, _TargetTag);
 				SetViewTargetWithBlend(PlayerCharacter, 0.0f);
+				Client_SetCurSpectateTargetTag(_TargetTag);
 
 				SettedTarget = true;
 				Server_NotifySettedTarget(SettedTarget);
@@ -441,9 +440,26 @@ void APlayPlayerController::OnToggleTimerAction()
 	Server_ToggleTimerPause();
 }
 
-void APlayPlayerController::Server_NotifyHasSpectateTargetTag_Implementation(APlayPlayerState* _PState, FName _Tag)
+void APlayPlayerController::Client_SetCurSpectateTargetTag(FName _TargetTag)
 {
-	_PState->S2M_SetSpectateTargetTag(_Tag);
+	// 로컬 플레이어스테이트 갱신
+	APlayPlayerState* MyState = GetPlayerState<APlayPlayerState>();
+	if (MyState)
+	{
+		MyState->PlayerInfo.CurSpectateTargetTag = _TargetTag;
+	}
+
+	// 서버에 반영
+	Server_SetCurSpectateTargetTag(_TargetTag);
+}
+
+void APlayPlayerController::Server_SetCurSpectateTargetTag_Implementation(FName _TargetTag)
+{
+	APlayPlayerState* MyState = GetPlayerState<APlayPlayerState>();
+	if (MyState)
+	{
+		MyState->PlayerInfo.CurSpectateTargetTag = _TargetTag;
+	}
 }
 
 // 서버에게 타이머 정지/재시작 요청

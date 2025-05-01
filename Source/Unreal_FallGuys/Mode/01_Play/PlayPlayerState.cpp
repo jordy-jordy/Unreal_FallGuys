@@ -149,12 +149,6 @@ void APlayPlayerState::S2M_SetPlayInfo_Implementation(FPlayerInfo _PlayerInfo)
 	PlayerInfo = _PlayerInfo;
 }
 
-// 현재 관전하고 있는 대상의 태그를 저장함
-void APlayPlayerState::S2M_SetSpectateTargetTag_Implementation(FName _Tag)
-{
-	PlayerInfo.CurSpectateTargetTag = _Tag;
-}
-
 void APlayPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
