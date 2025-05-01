@@ -155,19 +155,6 @@ void APlayCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	// 이현정 : 결과 화면에서 클라이언트 본인의 화면 전환 / 자기가 컨트롤 하는 캐릭터만 제어
-	if (!bSettedView && bNeedHiddenAtResult && IsLocallyControlled())
-	{
-		APlayPlayerController* FallController = Cast<APlayPlayerController>(GetController());
-		APlayPlayerState* FallPlyerState = Cast<APlayPlayerState>(GetPlayerState());
-		if (FallPlyerState && FallController)
-		{
-			C2S_ApplySpectatorVisibilityAtResult();
-			FallController->Client_SetFailPlayerResultView(FallPlyerState->PlayerInfo.SpectateTargetTag);
-			bSettedView = true;
-		}
-	}
-
 	// 이현정 : 클라이언트 본인의 캐릭터만 제어 → 준비 완료 CALL / 클라가 가진 다른 클라 캐릭터는 제어 XX
 	if (!bCallReadySent && !HasAuthority() && IsLocallyControlled())
 	{
@@ -176,6 +163,19 @@ void APlayCharacter::Tick(float DeltaTime)
 		{
 			FallController->CallReady();
 			bCallReadySent = true;
+		}
+	}
+
+	// 이현정 : 결과 화면에서 클라이언트 본인의 화면 전환 / 자기가 컨트롤 하는 캐릭터만 제어
+	if (!bSettedView && bNeedHiddenAtResult && IsLocallyControlled())
+	{
+		APlayPlayerController* FallController = Cast<APlayPlayerController>(GetController());
+		APlayPlayerState* FallPlyerState = Cast<APlayPlayerState>(GetPlayerState());
+		if (FallPlyerState && FallController)
+		{
+			FallController->Client_SetFailPlayerResultView(FallPlyerState->PlayerInfo.SpectateTargetTag);
+			C2S_ApplySpectatorVisibilityAtResult();
+			bSettedView = true;
 		}
 	}
 }
