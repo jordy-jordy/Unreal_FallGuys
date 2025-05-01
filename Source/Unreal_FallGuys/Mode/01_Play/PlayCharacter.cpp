@@ -23,8 +23,8 @@
 // Sets default values
 APlayCharacter::APlayCharacter()
 {
-	//bNetLoadOnClient = true;
-	//bOnlyRelevantToOwner = false;
+	bNetLoadOnClient = true;
+	bOnlyRelevantToOwner = false;
 	bReplicates = true;
 	SetReplicateMovement(true);
 
@@ -140,12 +140,6 @@ void APlayCharacter::BeginPlay()
 		SetCharacterCostume(CostumeColor, CostumeTopName, CostumeBotName);
 	}
 
-	// 클라이언트의 움직임 보정
-	if (HasAuthority() == false)
-	{
-		GetCharacterMovement()->NetworkSmoothingMode = ENetworkSmoothingMode::Linear;
-	}
-
 	if (HasAuthority())
 	{
 		UE_LOG(FALL_DEV_LOG, Warning, TEXT("SERVER :: ======= PlayCharacter BeginPlay END ======= "));
@@ -175,7 +169,7 @@ void APlayCharacter::Tick(float DeltaTime)
 	}
 
 	// 이현정 : 클라이언트 본인의 캐릭터만 제어 → 준비 완료 CALL / 클라가 가진 다른 클라 캐릭터는 제어 XX
-	if (!bCallReadySent && IsLocallyControlled())
+	if (!bCallReadySent && !HasAuthority() && IsLocallyControlled())
 	{
 		APlayPlayerController* FallController = Cast<APlayPlayerController>(GetController());
 		if (FallController)

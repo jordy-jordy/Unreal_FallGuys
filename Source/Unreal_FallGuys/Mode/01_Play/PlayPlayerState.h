@@ -48,9 +48,13 @@ struct FPlayerInfo
     // 결과화면에서 가려도 되니?
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
     bool bCanHiddenAtResult;
-    // 랜덤 뷰 타겟
+    // 관전 목표의 태그
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
     FName SpectateTargetTag;
+    // 현재 관전하는 대상의 태그
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    FName CurSpectateTargetTag;
+
 
     // 플레이어 정보가 모두 동일할 때 TRUE 반환
     bool operator==(const FPlayerInfo& Other) const
@@ -66,7 +70,8 @@ struct FPlayerInfo
             DropOrder == Other.DropOrder &&
             bIsSpectar == Other.bIsSpectar &&
             bCanHiddenAtResult == Other.bCanHiddenAtResult &&
-            SpectateTargetTag == Other.SpectateTargetTag;
+            SpectateTargetTag == Other.SpectateTargetTag &&
+            CurSpectateTargetTag == Other.CurSpectateTargetTag;
 
     }
     // 플레이어 정보가 동일하지 않을때 FALSE 반환
@@ -78,7 +83,7 @@ struct FPlayerInfo
     FPlayerInfo()
         : Tag(TEXT("")), NickName(TEXT("")), CostumeColor(TEXT("")), CostumeTOP(TEXT("")), CostumeBOT(TEXT("")),
           Status(EPlayerStatus::DEFAULT), Team(ETeamType::NONE), DropOrder(-1), bIsSpectar(false), bCanHiddenAtResult(false), 
-          SpectateTargetTag(TEXT(""))
+          SpectateTargetTag(TEXT("")), CurSpectateTargetTag(TEXT(""))
     {
     }
 };
@@ -157,6 +162,11 @@ public:
     UFUNCTION(Reliable, NetMulticast, Category = "PLAYER INFO")
     void S2M_SetPlayInfo(FPlayerInfo _PlayerInfo);
     void S2M_SetPlayInfo_Implementation(FPlayerInfo _PlayerInfo);
+
+    // 현재 관전하고 있는 대상의 태그를 저장함
+    UFUNCTION(Reliable, NetMulticast, Category = "PLAYER INFO")
+    void S2M_SetSpectateTargetTag(FName _Tag);
+    void S2M_SetSpectateTargetTag_Implementation(FName _Tag);
 
 
 // 반환 함수

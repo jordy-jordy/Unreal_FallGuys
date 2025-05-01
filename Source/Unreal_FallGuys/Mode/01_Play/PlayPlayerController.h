@@ -133,6 +133,10 @@ public:
 	bool SettedRandomTarget = false;
 	bool SettedRandomTarget_server = false; // 서버에서 클라 상태를 알기 위한 변수
 
+	UFUNCTION(Server, Reliable)
+	void Server_NotifyHasSpectateTargetTag(APlayPlayerState* _PState, FName _Tag);
+	void Server_NotifyHasSpectateTargetTag_Implementation(APlayPlayerState* _PState, FName _Tag);
+
 	// 디버그용 : 팀전 제한시간 관련
 	// 서버에게 타이머 정지/재시작 요청
 	UFUNCTION(Server, Reliable)

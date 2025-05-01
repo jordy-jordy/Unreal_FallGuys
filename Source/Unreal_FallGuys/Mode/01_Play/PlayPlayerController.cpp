@@ -281,6 +281,9 @@ void APlayPlayerController::Client_SetViewTargetByTag_Implementation(FName _Targ
 {
 	bool bFound = false;
 	int32 ActorCount = 0;
+	// 현재 컨트롤러의 캐릭터
+	APlayCharacter* FallPC = Cast<APlayCharacter>(GetCharacter());
+	APlayPlayerState* FallPCState = Cast<APlayPlayerState>(FallPC->GetPlayerState());
 
 	for (TActorIterator<APlayCharacter> It(GetWorld()); It; ++It)
 	{
@@ -292,6 +295,10 @@ void APlayPlayerController::Client_SetViewTargetByTag_Implementation(FName _Targ
 			APlayPlayerState* PS = PlayerCharacter->GetPlayerState<APlayPlayerState>();
 			if (PS && PS->PlayerInfo.Tag == _TargetTag)
 			{
+				UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayPlayerController :: 일반 스테이지 :: 뷰 타겟 설정 성공 → 요청자의 태그: %s | 타겟 태그: %s | 타겟 컨트롤러: %s"),
+					*FallPCState->PlayerInfo.Tag.ToString(), *_TargetTag.ToString(), *PlayerCharacter->GetName());
+
+				// Server_NotifyHasSpectateTargetTag(FallPCState, _TargetTag);
 				SetViewTargetWithBlend(PlayerCharacter, 0.0f); // 블렌딩 없이 바로 전환
 
 				// 세팅 완료
@@ -299,17 +306,14 @@ void APlayPlayerController::Client_SetViewTargetByTag_Implementation(FName _Targ
 				// 서버에게 완료 알림
 				Server_NotifySettedRandomTarget(SettedRandomTarget);
 
-				UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayPlayerController :: 일반 스테이지 :: 뷰 타겟 설정 성공 → 요청자: %s | 타겟 태그: %s | 타겟 컨트롤러: %s"),
-					*GetName(), *_TargetTag.ToString(), *PlayerCharacter->GetName());
-
 				bFound = true;
 				break;
 			}
 			else
 			{
 				FString StateTag = PS ? PS->PlayerInfo.Tag.ToString() : TEXT("NoState");
-				UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayPlayerController :: 일반 스테이지 :: 검사중 → 요청자: %s | 타겟 태그: %s | 검사 컨트롤러: %s | 검사 컨트롤러 태그: %s"),
-					*GetName(),
+				UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayPlayerController :: 일반 스테이지 :: 검사중 → 요청자의 태그: %s | 타겟 태그: %s | 검사 컨트롤러: %s | 검사 컨트롤러 태그: %s"),
+					*FallPCState->PlayerInfo.Tag.ToString(),
 					*_TargetTag.ToString(),
 					*PlayerCharacter->GetName(),
 					*StateTag);
@@ -319,8 +323,8 @@ void APlayPlayerController::Client_SetViewTargetByTag_Implementation(FName _Targ
 
 	if (!bFound)
 	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayPlayerController :: 일반 스테이지 :: 실패 → 요청자: %s | 타겟 태그: %s | 전체 액터 수: %d"),
-			*GetName(), *_TargetTag.ToString(), ActorCount);
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayPlayerController :: 일반 스테이지 :: 실패 → 요청자의 태그: %s | 타겟 태그: %s | 전체 액터 수: %d"),
+			*FallPCState->PlayerInfo.Tag.ToString(), *_TargetTag.ToString(), ActorCount);
 	}
 }
 
@@ -329,7 +333,11 @@ void APlayPlayerController::Server_NotifySettedRandomTarget_Implementation(bool 
 {
 	SettedRandomTarget_server = _Value;
 
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayPlayerController :: 일반 스테이지 :: 서버에서 뷰 타겟 세팅 완료 확인 :: 요청자: %s"), *GetName());
+	if (_Value == false) return;
+	// 현재 컨트롤러의 캐릭터
+	APlayCharacter* FallPC = Cast<APlayCharacter>(GetCharacter());
+	APlayPlayerState* FallPCState = Cast<APlayPlayerState>(FallPC->GetPlayerState());
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayPlayerController :: 일반 스테이지 :: 서버에서 뷰 타겟 세팅 완료 확인 :: 요청자의 태그: %s"), *FallPCState->PlayerInfo.Tag.ToString());
 }
 
 // 결과 화면 : 뷰 타겟을 바꿔줌
@@ -337,6 +345,9 @@ void APlayPlayerController::ClientWhoHidden_SetViewTargetByTag_Implementation(FN
 {
 	bool bFound = false;
 	int32 ActorCount = 0;
+	// 현재 컨트롤러의 캐릭터
+	APlayCharacter* FallPC = Cast<APlayCharacter>(GetCharacter());
+	APlayPlayerState* FallPCState = Cast<APlayPlayerState>(FallPC->GetPlayerState());
 
 	for (TActorIterator<APlayCharacter> It(GetWorld()); It; ++It)
 	{
@@ -348,13 +359,14 @@ void APlayPlayerController::ClientWhoHidden_SetViewTargetByTag_Implementation(FN
 			APlayPlayerState* PS = PlayerCharacter->GetPlayerState<APlayPlayerState>();
 			if (PS && PS->PlayerInfo.Tag == _TargetTag)
 			{
+				UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayPlayerController :: 결과 화면 :: 뷰 타겟 설정 성공 → 요청자의 태그: %s | 타겟 태그: %s | 타겟 컨트롤러: %s"),
+					*FallPCState->PlayerInfo.Tag.ToString(), *_TargetTag.ToString(), *PlayerCharacter->GetName());
+
+				// Server_NotifyHasSpectateTargetTag(FallPCState, _TargetTag);
 				SetViewTargetWithBlend(PlayerCharacter, 0.0f);
 
 				SettedTarget = true;
 				Server_NotifySettedTarget(SettedTarget);
-
-				UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayPlayerController :: 결과 화면 :: 뷰 타겟 설정 성공 → 요청자: %s | 타겟 태그: %s | 타겟 컨트롤러: %s"),
-					*GetName(), *_TargetTag.ToString(), *PlayerCharacter->GetName());
 
 				bFound = true;
 				break;
@@ -362,8 +374,8 @@ void APlayPlayerController::ClientWhoHidden_SetViewTargetByTag_Implementation(FN
 			else
 			{
 				FString StateTag = PS ? PS->PlayerInfo.Tag.ToString() : TEXT("NoState");
-				UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayPlayerController :: 결과 화면 :: 검사중 → 요청자: %s | 타겟 태그: %s | 검사 컨트롤러: %s | 검사 컨트롤러 태그: %s"),
-					*GetName(),
+				UE_LOG(FALL_DEV_LOG, Log, TEXT("PlayPlayerController :: 결과 화면 :: 검사중 → 요청자의 태그: %s | 타겟 태그: %s | 검사 컨트롤러: %s | 검사 컨트롤러 태그: %s"),
+					*FallPCState->PlayerInfo.Tag.ToString(),
 					*_TargetTag.ToString(),
 					*PlayerCharacter->GetName(),
 					*StateTag);
@@ -373,8 +385,8 @@ void APlayPlayerController::ClientWhoHidden_SetViewTargetByTag_Implementation(FN
 
 	if (!bFound)
 	{
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayPlayerController :: 결과 화면 :: 실패 → 요청자: %s | 타겟 태그: %s | 전체 액터 수: %d. 0.1초 후 재시도합니다."),
-			*GetName(), *_TargetTag.ToString(), ActorCount);
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayPlayerController :: 결과 화면 :: 실패 → 요청자의 태그: %s | 타겟 태그: %s | 전체 액터 수: %d. 0.1초 후 재시도합니다."),
+			*FallPCState->PlayerInfo.Tag.ToString(), *_TargetTag.ToString(), ActorCount);
 
 		FTimerHandle RetryHandle;
 		FTimerDelegate RetryDelegate;
@@ -391,7 +403,11 @@ void APlayPlayerController::Server_NotifySettedTarget_Implementation(bool _Value
 {
 	SettedTarget_server = _Value;
 
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayPlayerController :: 결과 화면 :: 서버에서 뷰 타겟 세팅 완료 확인 :: 요청자: %s"), *GetName());
+	if (_Value == false) return;
+	// 현재 컨트롤러의 캐릭터
+	APlayCharacter* FallPC = Cast<APlayCharacter>(GetCharacter());
+	APlayPlayerState* FallPCState = Cast<APlayPlayerState>(FallPC->GetPlayerState());
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayPlayerController :: 결과 화면 :: 서버에서 뷰 타겟 세팅 완료 확인 :: 요청자의 태그: %s"), *FallPCState->PlayerInfo.Tag.ToString());
 }
 
 
@@ -400,8 +416,11 @@ void APlayPlayerController::Client_SetFailPlayerResultView(FName _Tag)
 	// 저장된 타겟 태그로 뷰 설정
 	ClientWhoHidden_SetViewTargetByTag(_Tag);
 
-	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayPlayerController :: 결과 화면 :: 서버에게 뷰 타겟 세팅 요청 호출 :: 요청자: %s | 타겟 태그: %s"),
-		*GetName(), *_Tag.ToString());
+	// 현재 컨트롤러의 캐릭터
+	APlayCharacter* FallPC = Cast<APlayCharacter>(GetCharacter());
+	APlayPlayerState* FallPCState = Cast<APlayPlayerState>(FallPC->GetPlayerState());
+	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayPlayerController :: 결과 화면 :: 서버에게 뷰 타겟 세팅 요청 호출 :: 요청자의 태그: %s | 타겟 태그: %s"),
+		*FallPCState->PlayerInfo.Tag.ToString(), *_Tag.ToString());
 }
 
 void APlayPlayerController::Client_SetFailPlayerStageView(FName _Tag)
@@ -409,14 +428,22 @@ void APlayPlayerController::Client_SetFailPlayerStageView(FName _Tag)
 	// 저장된 타겟 태그로 뷰 설정
 	Client_SetViewTargetByTag(_Tag);
 
+	// 현재 컨트롤러의 캐릭터
+	APlayCharacter* FallPC = Cast<APlayCharacter>(GetCharacter());
+	APlayPlayerState* FallPCState = Cast<APlayPlayerState>(FallPC->GetPlayerState());
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayPlayerController :: 일반 스테이지 :: 서버에게 뷰 타겟 세팅 요청 호출 :: 요청자: %s | 타겟 태그: %s"),
-		*GetName(), *_Tag.ToString());
+		*FallPCState->PlayerInfo.Tag.ToString(), *_Tag.ToString());
 }
 
 // 제한시간 타이머 정지/재시작 입력 처리
 void APlayPlayerController::OnToggleTimerAction()
 {
 	Server_ToggleTimerPause();
+}
+
+void APlayPlayerController::Server_NotifyHasSpectateTargetTag_Implementation(APlayPlayerState* _PState, FName _Tag)
+{
+	_PState->S2M_SetSpectateTargetTag(_Tag);
 }
 
 // 서버에게 타이머 정지/재시작 요청

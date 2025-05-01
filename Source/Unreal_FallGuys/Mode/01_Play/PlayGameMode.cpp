@@ -875,21 +875,23 @@ void APlayGameMode::OnPlayerFinished(APlayCharacter* _Character)
 
 	// 이동을 막음
 	_Character->S2M_SetCanMoveFalse();
+
 	// 관전자 중에서 이 캐릭터를 보고 있는 사람들 → 타겟 변경
 	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
 	{
 		APlayPlayerController* SpectatorPC = Cast<APlayPlayerController>(It->Get());
-		if (SpectatorPC && SpectatorPC->GetViewTarget() == _Character)
+		APlayCharacter* SpectatorPC_Character = Cast<APlayCharacter>(SpectatorPC->GetPawn());
+		APlayPlayerState* SpectatorPC_State = Cast<APlayPlayerState>(SpectatorPC_Character->GetPlayerState());
+
+		if (SpectatorPC_State && SpectatorPC_State->PlayerInfo.CurSpectateTargetTag == PlayerState->PlayerInfo.Tag)
 		{
 			// 타겟 바꿔줌
 			SetRandomViewForClient(SpectatorPC);
 		}
 	}
+
 	// 메쉬 및 콜리전 투명화
 	_Character->C2S_ApplySpectatorVisibilityAtGoalColl();
-	// 관전자 모드를 켜줌
-	PlayerState->SetPlayertoSpectar(true);
-
 	if (CurLevelInfo_Mode.EndCondition == EPlayerStatus::SUCCESS)
 	{
 		// 레이싱 : 성공 처리
@@ -916,6 +918,8 @@ void APlayGameMode::OnPlayerFinished(APlayCharacter* _Character)
 	}
 	else
 	{
+		// 관전자 모드를 켜줌
+		PlayerState->SetPlayertoSpectar(true);
 		APlayerController* FallController = Cast<APlayerController>(_Character->GetController());
 		SetRandomViewForClient(FallController);
 	}
@@ -1352,14 +1356,14 @@ void APlayGameMode::SetSpectar_STAGE()
 			FString TagString = TEXT("");
 			if (!FallController->SettedRandomTarget_server)
 			{
-				FallController->Client_SetFailPlayerStageView(PS->PlayerInfo.SpectateTargetTag);
 				TagString = *PS->PlayerInfo.SpectateTargetTag.ToString();
-
-				UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 일반 화면 :: 뷰타겟 변경 호출 | 컨트롤러: %s | 닉네임: %s | 뷰타겟 태그: %s"),
+				UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 일반 화면 :: 뷰타겟 변경 호출 | 대상자의 캐릭터: %s | 대상자의 닉네임: %s | 뷰타겟 태그: %s"),
 					*PlayerCharacter->GetName(),
 					*PS->PlayerInfo.NickName,
 					*TagString
 				);
+
+				FallController->Client_SetFailPlayerStageView(PS->PlayerInfo.SpectateTargetTag);
 			}
 			PlayerCharacter->S2M_ApplySpectatorVisibilityAtPlay();
 		}
@@ -1396,10 +1400,10 @@ void APlayGameMode::SetSpectar_RESULT()
 	//}
 }
 
-void APlayGameMode::SetRandomViewForClient(APlayerController* _TargetController)
+void APlayGameMode::SetRandomViewForClient(APlayerController* _CurController)
 {
 	APlayGameState* FallState = GetGameState<APlayGameState>();
-	if (!FallState || !_TargetController) return;
+	if (!FallState || !_CurController) return;
 
 	// 유저 리스트 업데이트 해줌
 	FallState->UpdateAlivePlayers();
@@ -1415,7 +1419,7 @@ void APlayGameMode::SetRandomViewForClient(APlayerController* _TargetController)
 	int32 RandomIndex = FMath::RandRange(0, ValidTargets.Num() - 1);
 	APlayCharacter* RandomTarget = ValidTargets[RandomIndex];
 
-	APlayPlayerController* PC = Cast<APlayPlayerController>(_TargetController);
+	APlayPlayerController* PC = Cast<APlayPlayerController>(_CurController);
 	if (RandomTarget && PC)
 	{
 		FName TargetTag = NAME_None;
@@ -1425,17 +1429,20 @@ void APlayGameMode::SetRandomViewForClient(APlayerController* _TargetController)
 			TargetTag = PS->PlayerInfo.Tag;
 		}
 
+		// 현재 컨트롤러의 캐릭터
+		APlayCharacter* FallPC = Cast<APlayCharacter>(PC->GetCharacter());
+		APlayPlayerState* FallPCState = Cast<APlayPlayerState>(FallPC->GetPlayerState());
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 뷰 타겟 호출 - 랜덤 :: 서버 → 클라 :: 대상자의 태그: %s | 타겟 컨트롤러: %s | 타겟의 태그: %s"),
+			*FallPCState->PlayerInfo.Tag.ToString(), *RandomTarget->GetName(), *TargetTag.ToString());
+		
 		PC->Client_SetViewTargetByTag(TargetTag);
-
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: SetRandomViewForClient :: 서버 → 클라 :: 대상자: %s | 타겟 컨트롤러: %s | 타겟의 태그: %s"),
-			*PC->GetName(), *RandomTarget->GetName(), *TargetTag.ToString());
 	}
 }
 
-void APlayGameMode::SetViewForClientByIndex(APlayerController* _TargetController, int32 _TargetIndex)
+void APlayGameMode::SetViewForClientByIndex(APlayerController* _CurController, int32 _TargetIndex)
 {
 	APlayGameState* FallState = GetGameState<APlayGameState>();
-	if (!FallState || !_TargetController) return;
+	if (!FallState || !_CurController) return;
 
 	// 유저 리스트 업데이트 해줌
 	FallState->UpdateAlivePlayers();
@@ -1453,7 +1460,7 @@ void APlayGameMode::SetViewForClientByIndex(APlayerController* _TargetController
 	// 다음 타겟
 	APlayCharacter* TargetCharacter = ValidTargets[ValidIndex];
 
-	APlayPlayerController* PC = Cast<APlayPlayerController>(_TargetController);
+	APlayPlayerController* PC = Cast<APlayPlayerController>(_CurController);
 	if (TargetCharacter && PC)
 	{
 		FName TargetTag = NAME_None;
@@ -1463,10 +1470,13 @@ void APlayGameMode::SetViewForClientByIndex(APlayerController* _TargetController
 			TargetTag = PS->PlayerInfo.Tag;
 		}
 
-		PC->Client_SetViewTargetByTag(TargetTag);
+		// 현재 컨트롤러의 캐릭터
+		APlayCharacter* FallPC = Cast<APlayCharacter>(PC->GetCharacter());
+		APlayPlayerState* FallPCState = Cast<APlayPlayerState>(FallPC->GetPlayerState());
+		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: 뷰 타겟 호출 - 배열 순환 :: 서버 → 클라 :: 대상자의 태그: %s | 타겟 컨트롤러: %s | 타겟의 태그: %s | 인덱스: %d"),
+			*FallPCState->PlayerInfo.Tag.ToString(), *TargetCharacter->GetName(), *TargetTag.ToString(), ValidIndex);
 
-		UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: SetViewForClientByIndex :: 서버 → 클라 :: 대상자: %s | 타겟 컨트롤러: %s | 타겟의 태그: %s | 인덱스: %d"),
-			*PC->GetName(), *TargetCharacter->GetName(), *TargetTag.ToString(), ValidIndex);
+		PC->Client_SetViewTargetByTag(TargetTag);
 	}
 }
 
@@ -1481,7 +1491,6 @@ void APlayGameMode::ResetAllControllersTargetStatus()
 			PC->Server_NotifySettedTarget(false);
 			PC->SettedRandomTarget = false;
 			PC->Server_NotifySettedRandomTarget(false);
-
 			UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayGameMode :: ResetAllControllersTargetStatus :: 컨트롤러 %s 초기화 완료"), *PC->GetName());
 		}
 	}
