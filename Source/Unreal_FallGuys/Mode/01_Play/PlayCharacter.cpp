@@ -421,12 +421,6 @@ void APlayCharacter::S2M_ApplySpectatorVisibilityAtPlay_Implementation()
 // 플레이어를 투명화 : 결과 화면에서 - 서버에게 요청
 void APlayCharacter::C2S_ApplySpectatorVisibilityAtResult_Implementation()
 {
-	GetMovementComponent()->StopMovementImmediately();
-	SetActorEnableCollision(false);
-	GetMesh()->SetSimulatePhysics(false);
-	GetMesh()->SetEnableGravity(false);
-	SetActorLocation(FVector(0.f, -10000.f, 0.f));
-
 	TArray<UActorComponent*> Components;
 	GetComponents(Components);
 	for (UActorComponent* Comp : Components)
@@ -440,6 +434,11 @@ void APlayCharacter::C2S_ApplySpectatorVisibilityAtResult_Implementation()
 			PrimComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		}
 	}
+
+	SetActorEnableCollision(false);
+	GetMesh()->SetSimulatePhysics(false);
+	GetMesh()->SetEnableGravity(false);
+	SetActorLocation(FVector(0.f, -10000.f, 0.f));
 
 	// 서버가 다른 클라에도 전파
 	S2M_ApplySpectatorVisibilityAtResult();
@@ -448,12 +447,6 @@ void APlayCharacter::C2S_ApplySpectatorVisibilityAtResult_Implementation()
 // 플레이어를 투명화 : 결과 화면에서 - 서버가 동기화
 void APlayCharacter::S2M_ApplySpectatorVisibilityAtResult_Implementation()
 {
-	GetMovementComponent()->StopMovementImmediately();
-	SetActorEnableCollision(false);
-	GetMesh()->SetSimulatePhysics(false);
-	GetMesh()->SetEnableGravity(false);
-	SetActorLocation(FVector(0.f, -10000.f, 0.f));
-
 	TArray<UActorComponent*> Components;
 	GetComponents(Components);
 	for (UActorComponent* Comp : Components)
@@ -467,6 +460,11 @@ void APlayCharacter::S2M_ApplySpectatorVisibilityAtResult_Implementation()
 			PrimComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		}
 	}
+
+	SetActorEnableCollision(false);
+	GetMesh()->SetSimulatePhysics(false);
+	GetMesh()->SetEnableGravity(false);
+	SetActorLocation(FVector(0.f, -10000.f, 0.f));
 
 	UE_LOG(FALL_DEV_LOG, Warning, TEXT("PlayCharacter :: 관전자 숨김 처리 완료 :: 닉네임 : %s"),
 	*NickName);
@@ -476,6 +474,7 @@ void APlayCharacter::S2M_ApplySpectatorVisibilityAtResult_Implementation()
 void APlayCharacter::C2S_ApplySpectatorVisibilityAtGoalColl_Implementation()
 {
 	GetMovementComponent()->StopMovementImmediately();
+	SetActorHiddenInGame(true);
 	SetActorEnableCollision(false);
 	GetMesh()->SetSimulatePhysics(false);
 	GetMesh()->SetEnableGravity(false);
@@ -484,9 +483,6 @@ void APlayCharacter::C2S_ApplySpectatorVisibilityAtGoalColl_Implementation()
 	GetComponents(Components);
 	for (UActorComponent* Comp : Components)
 	{
-		// 카메라는 숨기지 않음
-		if (Comp->IsA<UCameraComponent>()) continue;
-
 		if (UPrimitiveComponent* PrimComp = Cast<UPrimitiveComponent>(Comp))
 		{
 			PrimComp->SetVisibility(false, true);
@@ -502,6 +498,7 @@ void APlayCharacter::C2S_ApplySpectatorVisibilityAtGoalColl_Implementation()
 void APlayCharacter::S2M_ApplySpectatorVisibilityAtGoalColl_Implementation()
 {
 	GetMovementComponent()->StopMovementImmediately();
+	SetActorHiddenInGame(true);
 	SetActorEnableCollision(false);
 	GetMesh()->SetSimulatePhysics(false);
 	GetMesh()->SetEnableGravity(false);
@@ -510,9 +507,6 @@ void APlayCharacter::S2M_ApplySpectatorVisibilityAtGoalColl_Implementation()
 	GetComponents(Components);
 	for (UActorComponent* Comp : Components)
 	{
-		// 카메라는 숨기지 않음
-		if (Comp->IsA<UCameraComponent>()) continue;
-
 		if (UPrimitiveComponent* PrimComp = Cast<UPrimitiveComponent>(Comp))
 		{
 			PrimComp->SetVisibility(false, true);

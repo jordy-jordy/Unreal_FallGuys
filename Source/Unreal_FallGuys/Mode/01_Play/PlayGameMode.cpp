@@ -890,8 +890,6 @@ void APlayGameMode::OnPlayerFinished(APlayCharacter* _Character)
 		}
 	}
 
-	// 메쉬 및 콜리전 투명화
-	_Character->C2S_ApplySpectatorVisibilityAtGoalColl();
 	if (CurLevelInfo_Mode.EndCondition == EPlayerStatus::SUCCESS)
 	{
 		// 레이싱 : 성공 처리
@@ -908,6 +906,14 @@ void APlayGameMode::OnPlayerFinished(APlayCharacter* _Character)
 		return;
 	}
 
+	// 관전자 모드를 켜줌
+	PlayerState->SetPlayertoSpectar(true);
+	APlayerController* FallController = Cast<APlayerController>(_Character->GetController());
+	SetRandomViewForClient(FallController);
+
+	// 메쉬 및 콜리전 투명화
+	_Character->C2S_ApplySpectatorVisibilityAtGoalColl();
+
 	// 결승선 or 킬존 닿은 플레이어 카운트 +1
 	++CurFinishPlayer;
 	FallState->SetGameStateCurFinishPlayer(CurFinishPlayer);
@@ -915,13 +921,6 @@ void APlayGameMode::OnPlayerFinished(APlayCharacter* _Character)
 	if (CurFinishPlayer >= FinishPlayer && IsEndGame == false)
 	{
 		SetEndCondition_Trigger(FallState);
-	}
-	else
-	{
-		// 관전자 모드를 켜줌
-		PlayerState->SetPlayertoSpectar(true);
-		APlayerController* FallController = Cast<APlayerController>(_Character->GetController());
-		SetRandomViewForClient(FallController);
 	}
 }
 
