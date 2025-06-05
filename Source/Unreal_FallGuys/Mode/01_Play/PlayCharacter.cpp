@@ -129,7 +129,90 @@ void APlayCharacter::BeginPlay()
 void APlayCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	APlayPlayerState* FallPlayState = GetPlayerState<APlayPlayerState>();
+	UBaseGameInstance* FallGameIns = GetGameInstance<UBaseGameInstance>();
+
+	if (FallPlayState == nullptr) return;
+
+	if (false == FallPlayState->GetIsResultLevel())
+	{
+		if (true == FallGameIns->bIsSpectar)
+		{
+			if (GetWorld()->GetAuthGameMode())
+			{
+				S2M_SpectarLoc();
+			}
+			else
+			{
+				C2S_SpectarLoc();
+
+			}
+		}
+	}
+
+	if (UGameplayStatics::GetPlayerController(GetWorld(), 0) == GetController())
+	{
+		UBaseGameInstance* GameIns = GetGameInstance<UBaseGameInstance>();
+		APlayPlayerState* PlayState = GetPlayerState<APlayPlayerState>();
+		if (nullptr == PlayState) return;
+		if (true == PlayState->GetIsResultLevel())
+		{
+			if (bDoOnce == false )
+			{
+				bDoOnce = true;
+				
+				if(true == GameIns->bIsSpectar)
+				{
+					SpectatorOnForRaceOver();
+					if (GetWorld()->GetAuthGameMode())
+					{
+						S2M_SpectarLoc();
+					}
+					else
+					{
+						C2S_SpectarLoc();
+
+					}
+				}
+				
+		
+				
+				CheckFailPlayer();
+
+					
+		
+			}
+
+		}
+
+		else
+		{
+			if (true == UFallGlobal::GetIsLevelCinematicEnd() && bDoOnce == false && true == GameIns->bIsSpectar)
+			{
+
+				bDoOnce = true;
+	
+				SpectatorOn();
+
+				if (GetWorld()->GetAuthGameMode())
+				{
+					S2M_SpectarLoc();
+				}
+				else
+				{
+					C2S_SpectarLoc();
+
+				}
+
+				
+
+				//SpectatorOn();
+			}
+		}
+	}
 }
+
 
 FVector APlayCharacter::GetControllerForward()
 {
@@ -377,11 +460,11 @@ void APlayCharacter::CheckPlayer()
 	if (UGameplayStatics::GetPlayerController(GetWorld(), 0) == GetController())
 	{
 		APlayPlayerState* PlayState = GetPlayerState<APlayPlayerState>();
-		
+		if (nullptr == PlayState) return;
 		
 		if (false == PlayState->GetIsResultLevel())
 		{
-			OutFailPlayer();
+			//OutFailPlayer();
 
 			UBaseGameInstance* GameIns = GetGameInstance<UBaseGameInstance>();
 			GameIns->bIsSuccess = false;
@@ -390,7 +473,7 @@ void APlayCharacter::CheckPlayer()
 		else
 		{
 			// 결과 화면인지 확인
-			CheckFailPlayer();
+			//CheckFailPlayer();
 		}
 	}
 
@@ -405,7 +488,7 @@ void APlayCharacter::C2S_SpectarLoc_Implementation()
 void APlayCharacter::S2M_SpectarLoc_Implementation()
 {
 		//위치 동기화
-		SetActorLocation({ 0,0,-100000 });
+		SetActorLocation({ 0,0,-10000 });
 		SetActorEnableCollision(false);
 		SetActorHiddenInGame(true);
 
@@ -430,10 +513,8 @@ void APlayCharacter::CurStatusReadTimerFuc()
 // 이민하 : 경기에서 실패한 캐릭터 관전자로 저장
 void APlayCharacter::CheckFailPlayer()
 {
-	OutFailPlayer();
+	//OutFailPlayer();
 
-	 APlayPlayerState* PlayState = GetPlayerState<APlayPlayerState>();
-	 if (nullptr == PlayState) return;
 	 UBaseGameInstance* GameIns = GetGameInstance<UBaseGameInstance>();
 	 
 	// UE_LOG(FALL_DEV_LOG, Warning, TEXT("CheckFailPlayer ::%s, %d"),*PlayState->GetPlayerStateNickName(), PlayState->GetPlayerStateStatus());
@@ -458,22 +539,17 @@ void APlayCharacter::OutFailPlayer()
 	{
 		
 
-		APlayPlayerState* PlayState = GetPlayerState<APlayPlayerState>();
-		if (nullptr == PlayState) return;
-
-
-		if (true == PlayState->GetIsResultLevel())
+	
+		if (GetWorld()->GetAuthGameMode())
 		{
-			SpectatorOnForRaceOver();
+			S2M_SpectarLoc();
 		}
 		else
 		{
-			SpectatorOn();
+			C2S_SpectarLoc();
 
 		}
 
-			C2S_SpectarLoc();
-\
 	}
 	
 }

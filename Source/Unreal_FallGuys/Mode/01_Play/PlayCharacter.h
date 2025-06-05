@@ -250,6 +250,9 @@ public:
 	UPROPERTY( Replicated, BlueprintReadWrite, Category = "PLAYER START")
 	bool IsSuccess = false;
 
+	UPROPERTY( BlueprintReadWrite, Category = "PLAYER START")
+	bool bDoOnce = false;
+
 	UFUNCTION(BlueprintCallable)
 	class UGameInstance* GetPlayerGameInstance()
 	{
